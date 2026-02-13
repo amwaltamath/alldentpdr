@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import MobileMenu from '../components/MobileMenu.jsx';
 
 const {
   title = 'AllDent PDR | Paintless Dent Repair Cincinnati',
@@ -31,8 +32,11 @@ const {
     <header class="site-header">
       <div class="container header-inner">
         <a class="logo" href="/">
-          <span class="logo-mark">AllDent</span>
-          <span class="logo-sub">Paintless Dent Repair</span>
+          <img src="/images/logo.jpg" alt="AllDent PDR Logo" class="logo-img" />
+          <div class="logo-text">
+            <span class="logo-mark">AllDent</span>
+            <span class="logo-sub">Paintless Dent Repair</span>
+          </div>
         </a>
         <nav class="nav">
           <a href="/services">Services</a>
@@ -40,6 +44,7 @@ const {
           <a href="/blog">Blog</a>
           <a class="nav-cta" href="/contact">Free Estimate</a>
         </nav>
+        <MobileMenu client:load />
       </div>
     </header>
 
