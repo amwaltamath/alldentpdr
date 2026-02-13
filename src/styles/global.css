@@ -266,6 +266,15 @@ select {
   padding: 50px 0 20px;
 }
 
+.site-footer p {
+  color: #ffffff;
+}
+
+.site-footer h4,
+.site-footer h5 {
+  color: #ffffff;
+}
+
 .footer-inner {
   display: grid;
   gap: 20px;

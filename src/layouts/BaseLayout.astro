@@ -6,8 +6,11 @@ const {
   title = 'AllDent PDR | Paintless Dent Repair Cincinnati',
   description = 'Paintless dent repair in Cincinnati. Fast, affordable PDR for door dings, hail damage, and minor collision dents.',
   canonical = 'https://alldentpdr.com',
+  ogImage = '/images/logo.jpg',
   noindex = false
 } = Astro.props;
+
+const gaId = 'G-YOUR_MEASUREMENT_ID';
 ---
 
 <!DOCTYPE html>
@@ -23,10 +26,28 @@ const {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`https://alldentpdr.com${ogImage}`} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={`https://alldentpdr.com${ogImage}`} />
+    <meta name="google-site-verification" content="UdUBGJ6CT7WTj7DlCdAeVQ0JqiMupWXbQ9hrj3ZiUwY" />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    
+    <!-- Google Analytics -->
+    {gaId && gaId !== 'G-YOUR_MEASUREMENT_ID' && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+        <script>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${gaId}');
+          `}
+        </script>
+      </>
+    )}
   </head>
   <body>
     <header class="site-header">
