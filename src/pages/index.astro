@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BeforeAfter from '../components/BeforeAfter.jsx';
 
 const title = 'AllDent PDR | Paintless Dent Repair Cincinnati';
 const description = 'Paintless Dent Repair Cincinnati drivers trust for fast, factory-finish results. Door dings, hail damage, and minor collision dents repaired without paint.';
@@ -56,6 +57,69 @@ const description = 'Paintless Dent Repair Cincinnati drivers trust for fast, fa
 	</section>
 
 	<section class="section">
+		<div class="container">
+			<h2>See the results</h2>
+			<p>Before and after repairs from Cincinnati-area drivers.</p>
+			<div class="gallery-grid">
+				<div class="card">
+					<span class="tag">Door Ding</span>
+					<BeforeAfter 
+						client:load 
+						before="/images/topdoorbefore.jpg" 
+						after="/images/topdoorafter.jpg" 
+						alt="Door ding before and after repair"
+					/>
+				</div>
+				<div class="card">
+					<span class="tag">Hood Dent</span>
+					<BeforeAfter 
+						client:load 
+						before="/images/pdrhoodbefore.png" 
+						after="/images/pdrhoodafter.png" 
+						alt="Hood dent before and after repair"
+					/>
+				</div>
+				<div class="card">
+					<span class="tag">Side Dent</span>
+					<BeforeAfter 
+						client:load 
+						before="/images/sidedentbefore.jpg" 
+						after="/images/sidedentafter.jpg" 
+						alt="Side dent before and after repair"
+					/>
+				</div>
+				<div class="card">
+					<span class="tag">Hail Damage</span>
+					<BeforeAfter 
+						client:load 
+						before="/images/haildamangetopbefore.jpg" 
+						after="/images/haildamagetopafter.jpg" 
+						alt="Hail damage before and after repair"
+					/>
+				</div>
+				<div class="card">
+					<span class="tag">Trunk Dent</span>
+					<BeforeAfter 
+						client:load 
+						before="/images/denttrunkbefore.png" 
+						after="/images/denttrunkafter.png" 
+						alt="Trunk dent before and after repair"
+					/>
+				</div>
+				<div class="card">
+					<span class="tag">Side Panel</span>
+					<BeforeAfter 
+						client:load 
+						before="/images/sidepaneldentbefore.png" 
+						after="/images/sidepaneldentafter.png" 
+						alt="Side panel dent before and after repair"
+					/>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="section alt">
 		<div class="container">
 			<h2>Local, trusted, and transparent</h2>
 			<div class="grid-3">

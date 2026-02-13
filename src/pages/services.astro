@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BeforeAfter from '../components/BeforeAfter.jsx';
 
 const title = 'Services | AllDent PDR';
 const description = 'Paintless dent repair services in Cincinnati for door dings, hail damage, and minor collision dents.';
@@ -32,6 +33,41 @@ const description = 'Paintless dent repair services in Cincinnati for door dings
   </section>
 
   <section class="section">
+    <div class="container">
+      <h2>Real repairs from Cincinnati</h2>
+      <div class="gallery-grid">
+        <div class="card">
+          <span class="tag">Door Ding</span>
+          <BeforeAfter 
+            client:load 
+            before="/images/topdoorbefore.jpg" 
+            after="/images/topdoorafter.jpg" 
+            alt="Door ding before and after repair"
+          />
+        </div>
+        <div class="card">
+          <span class="tag">Hood Dent</span>
+          <BeforeAfter 
+            client:load 
+            before="/images/pdrhoodbefore.png" 
+            after="/images/pdrhoodafter.png" 
+            alt="Hood dent before and after repair"
+          />
+        </div>
+        <div class="card">
+          <span class="tag">Hail Damage</span>
+          <BeforeAfter 
+            client:load 
+            before="/images/haildamangetopbefore.jpg" 
+            after="/images/haildamagetopafter.jpg" 
+            alt="Hail damage before and after repair"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
     <div class="container">
       <h2>How PDR works</h2>
       <p>

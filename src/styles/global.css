@@ -265,6 +265,45 @@ select {
   color: rgba(246, 239, 231, 0.7);
 }
 
+.before-after-container {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.before-after-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.before-after-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 8px 14px;
+  background: rgba(27, 18, 12, 0.8);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s ease;
+}
+
+.before-after-toggle:hover {
+  background: rgba(27, 18, 12, 0.95);
+}
+
+.gallery-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
 @media (max-width: 720px) {
   .nav {
     display: none;
