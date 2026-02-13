@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Contact | AllDent PDR';
+const description = 'Request a paintless dent repair estimate in Cincinnati. Fast replies and flexible scheduling.';
+---
+
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/contact">
+  <section class="page-hero container">
+    <h1>Get a free estimate</h1>
+    <p>Share a few details and we will reply the same day with pricing and availability.</p>
+  </section>
+
+  <section class="section alt">
+    <div class="container contact-panel">
+      <div class="form-card">
+        <h3>Estimate request</h3>
+        <p>This form is a placeholder. Connect your form provider when ready.</p>
+        <form>
+          <label>
+            Name
+            <input type="text" name="name" placeholder="Your name" />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="you@email.com" />
+          </label>
+          <label>
+            Vehicle
+            <input type="text" name="vehicle" placeholder="Year, make, model" />
+          </label>
+          <label>
+            Describe the damage
+            <textarea name="details" rows="4" placeholder="Location, size, and any details"></textarea>
+          </label>
+          <button class="button primary" type="submit">Send request</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Reach us directly</h3>
+        <p>Phone: (513) 555-0110</p>
+        <p>Email: hello@alldentpdr.com</p>
+        <p>Service area: Cincinnati, OH and Northern Kentucky.</p>
+        <div class="button-row">
+          <a class="button ghost" href="/services">Review services</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,64 @@
+---
+import '../styles/global.css';
+
+const { title, description, pubDate } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} | AllDent PDR</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={`https://alldentpdr.com${Astro.url.pathname}`} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="logo" href="/">
+          <span class="logo-mark">AllDent</span>
+          <span class="logo-sub">Paintless Dent Repair</span>
+        </a>
+        <nav class="nav">
+          <a href="/services">Services</a>
+          <a href="/about">About</a>
+          <a href="/blog">Blog</a>
+          <a class="nav-cta" href="/contact">Free Estimate</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="section">
+      <article class="container hero-card">
+        <p class="tag">{pubDate}</p>
+        <h1>{title}</h1>
+        <p>{description}</p>
+        <slot />
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <h4>AllDent PDR</h4>
+          <p>Paintless Dent Repair Cincinnati and surrounding neighborhoods.</p>
+        </div>
+        <div>
+          <h5>Contact</h5>
+          <p>(513) 555-0110</p>
+          <p>hello@alldentpdr.com</p>
+        </div>
+        <div>
+          <h5>Hours</h5>
+          <p>Mon - Fri: 8am - 6pm</p>
+          <p>Sat: 9am - 2pm</p>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2026 AllDent PDR. All rights reserved.</div>
+    </footer>
+  </body>
+</html>

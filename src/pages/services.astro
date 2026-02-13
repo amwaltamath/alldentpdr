@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Services | AllDent PDR';
+const description = 'Paintless dent repair services in Cincinnati for door dings, hail damage, and minor collision dents.';
+---
+
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services">
+  <section class="page-hero container">
+    <h1>Paintless dent repair services</h1>
+    <p>From one-off door dings to hail storms, we use PDR techniques to restore your panels without repainting.</p>
+  </section>
+
+  <section class="section alt">
+    <div class="container grid-3">
+      <article class="card">
+        <span class="tag">Door Dings</span>
+        <h3>Small dents, clean finish</h3>
+        <p>Ideal for parking lot dings and light creases that keep the paint intact.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Hail Damage</span>
+        <h3>Storm repair plans</h3>
+        <p>Systematic panel repair with consistent results and fast turnaround.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Minor Collision</span>
+        <h3>Soft impact repair</h3>
+        <p>Correct dents from low-speed bumps when paint is undamaged.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>How PDR works</h2>
+      <p>
+        We access the backside of your panel and gently reshape the metal with specialized tools.
+        This keeps your factory paint, reduces repair time, and protects resale value.
+      </p>
+      <div class="button-row">
+        <a class="button primary" href="/contact">Request a quote</a>
+        <a class="button ghost" href="/blog">Read the blog</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

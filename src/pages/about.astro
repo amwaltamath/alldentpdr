@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'About | AllDent PDR';
+const description = 'Local paintless dent repair specialists serving Cincinnati with transparent estimates and fast turnaround.';
+---
+
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/about">
+  <section class="page-hero container">
+    <h1>Local PDR specialists</h1>
+    <p>We focus on paintless dent repair so Cincinnati drivers get factory-quality results without the repainting wait.</p>
+  </section>
+
+  <section class="section alt">
+    <div class="container grid-3">
+      <article class="card">
+        <h3>Precision craft</h3>
+        <p>Every repair is shaped with detail in mind, from light door dings to complex hail damage.</p>
+      </article>
+      <article class="card">
+        <h3>Clear communication</h3>
+        <p>Photo-based estimates, realistic timelines, and straight answers from start to finish.</p>
+      </article>
+      <article class="card">
+        <h3>Community-first</h3>
+        <p>Serving Cincinnati neighborhoods and Northern Kentucky with pride and consistency.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>Why paintless dent repair?</h2>
+      <p>
+        PDR preserves factory paint, minimizes downtime, and typically costs less than conventional body repair.
+        It is the preferred option when the paint surface is intact.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,17 +1,88 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
 
+const title = 'AllDent PDR | Paintless Dent Repair Cincinnati';
+const description = 'Paintless Dent Repair Cincinnati drivers trust for fast, factory-finish results. Door dings, hail damage, and minor collision dents repaired without paint.';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com">
+	<section class="hero container">
+		<div>
+			<span class="hero-pill">Paintless Dent Repair Cincinnati</span>
+			<h1>Restore your vehicle with precise, paintless dent repair.</h1>
+			<p>
+				AllDent PDR delivers clean, factory-level results without repainting. We remove door dings,
+				hail damage, and minor dents quickly so you can get back on the road.
+			</p>
+			<div class="button-row">
+				<a class="button primary" href="/contact">Get a free estimate</a>
+				<a class="button ghost" href="/services">View services</a>
+			</div>
+		</div>
+		<div class="hero-card">
+			<h3>Why drivers choose AllDent</h3>
+			<ul>
+				<li>Same-week appointments for most repairs</li>
+				<li>Keep your factory paint intact</li>
+				<li>Mobile-friendly scheduling and updates</li>
+			</ul>
+			<p class="tag">Serving Cincinnati + Northern Kentucky</p>
+			<p>Trusted by busy families, commuters, and local dealerships.</p>
+		</div>
+	</section>
+
+	<section class="section alt">
+		<div class="container">
+			<h2>Paintless dent repair services</h2>
+			<p>Targeted options for common damage types so you only pay for what you need.</p>
+			<div class="grid-3">
+				<article class="card">
+					<span class="tag">Door Dings</span>
+					<h3>Parking lot dents</h3>
+					<p>Quick PDR fixes for small dents and creases without fillers or repaint.</p>
+				</article>
+				<article class="card">
+					<span class="tag">Hail Damage</span>
+					<h3>Storm recovery</h3>
+					<p>Panel-by-panel restoration that keeps your OEM finish intact.</p>
+				</article>
+				<article class="card">
+					<span class="tag">Minor Collision</span>
+					<h3>Soft impact dents</h3>
+					<p>Correct dents with intact paint using precise metal reshaping.</p>
+				</article>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<h2>Local, trusted, and transparent</h2>
+			<div class="grid-3">
+				<article class="card">
+					<h3>Clear quotes</h3>
+					<p>Photo-based estimates so you know exactly what to expect.</p>
+				</article>
+				<article class="card">
+					<h3>Fast turnaround</h3>
+					<p>Most repairs are completed in hours, not days.</p>
+				</article>
+				<article class="card">
+					<h3>Respect for your time</h3>
+					<p>Concise updates, easy scheduling, and mobile-friendly communication.</p>
+				</article>
+			</div>
+		</div>
+	</section>
+
+	<section class="section alt">
+		<div class="container">
+			<h2>Ready for paintless dent repair in Cincinnati?</h2>
+			<p>Tell us about the damage and we will reply with next steps the same day.</p>
+			<div class="button-row">
+				<a class="button primary" href="/contact">Start your estimate</a>
+				<a class="button ghost" href="/blog">Learn about PDR</a>
+			</div>
+		</div>
+	</section>
+</BaseLayout>
