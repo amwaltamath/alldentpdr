@@ -15,15 +15,15 @@ const description = 'Request a paintless dent repair estimate in Cincinnati. Fas
     <div class="container contact-panel">
       <div class="form-card">
         <h3>Estimate request</h3>
-        <p>This form is a placeholder. Connect your form provider when ready.</p>
-        <form>
+        <p>Fill out the form and we'll email you back within 24 hours.</p>
+        <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
           <label>
             Name
-            <input type="text" name="name" placeholder="Your name" />
+            <input type="text" name="name" placeholder="Your name" required />
           </label>
           <label>
             Email
-            <input type="email" name="email" placeholder="you@email.com" />
+            <input type="email" name="email" placeholder="you@email.com" required />
           </label>
           <label>
             Vehicle
@@ -31,7 +31,7 @@ const description = 'Request a paintless dent repair estimate in Cincinnati. Fas
           </label>
           <label>
             Describe the damage
-            <textarea name="details" rows="4" placeholder="Location, size, and any details"></textarea>
+            <textarea name="message" rows="4" placeholder="Location, size, and any details" required></textarea>
           </label>
           <button class="button primary" type="submit">Send request</button>
         </form>
