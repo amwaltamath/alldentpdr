@@ -1,11 +1,15 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const title = 'Blog | AllDent PDR';
-const description = 'Tips and insights on paintless dent repair in Cincinnati.';
+const title = 'Paintless Dent Repair Blog | Tips & Guides | AllDent PDR Cincinnati';
+const description = 'Learn about paintless dent repair in Cincinnati. Tips on PDR cost, repair timelines, hail damage recovery, and how to protect your vehicle.';
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Blog', url: 'https://alldentpdr.com/blog' }
+];
 ---
 
-<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/blog">
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/blog" breadcrumbs={breadcrumbs}>
   <section class="page-hero container">
     <h1>Paintless dent repair insights</h1>
     <p>Learn how PDR works, what to expect, and how to protect your vehicle.</p>

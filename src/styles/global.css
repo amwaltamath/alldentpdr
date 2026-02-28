@@ -431,3 +431,79 @@ select {
     background-attachment: scroll;
   }
 }
+
+/* FAQ Section */
+.faq-list {
+  max-width: 740px;
+  margin: 0 auto 2rem;
+}
+
+.faq-item {
+  border-bottom: 1px solid rgba(27, 18, 12, 0.1);
+  padding: 0;
+}
+
+.faq-item summary {
+  cursor: pointer;
+  padding: 1.1rem 0;
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: var(--ink);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-item summary::after {
+  content: "+";
+  font-size: 1.4rem;
+  color: var(--rust);
+  margin-left: 1rem;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.faq-item[open] summary::after {
+  content: "−";
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item p {
+  padding: 0 0 1.2rem;
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* Breadcrumb */
+.breadcrumb ol {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.breadcrumb li:not(:last-child)::after {
+  content: "›";
+  margin-left: 0.4rem;
+  color: var(--clay);
+}
+
+.breadcrumb a {
+  color: var(--rust);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.2s;
+}
+
+.breadcrumb a:hover {
+  text-decoration-color: var(--rust);
+}

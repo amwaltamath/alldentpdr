@@ -2,11 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
 
-const title = 'AllDent PDR | Paintless Dent Repair Cincinnati';
-const description = 'Paintless Dent Repair Cincinnati drivers trust for fast, factory-finish results. Door dings, hail damage, and minor collision dents repaired without paint.';
+const title = 'Paintless Dent Repair Cincinnati, OH | AllDent PDR | Door Ding & Hail Repair';
+const description = 'Cincinnati\'s trusted paintless dent repair shop. Fast, affordable PDR for door dings, hail damage, and minor collision dents. Factory-finish results without repainting. Free estimates.';
+const faqItems = [
+  { question: 'What is paintless dent repair?', answer: 'Paintless dent repair (PDR) is a technique that removes dents from vehicle panels without sanding, filling, or repainting. A technician uses specialized tools to reshape the metal from behind the panel, preserving your factory paint finish.' },
+  { question: 'How much does paintless dent repair cost in Cincinnati?', answer: 'PDR cost depends on dent size, location, and accessibility. Small door dings typically range from $75-$150. Hail damage is quoted per panel. Contact AllDent PDR for a free photo-based estimate.' },
+  { question: 'Where does AllDent PDR provide service?', answer: 'AllDent PDR serves Cincinnati, OH and surrounding areas including Northern Kentucky, Covington, Florence, Mason, and West Chester.' },
+  { question: 'How long does a typical PDR repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Multi-panel hail damage may take a full day. We provide a timeline upfront so you can plan accordingly.' }
+];
 ---
 
-<BaseLayout title={title} description={description} canonical="https://alldentpdr.com">
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com" faqItems={faqItems}>
 	<section class="hero">
 		<div class="container hero-inner">
 			<div>
@@ -148,6 +154,30 @@ const description = 'Paintless Dent Repair Cincinnati drivers trust for fast, fa
 			<div class="button-row">
 				<a class="button primary" href="/contact">Start your estimate</a>
 				<a class="button ghost" href="/blog">Learn about PDR</a>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<h2>Paintless dent repair FAQ</h2>
+			<div class="faq-list">
+				<details class="faq-item">
+					<summary>What is paintless dent repair?</summary>
+					<p>Paintless dent repair (PDR) is a technique that removes dents from vehicle panels without sanding, filling, or repainting. A technician uses specialized tools to reshape the metal from behind the panel, preserving your factory paint finish.</p>
+				</details>
+				<details class="faq-item">
+					<summary>How much does paintless dent repair cost in Cincinnati?</summary>
+					<p>PDR cost depends on dent size, location, and accessibility. Small door dings typically range from $75–$150. Hail damage is quoted per panel. Contact AllDent PDR for a free photo-based estimate.</p>
+				</details>
+				<details class="faq-item">
+					<summary>Where does AllDent PDR provide service?</summary>
+					<p>AllDent PDR serves Cincinnati, OH and surrounding areas including Northern Kentucky, Covington, Florence, Mason, and West Chester.</p>
+				</details>
+				<details class="faq-item">
+					<summary>How long does a typical PDR repair take?</summary>
+					<p>Most single-dent repairs are completed in 1–3 hours. Multi-panel hail damage may take a full day. We provide a timeline upfront so you can plan accordingly.</p>
+				</details>
 			</div>
 		</div>
 	</section>

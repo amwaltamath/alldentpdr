@@ -1,11 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = 'About | AllDent PDR';
-const description = 'Local paintless dent repair specialists serving Cincinnati with transparent estimates and fast turnaround.';
+const title = 'About AllDent PDR | Cincinnati Paintless Dent Repair Specialists';
+const description = 'AllDent PDR is a local paintless dent repair shop serving Cincinnati, OH and Northern Kentucky. Transparent estimates, fast turnaround, and factory-quality results.';
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'About', url: 'https://alldentpdr.com/about' }
+];
 ---
 
-<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/about">
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/about" breadcrumbs={breadcrumbs}>
   <section class="page-hero container">
     <h1>Local PDR specialists</h1>
     <p>We focus on paintless dent repair so Cincinnati drivers get factory-quality results without the repainting wait.</p>
@@ -35,6 +39,31 @@ const description = 'Local paintless dent repair specialists serving Cincinnati 
         PDR preserves factory paint, minimizes downtime, and typically costs less than conventional body repair.
         It is the preferred option when the paint surface is intact.
       </p>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <h2>Paintless dent repair service areas</h2>
+      <p>AllDent PDR proudly serves the following Cincinnati-area communities:</p>
+      <div class="grid-3">
+        <article class="card">
+          <h3>Cincinnati, OH</h3>
+          <p>Our home base. We serve all Cincinnati neighborhoods with fast, reliable PDR.</p>
+        </article>
+        <article class="card">
+          <h3>Northern Kentucky</h3>
+          <p>Covington, Florence, and surrounding Northern Kentucky communities.</p>
+        </article>
+        <article class="card">
+          <h3>Greater Cincinnati</h3>
+          <p>Mason, West Chester, and other suburbs in the greater Cincinnati metro area.</p>
+        </article>
+      </div>
+      <div class="button-row">
+        <a class="button primary" href="/contact">Get a free estimate</a>
+        <a class="button ghost" href="/services">View services</a>
+      </div>
     </div>
   </section>
 </BaseLayout>

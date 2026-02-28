@@ -1,64 +1,45 @@
 ---
-import '../styles/global.css';
+import BaseLayout from './BaseLayout.astro';
 
 const { title, description, pubDate } = Astro.props;
+const fullTitle = `${title} | AllDent PDR`;
+const canonical = `https://alldentpdr.com${Astro.url.pathname}`;
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Blog', url: 'https://alldentpdr.com/blog' },
+  { name: title, url: canonical }
+];
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title} | AllDent PDR</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={`https://alldentpdr.com${Astro.url.pathname}`} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="container header-inner">
-        <a class="logo" href="/">
-          <span class="logo-mark">AllDent</span>
-          <span class="logo-sub">Paintless Dent Repair</span>
-        </a>
-        <nav class="nav">
-          <a href="/services">Services</a>
-          <a href="/about">About</a>
-          <a href="/blog">Blog</a>
-          <a class="nav-cta" href="/contact">Free Estimate</a>
-        </nav>
+<BaseLayout
+  title={fullTitle}
+  description={description}
+  canonical={canonical}
+  type="article"
+  publishedDate={pubDate}
+  breadcrumbs={breadcrumbs}
+>
+  <section class="section">
+    <article class="container hero-card" itemscope itemtype="https://schema.org/BlogPosting">
+      <meta itemprop="headline" content={title} />
+      <meta itemprop="description" content={description} />
+      <meta itemprop="datePublished" content={pubDate} />
+      <meta itemprop="author" content="AllDent PDR" />
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li aria-current="page">{title}</li>
+        </ol>
+      </nav>
+      <p class="tag">{pubDate}</p>
+      <h1>{title}</h1>
+      <p>{description}</p>
+      <slot />
+      <div class="button-row" style="margin-top: 2rem;">
+        <a class="button primary" href="/contact">Get a Free Estimate</a>
+        <a class="button ghost" href="/services">View All Services</a>
       </div>
-    </header>
-
-    <main class="section">
-      <article class="container hero-card">
-        <p class="tag">{pubDate}</p>
-        <h1>{title}</h1>
-        <p>{description}</p>
-        <slot />
-      </article>
-    </main>
-
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <div>
-          <h4>AllDent PDR</h4>
-          <p>Paintless Dent Repair Cincinnati and surrounding neighborhoods.</p>
-        </div>
-        <div>
-          <h5>Contact</h5>
-          <p>1 855-425-5336</p>
-          <p>alldentpdr@gmail.com</p>
-        </div>
-        <div>
-          <h5>Hours</h5>
-          <p>Mon - Fri: 8am - 6pm</p>
-          <p>Sat: 9am - 2pm</p>
-        </div>
-      </div>
-      <div class="footer-bottom">© 2026 AllDent PDR. All rights reserved.</div>
-    </footer>
-  </body>
-</html>
+    </article>
+  </section>
+</BaseLayout>

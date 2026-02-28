@@ -7,7 +7,11 @@ const {
   description = 'Paintless dent repair in Cincinnati. Fast, affordable PDR for door dings, hail damage, and minor collision dents.',
   canonical = 'https://alldentpdr.com',
   ogImage = '/images/logo.jpg',
-  noindex = false
+  noindex = false,
+  type = 'website',
+  publishedDate = '',
+  breadcrumbs = [] as { name: string; url: string }[],
+  faqItems = [] as { question: string; answer: string }[]
 } = Astro.props;
 
 const gaId = 'G-T7RLXD05RW';
@@ -28,9 +32,18 @@ const gaId = 'G-T7RLXD05RW';
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={`https://alldentpdr.com${ogImage}`} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`https://alldentpdr.com${ogImage}`} />
     <meta name="google-site-verification" content="UdUBGJ6CT7WTj7DlCdAeVQ0JqiMupWXbQ9hrj3ZiUwY" />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
+    <meta name="geo.region" content="US-OH" />
+    <meta name="geo.placename" content="Cincinnati" />
+    <meta name="geo.position" content="39.1031;-84.5120" />
+    <meta name="ICBM" content="39.1031, -84.5120" />
+    {type === 'article' && publishedDate && (
+      <meta property="article:published_time" content={publishedDate} />
+    )}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     
@@ -72,10 +85,53 @@ const gaId = 'G-T7RLXD05RW';
               "name": "Cincinnati"
             },
             {
+              "@type": "City",
+              "name": "Covington"
+            },
+            {
+              "@type": "City",
+              "name": "Florence"
+            },
+            {
+              "@type": "City",
+              "name": "Mason"
+            },
+            {
+              "@type": "City",
+              "name": "West Chester"
+            },
+            {
               "@type": "State",
               "name": "Northern Kentucky"
             }
           ],
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 39.1031,
+            "longitude": -84.5120
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Paintless Dent Repair Services",
+            "itemListElement": [
+              {
+                "@type": "OfferCatalog",
+                "name": "Door Ding Repair",
+                "description": "Quick PDR fixes for small dents and creases without fillers or repaint"
+              },
+              {
+                "@type": "OfferCatalog",
+                "name": "Hail Damage Repair",
+                "description": "Panel-by-panel hail dent restoration that preserves your OEM finish"
+              },
+              {
+                "@type": "OfferCatalog",
+                "name": "Minor Collision Dent Repair",
+                "description": "Correct dents from low-speed impacts when paint is undamaged"
+              }
+            ]
+          },
+          "paymentAccepted": "Cash, Credit Card, Debit Card",
           "priceRange": "$$",
           "openingHours": "Mo-Fr 08:00-18:00, Sa 09:00-14:00",
           "image": "https://alldentpdr.com/images/logo.jpg",
@@ -83,6 +139,36 @@ const gaId = 'G-T7RLXD05RW';
         }
       `}
     </script>
+
+    {/* Breadcrumb Schema */}
+    {breadcrumbs.length > 0 && (
+      <script type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbs.map((crumb: { name: string; url: string }, i: number) => ({
+          "@type": "ListItem",
+          "position": i + 1,
+          "name": crumb.name,
+          "item": crumb.url
+        }))
+      })} />
+    )}
+
+    {/* FAQ Schema */}
+    {faqItems.length > 0 && (
+      <script type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqItems.map((item: { question: string; answer: string }) => ({
+          "@type": "Question",
+          "name": item.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": item.answer
+          }
+        }))
+      })} />
+    )}
   </head>
   <body>
     <header class="site-header">

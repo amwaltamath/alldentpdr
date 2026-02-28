@@ -1,11 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = 'Contact | AllDent PDR';
-const description = 'Request a paintless dent repair estimate in Cincinnati. Fast replies and flexible scheduling.';
+const title = 'Get a Free Dent Repair Estimate | AllDent PDR Cincinnati';
+const description = 'Request a free paintless dent repair estimate in Cincinnati, OH. Same-day replies, photo-based quotes, and flexible scheduling. Call 1-855-425-5336.';
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Contact', url: 'https://alldentpdr.com/contact' }
+];
 ---
 
-<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/contact">
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/contact" breadcrumbs={breadcrumbs}>
   <section class="page-hero container">
     <h1>Get a free estimate</h1>
     <p>Share a few details and we will reply the same day with pricing and availability.</p>

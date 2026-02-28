@@ -2,11 +2,22 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
 
-const title = 'Services | AllDent PDR';
-const description = 'Paintless dent repair services in Cincinnati for door dings, hail damage, and minor collision dents.';
+const title = 'Paintless Dent Repair Services Cincinnati | AllDent PDR';
+const description = 'Professional paintless dent repair services in Cincinnati, OH. Door ding removal, hail damage repair, and minor collision dent repair. Get a free quote today.';
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Services', url: 'https://alldentpdr.com/services' }
+];
+const faqItems = [
+  { question: 'How much does paintless dent repair cost in Cincinnati?', answer: 'PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75-$150, while hail damage is quoted per panel. Contact us for a free photo-based estimate.' },
+  { question: 'How long does paintless dent repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Hail damage with multiple panels may take a full day. We provide realistic timelines upfront so you can plan.' },
+  { question: 'Will PDR damage my factory paint?', answer: 'No. Paintless dent repair preserves your original factory finish. We reshape the metal from behind the panel without using fillers, sanding, or repainting.' },
+  { question: 'What types of dents can be fixed with PDR?', answer: 'PDR works best on dents where the paint surface is intact — including door dings, hail dents, minor collision dents, and creases. Very sharp or stretched-metal dents may require conventional repair.' },
+  { question: 'Do you offer mobile paintless dent repair in Cincinnati?', answer: 'We serve the greater Cincinnati area and Northern Kentucky including Covington, Florence, Mason, and West Chester. Contact us to discuss mobile service availability.' }
+];
 ---
 
-<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services">
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services" breadcrumbs={breadcrumbs} faqItems={faqItems}>
   <section class="page-hero container">
     <h1>Paintless dent repair services</h1>
     <p>From one-off door dings to hail storms, we use PDR techniques to restore your panels without repainting.</p>
@@ -74,6 +85,34 @@ const description = 'Paintless dent repair services in Cincinnati for door dings
         We access the backside of your panel and gently reshape the metal with specialized tools.
         This keeps your factory paint, reduces repair time, and protects resale value.
       </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>Frequently asked questions about paintless dent repair</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>How much does paintless dent repair cost in Cincinnati?</summary>
+          <p>PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75–$150, while hail damage is quoted per panel. Contact us for a free photo-based estimate.</p>
+        </details>
+        <details class="faq-item">
+          <summary>How long does paintless dent repair take?</summary>
+          <p>Most single-dent repairs are completed in 1–3 hours. Hail damage with multiple panels may take a full day. We provide realistic timelines upfront so you can plan.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Will PDR damage my factory paint?</summary>
+          <p>No. Paintless dent repair preserves your original factory finish. We reshape the metal from behind the panel without using fillers, sanding, or repainting.</p>
+        </details>
+        <details class="faq-item">
+          <summary>What types of dents can be fixed with PDR?</summary>
+          <p>PDR works best on dents where the paint surface is intact — including door dings, hail dents, minor collision dents, and creases. Very sharp or stretched-metal dents may require conventional repair.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Do you offer mobile paintless dent repair in Cincinnati?</summary>
+          <p>We serve the greater Cincinnati area and Northern Kentucky including Covington, Florence, Mason, and West Chester. Contact us to discuss mobile service availability.</p>
+        </details>
+      </div>
       <div class="button-row">
         <a class="button primary" href="/contact">Request a quote</a>
         <a class="button ghost" href="/blog">Read the blog</a>
