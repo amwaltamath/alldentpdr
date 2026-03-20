@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
 
-const title = 'Paintless Dent Repair Services Cincinnati | AllDent PDR';
-const description = 'Professional paintless dent repair services in Cincinnati, OH. Door ding removal, hail damage repair, and minor collision dent repair. Get a free quote today.';
+const title = 'Paintless Dent Repair Services | Hail Damage, Door Dings & More | AllDent PDR';
+const description = 'Professional paintless dent repair services from AllDent PDR. Mobile hail damage repair, door ding removal, and minor collision dent repair. We travel nationwide from Cincinnati. Free estimates.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Services', url: 'https://alldentpdr.com/services' }
@@ -13,39 +13,66 @@ const faqItems = [
   { question: 'How long does paintless dent repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Hail damage with multiple panels may take a full day. We provide realistic timelines upfront so you can plan.' },
   { question: 'Will PDR damage my factory paint?', answer: 'No. Paintless dent repair preserves your original factory finish. We reshape the metal from behind the panel without using fillers, sanding, or repainting.' },
   { question: 'What types of dents can be fixed with PDR?', answer: 'PDR works best on dents where the paint surface is intact — including door dings, hail dents, minor collision dents, and creases. Very sharp or stretched-metal dents may require conventional repair.' },
-  { question: 'Do you offer mobile paintless dent repair in Cincinnati?', answer: 'We serve the greater Cincinnati area and Northern Kentucky including Covington, Florence, Mason, and West Chester. Contact us to discuss mobile service availability.' }
+  { question: 'Do you offer mobile paintless dent repair?', answer: 'Yes! AllDent PDR is a fully mobile service. We are based in Cincinnati but travel across the United States to repair hail damage on-site wherever storms occur. Contact us to check availability in your area.' }
 ];
 ---
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services" breadcrumbs={breadcrumbs} faqItems={faqItems}>
   <section class="page-hero container">
+    <span class="section-label">Our Services</span>
     <h1>Paintless dent repair services</h1>
-    <p>From one-off door dings to hail storms, we use PDR techniques to restore your panels without repainting.</p>
+    <p>From one-off door dings to full hail storm recovery, AllDent PDR brings expert paintless dent repair services to you — anywhere in the U.S.</p>
   </section>
 
   <section class="section alt">
     <div class="container grid-3">
       <article class="card">
         <span class="tag">Door Dings</span>
-        <h3>Small dents, clean finish</h3>
-        <p>Ideal for parking lot dings and light creases that keep the paint intact.</p>
+        <h3>Paintless door ding repair</h3>
+        <p>Professional PDR for parking lot dents and light creases that preserves your factory paint finish.</p>
       </article>
       <article class="card">
         <span class="tag">Hail Damage</span>
-        <h3>Storm repair plans</h3>
-        <p>Systematic panel repair with consistent results and fast turnaround.</p>
+        <h3>Hail storm damage repair — nationwide</h3>
+        <p>We deploy to storm-affected areas across the U.S. for systematic panel-by-panel paintless dent repair with fast turnaround.</p>
       </article>
       <article class="card">
         <span class="tag">Minor Collision</span>
-        <h3>Soft impact repair</h3>
-        <p>Correct dents from low-speed bumps when paint is undamaged.</p>
+        <h3>Collision dent removal</h3>
+        <p>Paintless repair for soft impact dents from low-speed bumps where paint remains undamaged.</p>
       </article>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <h2>Real repairs from Cincinnati</h2>
+      <span class="section-label">How It Works</span>
+      <h2>The paintless dent repair process</h2>
+      <p>Simple, transparent, and efficient — start to finish.</p>
+      <div class="process-grid">
+        <div class="process-step card">
+          <h3>Send Photos</h3>
+          <p>Text or email photos of the damage for a free same-day paintless dent repair estimate.</p>
+        </div>
+        <div class="process-step card">
+          <h3>Get Your Quote</h3>
+          <p>Receive upfront pricing — no hidden fees, no upsells.</p>
+        </div>
+        <div class="process-step card">
+          <h3>We Come to You</h3>
+          <p>Our mobile PDR technicians arrive at your location anywhere in the U.S.</p>
+        </div>
+        <div class="process-step card">
+          <h3>Flawless Finish</h3>
+          <p>Your vehicle is restored to factory condition with original paint intact.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>Real repairs from across the country</h2>
       <div class="gallery-grid">
         <div class="card">
           <span class="tag">Door Ding</span>
@@ -80,10 +107,13 @@ const faqItems = [
 
   <section class="section alt">
     <div class="container">
-      <h2>How PDR works</h2>
+      <span class="section-label">About PDR</span>
+      <h2>What is paintless dent repair?</h2>
       <p>
-        We access the backside of your panel and gently reshape the metal with specialized tools.
-        This keeps your factory paint, reduces repair time, and protects resale value.
+        Paintless dent repair (PDR) is a specialized technique where trained technicians access the backside of your vehicle's panel 
+        and gently reshape the metal with precision tools. Unlike traditional body shop methods, 
+        PDR preserves your factory paint, reduces repair time significantly, and protects your vehicle's resale value. 
+        It is the industry-preferred method whenever the paint surface is intact.
       </p>
     </div>
   </section>
@@ -109,13 +139,24 @@ const faqItems = [
           <p>PDR works best on dents where the paint surface is intact — including door dings, hail dents, minor collision dents, and creases. Very sharp or stretched-metal dents may require conventional repair.</p>
         </details>
         <details class="faq-item">
-          <summary>Do you offer mobile paintless dent repair in Cincinnati?</summary>
-          <p>We serve the greater Cincinnati area and Northern Kentucky including Covington, Florence, Mason, and West Chester. Contact us to discuss mobile service availability.</p>
+          <summary>Do you offer mobile paintless dent repair?</summary>
+          <p>Yes! AllDent PDR is a fully mobile service. We are based in Cincinnati but travel across the United States to repair hail damage on-site wherever storms occur. Contact us to check availability in your area.</p>
         </details>
       </div>
-      <div class="button-row">
-        <a class="button primary" href="/contact">Request a quote</a>
-        <a class="button ghost" href="/blog">Read the blog</a>
+      <div class="button-row" style="justify-content: center;">
+        <a class="button primary" href="/contact">Request a Free Quote</a>
+        <a class="button ghost" href="/blog">Read the Blog</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Ready to get your dents fixed?</h2>
+      <p>Contact AllDent PDR today for a free paintless dent repair estimate. We respond the same day.</p>
+      <div class="button-row" style="justify-content: center;">
+        <a class="button primary" href="/contact">Start Your Estimate</a>
+        <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
       </div>
     </div>
   </section>

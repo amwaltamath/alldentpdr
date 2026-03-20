@@ -51,9 +51,9 @@ Most Cincinnati drivers have their vehicle back the same day for single-dent rep
 
 PDR is not only faster and more affordable — it also **preserves your vehicle's resale value** by keeping the original factory finish intact.
 
-## About AllDent PDR in Cincinnati
+## About AllDent PDR
 
-AllDent PDR serves the greater Cincinnati area and Northern Kentucky, including Covington, Florence, Mason, and West Chester. Whether you need a quick door ding fix or full hail damage recovery, we provide transparent quotes, fast turnaround, and factory-quality results.
+AllDent PDR is a mobile paintless dent repair service based in Cincinnati, OH that travels across the United States to repair hail storm damage on-site. Whether you need a quick door ding fix locally or full hail damage recovery after a major storm, we bring our tools and expertise directly to you — wherever you are. We provide transparent quotes, fast turnaround, and factory-quality results.
 
 **Hours**: Monday–Friday 8am–6pm, Saturday 9am–2pm  
 **Phone**: [1-855-425-5336](tel:18554255336)  

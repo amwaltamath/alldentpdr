@@ -1,8 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = 'Get a Free Dent Repair Estimate | AllDent PDR Cincinnati';
-const description = 'Request a free paintless dent repair estimate in Cincinnati, OH. Same-day replies, photo-based quotes, and flexible scheduling. Call 1-855-425-5336.';
+const title = 'Free Paintless Dent Repair Estimate | Contact AllDent PDR | Cincinnati & Nationwide';
+const description = 'Get a free paintless dent repair estimate from AllDent PDR. Mobile hail damage repair in Cincinnati and nationwide. Same-day replies. Call 1-855-425-5336 or submit your photos online.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Contact', url: 'https://alldentpdr.com/contact' }
@@ -11,8 +11,9 @@ const breadcrumbs = [
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/contact" breadcrumbs={breadcrumbs}>
   <section class="page-hero container">
-    <h1>Get a free estimate</h1>
-    <p>Share a few details and we will reply the same day with pricing and availability.</p>
+    <span class="section-label">Contact Us</span>
+    <h1>Get a free paintless dent repair estimate</h1>
+    <p>Share a few details about your damage and location — we'll reply the same day with pricing and availability.</p>
   </section>
 
   <section class="section alt">
@@ -30,6 +31,10 @@ const breadcrumbs = [
             <input type="email" name="email" placeholder="you@email.com" required />
           </label>
           <label>
+            Location
+            <input type="text" name="location" placeholder="City, State" />
+          </label>
+          <label>
             Vehicle
             <input type="text" name="vehicle" placeholder="Year, make, model" />
           </label>
@@ -44,7 +49,7 @@ const breadcrumbs = [
         <h3>Reach us directly</h3>
         <p>Phone: 1 855-425-5336</p>
         <p>Email: alldentpdr@gmail.com</p>
-        <p>Service area: Cincinnati, OH and Northern Kentucky.</p>
+        <p>Service area: Based in Cincinnati, OH — traveling nationwide for hail storm repairs.</p>
         <div class="button-row">
           <a class="button ghost" href="/services">Review services</a>
         </div>

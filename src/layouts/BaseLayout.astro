@@ -4,7 +4,7 @@ import MobileMenu from '../components/MobileMenu.jsx';
 
 const {
   title = 'AllDent PDR | Paintless Dent Repair Cincinnati',
-  description = 'Paintless dent repair in Cincinnati. Fast, affordable PDR for door dings, hail damage, and minor collision dents.',
+  description = 'Mobile paintless dent repair based in Cincinnati. We travel nationwide to repair hail storm damage on-site. Fast, affordable PDR for door dings, hail damage, and minor collision dents.',
   canonical = 'https://alldentpdr.com',
   ogImage = '/images/logo.jpg',
   noindex = false,
@@ -46,6 +46,9 @@ const gaId = 'G-T7RLXD05RW';
     )}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/images/logo.jpg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#b0522b" />
     
     <!-- Google Analytics -->
     {gaId && gaId !== 'G-YOUR_MEASUREMENT_ID' && (
@@ -69,7 +72,7 @@ const gaId = 'G-T7RLXD05RW';
           "@context": "https://schema.org",
           "@type": "AutoRepair",
           "name": "AllDent PDR",
-          "description": "Paintless dent repair in Cincinnati. Fast, affordable PDR for door dings, hail damage, and minor collision dents.",
+          "description": "Mobile paintless dent repair based in Cincinnati. We travel across the U.S. to repair hail storm damage on-site.",
           "url": "https://alldentpdr.com",
           "telephone": "1-855-425-5336",
           "email": "alldentpdr@gmail.com",
@@ -85,24 +88,8 @@ const gaId = 'G-T7RLXD05RW';
               "name": "Cincinnati"
             },
             {
-              "@type": "City",
-              "name": "Covington"
-            },
-            {
-              "@type": "City",
-              "name": "Florence"
-            },
-            {
-              "@type": "City",
-              "name": "Mason"
-            },
-            {
-              "@type": "City",
-              "name": "West Chester"
-            },
-            {
-              "@type": "State",
-              "name": "Northern Kentucky"
+              "@type": "Country",
+              "name": "United States"
             }
           ],
           "geo": {
@@ -198,20 +185,29 @@ const gaId = 'G-T7RLXD05RW';
       <div class="container footer-inner">
         <div>
           <h4>AllDent PDR</h4>
-          <p>Paintless Dent Repair Cincinnati and surrounding neighborhoods.</p>
+          <p>Professional mobile paintless dent repair based in Cincinnati, OH. We travel nationwide to repair hail damage, door dings, and minor collision dents — preserving your factory finish.</p>
+        </div>
+        <div>
+          <h5>Services</h5>
+          <p><a href="/services">Paintless Dent Repair</a></p>
+          <p><a href="/services">Hail Damage Repair</a></p>
+          <p><a href="/services">Door Ding Removal</a></p>
+          <p><a href="/blog">PDR Blog</a></p>
         </div>
         <div>
           <h5>Contact</h5>
-          <p>1 855-425-5336</p>
-          <p>alldentpdr@gmail.com</p>
+          <p><a href="tel:18554255336">1-855-425-5336</a></p>
+          <p><a href="mailto:alldentpdr@gmail.com">alldentpdr@gmail.com</a></p>
+          <p><a href="/contact">Free Estimate</a></p>
         </div>
         <div>
           <h5>Hours</h5>
-          <p>Mon - Fri: 8am - 6pm</p>
-          <p>Sat: 9am - 2pm</p>
+          <p>Mon – Fri: 8am – 6pm</p>
+          <p>Sat: 9am – 2pm</p>
+          <p>Cincinnati, OH &amp; Nationwide</p>
         </div>
       </div>
-      <div class="footer-bottom">© 2026 AllDent PDR. All rights reserved.</div>
+      <div class="footer-bottom">© 2026 AllDent PDR. All rights reserved. | Paintless Dent Repair Cincinnati</div>
     </footer>
   </body>
 </html>
