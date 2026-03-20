@@ -623,6 +623,66 @@ select:focus {
   text-decoration-color: var(--rust);
 }
 
+/* Testimonials */
+.testimonial-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.testimonial-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(60, 40, 20, 0.04);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.testimonial-stars {
+  color: var(--clay);
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.testimonial-text {
+  font-style: italic;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.testimonial-author {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-top: 1px solid rgba(60, 40, 20, 0.08);
+  padding-top: 14px;
+}
+
+.testimonial-author strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.testimonial-author span {
+  font-size: 0.82rem;
+  color: var(--rust);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
 /* Section headings */
 .section h2 {
   text-align: center;
