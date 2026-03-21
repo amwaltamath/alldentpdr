@@ -6,7 +6,7 @@ const {
   title = 'AllDent PDR | Paintless Dent Repair Cincinnati',
   description = 'Mobile paintless dent repair based in Cincinnati. We travel nationwide to repair hail storm damage on-site. Fast, affordable PDR for door dings, hail damage, and minor collision dents.',
   canonical = 'https://alldentpdr.com',
-  ogImage = '/images/logo.jpg',
+  ogImage = '/images/logo-branded.svg',
   noindex = false,
   type = 'website',
   publishedDate = '',
@@ -31,10 +31,13 @@ const gaId = 'G-T7RLXD05RW';
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={`https://alldentpdr.com${ogImage}`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`https://alldentpdr.com${ogImage}`} />
+    <meta name="twitter:image:alt" content="AllDent PDR - Paintless Dent Repair" />
     <meta name="google-site-verification" content="UdUBGJ6CT7WTj7DlCdAeVQ0JqiMupWXbQ9hrj3ZiUwY" />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
     <meta name="geo.region" content="US-OH" />
@@ -121,7 +124,7 @@ const gaId = 'G-T7RLXD05RW';
           "paymentAccepted": "Cash, Credit Card, Debit Card",
           "priceRange": "$$",
           "openingHours": "Mo-Fr 08:00-18:00, Sa 09:00-14:00",
-          "image": "https://alldentpdr.com/images/logo.jpg",
+          "image": "https://alldentpdr.com/images/logo-branded.svg",
           "sameAs": [],
           "aggregateRating": {
             "@type": "AggregateRating",
