@@ -26,7 +26,7 @@ Follow these steps immediately after a storm:
 
 1. **Document the damage** — Take photos of every affected panel in good lighting. Shoot at an angle so the dents cast shadows.
 2. **File an insurance claim** — Most comprehensive auto insurance policies cover hail damage. File promptly to avoid delays.
-3. **Get a professional assessment** — Contact a PDR specialist for a detailed estimate. Photo-based estimates are quick and accurate.
+3. **Get a professional assessment** — Contact a PDR specialist for a detailed estimate based on an actual inspection.
 4. **Avoid body shops that want to repaint** — If your paint is intact, PDR preserves the factory finish and your vehicle's value.
 
 ## Why PDR is the best choice for hail repair
@@ -45,8 +45,8 @@ Paintless dent repair is the industry-standard method for hail damage restoratio
 
 At AllDent PDR, we are a **mobile repair service** — meaning we travel to storm-affected areas across the United States to perform repairs on-site. Here's what that looks like:
 
-1. **You contact us** with photos of your damage and your location.
-2. **We provide a free estimate** based on the number of panels and severity.
+1. **You contact us** with your location, vehicle details, and storm information.
+2. **We inspect the vehicle** and provide a repair plan based on the number of panels and severity.
 3. **We come to you** — whether that's your driveway, dealership, or parking lot.
 4. **Repairs are completed on-site** using specialized PDR tools.
 5. **You drive away** with a factory-quality finish restored.
@@ -84,8 +84,8 @@ Not all PDR technicians are equal. When choosing a repair provider after a storm
 
 AllDent PDR has extensive experience with storm damage repair across the country. We travel to where storms hit, bring our full tool setup, and deliver factory-quality results on-site.
 
-## Get a free hail damage estimate
+## Request a hail damage inspection
 
-If your vehicle was caught in a hail storm, [contact AllDent PDR](/contact) for a free photo-based estimate. Just send pictures of the damage and your location — we'll reply the same day with pricing, timeline, and next steps.
+If your vehicle was caught in a hail storm, [contact AllDent PDR](/contact) to request an inspection. Share your location and vehicle details, and we'll reply with pricing guidance, timing, and next steps after inspection.
 
 Based in Cincinnati and serving storm-affected areas nationwide.

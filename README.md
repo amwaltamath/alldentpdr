@@ -16,12 +16,14 @@ Built with **Astro 5**, **React**, and **CSS3** for optimal performance and SEO.
 - **Process Steps** — Numbered step cards with CSS counters
 - **CTA Banners** — High-conversion call-to-action sections throughout
 - **Local SEO** — Geo-targeting, business schema, area served metadata
+- **Customer Portal MVP** — Customer status login plus admin vehicle registration dashboard
 - **Fast Performance** — Static site generation, optimized assets, ~6ms build time
 
 ## Tech Stack
 
 - **Astro 5.17** — Static site generation framework
 - **React 19** — Interactive components (image comparisons, mobile menu)
+- **Supabase Client** — Optional live portal data backend
 - **CSS3** — Custom properties, grid, flexbox, animations
 - **Node.js** — Build tools and package management
 
@@ -133,7 +135,41 @@ git push                    # Now just 'git push' — upstream is configured
 
 ### Environment
 
-No environment variables needed — the site is fully static.
+Core marketing pages work without environment variables.
+
+For the live portal backend, copy `.env.example` and set:
+
+```bash
+PUBLIC_SUPABASE_URL=your-project-url
+PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+PUBLIC_PORTAL_ADMIN_USER=admin
+PUBLIC_PORTAL_ADMIN_PASS=strong-password
+```
+
+If Supabase variables are not set, the portal falls back to browser-local demo storage.
+
+### Portal Setup
+
+Routes:
+
+- `/portal/customer-login`
+- `/portal/admin-dashboard`
+
+Supabase schema:
+
+- Run [supabase/portal-schema.sql](supabase/portal-schema.sql) in your Supabase SQL editor.
+
+Supabase auth requirement:
+
+- Create at least one admin user in Supabase Auth (Email/Password).
+- Use that email/password on `/portal/admin-dashboard` when live mode is enabled.
+
+Current portal scope:
+
+- Admin vehicle registration
+- Customer vehicle status lookup
+- Status values: `Registered`, `In Progress`, `Complete`
+- Notification preference capture for future email/web-push alerts
 
 ### Manual Deployment
 
@@ -177,4 +213,4 @@ For website questions or updates, contact the development team or submit changes
 
 ---
 
-**Last updated**: March 21, 2026
+**Last updated**: April 20, 2026

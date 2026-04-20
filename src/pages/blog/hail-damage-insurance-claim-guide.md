@@ -47,7 +47,7 @@ Most insurers assign a claim number within 24 hours.
 
 Before an adjuster visits, it helps to have an independent estimate from a PDR specialist. This gives you a baseline to compare against the insurance company's assessment.
 
-At AllDent PDR, we provide **free photo-based estimates** — just send us your damage photos and we'll reply the same day.
+At AllDent PDR, we provide **free inspection-based estimates** so the repair plan is built around the real vehicle condition rather than a rough photo quote.
 
 ### 4. Meet the insurance adjuster
 
@@ -90,7 +90,7 @@ Technically yes — you can accept the payout and drive with the dents. However,
 
 ### What if I don't have comprehensive coverage?
 
-Without comprehensive coverage, hail damage repair is an out-of-pocket expense. AllDent PDR offers competitive pricing and free estimates to help you understand the cost before committing.
+Without comprehensive coverage, hail damage repair is an out-of-pocket expense. AllDent PDR offers competitive pricing and clear inspection-based pricing guidance before you commit.
 
 ## Tips to speed up the process
 
@@ -103,4 +103,4 @@ Without comprehensive coverage, hail damage repair is an out-of-pocket expense. 
 
 We handle hail damage insurance repairs regularly and work directly with adjusters to ensure accurate estimates and smooth approvals. As a mobile service, we travel to storm-affected areas across the U.S. — so no matter where the hail hits, we can get your vehicle restored quickly.
 
-[Contact us for a free estimate](/contact) — send photos and your location, and we'll reply the same day.
+[Contact us to request an inspection](/contact) — send your location and vehicle details, and we'll reply with the next step.

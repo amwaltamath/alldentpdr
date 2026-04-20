@@ -1,9 +1,9 @@
----
+﻿---
 import BaseLayout from './BaseLayout.astro';
 
 const { title, description, pubDate } = Astro.props;
 const fullTitle = `${title} | AllDent PDR`;
-const canonical = `https://alldentpdr.com${Astro.url.pathname}`;
+const canonical = `https://alldentpdr.com`;
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Blog', url: 'https://alldentpdr.com/blog' },
@@ -20,26 +20,32 @@ const breadcrumbs = [
   breadcrumbs={breadcrumbs}
 >
   <section class="section">
-    <article class="container hero-card" itemscope itemtype="https://schema.org/BlogPosting">
-      <meta itemprop="headline" content={title} />
-      <meta itemprop="description" content={description} />
-      <meta itemprop="datePublished" content={pubDate} />
-      <meta itemprop="author" content="AllDent PDR" />
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <ol>
-          <li><a href="/">Home</a></li>
-          <li><a href="/blog">Blog</a></li>
-          <li aria-current="page">{title}</li>
-        </ol>
-      </nav>
-      <p class="tag">{pubDate}</p>
-      <h1>{title}</h1>
-      <p>{description}</p>
-      <slot />
-      <div class="button-row" style="margin-top: 2rem;">
-        <a class="button primary" href="/contact">Get a Free Estimate</a>
-        <a class="button ghost" href="/services">View All Services</a>
-      </div>
-    </article>
+    <div class="container">
+      <article class="article-shell" itemscope itemtype="https://schema.org/BlogPosting">
+        <meta itemprop="headline" content={title} />
+        <meta itemprop="description" content={description} />
+        <meta itemprop="datePublished" content={pubDate} />
+        <meta itemprop="author" content="AllDent PDR" />
+
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li aria-current="page">{title}</li>
+          </ol>
+        </nav>
+
+        <p class="tag">{pubDate}</p>
+        <h1>{title}</h1>
+        <p class="muted" style="font-size:1.1rem;">{description}</p>
+
+        <slot />
+
+        <div class="button-row" style="margin-top: 2rem;">
+          <a class="button primary" href="/contact">Request an Inspection</a>
+          <a class="button ghost" href="/services">View All Services</a>
+        </div>
+      </article>
+    </div>
   </section>
 </BaseLayout>

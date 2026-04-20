@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/BlogPost.astro
 title: "Paintless Dent Repair Cincinnati: What to Know Before You Book"
-description: "A complete guide to paintless dent repair in Cincinnati, OH. Learn about PDR cost, repair timelines, what dents qualify, and how to get a fast estimate from AllDent PDR."
+description: "A complete guide to paintless dent repair in Cincinnati, OH. Learn about PDR cost, repair timelines, what dents qualify, and how inspections shape accurate pricing from AllDent PDR."
 pubDate: "2026-02-13"
 ---
 
@@ -18,7 +18,7 @@ PDR works best for dents where the paint surface hasn't cracked or chipped. Comm
 - **Minor collision dents** from low-speed bumps where paint is undamaged
 - **Creases** along body lines that haven't stretched the metal
 
-If the dent has damaged paint, deep scratches, or severely stretched metal, conventional body repair may be required instead. Not sure? [Send us photos for a free assessment](/contact).
+If the dent has damaged paint, deep scratches, or severely stretched metal, conventional body repair may be required instead. Not sure? [Contact us for an inspection](/contact).
 
 ## How much does paintless dent repair cost in Cincinnati?
 
@@ -29,7 +29,7 @@ PDR pricing depends on several factors:
 - **Number of dents** — hail damage with dozens of dents is priced per panel
 - **Accessibility** — some panels require interior trim removal for tool access
 
-Small door dings in Cincinnati typically range from **$75–$150**. Hail damage is quoted per panel after reviewing photos. AllDent PDR provides free, no-obligation photo-based estimates so you know exactly what to expect.
+Small door dings in Cincinnati typically range from **$75–$150**. Hail damage is quoted per panel after inspection. AllDent PDR provides free, no-obligation evaluations so the repair plan reflects the actual vehicle condition.
 
 ## Typical PDR repair timelines
 
@@ -59,8 +59,8 @@ AllDent PDR is a mobile paintless dent repair service based in Cincinnati, OH th
 **Phone**: [1-855-425-5336](tel:18554255336)  
 **Email**: alldentpdr@gmail.com
 
-## Get a free PDR estimate today
+## Request a PDR inspection today
 
-Ready to fix that dent? [Request a free estimate](/contact) — just send photos and a description of the damage, and we'll reply the same day with pricing and availability.
+Ready to fix that dent? [Request an inspection](/contact) and we'll help you schedule the right next step for pricing and availability.
 
 Looking for more details about our repair options? [View all services](/services) or [learn more about AllDent PDR](/about).

@@ -71,4 +71,4 @@ Whether you're at home, at work, or in a storm-affected area hundreds of miles f
 
 If your dent has intact paint, PDR is almost always the better choice — it's faster, more affordable, preserves your factory finish, and can be done on-site. Save the body shop for damage that truly requires repainting or structural work.
 
-Not sure which option your dent needs? [Send us photos for a free assessment](/contact) and we'll give you an honest recommendation.
+Not sure which option your dent needs? [Contact us for a free assessment](/contact) and we'll give you an honest recommendation after evaluating the vehicle.

@@ -65,8 +65,8 @@ Mobile PDR is the best option when:
 
 ## How AllDent PDR's mobile service works
 
-1. **Send us photos** of the damage and your location via our [contact form](/contact) or email
-2. **Receive a same-day estimate** with pricing and timeline
+1. **Contact us** with your damage details and location via our [contact form](/contact) or email
+2. **Schedule the right inspection** so pricing and timeline are based on the actual repair
 3. **We schedule and travel to you** — locally in Cincinnati or anywhere in the U.S. for storm damage
 4. **Repairs are completed on-site** with professional-grade PDR tools
 5. **You inspect the results** before we leave
@@ -88,4 +88,4 @@ This model benefits everyone:
 
 Mobile PDR eliminates the friction of traditional shop-based repair. It's faster, more convenient, and delivers the same factory-quality results — wherever you are.
 
-If your vehicle has dents or hail damage, [contact AllDent PDR](/contact) for a free mobile estimate. We come to you.
+If your vehicle has dents or hail damage, [contact AllDent PDR](/contact) to request a mobile inspection. We come to you.

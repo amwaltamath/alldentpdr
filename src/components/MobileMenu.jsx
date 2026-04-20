@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
-
+  
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
 
@@ -12,6 +12,7 @@ export default function MobileMenu() {
         className="mobile-menu-toggle" 
         onClick={toggleMenu}
         aria-label="Toggle navigation menu"
+        aria-expanded={isOpen}
       >
         <span></span>
         <span></span>
@@ -19,11 +20,13 @@ export default function MobileMenu() {
       </button>
       
       {isOpen && (
-        <nav className="mobile-nav">
+        <nav className="mobile-nav" role="navigation">
           <a href="/services" onClick={closeMenu}>Services</a>
           <a href="/about" onClick={closeMenu}>About</a>
           <a href="/blog" onClick={closeMenu}>Blog</a>
-          <a className="nav-cta" href="/contact" onClick={closeMenu}>Free Estimate</a>
+          <a href="/portal/customer-login" onClick={closeMenu}>Customer Login</a>
+          <a href="/portal/admin-dashboard" onClick={closeMenu}>Admin</a>
+          <a className="nav-cta" href="/contact" onClick={closeMenu}>Request Inspection</a>
         </nav>
       )}
     </>
