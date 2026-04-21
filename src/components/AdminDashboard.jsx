@@ -59,6 +59,7 @@ export default function AdminDashboard() {
   const [authLoading, setAuthLoading] = useState(false);
 
   const [view, setView] = useState('overview');
+  const [navOpen, setNavOpen] = useState(false);
   const [pipelineMode, setPipelineMode] = useState('kanban');
   const [form, setForm] = useState(initialForm);
   const [vehicles, setVehicles] = useState([]);
@@ -281,7 +282,8 @@ export default function AdminDashboard() {
 
   return (
     <div className="dash">
-      <aside className="dash-aside">
+      {navOpen && <div className="dash-overlay" onClick={() => setNavOpen(false)} aria-hidden="true" />}
+      <aside className={`dash-aside${navOpen ? ' is-open' : ''}`}>
         <a href="/" className="dash-brand" title="Back to site">
           <img src="/images/logo.jpg" alt="" />
           <div>
@@ -297,7 +299,7 @@ export default function AdminDashboard() {
               key={item.id}
               type="button"
               className={view === item.id ? 'is-active' : ''}
-              onClick={() => setView(item.id)}
+              onClick={() => { setView(item.id); setNavOpen(false); }}
             >
               <span aria-hidden="true" style={{ width: 16, opacity: .7 }}>{item.icon}</span>
               {item.label}
@@ -307,8 +309,8 @@ export default function AdminDashboard() {
 
         <div className="dash-nav-label">Account</div>
         <nav className="dash-nav">
-          <a href="/" target="_blank" rel="noreferrer">↗ View public site</a>
-          <button type="button" onClick={handleLogout}>↩ Sign out</button>
+          <a href="/" target="_blank" rel="noreferrer" onClick={() => setNavOpen(false)}>↗ View public site</a>
+          <button type="button" onClick={() => { handleLogout(); setNavOpen(false); }}>↩ Sign out</button>
         </nav>
 
         <div className="dash-aside-bottom">
@@ -319,6 +321,15 @@ export default function AdminDashboard() {
 
       <div className="dash-main">
         <header className="dash-topbar">
+          <button
+            type="button"
+            className="dash-hamburger"
+            aria-label="Open navigation"
+            aria-expanded={navOpen}
+            onClick={() => setNavOpen(true)}
+          >
+            <span /><span /><span />
+          </button>
           <div>
             <p className="crumb">Admin</p>
             <h1>{NAV_ITEMS.find((n) => n.id === view)?.label || 'Dashboard'}</h1>
