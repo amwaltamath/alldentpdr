@@ -545,77 +545,170 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
 
 const STATUS_COLUMNS = ['Registered', 'In Progress', 'Complete'];
 
-function JobsView({ vehicles, loading, onStatusChange, onNotificationChange }) {
+function JobDetail({ v, onClose, onStatusChange, onNotificationChange }) {
   return (
-    <section className="panel">
-      <div className="panel-head">
-        <div>
-          <h3>All jobs</h3>
-          <p className="meta" style={{ margin: '2px 0 0' }}>{vehicles.length} {vehicles.length === 1 ? 'job' : 'jobs'}</p>
+    <div className="job-drawer-overlay" onClick={onClose}>
+      <aside className="job-drawer" onClick={(e) => e.stopPropagation()}>
+        <div className="job-drawer-head">
+          <div>
+            <p className="crumb" style={{ margin: 0 }}>{v.id}</p>
+            <h3 style={{ margin: '2px 0 0' }}>{v.year} {v.make} {v.model}</h3>
+          </div>
+          <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
         </div>
-      </div>
-      <div className="table-scroll">
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Job</th>
-              <th>Vehicle</th>
-              <th>Customer</th>
-              <th>Status</th>
-              <th>Notifications</th>
-            </tr>
-          </thead>
-          <tbody>
-            {vehicles.map((v) => (
-              <tr key={v.id}>
-                <td>
-                  <div className="cell-strong">{v.id}</div>
-                  <div className="cell-sub">{v.plate}</div>
-                </td>
-                <td>
-                  <div className="cell-strong">{v.year} {v.make} {v.model}</div>
-                  <div className="cell-sub">Updated {new Date(v.updatedAt).toLocaleDateString()}</div>
-                </td>
-                <td>
-                  <div className="cell-strong">{v.customerName}</div>
-                  <div className="cell-sub">{v.email}</div>
-                </td>
-                <td>
-                  <select value={v.status} onChange={(e) => onStatusChange(v.id, e.target.value)}>
-                    {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </td>
-                <td>
-                  <div className="row-actions">
-                    <label className="checkbox-row" style={{ margin: 0 }}>
-                      <input
-                        type="checkbox"
-                        checked={Boolean(v.notificationsEnabled)}
-                        onChange={(e) => onNotificationChange(v.id, 'notificationsEnabled', e.target.checked)}
-                      />
-                      <span style={{ fontSize: 13 }}>Alerts</span>
-                    </label>
-                    <select
-                      value={v.notificationChannel || 'email'}
-                      onChange={(e) => onNotificationChange(v.id, 'notificationChannel', e.target.value)}
-                    >
-                      <option value="email">Email</option>
-                      <option value="web-push">Web Push</option>
-                    </select>
-                  </div>
-                </td>
+
+        <div className="job-drawer-body">
+          <h4 className="form-section-label">Status</h4>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            <span className={statusBadge(v.status)}>{v.status}</span>
+            <select value={v.status} onChange={(e) => onStatusChange(v.id, e.target.value)}>
+              {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+
+          <h4 className="form-section-label" style={{ marginTop: 22 }}>Customer</h4>
+          <div className="job-drawer-grid">
+            <div><span className="jd-label">Name</span><span className="jd-val">{v.customerName || '—'}</span></div>
+            <div><span className="jd-label">Email</span><span className="jd-val">{v.email || '—'}</span></div>
+            <div><span className="jd-label">Cell phone</span><span className="jd-val">{v.phone || '—'}</span></div>
+            <div><span className="jd-label">Home phone</span><span className="jd-val">{v.homePhone || '—'}</span></div>
+            <div><span className="jd-label">Address</span><span className="jd-val">{[v.address, v.city, v.state, v.zip].filter(Boolean).join(', ') || '—'}</span></div>
+            <div><span className="jd-label">How heard</span><span className="jd-val">{v.howHeardAboutUs || '—'}</span></div>
+          </div>
+
+          <h4 className="form-section-label" style={{ marginTop: 22 }}>Vehicle</h4>
+          <div className="job-drawer-grid">
+            <div><span className="jd-label">Year / Make / Model</span><span className="jd-val">{v.year} {v.make} {v.model}</span></div>
+            <div><span className="jd-label">Color</span><span className="jd-val">{v.color || '—'}</span></div>
+            <div><span className="jd-label">Plate</span><span className="jd-val">{v.plate || '—'}</span></div>
+            <div><span className="jd-label">VIN</span><span className="jd-val" style={{ fontFamily: 'monospace', fontSize: 13 }}>{v.vin || '—'}</span></div>
+          </div>
+
+          <h4 className="form-section-label" style={{ marginTop: 22 }}>Insurance</h4>
+          <div className="job-drawer-grid">
+            <div><span className="jd-label">Company</span><span className="jd-val">{v.insuranceCompany || '—'}</span></div>
+            <div><span className="jd-label">Deductible</span><span className="jd-val">{v.deductible || '—'}</span></div>
+            <div><span className="jd-label">Claim #</span><span className="jd-val">{v.claimNumber || '—'}</span></div>
+          </div>
+
+          {v.notes && (
+            <>
+              <h4 className="form-section-label" style={{ marginTop: 22 }}>Notes</h4>
+              <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0 }}>{v.notes}</p>
+            </>
+          )}
+
+          <h4 className="form-section-label" style={{ marginTop: 22 }}>Notifications</h4>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <label className="checkbox-row" style={{ margin: 0 }}>
+              <input
+                type="checkbox"
+                checked={Boolean(v.notificationsEnabled)}
+                onChange={(e) => onNotificationChange(v.id, 'notificationsEnabled', e.target.checked)}
+              />
+              <span style={{ fontSize: 13 }}>Alerts enabled</span>
+            </label>
+            <select
+              value={v.notificationChannel || 'email'}
+              onChange={(e) => onNotificationChange(v.id, 'notificationChannel', e.target.value)}
+            >
+              <option value="email">Email</option>
+              <option value="web-push">Web Push</option>
+            </select>
+          </div>
+
+          <p className="cell-sub" style={{ marginTop: 20 }}>
+            Registered {new Date(v.createdAt).toLocaleDateString()} · Updated {new Date(v.updatedAt).toLocaleDateString()}
+          </p>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function JobsView({ vehicles, loading, onStatusChange, onNotificationChange }) {
+  const [selected, setSelected] = useState(null);
+
+  return (
+    <>
+      {selected && (
+        <JobDetail
+          v={selected}
+          onClose={() => setSelected(null)}
+          onStatusChange={(id, s) => { onStatusChange(id, s); setSelected((prev) => prev ? { ...prev, status: s } : null); }}
+          onNotificationChange={(id, field, val) => { onNotificationChange(id, field, val); setSelected((prev) => prev ? { ...prev, [field]: val } : null); }}
+        />
+      )}
+      <section className="panel">
+        <div className="panel-head">
+          <div>
+            <h3>All jobs</h3>
+            <p className="meta" style={{ margin: '2px 0 0' }}>{vehicles.length} {vehicles.length === 1 ? 'job' : 'jobs'}</p>
+          </div>
+        </div>
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Job</th>
+                <th>Vehicle</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Notifications</th>
               </tr>
-            ))}
-            {!loading && !vehicles.length && (
-              <tr><td colSpan={5} className="kanban-empty">No jobs match your search yet.</td></tr>
-            )}
-            {loading && (
-              <tr><td colSpan={5} className="kanban-empty">Loading…</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </section>
+            </thead>
+            <tbody>
+              {vehicles.map((v) => (
+                <tr key={v.id} className="job-row-clickable" onClick={() => setSelected(v)}>
+                  <td>
+                    <div className="cell-strong">{v.id}</div>
+                    <div className="cell-sub">{v.plate}</div>
+                  </td>
+                  <td>
+                    <div className="cell-strong">{v.year} {v.make} {v.model}</div>
+                    <div className="cell-sub">Updated {new Date(v.updatedAt).toLocaleDateString()}</div>
+                  </td>
+                  <td>
+                    <div className="cell-strong">{v.customerName}</div>
+                    <div className="cell-sub">{v.email}</div>
+                  </td>
+                  <td onClick={(e) => e.stopPropagation()}>
+                    <select value={v.status} onChange={(e) => onStatusChange(v.id, e.target.value)}>
+                      {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </td>
+                  <td onClick={(e) => e.stopPropagation()}>
+                    <div className="row-actions">
+                      <label className="checkbox-row" style={{ margin: 0 }}>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(v.notificationsEnabled)}
+                          onChange={(e) => onNotificationChange(v.id, 'notificationsEnabled', e.target.checked)}
+                        />
+                        <span style={{ fontSize: 13 }}>Alerts</span>
+                      </label>
+                      <select
+                        value={v.notificationChannel || 'email'}
+                        onChange={(e) => onNotificationChange(v.id, 'notificationChannel', e.target.value)}
+                      >
+                        <option value="email">Email</option>
+                        <option value="web-push">Web Push</option>
+                      </select>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {!loading && !vehicles.length && (
+                <tr><td colSpan={5} className="kanban-empty">No jobs match your search yet.</td></tr>
+              )}
+              {loading && (
+                <tr><td colSpan={5} className="kanban-empty">Loading…</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </>
   );
 }
 
