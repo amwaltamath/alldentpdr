@@ -114,13 +114,20 @@ p { margin: 0 0 1rem; color: var(--muted); }
 
 .nav .nav-cta {
   margin-left: 8px;
-  background: var(--ink);
-  color: #fff;
-  padding: 10px 18px;
+  background: var(--rust);
+  color: #fffaf4;
+  padding: 10px 22px;
   font-weight: 600;
-  box-shadow: var(--shadow-sm);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(176, 82, 43, 0.25);
+  transition: background var(--t), transform var(--t), box-shadow var(--t);
 }
-.nav .nav-cta:hover { background: var(--rust); color: #fff; }
+.nav .nav-cta:hover {
+  background: var(--rust-dark, #8a3e1f);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(176, 82, 43, 0.35);
+}
 
 /* Buttons ----------------------------------------------------- */
 .button {
@@ -716,6 +723,8 @@ select {
 }
 .dash-aside-bottom p { color: #6b7385; margin: 0 0 8px; }
 .dash-aside-bottom strong { color: #cbd2e0; display: block; font-weight: 600; }
+.dash-aside-user { display: flex; align-items: center; gap: 8px; }
+.dash-aside-user-label { color: #cbd2e0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .dash-main { display: flex; flex-direction: column; min-width: 0; }
 
@@ -913,6 +922,8 @@ select {
 .kanban-empty { color: var(--muted); font-size: 13px; padding: 24px 8px; text-align: center; }
 
 .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 14px; }
+.form-section-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
 
 /* Business card preview grid (admin dashboard) */
 .cards-grid {
@@ -962,7 +973,172 @@ select {
   width: 100%;
   justify-content: center;
 }
-@media (max-width: 520px) { .form-grid-2 { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; } }
+
+/* ============================================================
+   Vehicle Registration Form
+   ============================================================ */
+
+/* Steps progress bar */
+.reg-steps {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+  border-bottom: 2px solid var(--line);
+  padding-bottom: 0;
+}
+.reg-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px 14px;
+  position: relative;
+  color: var(--muted-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+  transition: color var(--t);
+}
+.reg-step::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0; right: 0;
+  height: 2px;
+  background: transparent;
+  border-radius: 2px;
+  transition: background var(--t);
+}
+.reg-step.is-active { color: var(--rust); }
+.reg-step.is-active::after { background: var(--rust); }
+.reg-step.is-done { color: var(--ok); }
+.reg-step.is-done::after { background: var(--ok); }
+.reg-step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  flex-shrink: 0;
+}
+.reg-step.is-active .reg-step-num { background: var(--rust); color: #fff; border-color: var(--rust); }
+.reg-step.is-done .reg-step-num   { background: var(--ok);   color: #fff; border-color: var(--ok); }
+.reg-step-label { display: block; }
+@media (max-width: 480px) { .reg-step-label { display: none; } }
+
+/* Fieldset */
+.reg-fieldset {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px 10px;
+  margin: 0 0 20px;
+  background: var(--surface-2);
+}
+.reg-fieldset legend {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 8px;
+}
+
+/* Field layout helpers */
+.reg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.reg-row-3 { grid-template-columns: 2fr 1fr 1fr; }
+.reg-field { margin-bottom: 14px; }
+.reg-field.full { grid-column: 1 / -1; }
+@media (max-width: 560px) {
+  .reg-row, .reg-row-3 { grid-template-columns: 1fr; }
+}
+
+/* Legal text */
+.reg-legal {
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+.reg-legal strong { color: var(--ink); }
+
+/* Inline input inside legal text */
+.reg-inline-input {
+  display: inline;
+  width: auto;
+  min-width: 180px;
+  margin: 0 4px;
+  padding: 3px 8px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+/* Checkbox agreement rows */
+.reg-sign-row {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+.reg-check-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-700);
+  cursor: pointer;
+  line-height: 1.5;
+}
+.reg-check-label input[type="checkbox"] {
+  width: 18px; height: 18px;
+  margin: 2px 0 0;
+  flex-shrink: 0;
+  accent-color: var(--rust);
+}
+
+/* Signature input */
+.reg-sig-input {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 1.1rem;
+  letter-spacing: .01em;
+  color: var(--rust-700, #8c3e1e);
+  border-bottom: 2px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+}
+
+/* Nav buttons */
+.reg-nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+.reg-nav .button.ghost { margin-right: auto; }
+
+/* Success state */
+.reg-success {
+  text-align: center;
+  padding: 20px 0 8px;
+}
+.reg-success-icon {
+  width: 64px; height: 64px;
+  background: var(--ok-50);
+  color: var(--ok);
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  border: 2px solid var(--ok);
+}
+.reg-success h2 { margin-bottom: 8px; }
+.reg-success-sub { font-size: 13.5px; color: var(--muted); }
+.reg-success-sub a { color: var(--rust); font-weight: 600; }
 
 .checkbox-row {
   display: flex; align-items: center; gap: 10px;
@@ -1233,6 +1409,12 @@ p {
 .hero p {
   color: #ffffff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-card p,
+.hero-card .tag {
+  color: var(--ink);
+  text-shadow: none;
 }
 
 .hero-card {
@@ -2047,29 +2229,6 @@ select:focus {
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 16px;
-}
-
-/* Hero list styling */
-.hero-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 16px;
-}
-
-.hero-card li {
-  padding: 8px 0;
-  padding-left: 24px;
-  position: relative;
-  color: var(--ink-soft);
-  font-size: 0.95rem;
-}
-
-.hero-card li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: var(--sage);
-  font-weight: 700;
 }
 
 /* Smooth scroll */

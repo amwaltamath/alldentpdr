@@ -24,8 +24,8 @@ export default function MobileMenu() {
           <a href="/services" onClick={closeMenu}>Services</a>
           <a href="/about" onClick={closeMenu}>About</a>
           <a href="/blog" onClick={closeMenu}>Blog</a>
+          <a href="/register" onClick={closeMenu}>Vehicle Registration</a>
           <a href="/portal/customer-login" onClick={closeMenu}>Customer Login</a>
-          <a href="/portal/admin-dashboard" onClick={closeMenu}>Admin</a>
           <a className="nav-cta" href="/contact" onClick={closeMenu}>Request Inspection</a>
         </nav>
       )}

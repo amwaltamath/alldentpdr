@@ -19,13 +19,27 @@ const ADMIN_PASS = import.meta.env.PUBLIC_PORTAL_ADMIN_PASS || 'allDent2026';
 const STATUS_OPTIONS = ['Registered', 'In Progress', 'Complete'];
 
 const initialForm = {
+  // Customer Information
   customerName: '',
   email: '',
   phone: '',
+  homePhone: '',
+  address: '',
+  city: '',
+  state: '',
+  zip: '',
+  howHeardAboutUs: '',
+  // Insurance / Vehicle Information
+  insuranceCompany: '',
+  deductible: '',
+  claimNumber: '',
   year: '',
   make: '',
   model: '',
+  vin: '',
+  color: '',
   plate: '',
+  // Job Settings
   status: 'Registered',
   notes: '',
   notificationsEnabled: true,
@@ -311,12 +325,16 @@ export default function AdminDashboard() {
         <div className="dash-nav-label">Account</div>
         <nav className="dash-nav">
           <a href="/" target="_blank" rel="noreferrer" onClick={() => setNavOpen(false)}>↗ View public site</a>
+          <a href="/register" target="_blank" rel="noreferrer" onClick={() => setNavOpen(false)}>📋 Vehicle registration</a>
           <button type="button" onClick={() => { handleLogout(); setNavOpen(false); }}>↩ Sign out</button>
         </nav>
 
         <div className="dash-aside-bottom">
           <p>{remoteMode ? 'Live · Supabase connected' : 'Demo · local-only data'}</p>
-          <strong>{userLabel}</strong>
+          <div className="dash-aside-user">
+            <span className="dash-avatar" style={{ width: 28, height: 28, fontSize: 11 }}>{userInitials}</span>
+            <span className="dash-aside-user-label">{userLabel}</span>
+          </div>
         </div>
       </aside>
 
@@ -654,7 +672,7 @@ function RegisterView({ form, setForm, onSubmit, saveMessage }) {
   const onField = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
   return (
-    <section className="panel" style={{ maxWidth: 720 }}>
+    <section className="panel" style={{ maxWidth: 800 }}>
       <div className="panel-head">
         <div>
           <h3>Register a vehicle</h3>
@@ -663,8 +681,23 @@ function RegisterView({ form, setForm, onSubmit, saveMessage }) {
       </div>
       <div className="panel-body">
         <form onSubmit={onSubmit}>
+
+          {/* ── Customer Information ── */}
+          <h4 className="form-section-label">Customer Information</h4>
+
           <label>Customer name</label>
           <input type="text" value={form.customerName} onChange={onField('customerName')} required />
+
+          <div className="form-grid-2">
+            <div>
+              <label>Cell phone</label>
+              <input type="tel" value={form.phone} onChange={onField('phone')} />
+            </div>
+            <div>
+              <label>Home phone</label>
+              <input type="tel" value={form.homePhone} onChange={onField('homePhone')} />
+            </div>
+          </div>
 
           <div className="form-grid-2">
             <div>
@@ -672,12 +705,48 @@ function RegisterView({ form, setForm, onSubmit, saveMessage }) {
               <input type="email" value={form.email} onChange={onField('email')} required />
             </div>
             <div>
-              <label>Phone</label>
-              <input type="text" value={form.phone} onChange={onField('phone')} />
+              <label>How did you hear about us?</label>
+              <input type="text" value={form.howHeardAboutUs} onChange={onField('howHeardAboutUs')} />
             </div>
           </div>
 
-          <div className="form-grid-2">
+          <label>Address</label>
+          <input type="text" value={form.address} onChange={onField('address')} />
+
+          <div className="form-grid-3">
+            <div>
+              <label>City</label>
+              <input type="text" value={form.city} onChange={onField('city')} />
+            </div>
+            <div>
+              <label>State</label>
+              <input type="text" value={form.state} onChange={onField('state')} maxLength={2} style={{ textTransform: 'uppercase' }} />
+            </div>
+            <div>
+              <label>ZIP</label>
+              <input type="text" value={form.zip} onChange={onField('zip')} maxLength={10} />
+            </div>
+          </div>
+
+          {/* ── Insurance / Vehicle Information ── */}
+          <h4 className="form-section-label" style={{ marginTop: 28 }}>Insurance / Vehicle Information</h4>
+
+          <div className="form-grid-3">
+            <div>
+              <label>Insurance company</label>
+              <input type="text" value={form.insuranceCompany} onChange={onField('insuranceCompany')} />
+            </div>
+            <div>
+              <label>Deductible</label>
+              <input type="text" value={form.deductible} onChange={onField('deductible')} placeholder="$" />
+            </div>
+            <div>
+              <label>Claim #</label>
+              <input type="text" value={form.claimNumber} onChange={onField('claimNumber')} />
+            </div>
+          </div>
+
+          <div className="form-grid-3">
             <div>
               <label>Year</label>
               <input type="text" value={form.year} onChange={onField('year')} required />
@@ -686,18 +755,29 @@ function RegisterView({ form, setForm, onSubmit, saveMessage }) {
               <label>Make</label>
               <input type="text" value={form.make} onChange={onField('make')} required />
             </div>
-          </div>
-
-          <div className="form-grid-2">
             <div>
               <label>Model</label>
               <input type="text" value={form.model} onChange={onField('model')} required />
             </div>
+          </div>
+
+          <div className="form-grid-3">
+            <div>
+              <label>VIN #</label>
+              <input type="text" value={form.vin} onChange={onField('vin')} maxLength={17} style={{ textTransform: 'uppercase' }} />
+            </div>
+            <div>
+              <label>Color</label>
+              <input type="text" value={form.color} onChange={onField('color')} />
+            </div>
             <div>
               <label>License plate</label>
-              <input type="text" value={form.plate} onChange={onField('plate')} required />
+              <input type="text" value={form.plate} onChange={onField('plate')} required style={{ textTransform: 'uppercase' }} />
             </div>
           </div>
+
+          {/* ── Job Settings ── */}
+          <h4 className="form-section-label" style={{ marginTop: 28 }}>Job Settings</h4>
 
           <div className="form-grid-2">
             <div>

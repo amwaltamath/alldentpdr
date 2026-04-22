@@ -17,9 +17,20 @@ function mapRemoteVehicle(item) {
     customerName: item.customer_name,
     email: item.email,
     phone: item.phone || '',
+    homePhone: item.home_phone || '',
+    address: item.address || '',
+    city: item.city || '',
+    state: item.state || '',
+    zip: item.zip || '',
+    howHeardAboutUs: item.how_heard_about_us || '',
+    insuranceCompany: item.insurance_company || '',
+    deductible: item.deductible || '',
+    claimNumber: item.claim_number || '',
     year: item.year,
     make: item.make,
     model: item.model,
+    vin: item.vin || '',
+    color: item.color || '',
     plate: item.plate,
     status: item.status,
     notes: item.notes || '',
@@ -55,13 +66,24 @@ function buildVehicleRecord(vehicle) {
     id,
     customerName: vehicle.customerName.trim(),
     email: vehicle.email.trim().toLowerCase(),
-    phone: vehicle.phone.trim(),
+    phone: (vehicle.phone || '').trim(),
+    homePhone: (vehicle.homePhone || '').trim(),
+    address: (vehicle.address || '').trim(),
+    city: (vehicle.city || '').trim(),
+    state: (vehicle.state || '').trim().toUpperCase(),
+    zip: (vehicle.zip || '').trim(),
+    howHeardAboutUs: (vehicle.howHeardAboutUs || '').trim(),
+    insuranceCompany: (vehicle.insuranceCompany || '').trim(),
+    deductible: (vehicle.deductible || '').trim(),
+    claimNumber: (vehicle.claimNumber || '').trim(),
     year: vehicle.year.trim(),
     make: vehicle.make.trim(),
     model: vehicle.model.trim(),
+    vin: (vehicle.vin || '').trim().toUpperCase(),
+    color: (vehicle.color || '').trim(),
     plate: vehicle.plate.trim().toUpperCase(),
     status: vehicle.status || 'Registered',
-    notes: vehicle.notes.trim(),
+    notes: (vehicle.notes || '').trim(),
     notificationsEnabled: Boolean(vehicle.notificationsEnabled),
     notificationChannel: vehicle.notificationChannel || 'email',
     createdAt: now,
@@ -75,9 +97,20 @@ function mapRemotePayload(vehicle) {
     customer_name: vehicle.customerName,
     email: vehicle.email,
     phone: vehicle.phone,
+    home_phone: vehicle.homePhone,
+    address: vehicle.address,
+    city: vehicle.city,
+    state: vehicle.state,
+    zip: vehicle.zip,
+    how_heard_about_us: vehicle.howHeardAboutUs,
+    insurance_company: vehicle.insuranceCompany,
+    deductible: vehicle.deductible,
+    claim_number: vehicle.claimNumber,
     year: vehicle.year,
     make: vehicle.make,
     model: vehicle.model,
+    vin: vehicle.vin,
+    color: vehicle.color,
     plate: vehicle.plate,
     status: vehicle.status,
     notes: vehicle.notes,
@@ -250,4 +283,48 @@ export async function findCustomerVehicle(email, plate) {
 
 export async function getCustomerVehicleStatus(email, plate) {
   return findCustomerVehicle(email, plate);
+}
+
+export async function registerVehiclePublic(data) {
+  if (isSupabaseEnabled()) {
+    const { data: result, error } = await supabase.rpc('register_vehicle_public', {
+      p_customer_name:           data.customerName,
+      p_email:                   data.email,
+      p_phone:                   data.phone            || '',
+      p_address:                 data.address          || '',
+      p_city:                    data.city             || '',
+      p_state:                   data.state            || '',
+      p_zip:                     data.zip              || '',
+      p_home_phone:              data.homePhone        || '',
+      p_how_heard:               data.howHeard         || '',
+      p_year:                    data.year,
+      p_make:                    data.make,
+      p_model:                   data.model,
+      p_plate:                   data.plate,
+      p_vin:                     data.vin              || '',
+      p_color:                   data.color            || '',
+      p_insurance_company:       data.insuranceCompany || '',
+      p_deductible:              data.deductible       || '',
+      p_claim_number:            data.claimNumber      || '',
+      p_notes:                   data.notes            || '',
+      p_direction_to_pay_signed: Boolean(data.directionToPaySigned),
+      p_repair_auth_signed:      Boolean(data.repairAuthSigned),
+      p_insurance_auth_name:     data.insuranceAuthName || '',
+      p_signature_name:          data.signatureName    || ''
+    });
+    if (error) throw error;
+    return result;
+  }
+
+  // Local fallback
+  const id = `AD-${Date.now().toString().slice(-6)}`;
+  const now = new Date().toISOString();
+  const list = typeof window !== 'undefined'
+    ? JSON.parse(localStorage.getItem('alldentpdr_vehicles') || '[]')
+    : [];
+  list.unshift({ id, ...data, status: 'Registered', createdAt: now, updatedAt: now });
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('alldentpdr_vehicles', JSON.stringify(list));
+  }
+  return id;
 }
