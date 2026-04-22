@@ -36,7 +36,8 @@ const NAV_ITEMS = [
   { id: 'overview', label: 'Overview', icon: '◧' },
   { id: 'pipeline', label: 'Pipeline', icon: '▦' },
   { id: 'jobs', label: 'All Jobs', icon: '☰' },
-  { id: 'register', label: 'Register Vehicle', icon: '+' }
+  { id: 'register', label: 'Register Vehicle', icon: '+' },
+  { id: 'cards', label: 'Business Cards', icon: '▣' }
 ];
 
 function statusBadge(status) {
@@ -386,6 +387,8 @@ export default function AdminDashboard() {
               saveMessage={saveMessage}
             />
           )}
+
+          {view === 'cards' && <CardsView />}
         </main>
       </div>
     </div>
@@ -595,6 +598,55 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange }) {
         </table>
       </div>
     </section>
+  );
+}
+
+const TEAM_CARDS = [
+  { slug: 'zachary', name: 'Zachary', title: 'PDR Specialist', email: 'zachary@alldentpdr.com' },
+  { slug: 'kevin',   name: 'Kevin',   title: 'PDR Specialist', email: 'kevin@alldentpdr.com' },
+  { slug: 'patrick', name: 'Patrick', title: 'PDR Specialist', email: 'patrick@alldentpdr.com' },
+];
+
+function CardsView() {
+  const base = 'https://alldentpdr.com';
+  return (
+    <div>
+      <div className="panel-head" style={{ marginBottom: 18, background: 'transparent', border: 'none', padding: 0 }}>
+        <div>
+          <h3 style={{ marginBottom: 4 }}>Digital Business Cards</h3>
+          <p className="meta" style={{ margin: 0 }}>Share your card link or let customers scan the QR code.</p>
+        </div>
+      </div>
+      <div className="cards-grid">
+        {TEAM_CARDS.map((c) => {
+          const url = `${base}/card/${c.slug}`;
+          const qr = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(url)}&color=b0522b&bgcolor=ffffff&margin=8`;
+          return (
+            <div key={c.slug} className="biz-preview-card">
+              <div className="bpc-header">
+                <img src="/images/logo.jpg" alt="" />
+                <div>
+                  <strong>{c.name}</strong>
+                  <span>{c.title}</span>
+                </div>
+              </div>
+              <img src={qr} alt={`QR for ${c.name}`} className="bpc-qr" width="80" height="80" />
+              <p className="bpc-url">{url.replace('https://', '')}</p>
+              <div className="bpc-actions">
+                <a href={url} target="_blank" rel="noreferrer" className="button ghost sm">Preview ↗</a>
+                <button
+                  type="button"
+                  className="button primary sm"
+                  onClick={() => navigator.clipboard.writeText(url)}
+                >
+                  Copy link
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

@@ -913,6 +913,55 @@ select {
 .kanban-empty { color: var(--muted); font-size: 13px; padding: 24px 8px; text-align: center; }
 
 .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+
+/* Business card preview grid (admin dashboard) */
+.cards-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+.biz-preview-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+.bpc-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.bpc-header img {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.bpc-header strong { display: block; font-size: 15px; color: var(--ink); font-weight: 700; }
+.bpc-header span   { display: block; font-size: 12px; color: var(--muted); }
+.bpc-qr {
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  display: block;
+}
+.bpc-url {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+  word-break: break-all;
+}
+.bpc-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: center;
+}
 @media (max-width: 520px) { .form-grid-2 { grid-template-columns: 1fr; } }
 
 .checkbox-row {
