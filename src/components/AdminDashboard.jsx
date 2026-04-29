@@ -794,74 +794,73 @@ function CardsView() {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   VIN Scanner — uses native BarcodeDetector API (Chrome 83+,
-   Edge 83+, Safari 17+). Zero bundle impact, hardware-accelerated
-   on Android devices used in the field.
+   VIN Scanner — uses @zxing/browser (pure JS, no WASM)
+   Works in all modern browsers: desktop Chrome, Firefox, Edge,
+   Safari, iOS Safari, Android Chrome.
 ───────────────────────────────────────────────────────────── */
 function VinScanner({ onScan, onClose }) {
-  const videoRef  = useRef(null);
+  const videoRef   = useRef(null);
+  const readerRef  = useRef(null);
   const [scanError, setScanError] = useState('');
   const [ready,     setReady]     = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    let active = true;
 
-    if (!('BarcodeDetector' in window)) {
-      setScanError(
-        'Barcode scanning is not supported in this browser. ' +
-        'Please use Chrome or Edge on Android, or enter the VIN manually.'
-      );
-      return;
-    }
+    import('@zxing/browser').then(({ BrowserMultiFormatReader }) => {
+      if (!active) return;
 
-    let stream   = null;
-    let frameId  = null;
-    let active   = true;
+      const reader = new BrowserMultiFormatReader();
+      readerRef.current = reader;
 
-    const detector = new window.BarcodeDetector({
-      formats: ['qr_code', 'code_39', 'code_93', 'code_128', 'pdf417', 'data_matrix'],
-    });
-
-    async function startCamera() {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-        });
-        if (!active) { stream.getTracks().forEach((t) => t.stop()); return; }
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          await videoRef.current.play();
-          setReady(true);
-          scan();
-        }
-      } catch {
-        setScanError('Camera access denied. Please allow camera access, or enter the VIN manually.');
-      }
-    }
-
-    async function scan() {
-      if (!active || !videoRef.current) return;
-      try {
-        const results = await detector.detect(videoRef.current);
-        for (const r of results) {
-          // Strip Code-39 asterisk delimiters, uppercase, trim
-          const vin = r.rawValue.replace(/\*/g, '').trim().toUpperCase();
-          if (vin.length >= 5) {   // accept partial reads; caller validates
-            active = false;
-            onScan(vin);
+      // Get the back/environment camera
+      BrowserMultiFormatReader.listVideoInputDevices()
+        .then((devices) => {
+          if (!active) return;
+          if (!devices.length) {
+            setScanError('No camera found. Please enter the VIN manually.');
             return;
           }
-        }
-      } catch { /* per-frame errors are normal — ignore */ }
-      frameId = requestAnimationFrame(scan);
-    }
+          // Prefer rear camera on mobile; fallback to first available
+          const preferred = devices.find((d) =>
+            /back|rear|environment/i.test(d.label)
+          ) || devices[devices.length - 1];
 
-    startCamera();
+          return reader.decodeFromVideoDevice(
+            preferred.deviceId,
+            videoRef.current,
+            (result, err) => {
+              if (!active) return;
+              if (result) {
+                setReady(true);
+                // Strip Code-39 asterisk delimiters, uppercase, trim
+                const vin = result.getText().replace(/\*/g, '').trim().toUpperCase();
+                if (vin.length >= 5) {
+                  active = false;
+                  onScan(vin);
+                }
+              }
+              if (err && !(err?.name === 'NotFoundException')) {
+                // Only log non-expected decode errors
+                console.warn('[VinScanner]', err);
+              }
+              if (!ready) setReady(true);
+            }
+          );
+        })
+        .catch((err) => {
+          console.error('[VinScanner camera]', err);
+          if (active) setScanError('Camera access denied. Please allow camera access or enter the VIN manually.');
+        });
+    }).catch((err) => {
+      console.error('[VinScanner import]', err);
+      if (active) setScanError('Scanner failed to load. Please enter the VIN manually.');
+    });
 
     return () => {
       active = false;
-      if (frameId)  cancelAnimationFrame(frameId);
-      if (stream)   stream.getTracks().forEach((t) => t.stop());
+      readerRef.current?.reset();
     };
   }, []);
 
@@ -873,10 +872,12 @@ function VinScanner({ onScan, onClose }) {
           <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
         </div>
         <p className="vin-scanner-hint">
-          Point the camera at the VIN barcode on the door jamb sticker or QR code.
+          Point the camera at the VIN barcode on the door jamb sticker, windshield, or QR code.
         </p>
         {scanError ? (
-          <p style={{ color: 'var(--rust,#b0522b)', textAlign: 'center', padding: '24px 0', fontSize: 14 }}>{scanError}</p>
+          <p style={{ color: 'var(--rust,#b0522b)', textAlign: 'center', padding: '24px 0', fontSize: 14 }}>
+            {scanError}
+          </p>
         ) : (
           <div style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', background: '#111', minHeight: 180 }}>
             <video
@@ -886,8 +887,8 @@ function VinScanner({ onScan, onClose }) {
               playsInline
             />
             {ready && <div className="vin-scan-reticle" />}
-            {!ready && (
-              <p style={{ color: '#aaa', textAlign: 'center', padding: '48px 16px', fontSize: 13, margin: 0 }}>
+            {!ready && !scanError && (
+              <p style={{ color: '#aaa', textAlign: 'center', padding: '48px 16px', fontSize: 13, margin: 0, position: 'absolute', inset: 0 }}>
                 Starting camera…
               </p>
             )}
