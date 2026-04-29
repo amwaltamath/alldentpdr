@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
+  getPricing,
   getRemoteAuthUser,
   getSession,
   getVehicles,
   isRemoteAdmin,
   isRemotePortalEnabled,
   registerVehicle,
+  savePricing,
   setSession,
   signInRemoteAdmin,
   signOutRemoteAdmin,
@@ -51,6 +53,7 @@ const NAV_ITEMS = [
   { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
   { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
   { id: 'quote',    label: 'New Quote',         icon: '$' },
+  { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
   { id: 'register', label: 'Register Vehicle',  icon: '+' },
   { id: 'cards',    label: 'Business Cards',    icon: '▣' },
 ];
@@ -429,6 +432,10 @@ export default function AdminDashboard() {
 
           {view === 'quote' && (
             <QuoteView vehicles={vehicles} />
+          )}
+
+          {view === 'pricing' && (
+            <PricingView />
           )}
 
           {view === 'cards' && <CardsView />}
@@ -942,17 +949,316 @@ const BLANK_QUOTE = {
   notes: '',
 };
 
+/* ─────────────────────────────────────────────────────────────
+   Pricing Matrix shared helpers
+───────────────────────────────────────────────────────────── */
+const DEFAULT_TIERS = ['Cash', 'Insurance Standard'];
+
+// Industry-average starting suggestions (USD). Fully editable per shop.
+const PRICING_DEFAULTS = {
+  Small:     { hood: 75,  fender: 60, door: 65,  quarter: 80,  roof: 90,  trunk: 70,  bumper: 90,  rocker: 70,  mirror: 50 },
+  Medium:    { hood: 150, fender: 110, door: 130, quarter: 160, roof: 180, trunk: 140, bumper: 175, rocker: 130, mirror: 90 },
+  Large:     { hood: 275, fender: 200, door: 240, quarter: 290, roof: 325, trunk: 260, bumper: 320, rocker: 240, mirror: 150 },
+  Oversized: { hood: 450, fender: 325, door: 395, quarter: 475, roof: 550, trunk: 425, bumper: 525, rocker: 395, mirror: 225 },
+};
+
+function panelCategory(panelId) {
+  if (panelId === 'hood')                             return 'hood';
+  if (panelId.endsWith('fender'))                     return 'fender';
+  if (panelId.endsWith('door'))                       return 'door';
+  if (panelId.endsWith('quarter'))                    return 'quarter';
+  if (panelId === 'roof')                             return 'roof';
+  if (panelId === 'trunk')                            return 'trunk';
+  if (panelId.endsWith('bumper'))                     return 'bumper';
+  if (panelId.endsWith('rocker'))                     return 'rocker';
+  if (panelId.endsWith('mirror'))                     return 'mirror';
+  return 'door';
+}
+
+function buildDefaultPricing() {
+  const tiers = {};
+  DEFAULT_TIERS.forEach((tier) => {
+    const isInsurance = tier !== 'Cash';
+    const mult = isInsurance ? 1.15 : 1; // insurance tier slightly higher by default
+    tiers[tier] = {
+      panels: {},
+      riAddons: {},
+    };
+    PDR_PANELS.forEach((p) => {
+      const cat = panelCategory(p.id);
+      tiers[tier].panels[p.id] = {
+        Small:     Math.round((PRICING_DEFAULTS.Small[cat]     || 75)  * mult),
+        Medium:    Math.round((PRICING_DEFAULTS.Medium[cat]    || 150) * mult),
+        Large:     Math.round((PRICING_DEFAULTS.Large[cat]     || 275) * mult),
+        Oversized: Math.round((PRICING_DEFAULTS.Oversized[cat] || 450) * mult),
+      };
+      tiers[tier].riAddons[p.id] = 75; // flat R&I labor add-on
+    });
+  });
+  return { tiers, activeTier: 'Cash' };
+}
+
+function loadPricing() {
+  const saved = getPricing();
+  if (saved && saved.tiers) return saved;
+  return buildDefaultPricing();
+}
+
+function calculatePanelPrice(pricing, tierName, panelId, method, size) {
+  if (!pricing || !pricing.tiers || !pricing.tiers[tierName]) return '';
+  const tier = pricing.tiers[tierName];
+  const base = tier.panels?.[panelId]?.[size] ?? 0;
+  if (method === 'R&R') return ''; // manual entry
+  if (method === 'R&I') return String(base + (tier.riAddons?.[panelId] ?? 0));
+  return String(base); // PDR
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Pricing Matrix view
+───────────────────────────────────────────────────────────── */
+function PricingView() {
+  const [pricing, setPricing]   = useState(() => loadPricing());
+  const [activeTier, setActive] = useState(() => loadPricing().activeTier || 'Cash');
+  const [savedMsg, setSavedMsg] = useState('');
+  const [newTier,  setNewTier]  = useState('');
+
+  const tier = pricing.tiers[activeTier];
+
+  const setCell = (panelId, size, value) => {
+    const num = value === '' ? 0 : Math.max(0, parseFloat(value) || 0);
+    setPricing((p) => ({
+      ...p,
+      tiers: {
+        ...p.tiers,
+        [activeTier]: {
+          ...p.tiers[activeTier],
+          panels: {
+            ...p.tiers[activeTier].panels,
+            [panelId]: { ...p.tiers[activeTier].panels[panelId], [size]: num },
+          },
+        },
+      },
+    }));
+  };
+
+  const setRI = (panelId, value) => {
+    const num = value === '' ? 0 : Math.max(0, parseFloat(value) || 0);
+    setPricing((p) => ({
+      ...p,
+      tiers: {
+        ...p.tiers,
+        [activeTier]: {
+          ...p.tiers[activeTier],
+          riAddons: { ...p.tiers[activeTier].riAddons, [panelId]: num },
+        },
+      },
+    }));
+  };
+
+  const handleSave = () => {
+    const next = { ...pricing, activeTier };
+    savePricing(next);
+    setSavedMsg('Saved!');
+    setTimeout(() => setSavedMsg(''), 2000);
+  };
+
+  const handleAddTier = () => {
+    const name = newTier.trim();
+    if (!name) return;
+    if (pricing.tiers[name]) {
+      alert('A tier with that name already exists.');
+      return;
+    }
+    // Clone from current active tier as starting point
+    setPricing((p) => ({
+      ...p,
+      tiers: {
+        ...p.tiers,
+        [name]: JSON.parse(JSON.stringify(p.tiers[activeTier])),
+      },
+    }));
+    setActive(name);
+    setNewTier('');
+  };
+
+  const handleDeleteTier = () => {
+    if (Object.keys(pricing.tiers).length <= 1) {
+      alert('You must keep at least one pricing tier.');
+      return;
+    }
+    if (!window.confirm(`Delete pricing tier "${activeTier}"?`)) return;
+    const next = { ...pricing.tiers };
+    delete next[activeTier];
+    const remaining = Object.keys(next)[0];
+    setPricing((p) => ({ ...p, tiers: next }));
+    setActive(remaining);
+  };
+
+  const handleResetDefaults = () => {
+    if (!window.confirm('Reset all tiers to industry-average defaults? Your custom rates will be lost.')) return;
+    const fresh = buildDefaultPricing();
+    setPricing(fresh);
+    setActive(fresh.activeTier);
+    savePricing(fresh);
+  };
+
+  return (
+    <div>
+      <div className="panel">
+        <div className="panel-head">
+          <div>
+            <h3>Pricing Matrix</h3>
+            <p className="meta">Set per-panel rates for each customer tier or insurance carrier</p>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button type="button" className="button ghost sm" onClick={handleResetDefaults}>Reset to defaults</button>
+            <button type="button" className="button primary sm" onClick={handleSave}>Save changes</button>
+          </div>
+        </div>
+
+        <div className="panel-body">
+          {/* Tier selector */}
+          <div className="pricing-tier-bar">
+            <label style={{ marginBottom: 0 }}>Active tier</label>
+            <select value={activeTier} onChange={(e) => setActive(e.target.value)} style={{ flex: 1, maxWidth: 280, marginBottom: 0 }}>
+              {Object.keys(pricing.tiers).map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <button type="button" className="button ghost sm" onClick={handleDeleteTier}>Delete tier</button>
+
+            <span style={{ flex: 1 }} />
+
+            <input
+              type="text"
+              value={newTier}
+              onChange={(e) => setNewTier(e.target.value)}
+              placeholder="e.g. State Farm DRP"
+              style={{ marginBottom: 0, maxWidth: 220 }}
+            />
+            <button type="button" className="button primary sm" onClick={handleAddTier}>+ Add tier</button>
+          </div>
+
+          {savedMsg && <p className="portal-note" style={{ color: 'var(--sage,#4a7a5c)', marginBottom: 12 }}>✓ {savedMsg}</p>}
+
+          {/* Pricing grid */}
+          <div className="table-scroll">
+            <table className="pricing-table">
+              <thead>
+                <tr>
+                  <th>Panel</th>
+                  {PANEL_SIZES.map((s) => <th key={s} style={{ textAlign: 'right' }}>{s}</th>)}
+                  <th style={{ textAlign: 'right', borderLeft: '2px solid var(--line,#e8e2db)' }}>R&amp;I add-on</th>
+                </tr>
+              </thead>
+              <tbody>
+                {PANEL_SECTIONS.map((section) => (
+                  <Fragment key={section}>
+                    <tr className="pricing-section-row">
+                      <td colSpan={PANEL_SIZES.length + 2}>{section}</td>
+                    </tr>
+                    {PDR_PANELS.filter((p) => p.section === section).map((p) => (
+                      <tr key={p.id}>
+                        <td className="pricing-panel-name">{p.label}</td>
+                        {PANEL_SIZES.map((size) => (
+                          <td key={size} style={{ textAlign: 'right' }}>
+                            <div className="pricing-cell">
+                              <span className="pricing-cell-prefix">$</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="5"
+                                value={tier.panels[p.id]?.[size] ?? 0}
+                                onChange={(e) => setCell(p.id, size, e.target.value)}
+                                className="pricing-cell-input"
+                              />
+                            </div>
+                          </td>
+                        ))}
+                        <td style={{ textAlign: 'right', borderLeft: '2px solid var(--line,#e8e2db)' }}>
+                          <div className="pricing-cell">
+                            <span className="pricing-cell-prefix">$</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="5"
+                              value={tier.riAddons[p.id] ?? 0}
+                              onChange={(e) => setRI(p.id, e.target.value)}
+                              className="pricing-cell-input"
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <p className="meta" style={{ marginTop: 14, fontSize: 12 }}>
+            <strong>How it works:</strong> When building a quote, select a tier — prices auto-fill as you check panels and pick a size.
+            <br/>
+            <strong>R&amp;I add-on</strong> = labor cost added on top of the PDR price when method is set to R&amp;I (Remove &amp; Install).
+            <br/>
+            <strong>R&amp;R</strong> (Remove &amp; Replace) is always entered manually since part costs vary by vehicle.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function QuoteView({ vehicles }) {
   const [quote, setQuote]     = useState(BLANK_QUOTE);
   const [scanning, setScanning] = useState(false);
+  const [pricing, setPricingState] = useState(() => loadPricing());
+  const [activeTier, setActiveTier] = useState(() => loadPricing().activeTier || 'Cash');
+
+  // Refresh pricing whenever this view mounts (in case admin updated it)
+  useEffect(() => {
+    const fresh = loadPricing();
+    setPricingState(fresh);
+    if (!fresh.tiers[activeTier]) setActiveTier(Object.keys(fresh.tiers)[0]);
+  }, []);
 
   const setField = (key) => (e) => setQuote((q) => ({ ...q, [key]: e.target.value }));
 
   const setPanel = (id, field, value) =>
-    setQuote((q) => ({
-      ...q,
-      panels: { ...q.panels, [id]: { ...q.panels[id], [field]: value } },
-    }));
+    setQuote((q) => {
+      const current = q.panels[id];
+      const next    = { ...current, [field]: value };
+
+      // Auto-fill price when checking, or when method/size changes
+      const recompute =
+        (field === 'checked' && value === true) ||
+        (current.checked && (field === 'method' || field === 'size'));
+
+      if (recompute && next.method !== 'R&R') {
+        const auto = calculatePanelPrice(pricing, activeTier, id, next.method, next.size);
+        if (auto) next.price = auto;
+      }
+
+      return { ...q, panels: { ...q.panels, [id]: next } };
+    });
+
+  const reapplyAllPrices = (tierName) => {
+    setQuote((q) => {
+      const nextPanels = { ...q.panels };
+      Object.keys(nextPanels).forEach((id) => {
+        const p = nextPanels[id];
+        if (p.checked && p.method !== 'R&R') {
+          const auto = calculatePanelPrice(pricing, tierName, id, p.method, p.size);
+          if (auto) nextPanels[id] = { ...p, price: auto };
+        }
+      });
+      return { ...q, panels: nextPanels };
+    });
+  };
+
+  const handleTierChange = (e) => {
+    const t = e.target.value;
+    setActiveTier(t);
+    reapplyAllPrices(t);
+  };
 
   const total = Object.values(quote.panels).reduce((sum, p) => {
     if (!p.checked) return sum;
@@ -1164,6 +1470,19 @@ function QuoteView({ vehicles }) {
         </div>
 
         <div className="panel-body">
+          {/* Pricing tier — drives auto-fill of panel prices */}
+          <div className="quote-tier-row">
+            <div style={{ flex: 1 }}>
+              <label>Pricing tier</label>
+              <select value={activeTier} onChange={handleTierChange}>
+                {Object.keys(pricing.tiers).map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            <p className="meta" style={{ margin: '0 0 12px', alignSelf: 'flex-end', fontSize: 12, paddingBottom: 10 }}>
+              Prices auto-fill when you check a panel · Manage tiers in <strong>Pricing Matrix</strong>
+            </p>
+          </div>
+
           {vehicles.length > 0 && (
             <div style={{ marginBottom: 18 }}>
               <label>Auto-fill from existing job</label>

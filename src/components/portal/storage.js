@@ -2,6 +2,7 @@ import { isSupabaseEnabled, supabase } from './supabaseClient';
 
 const VEHICLES_KEY = 'alldentpdr_vehicles';
 const SESSION_KEY = 'alldentpdr_portal_session';
+const PRICING_KEY = 'alldentpdr_pricing_v1';
 
 function parseJson(value, fallback) {
   try {
@@ -327,4 +328,17 @@ export async function registerVehiclePublic(data) {
     localStorage.setItem('alldentpdr_vehicles', JSON.stringify(list));
   }
   return id;
+}
+
+/* ============================================================
+   Pricing Matrix (per-tier × panel × size) — local-only for now
+   ============================================================ */
+export function getPricing() {
+  if (typeof window === 'undefined') return null;
+  return parseJson(localStorage.getItem(PRICING_KEY) || 'null', null);
+}
+
+export function savePricing(pricing) {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(PRICING_KEY, JSON.stringify(pricing));
 }
