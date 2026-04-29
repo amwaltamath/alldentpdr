@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
   getRemoteAuthUser,
@@ -47,11 +47,12 @@ const initialForm = {
 };
 
 const NAV_ITEMS = [
-  { id: 'overview', label: 'Overview', icon: '◧' },
-  { id: 'pipeline', label: 'Pipeline', icon: '▦' },
-  { id: 'jobs', label: 'All Jobs', icon: '☰' },
-  { id: 'register', label: 'Register Vehicle', icon: '+' },
-  { id: 'cards', label: 'Business Cards', icon: '▣' }
+  { id: 'overview', label: 'Overview',          icon: '◧' },
+  { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
+  { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
+  { id: 'quote',    label: 'New Quote',         icon: '$' },
+  { id: 'register', label: 'Register Vehicle',  icon: '+' },
+  { id: 'cards',    label: 'Business Cards',    icon: '▣' },
 ];
 
 function statusBadge(status) {
@@ -230,7 +231,27 @@ export default function AdminDashboard() {
 
   const handleStatusChange = async (id, nextStatus) => {
     await updateVehicleStatus(id, nextStatus);
-    setVehicles(await getVehicles());
+    const updated = await getVehicles();
+    setVehicles(updated);
+
+    // Send customer email if notifications are enabled
+    const vehicle = updated.find((v) => v.id === id);
+    if (vehicle?.notificationsEnabled && vehicle?.email) {
+      fetch('/api/send-status-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId: vehicle.id,
+          customerName: vehicle.customerName,
+          email: vehicle.email,
+          status: nextStatus,
+          year: vehicle.year,
+          make: vehicle.make,
+          model: vehicle.model,
+          plate: vehicle.plate,
+        }),
+      }).catch((err) => console.warn('[status email]', err));
+    }
   };
 
   const handleNotificationChange = async (id, field, value) => {
@@ -404,6 +425,10 @@ export default function AdminDashboard() {
               onSubmit={handleRegister}
               saveMessage={saveMessage}
             />
+          )}
+
+          {view === 'quote' && (
+            <QuoteView vehicles={vehicles} />
           )}
 
           {view === 'cards' && <CardsView />}
@@ -756,6 +781,399 @@ function CardsView() {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   VIN Scanner — uses native BarcodeDetector API (Chrome 83+,
+   Edge 83+, Safari 17+). Zero bundle impact, hardware-accelerated
+   on Android devices used in the field.
+───────────────────────────────────────────────────────────── */
+function VinScanner({ onScan, onClose }) {
+  const videoRef  = useRef(null);
+  const [scanError, setScanError] = useState('');
+  const [ready,     setReady]     = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    if (!('BarcodeDetector' in window)) {
+      setScanError(
+        'Barcode scanning is not supported in this browser. ' +
+        'Please use Chrome or Edge on Android, or enter the VIN manually.'
+      );
+      return;
+    }
+
+    let stream   = null;
+    let frameId  = null;
+    let active   = true;
+
+    const detector = new window.BarcodeDetector({
+      formats: ['qr_code', 'code_39', 'code_93', 'code_128', 'pdf417', 'data_matrix'],
+    });
+
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        });
+        if (!active) { stream.getTracks().forEach((t) => t.stop()); return; }
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play();
+          setReady(true);
+          scan();
+        }
+      } catch {
+        setScanError('Camera access denied. Please allow camera access, or enter the VIN manually.');
+      }
+    }
+
+    async function scan() {
+      if (!active || !videoRef.current) return;
+      try {
+        const results = await detector.detect(videoRef.current);
+        for (const r of results) {
+          // Strip Code-39 asterisk delimiters, uppercase, trim
+          const vin = r.rawValue.replace(/\*/g, '').trim().toUpperCase();
+          if (vin.length >= 5) {   // accept partial reads; caller validates
+            active = false;
+            onScan(vin);
+            return;
+          }
+        }
+      } catch { /* per-frame errors are normal — ignore */ }
+      frameId = requestAnimationFrame(scan);
+    }
+
+    startCamera();
+
+    return () => {
+      active = false;
+      if (frameId)  cancelAnimationFrame(frameId);
+      if (stream)   stream.getTracks().forEach((t) => t.stop());
+    };
+  }, []);
+
+  return (
+    <div className="vin-scanner-overlay" onClick={onClose}>
+      <div className="vin-scanner-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="vin-scanner-head">
+          <h3>Scan VIN</h3>
+          <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+        <p className="vin-scanner-hint">
+          Point the camera at the VIN barcode on the door jamb sticker or QR code.
+        </p>
+        {scanError ? (
+          <p style={{ color: 'var(--rust,#b0522b)', textAlign: 'center', padding: '24px 0', fontSize: 14 }}>{scanError}</p>
+        ) : (
+          <div style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', background: '#111', minHeight: 180 }}>
+            <video
+              ref={videoRef}
+              style={{ width: '100%', display: 'block' }}
+              muted
+              playsInline
+            />
+            {ready && <div className="vin-scan-reticle" />}
+            {!ready && (
+              <p style={{ color: '#aaa', textAlign: 'center', padding: '48px 16px', fontSize: 13, margin: 0 }}>
+                Starting camera…
+              </p>
+            )}
+          </div>
+        )}
+        <div style={{ textAlign: 'center', marginTop: 16 }}>
+          <button type="button" className="button ghost sm" onClick={onClose}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Quote Builder
+───────────────────────────────────────────────────────────── */
+const PDR_PANELS = [
+  // Front
+  { id: 'hood',          label: 'Hood',               section: 'Front' },
+  { id: 'lf_fender',    label: 'LF Fender',           section: 'Front' },
+  { id: 'rf_fender',    label: 'RF Fender',            section: 'Front' },
+  { id: 'front_bumper', label: 'Front Bumper Cover',   section: 'Front' },
+  // Left Side
+  { id: 'lf_door',      label: 'LF Door',              section: 'Left Side' },
+  { id: 'lr_door',      label: 'LR Door',              section: 'Left Side' },
+  { id: 'lr_quarter',   label: 'LR Quarter Panel',     section: 'Left Side' },
+  { id: 'lf_rocker',   label: 'LF Rocker Panel',      section: 'Left Side' },
+  // Right Side
+  { id: 'rf_door',      label: 'RF Door',              section: 'Right Side' },
+  { id: 'rr_door',      label: 'RR Door',              section: 'Right Side' },
+  { id: 'rr_quarter',   label: 'RR Quarter Panel',     section: 'Right Side' },
+  { id: 'rf_rocker',   label: 'RF Rocker Panel',      section: 'Right Side' },
+  // Top
+  { id: 'roof',         label: 'Roof',                 section: 'Top' },
+  // Rear
+  { id: 'trunk',        label: 'Trunk / Liftgate',     section: 'Rear' },
+  { id: 'rear_bumper',  label: 'Rear Bumper Cover',    section: 'Rear' },
+  // Other
+  { id: 'lf_mirror',   label: 'LF Mirror Cap',        section: 'Other' },
+  { id: 'rf_mirror',   label: 'RF Mirror Cap',        section: 'Other' },
+];
+
+const PANEL_SECTIONS = ['Front', 'Left Side', 'Right Side', 'Top', 'Rear', 'Other'];
+const PANEL_METHODS  = ['PDR', 'R&I', 'R&R'];
+const PANEL_SIZES    = ['Small', 'Medium', 'Large', 'Oversized'];
+
+function buildBlankPanels() {
+  const panels = {};
+  PDR_PANELS.forEach((p) => {
+    panels[p.id] = { checked: false, method: 'PDR', dents: '', size: 'Small', price: '' };
+  });
+  return panels;
+}
+
+const BLANK_QUOTE = {
+  vin: '', year: '', make: '', model: '', color: '', plate: '',
+  customerName: '', insuranceCompany: '', claimNumber: '',
+  panels: buildBlankPanels(),
+  notes: '',
+};
+
+function QuoteView({ vehicles }) {
+  const [quote, setQuote]     = useState(BLANK_QUOTE);
+  const [scanning, setScanning] = useState(false);
+
+  const setField = (key) => (e) => setQuote((q) => ({ ...q, [key]: e.target.value }));
+
+  const setPanel = (id, field, value) =>
+    setQuote((q) => ({
+      ...q,
+      panels: { ...q.panels, [id]: { ...q.panels[id], [field]: value } },
+    }));
+
+  const total = Object.values(quote.panels).reduce((sum, p) => {
+    if (!p.checked) return sum;
+    return sum + (parseFloat(p.price) || 0);
+  }, 0);
+
+  const affectedCount = Object.values(quote.panels).filter((p) => p.checked).length;
+
+  const handleVinScan = (vin) => {
+    setQuote((q) => ({ ...q, vin }));
+    setScanning(false);
+  };
+
+  const handleLinkJob = (e) => {
+    const v = vehicles.find((veh) => veh.id === e.target.value);
+    if (!v) return;
+    setQuote((q) => ({
+      ...q,
+      vin: v.vin || '',
+      year: v.year || '',
+      make: v.make || '',
+      model: v.model || '',
+      color: v.color || '',
+      plate: v.plate || '',
+      customerName: v.customerName || '',
+      insuranceCompany: v.insuranceCompany || '',
+      claimNumber: v.claimNumber || '',
+    }));
+    e.target.value = '';
+  };
+
+  const handleClear = () => {
+    if (window.confirm('Clear this quote and start over?')) {
+      setQuote(BLANK_QUOTE);
+    }
+  };
+
+  return (
+    <div className="quote-wrap" id="quote-print-area">
+      {scanning && <VinScanner onScan={handleVinScan} onClose={() => setScanning(false)} />}
+
+      {/* ── Vehicle / Header ── */}
+      <div className="panel">
+        <div className="panel-head">
+          <div>
+            <h3>New Quote</h3>
+            <p className="meta">Damage assessment &amp; price estimate</p>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button type="button" className="button ghost sm" onClick={handleClear}>Clear</button>
+            <button type="button" className="button primary sm" onClick={() => window.print()}>Print / Save PDF</button>
+          </div>
+        </div>
+
+        <div className="panel-body">
+          {vehicles.length > 0 && (
+            <div style={{ marginBottom: 18 }}>
+              <label>Auto-fill from existing job</label>
+              <select defaultValue="" onChange={handleLinkJob}>
+                <option value="">— Select a job to pre-fill —</option>
+                {vehicles.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.id} · {v.year} {v.make} {v.model} · {v.customerName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* VIN row */}
+          <div className="quote-vin-row">
+            <div style={{ flex: 1 }}>
+              <label>VIN #</label>
+              <input
+                type="text"
+                value={quote.vin}
+                onChange={setField('vin')}
+                maxLength={17}
+                placeholder="17-character VIN"
+                className="quote-vin-input"
+              />
+            </div>
+            <button type="button" className="button primary btn-scan-vin" onClick={() => setScanning(true)}>
+              📷 Scan VIN
+            </button>
+          </div>
+
+          <div className="form-grid-3" style={{ marginTop: 10 }}>
+            <div><label>Year</label><input type="text" value={quote.year} onChange={setField('year')} placeholder="2022" /></div>
+            <div><label>Make</label><input type="text" value={quote.make} onChange={setField('make')} placeholder="Honda" /></div>
+            <div><label>Model</label><input type="text" value={quote.model} onChange={setField('model')} placeholder="Accord" /></div>
+          </div>
+          <div className="form-grid-3" style={{ marginTop: 8 }}>
+            <div><label>Color</label><input type="text" value={quote.color} onChange={setField('color')} /></div>
+            <div><label>Plate</label><input type="text" value={quote.plate} onChange={setField('plate')} style={{ textTransform: 'uppercase' }} /></div>
+            <div><label>Customer name</label><input type="text" value={quote.customerName} onChange={setField('customerName')} /></div>
+          </div>
+          <div className="form-grid-2" style={{ marginTop: 8 }}>
+            <div><label>Insurance company</label><input type="text" value={quote.insuranceCompany} onChange={setField('insuranceCompany')} /></div>
+            <div><label>Claim #</label><input type="text" value={quote.claimNumber} onChange={setField('claimNumber')} /></div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Panel Assessment ── */}
+      <div className="panel" style={{ marginTop: 20 }}>
+        <div className="panel-head">
+          <div>
+            <h3>Panel Assessment</h3>
+            <p className="meta">{affectedCount} panel{affectedCount !== 1 ? 's' : ''} affected · Check each damaged panel</p>
+          </div>
+          <div className="quote-method-legend">
+            <span className="qlabel pdr">PDR</span>
+            <span className="qlabel ri">R&amp;I</span>
+            <span className="qlabel rr">R&amp;R</span>
+          </div>
+        </div>
+
+        <div className="quote-panel-wrap">
+          {PANEL_SECTIONS.map((section) => {
+            const sectionPanels = PDR_PANELS.filter((p) => p.section === section);
+            return (
+              <div key={section} className="quote-panel-section">
+                <div className="quote-section-label">{section}</div>
+                <div className="table-scroll">
+                  <table className="quote-panel-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: 36 }}></th>
+                        <th>Panel</th>
+                        <th style={{ width: 100 }}>Method</th>
+                        <th style={{ width: 72 }}>Dents</th>
+                        <th style={{ width: 110 }}>Size</th>
+                        <th style={{ width: 100 }}>Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sectionPanels.map((p) => {
+                        const pv = quote.panels[p.id];
+                        const isRR = pv.method === 'R&R';
+                        return (
+                          <tr key={p.id} className={`quote-panel-row${pv.checked ? ' is-affected' : ''}`}>
+                            <td style={{ textAlign: 'center' }}>
+                              <input
+                                type="checkbox"
+                                checked={pv.checked}
+                                onChange={(e) => setPanel(p.id, 'checked', e.target.checked)}
+                                aria-label={`Mark ${p.label} affected`}
+                              />
+                            </td>
+                            <td className="quote-panel-name">{p.label}</td>
+                            <td>
+                              {pv.checked && (
+                                <select value={pv.method} onChange={(e) => setPanel(p.id, 'method', e.target.value)} className="quote-select">
+                                  {PANEL_METHODS.map((m) => <option key={m} value={m}>{m}</option>)}
+                                </select>
+                              )}
+                            </td>
+                            <td>
+                              {pv.checked && !isRR && (
+                                <input
+                                  type="number"
+                                  value={pv.dents}
+                                  onChange={(e) => setPanel(p.id, 'dents', e.target.value)}
+                                  min="0"
+                                  className="quote-num-input"
+                                  placeholder="0"
+                                />
+                              )}
+                            </td>
+                            <td>
+                              {pv.checked && !isRR && (
+                                <select value={pv.size} onChange={(e) => setPanel(p.id, 'size', e.target.value)} className="quote-select">
+                                  {PANEL_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                              )}
+                            </td>
+                            <td>
+                              {pv.checked && (
+                                <div className="quote-price-cell">
+                                  <span className="quote-price-prefix">$</span>
+                                  <input
+                                    type="number"
+                                    value={pv.price}
+                                    onChange={(e) => setPanel(p.id, 'price', e.target.value)}
+                                    min="0"
+                                    step="5"
+                                    className="quote-price-input"
+                                    placeholder="0"
+                                  />
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Total + Notes ── */}
+      <div className="panel quote-footer-panel" style={{ marginTop: 20 }}>
+        <div className="quote-footer-inner">
+          <div style={{ flex: 1 }}>
+            <label>Notes / Exclusions</label>
+            <textarea rows="4" value={quote.notes} onChange={setField('notes')} placeholder="Repair conditions, exclusions, special instructions…" />
+          </div>
+          <div className="quote-total-box">
+            <div className="quote-total-label">Estimated Total</div>
+            <div className="quote-total-amount">${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            <div className="quote-total-meta">{affectedCount} panel{affectedCount !== 1 ? 's' : ''} · AllDent PDR</div>
+            <button type="button" className="button primary" style={{ width: '100%', marginTop: 14 }} onClick={() => window.print()}>
+              Print / Save PDF
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

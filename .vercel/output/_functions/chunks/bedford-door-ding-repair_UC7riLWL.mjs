@@ -1,0 +1,43 @@
+import { c as createComponent } from './astro-component_BTanpJro.mjs';
+import 'piccolore';
+import { l as renderComponent, r as renderTemplate, m as maybeRenderHead } from './entrypoint_Dt5qyCpC.mjs';
+import { $ as $$BaseLayout } from './BaseLayout_BjTZv2mP.mjs';
+
+const $$BedfordDoorDingRepair = createComponent(($$result, $$props, $$slots) => {
+  const title = "Bedford Door Ding Repair | Mobile Paintless Dent Repair | AllDent PDR";
+  const description = "Door ding repair in Bedford, OH and surrounding areas. Fast mobile paintless dent repair with premium-quality results. Inspection request from AllDent PDR.";
+  const canonical = "https://alldentpdr.com/bedford-door-ding-repair";
+  const breadcrumbs = [
+    { name: "Home", url: "https://alldentpdr.com" },
+    { name: "Bedford Door Ding Repair", url: canonical }
+  ];
+  const faqItems = [
+    {
+      question: "How much does door ding repair cost?",
+      answer: "Pricing depends on dent size, location, and panel access. Many small door dings are in the $75 to $150 range. We confirm exact pricing after inspecting the vehicle."
+    },
+    {
+      question: "Can you fix sharp creases?",
+      answer: "Many creases can be improved or fully corrected with PDR when paint is intact. We provide a clear recommendation after inspecting the damage."
+    },
+    {
+      question: "Do you offer mobile service in surrounding cities?",
+      answer: "Yes. We serve Bedford and nearby cities including Bedford Heights, Maple Heights, Garfield Heights, Solon, and additional surrounding communities."
+    }
+  ];
+  return renderTemplate`${renderComponent($$result, "BaseLayout", $$BaseLayout, { "title": title, "description": description, "canonical": canonical, "breadcrumbs": breadcrumbs, "faqItems": faqItems }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<section class="page-hero container"> <span class="section-label">Google Ads Landing Page</span> <h1>Bedford door ding repair with detail-first craftsmanship</h1> <p>From parking lot dings to light creases, AllDent PDR restores panels cleanly with paintless dent repair in Bedford and nearby areas.</p> <div class="button-row" style="justify-content: center;"> <a class="button primary" href="/contact">Get My Door Ding Quote</a> <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a> </div> </section> <section class="section alt"> <div class="container grid-3"> <article class="card"> <h3>Paint preserved</h3> <p>PDR reshapes the metal from behind the panel so your original paint stays intact whenever possible.</p> </article> <article class="card"> <h3>Fast turnaround</h3> <p>Most door ding repairs are completed quickly, often within hours depending on access and dent complexity.</p> </article> <article class="card"> <h3>Premium finish quality</h3> <p>We focus on subtle metal finishing and clean final appearance, not just removing the obvious low spot.</p> </article> </div> </section> <section class="section"> <div class="container"> <span class="section-label">Common Repairs</span> <h2>Door ding and crease repairs we handle</h2> <div class="grid-3"> <article class="card"> <h3>Parking lot dings</h3> <p>Small to moderate dents caused by door impacts in tight spaces.</p> </article> <article class="card"> <h3>Body line dents</h3> <p>Precision correction for dents crossing subtle contour lines.</p> </article> <article class="card"> <h3>Light creases</h3> <p>Repair strategy based on depth and metal stretch to maximize final quality.</p> </article> </div> </div> </section> <section class="section alt"> <div class="container"> <span class="section-label">Service Area</span> <h2>Bedford and surrounding areas</h2> <p>We provide mobile door ding repair in Bedford, Bedford Heights, Maple Heights, Garfield Heights, Solon, Warrensville Heights, Oakwood Village, Northfield, and nearby communities.</p> <div class="button-row"> <a class="button primary" href="/contact">Request Inspection</a> <a class="button ghost" href="/bedford-hail-damage-repair">Need Hail Repair Instead?</a> </div> </div> </section> ` })}`;
+}, "C:/Users/dreww/OneDrive - Premier Digital Solution/Premier Digital Solutions/Premier Sites/alldentpdr/src/pages/bedford-door-ding-repair.astro", void 0);
+
+const $$file = "C:/Users/dreww/OneDrive - Premier Digital Solution/Premier Digital Solutions/Premier Sites/alldentpdr/src/pages/bedford-door-ding-repair.astro";
+const $$url = "/bedford-door-ding-repair";
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: $$BedfordDoorDingRepair,
+  file: $$file,
+  url: $$url
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };

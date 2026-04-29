@@ -43,6 +43,22 @@ export default function RegistrationForm() {
       const id = await registerVehiclePublic(form);
       setJobId(id);
       setStatus('success');
+
+      // Fire-and-forget registration emails
+      fetch('/api/send-registration-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId: id,
+          customerName: form.customerName,
+          email: form.email,
+          phone: form.phone,
+          year: form.year,
+          make: form.make,
+          model: form.model,
+          plate: form.plate,
+        }),
+      }).catch((err) => console.warn('[registration email]', err));
     } catch (err) {
       console.error(err);
       setErrorMsg('There was a problem submitting your registration. Please call us at 1-855-425-5336.');

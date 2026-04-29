@@ -1,0 +1,28 @@
+import { c as createComponent } from './astro-component_BTanpJro.mjs';
+import 'piccolore';
+import { l as renderComponent, r as renderTemplate, m as maybeRenderHead } from './entrypoint_Dt5qyCpC.mjs';
+import { $ as $$BaseLayout } from './BaseLayout_BjTZv2mP.mjs';
+
+const $$Index = createComponent(($$result, $$props, $$slots) => {
+  const title = "Paintless Dent Repair Blog | PDR Tips, Guides & Hail Damage Info | AllDent PDR";
+  const description = "Read expert guides on paintless dent repair, hail damage recovery, insurance claims, and mobile PDR. Tips from AllDent PDR — Cincinnati-based, serving nationwide.";
+  const breadcrumbs = [
+    { name: "Home", url: "https://alldentpdr.com" },
+    { name: "Blog", url: "https://alldentpdr.com/blog" }
+  ];
+  return renderTemplate`${renderComponent($$result, "BaseLayout", $$BaseLayout, { "title": title, "description": description, "canonical": "https://alldentpdr.com/blog", "breadcrumbs": breadcrumbs }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<section class="page-hero container"> <span class="section-label">Blog</span> <h1>Paintless dent repair guides &amp; insights</h1> <p>Expert guides on paintless dent repair, hail damage, insurance claims, and mobile PDR service — from AllDent PDR.</p> </section> <section class="section alt"> <div class="container blog-list"> <article class="blog-item"> <span class="tag">Ohio Storm</span> <h3><a href="/blog/bedford-ohio-hail-damage-repair">Bedford, Ohio Hail Damage Repair: What to Do After the Storm</a></h3> <p>Local guidance for Bedford-area drivers, plus what makes premium paintless dent repair worth choosing after hail.</p> </article> <article class="blog-item"> <span class="tag">Insurance</span> <h3><a href="/blog/hail-damage-insurance-claim-guide">How to File an Insurance Claim for Hail Damage</a></h3> <p>Step-by-step guide to filing a hail damage claim, what your policy covers, and how to get repaired fast.</p> </article> <article class="blog-item"> <span class="tag">Mobile PDR</span> <h3><a href="/blog/mobile-pdr-future-of-dent-repair">Why Mobile PDR Is the Future of Dent Repair</a></h3> <p>How mobile paintless dent repair is replacing shop visits with faster, on-site service.</p> </article> <article class="blog-item"> <span class="tag">Comparison</span> <h3><a href="/blog/pdr-vs-body-shop">PDR vs. Traditional Body Shop: Which Is Right for Your Dent?</a></h3> <p>Compare cost, time, paint preservation, and results between PDR and conventional body repair.</p> </article> <article class="blog-item"> <span class="tag">Hail Damage</span> <h3><a href="/blog/hail-damage-repair-guide">Hail Damage Repair: The Complete Guide to Restoring Your Vehicle</a></h3> <p>Everything you need to know about hail damage — what to do after a storm and how PDR restores your car.</p> </article> <article class="blog-item"> <span class="tag">PDR Basics</span> <h3><a href="/blog/paintless-dent-repair-cincinnati">Paintless Dent Repair Cincinnati: What to Know</a></h3> <p>Understand pricing, repair times, and what affects a proper PDR evaluation.</p> </article> </div> </section> ` })}`;
+}, "C:/Users/dreww/OneDrive - Premier Digital Solution/Premier Digital Solutions/Premier Sites/alldentpdr/src/pages/blog/index.astro", void 0);
+
+const $$file = "C:/Users/dreww/OneDrive - Premier Digital Solution/Premier Digital Solutions/Premier Sites/alldentpdr/src/pages/blog/index.astro";
+const $$url = "/blog";
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: $$Index,
+  file: $$file,
+  url: $$url
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };

@@ -1,0 +1,31 @@
+import { c as createComponent } from './astro-component_BTanpJro.mjs';
+import 'piccolore';
+import { l as renderComponent, r as renderTemplate, m as maybeRenderHead } from './entrypoint_Dt5qyCpC.mjs';
+import { $ as $$BaseLayout } from './BaseLayout_BjTZv2mP.mjs';
+
+const $$About = createComponent(($$result, $$props, $$slots) => {
+  const title = "About AllDent PDR | Paintless Dent Repair Experts — Cincinnati-Based, Nationwide";
+  const description = "AllDent PDR specializes in paintless dent repair with mobile service from Cincinnati to anywhere in the U.S. Expert PDR technicians, transparent inspections, and factory-quality hail damage repair results.";
+  const breadcrumbs = [
+    { name: "Home", url: "https://alldentpdr.com" },
+    { name: "About", url: "https://alldentpdr.com/about" }
+  ];
+  return renderTemplate`${renderComponent($$result, "BaseLayout", $$BaseLayout, { "title": title, "description": description, "canonical": "https://alldentpdr.com/about", "breadcrumbs": breadcrumbs }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<section class="page-hero container"> <span class="section-label">About Us</span> <h1>Cincinnati's paintless dent repair specialists</h1> <p>AllDent PDR travels across the United States to repair hail damage on-site — delivering factory-quality paintless dent repair results without the body shop wait.</p> </section> <section class="section alt"> <div class="container grid-3"> <article class="card"> <h3>Storm-ready mobile service</h3> <p>When hail strikes anywhere in the U.S., we deploy to affected areas and repair vehicles on location.</p> </article> <article class="card"> <h3>Clear communication</h3> <p>Accurate inspections, realistic timelines, and straight answers from start to finish.</p> </article> <article class="card"> <h3>Cincinnati home base</h3> <p>Proudly rooted in Cincinnati with the ability to serve drivers and dealerships nationwide.</p> </article> </div> </section> <section class="section"> <div class="container"> <span class="section-label">Why PDR</span> <h2>Why choose paintless dent repair?</h2> <p>
+Paintless dent repair preserves your factory paint, minimizes vehicle downtime, and typically costs less than conventional body repair.
+        PDR is the preferred repair method when your paint surface is intact — it maintains your vehicle's original finish and protects resale value.
+</p> </div> </section> <section class="section alt"> <div class="container"> <h2>Where we serve</h2> <p>AllDent PDR is based in Cincinnati but our mobile service reaches anywhere storms hit across the United States.</p> <div class="grid-3"> <article class="card"> <h3>Cincinnati, OH</h3> <p>Our home base. Local Cincinnati and Northern Kentucky customers can schedule anytime.</p> </article> <article class="card"> <h3>Storm-affected areas</h3> <p>We travel to hail-impacted regions across the U.S. to provide on-site repair after major storms.</p> </article> <article class="card"> <h3>Nationwide coverage</h3> <p>From the Midwest to the South and beyond — wherever hail damage happens, we can be there.</p> </article> </div> <div class="button-row" style="justify-content: center; margin-top: 32px;"> <a class="button primary" href="/contact">Request an Inspection</a> <a class="button ghost" href="/services">View Services</a> </div> </div> </section> <section class="cta-banner"> <div class="container"> <h2>Need paintless dent repair?</h2> <p>Request an inspection from AllDent PDR — Cincinnati's mobile PDR experts serving the entire U.S.</p> <div class="button-row" style="justify-content: center;"> <a class="button primary" href="/contact">Contact Us Today</a> <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a> </div> </div> </section> ` })}`;
+}, "C:/Users/dreww/OneDrive - Premier Digital Solution/Premier Digital Solutions/Premier Sites/alldentpdr/src/pages/about.astro", void 0);
+
+const $$file = "C:/Users/dreww/OneDrive - Premier Digital Solution/Premier Digital Solutions/Premier Sites/alldentpdr/src/pages/about.astro";
+const $$url = "/about";
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: $$About,
+  file: $$file,
+  url: $$url
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#f6efe7"/>
+  
+  <!-- Branded Box -->
+  <rect x="150" y="115" width="400" height="400" rx="30" fill="#b0522b"/>
+  
+  <!-- Logo Text "AD" -->
+  <text x="350" y="380" font-family="Georgia, serif" font-size="220" font-weight="bold" fill="#fffaf4" text-anchor="middle">AD</text>
+  
+  <!-- Company Name & Tagline -->
+  <text x="700" y="200" font-family="Georgia, serif" font-size="72" font-weight="bold" fill="#1a1410">AllDent</text>
+  <text x="700" y="270" font-family="system-ui, sans-serif" font-size="48" fill="#b0522b" font-weight="600">Paintless Dent Repair</text>
+  
+  <!-- Subtext -->
+  <text x="700" y="380" font-family="system-ui, sans-serif" font-size="32" fill="#4a3f36">Mobile Service • Nationwide</text>
+  <text x="700" y="430" font-family="system-ui, sans-serif" font-size="32" fill="#4a3f36">Cincinnati-Based</text>
+</svg>

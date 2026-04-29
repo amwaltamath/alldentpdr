@@ -1,0 +1,119 @@
+{
+	"version": 3,
+	"routes": [
+		{
+			"src": "^/(.*)/$",
+			"headers": {
+				"Location": "/$1"
+			},
+			"status": 308
+		},
+		{
+			"handle": "filesystem"
+		},
+		{
+			"src": "^/_astro/(.*)$",
+			"headers": {
+				"cache-control": "public, max-age=31536000, immutable"
+			},
+			"continue": true
+		},
+		{
+			"src": "^/_server-islands/([^/]+?)$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/_image$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/about$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/contact$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/send-registration-email$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/api/send-status-email$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/bedford-door-ding-repair$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/bedford-hail-damage-repair$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/bedford-paintless-dent-repair$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/blog/bedford-ohio-hail-damage-repair$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/blog/hail-damage-insurance-claim-guide$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/blog/hail-damage-repair-guide$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/blog/mobile-pdr-future-of-dent-repair$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/blog/paintless-dent-repair-cincinnati$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/blog/pdr-vs-body-shop$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/blog$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/contact$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/portal/admin-dashboard$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/portal/customer-login$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/register$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/services$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/404/?$",
+			"dest": "_render"
+		},
+		{
+			"src": "^/.*$",
+			"dest": "_render",
+			"status": 404
+		}
+	]
+}

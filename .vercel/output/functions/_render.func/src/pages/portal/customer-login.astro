@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CustomerPortal from '../../components/CustomerPortal.jsx';
+
+const title = 'Customer Login | Vehicle Status | AllDent PDR';
+const description = 'Customer portal login for AllDent PDR. Track your vehicle from registration through completion in real time.';
+const canonical = 'https://alldentpdr.com/portal/customer-login';
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Customer Login', url: canonical }
+];
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} noindex={true}>
+  <CustomerPortal client:load />
+</BaseLayout>

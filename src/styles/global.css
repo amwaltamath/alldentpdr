@@ -2334,3 +2334,248 @@ label {
     padding: 44px 0;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   VIN Scanner modal
+═══════════════════════════════════════════════════════════════ */
+.vin-scanner-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,20,16,.72);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.vin-scanner-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.35);
+}
+
+.vin-scanner-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.vin-scanner-head h3 { margin: 0; font-size: 17px; }
+
+.vin-scanner-hint {
+  font-size: 13px;
+  color: var(--muted, #9e8f84);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+/* Scanning reticle overlay */
+.vin-scan-reticle {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.5) 30%, transparent 30%, transparent 70%, rgba(0,0,0,.5) 70%),
+    linear-gradient(to right,  rgba(0,0,0,.5) 10%, transparent 10%, transparent 90%, rgba(0,0,0,.5) 90%);
+  box-shadow: inset 0 0 0 2px rgba(176,82,43,.8);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Quote builder
+═══════════════════════════════════════════════════════════════ */
+.quote-wrap { display: flex; flex-direction: column; gap: 0; }
+
+/* VIN scan row */
+.quote-vin-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.btn-scan-vin {
+  white-space: nowrap;
+  padding: 9px 16px !important;
+  font-size: 13px !important;
+  height: 42px;
+  margin-bottom: 0 !important;
+}
+.quote-vin-input {
+  text-transform: uppercase;
+  font-family: monospace;
+  letter-spacing: .06em;
+}
+
+/* Method legend badges */
+.quote-method-legend {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.qlabel {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: .04em;
+}
+.qlabel.pdr { background: #e6f2ec; color: #2d6b47; }
+.qlabel.ri  { background: #fff3e0; color: #b56a00; }
+.qlabel.rr  { background: #fdecea; color: #c0392b; }
+
+/* Panel sections */
+.quote-panel-wrap { padding: 0 20px 20px; }
+@media (max-width: 720px) { .quote-panel-wrap { padding: 0 12px 16px; } }
+
+.quote-panel-section { margin-top: 20px; }
+.quote-panel-section:first-child { margin-top: 8px; }
+
+.quote-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted, #9e8f84);
+  padding: 6px 0 4px;
+  border-bottom: 1px solid var(--line, #e8e2db);
+  margin-bottom: 2px;
+}
+
+/* Panel table */
+.quote-panel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.quote-panel-table thead th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted, #9e8f84);
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--line, #e8e2db);
+}
+
+.quote-panel-row td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--line, #e8e2db);
+  vertical-align: middle;
+  color: var(--muted, #9e8f84);
+  transition: background .15s;
+}
+.quote-panel-row.is-affected td {
+  color: var(--ink, #1a1410);
+  background: var(--sky, #eef5fb);
+}
+.quote-panel-row:last-child td { border-bottom: none; }
+
+.quote-panel-name { font-weight: 500; }
+.quote-panel-row.is-affected .quote-panel-name { font-weight: 600; }
+
+/* Inputs inside table */
+.quote-select {
+  margin: 0 !important;
+  padding: 5px 22px 5px 7px !important;
+  font-size: 12.5px !important;
+  border-radius: 6px !important;
+  width: 100%;
+}
+.quote-num-input {
+  margin: 0 !important;
+  padding: 5px 8px !important;
+  font-size: 13px !important;
+  border-radius: 6px !important;
+  width: 56px;
+  text-align: center;
+}
+.quote-price-cell {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.quote-price-prefix {
+  font-size: 13px;
+  color: var(--muted, #9e8f84);
+  font-weight: 600;
+}
+.quote-price-input {
+  margin: 0 !important;
+  padding: 5px 6px !important;
+  font-size: 13px !important;
+  border-radius: 6px !important;
+  width: 72px;
+  text-align: right;
+}
+
+/* Total / footer */
+.quote-footer-panel .panel-body { display: none; }
+.quote-footer-inner {
+  display: flex;
+  gap: 24px;
+  padding: 20px 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.quote-total-box {
+  background: var(--card, #fffbf6);
+  border: 1px solid var(--line, #e8e2db);
+  border-radius: 12px;
+  padding: 20px 24px;
+  min-width: 200px;
+  text-align: center;
+}
+.quote-total-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted, #9e8f84);
+}
+.quote-total-amount {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--rust, #b0522b);
+  margin: 6px 0 2px;
+  font-family: Georgia, serif;
+}
+.quote-total-meta {
+  font-size: 12px;
+  color: var(--muted, #9e8f84);
+}
+
+/* ── Print styles ──────────────────────────────────────────── */
+@media print {
+  .dash-aside,
+  .dash-topbar,
+  .dash-hamburger,
+  .dash-overlay,
+  .quote-footer-inner button,
+  .quote-method-legend,
+  .panel-head .button { display: none !important; }
+
+  .dash { display: block !important; }
+  .dash-main { margin: 0 !important; padding: 0 !important; }
+  .dash-content { padding: 0 !important; }
+
+  body { background: #fff !important; }
+
+  .panel {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    page-break-inside: avoid;
+  }
+
+  .quote-panel-table thead th,
+  .quote-panel-row td {
+    padding: 5px 6px;
+  }
+
+  /* only print the active quote */
+  .dash-content > * { display: none; }
+  .dash-content > .quote-wrap { display: flex !important; }
+}
