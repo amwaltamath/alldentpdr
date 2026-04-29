@@ -990,6 +990,162 @@ function QuoteView({ vehicles }) {
     }
   };
 
+  const handleExportPDF = () => {
+    const affected = PDR_PANELS.filter((p) => quote.panels[p.id].checked);
+    const dateStr  = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const quoteNum = `AQ-${Date.now().toString().slice(-6)}`;
+    const vehicle  = [quote.year, quote.make, quote.model].filter(Boolean).join(' ') || '—';
+
+    const methodBadge = (m) => {
+      const colors = { PDR: '#2d6b47', 'R&I': '#b56a00', 'R&R': '#c0392b' };
+      const bg     = { PDR: '#e6f2ec', 'R&I': '#fff3e0', 'R&R': '#fdecea' };
+      return `<span style="display:inline-block;background:${bg[m]||'#f0f0f0'};color:${colors[m]||'#333'};padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.03em">${m}</span>`;
+    };
+
+    const panelRows = affected.map((p) => {
+      const pv = quote.panels[p.id];
+      const isRR = pv.method === 'R&R';
+      return `
+        <tr>
+          <td>${p.label}</td>
+          <td style="text-align:center">${methodBadge(pv.method)}</td>
+          <td style="text-align:center">${!isRR && pv.dents ? pv.dents : '—'}</td>
+          <td style="text-align:center">${!isRR && pv.size ? pv.size : '—'}</td>
+          <td style="text-align:right;font-weight:600">${pv.price ? `$${parseFloat(pv.price).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}` : '—'}</td>
+        </tr>`;
+    }).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>AllDent PDR Estimate – ${quoteNum}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
+    /* Header */
+    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #b0522b;margin-bottom:24px}
+    .hd-brand{display:flex;flex-direction:column;gap:2px}
+    .hd-brand strong{font-size:22px;font-weight:800;color:#b0522b;letter-spacing:-.5px}
+    .hd-brand span{font-size:12px;color:#888}
+    .hd-meta{text-align:right;line-height:1.6}
+    .hd-meta .q-num{font-size:18px;font-weight:700;color:#b0522b}
+    /* Info grid */
+    .info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+    .info-box{background:#fffbf6;border:1px solid #e8e2db;border-radius:8px;padding:12px 14px}
+    .info-box h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9e8f84;margin-bottom:6px}
+    .info-box p{font-size:12.5px;line-height:1.6;color:#1a1410}
+    .info-box p span{color:#9e8f84}
+    /* Table */
+    h3.section{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9e8f84;padding-bottom:6px;border-bottom:1px solid #e8e2db;margin-bottom:0}
+    table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:12.5px}
+    thead th{background:#b0522b;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.05em}
+    thead th:last-child{text-align:right}
+    tbody tr:nth-child(even) td{background:#fffbf6}
+    tbody td{padding:7px 10px;border-bottom:1px solid #e8e2db;vertical-align:middle}
+    .total-row td{font-weight:700;font-size:14px;background:#fff3ee!important;border-top:2px solid #b0522b;padding:10px}
+    .total-row td:last-child{color:#b0522b;font-size:18px}
+    /* Footer */
+    .notes-box{background:#fffbf6;border:1px solid #e8e2db;border-radius:8px;padding:14px;margin-bottom:24px}
+    .notes-box h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9e8f84;margin-bottom:6px}
+    .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px}
+    .sig-line{border-top:1px solid #1a1410;padding-top:6px;font-size:11px;color:#888;margin-top:40px}
+    .footer{font-size:11px;color:#9e8f84;text-align:center;padding-top:16px;border-top:1px solid #e8e2db;line-height:1.7}
+    @media print{body{padding:16px 20px}}
+  </style>
+</head>
+<body>
+  <div class="hd">
+    <div class="hd-brand">
+      <strong>AllDent PDR</strong>
+      <span>Mobile Paintless Dent Repair</span>
+      <span style="margin-top:4px;color:#555">1-855-425-5336 · alldentpdr.com</span>
+    </div>
+    <div class="hd-meta">
+      <div class="q-num">ESTIMATE #${quoteNum}</div>
+      <div style="font-size:12px;color:#555;margin-top:4px">Date: ${dateStr}</div>
+      <div style="font-size:12px;color:#555">Valid for 30 days</div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box">
+      <h4>Customer</h4>
+      <p>${quote.customerName || '<span>—</span>'}</p>
+    </div>
+    <div class="info-box">
+      <h4>Vehicle</h4>
+      <p>${vehicle}</p>
+      ${quote.color  ? `<p><span>Color: </span>${quote.color}</p>` : ''}
+      ${quote.plate  ? `<p><span>Plate: </span>${quote.plate}</p>` : ''}
+      ${quote.vin    ? `<p style="font-family:monospace;font-size:11px"><span>VIN: </span>${quote.vin}</p>` : ''}
+    </div>
+    <div class="info-box">
+      <h4>Insurance</h4>
+      <p>${quote.insuranceCompany || '<span>—</span>'}</p>
+      ${quote.claimNumber ? `<p><span>Claim #: </span>${quote.claimNumber}</p>` : ''}
+    </div>
+  </div>
+
+  <h3 class="section">Panel Assessment — Affected Panels Only</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Panel</th>
+        <th style="text-align:center">Method</th>
+        <th style="text-align:center">Dents</th>
+        <th style="text-align:center">Size</th>
+        <th style="text-align:right">Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${panelRows || '<tr><td colspan="5" style="text-align:center;color:#9e8f84;padding:20px">No panels marked as affected.</td></tr>'}
+      <tr class="total-row">
+        <td colspan="4">Estimated Total</td>
+        <td style="text-align:right">$${total.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  ${quote.notes ? `
+  <div class="notes-box">
+    <h4>Notes / Exclusions</h4>
+    <p style="font-size:12.5px;line-height:1.6;white-space:pre-wrap">${quote.notes.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
+  </div>` : ''}
+
+  <div class="sig-grid">
+    <div>
+      <div class="sig-line">Customer Signature</div>
+    </div>
+    <div>
+      <div class="sig-line">Date</div>
+    </div>
+    <div>
+      <div class="sig-line">AllDent PDR Technician</div>
+    </div>
+    <div>
+      <div class="sig-line">Date</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>AllDent PDR · Mobile Paintless Dent Repair</strong><br/>
+    1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com<br/>
+    This estimate is valid for 30 days from the date above. Prices subject to change upon physical inspection.<br/>
+    Method key: PDR = Paintless Dent Repair &nbsp;|&nbsp; R&amp;I = Remove &amp; Install &nbsp;|&nbsp; R&amp;R = Remove &amp; Replace
+  </div>
+
+  <script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank', 'width=900,height=700');
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+    }
+  };
+
   return (
     <div className="quote-wrap" id="quote-print-area">
       {scanning && <VinScanner onScan={handleVinScan} onClose={() => setScanning(false)} />}
@@ -1003,7 +1159,7 @@ function QuoteView({ vehicles }) {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="button" className="button ghost sm" onClick={handleClear}>Clear</button>
-            <button type="button" className="button primary sm" onClick={() => window.print()}>Print / Save PDF</button>
+            <button type="button" className="button primary sm" onClick={handleExportPDF}>Export PDF</button>
           </div>
         </div>
 
@@ -1169,8 +1325,8 @@ function QuoteView({ vehicles }) {
             <div className="quote-total-label">Estimated Total</div>
             <div className="quote-total-amount">${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             <div className="quote-total-meta">{affectedCount} panel{affectedCount !== 1 ? 's' : ''} · AllDent PDR</div>
-            <button type="button" className="button primary" style={{ width: '100%', marginTop: 14 }} onClick={() => window.print()}>
-              Print / Save PDF
+            <button type="button" className="button primary" style={{ width: '100%', marginTop: 14 }} onClick={handleExportPDF}>
+              Export PDF
             </button>
           </div>
         </div>
