@@ -945,7 +945,7 @@ function buildBlankPanels() {
 
 const BLANK_QUOTE = {
   vin: '', year: '', make: '', model: '', color: '', plate: '',
-  customerName: '', insuranceCompany: '', claimNumber: '',
+  customerName: '', customerEmail: '', insuranceCompany: '', claimNumber: '',
   panels: buildBlankPanels(),
   notes: '',
 };
@@ -1209,10 +1209,12 @@ function PricingView() {
 }
 
 function QuoteView({ vehicles }) {
-  const [quote, setQuote]     = useState(BLANK_QUOTE);
+  const [quote, setQuote]       = useState(BLANK_QUOTE);
   const [scanning, setScanning] = useState(false);
   const [pricing, setPricingState] = useState(() => loadPricing());
   const [activeTier, setActiveTier] = useState(() => loadPricing().activeTier || 'Cash');
+  const [sending, setSending]   = useState(false);
+  const [sendMsg, setSendMsg]   = useState(null); // { type: 'ok'|'err', text }
 
   // Refresh pricing whenever this view mounts (in case admin updated it)
   useEffect(() => {
@@ -1294,6 +1296,46 @@ function QuoteView({ vehicles }) {
   const handleClear = () => {
     if (window.confirm('Clear this quote and start over?')) {
       setQuote(BLANK_QUOTE);
+      setSendMsg(null);
+    }
+  };
+
+  const handleSendToCustomer = async () => {
+    if (!quote.customerEmail) {
+      setSendMsg({ type: 'err', text: 'Enter a customer email address first.' });
+      return;
+    }
+    setSending(true);
+    setSendMsg(null);
+    try {
+      const affected = PDR_PANELS.filter((p) => quote.panels[p.id].checked);
+      const res = await fetch('/api/send-quote-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: quote.customerName,
+          customerEmail: quote.customerEmail,
+          year: quote.year, make: quote.make, model: quote.model,
+          color: quote.color, plate: quote.plate, vin: quote.vin,
+          insuranceCompany: quote.insuranceCompany, claimNumber: quote.claimNumber,
+          notes: quote.notes,
+          total,
+          panels: affected.map((p) => ({
+            label: p.label,
+            method: quote.panels[p.id].method,
+            dents: quote.panels[p.id].dents,
+            size: quote.panels[p.id].size,
+            price: quote.panels[p.id].price,
+          })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Send failed');
+      setSendMsg({ type: 'ok', text: `Quote sent to ${quote.customerEmail}` });
+    } catch (err) {
+      setSendMsg({ type: 'err', text: err.message || 'Failed to send — try again.' });
+    } finally {
+      setSending(false);
     }
   };
 
@@ -1464,9 +1506,17 @@ function QuoteView({ vehicles }) {
             <h3>New Quote</h3>
             <p className="meta">Damage assessment &amp; price estimate</p>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            {sendMsg && (
+              <span style={{ fontSize: 13, color: sendMsg.type === 'ok' ? 'var(--sage,#4a7a5c)' : 'var(--rust,#b0522b)' }}>
+                {sendMsg.text}
+              </span>
+            )}
             <button type="button" className="button ghost sm" onClick={handleClear}>Clear</button>
-            <button type="button" className="button primary sm" onClick={handleExportPDF}>Export PDF</button>
+            <button type="button" className="button ghost sm" onClick={handleExportPDF}>Export PDF</button>
+            <button type="button" className="button primary sm" onClick={handleSendToCustomer} disabled={sending}>
+              {sending ? 'Sending…' : '✉ Send to Customer'}
+            </button>
           </div>
         </div>
 
@@ -1525,6 +1575,10 @@ function QuoteView({ vehicles }) {
             <div><label>Color</label><input type="text" value={quote.color} onChange={setField('color')} /></div>
             <div><label>Plate</label><input type="text" value={quote.plate} onChange={setField('plate')} style={{ textTransform: 'uppercase' }} /></div>
             <div><label>Customer name</label><input type="text" value={quote.customerName} onChange={setField('customerName')} /></div>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <label>Customer email <span style={{ color: 'var(--muted)', fontWeight: 400, fontSize: 12 }}>(required to send quote)</span></label>
+            <input type="email" value={quote.customerEmail} onChange={setField('customerEmail')} placeholder="customer@example.com" />
           </div>
           <div className="form-grid-2" style={{ marginTop: 8 }}>
             <div><label>Insurance company</label><input type="text" value={quote.insuranceCompany} onChange={setField('insuranceCompany')} /></div>
@@ -1645,8 +1699,11 @@ function QuoteView({ vehicles }) {
             <div className="quote-total-label">Estimated Total</div>
             <div className="quote-total-amount">${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             <div className="quote-total-meta">{affectedCount} panel{affectedCount !== 1 ? 's' : ''} · AllDent PDR</div>
-            <button type="button" className="button primary" style={{ width: '100%', marginTop: 14 }} onClick={handleExportPDF}>
+            <button type="button" className="button ghost" style={{ width: '100%', marginTop: 14 }} onClick={handleExportPDF}>
               Export PDF
+            </button>
+            <button type="button" className="button primary" style={{ width: '100%', marginTop: 8 }} onClick={handleSendToCustomer} disabled={sending}>
+              {sending ? 'Sending…' : '✉ Send to Customer'}
             </button>
           </div>
         </div>
