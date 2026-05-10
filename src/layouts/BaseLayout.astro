@@ -42,9 +42,9 @@ const gaId: string = 'G-T7RLXD05RW';
     <meta name="google-site-verification" content="UdUBGJ6CT7WTj7DlCdAeVQ0JqiMupWXbQ9hrj3ZiUwY" />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
     <meta name="geo.region" content="US-OH" />
-    <meta name="geo.placename" content="Cincinnati" />
-    <meta name="geo.position" content="39.1031;-84.5120" />
-    <meta name="ICBM" content="39.1031, -84.5120" />
+    <meta name="geo.placename" content="Cleveland" />
+    <meta name="geo.position" content="41.3960;-81.6100" />
+    <meta name="ICBM" content="41.3960, -81.6100" />
     {type === 'article' && publishedDate && (
       <meta property="article:published_time" content={publishedDate} />
     )}
@@ -69,30 +69,32 @@ const gaId: string = 'G-T7RLXD05RW';
           "@context": "https://schema.org",
           "@type": "AutoRepair",
           "name": "AllDent PDR",
-          "description": "Mobile paintless dent repair based in Cincinnati. We travel across the U.S. to repair hail storm damage on-site.",
+          "description": "Expert paintless dent repair and hail damage repair shop serving Bedford, OH, Cleveland, and all of Northeast Ohio. Mobile service also available nationwide.",
           "url": "https://alldentpdr.com",
           "telephone": "1-855-425-5336",
           "email": "alldentpdr@gmail.com",
           "address": {
             "@type": "PostalAddress",
-            "addressLocality": "Cincinnati",
+            "streetAddress": "7695 Granger Rd",
+            "addressLocality": "Cleveland",
             "addressRegion": "OH",
+            "postalCode": "44125",
             "addressCountry": "US"
           },
           "areaServed": [
-            {
-              "@type": "City",
-              "name": "Cincinnati"
-            },
-            {
-              "@type": "Country",
-              "name": "United States"
-            }
+            { "@type": "City", "name": "Bedford" },
+            { "@type": "City", "name": "Cleveland" },
+            { "@type": "City", "name": "Bedford Heights" },
+            { "@type": "City", "name": "Maple Heights" },
+            { "@type": "City", "name": "Garfield Heights" },
+            { "@type": "City", "name": "Solon" },
+            { "@type": "City", "name": "Warrensville Heights" },
+            { "@type": "Country", "name": "United States" }
           ],
           "geo": {
             "@type": "GeoCoordinates",
-            "latitude": 39.1031,
-            "longitude": -84.5120
+            "latitude": 41.3960,
+            "longitude": -81.6100
           },
           "hasOfferCatalog": {
             "@type": "OfferCatalog",
@@ -160,6 +162,7 @@ const gaId: string = 'G-T7RLXD05RW';
         }))
       })} />
     )}
+    <slot name="head" />
   </head>
   <body>
     {!bare && (
@@ -169,11 +172,12 @@ const gaId: string = 'G-T7RLXD05RW';
             <img src="/images/logo.jpg" alt="AllDent PDR - Paintless Dent Repair Cincinnati" class="logo-img" />
             <div class="logo-text">
               <span class="logo-mark">AllDent PDR</span>
-              <span class="logo-sub">Mobile · Nationwide</span>
+              <span class="logo-sub">Bedford, OH Shop &amp; Mobile</span>
             </div>
           </a>
           <nav class="nav">
             <a href="/services">Services</a>
+            <a href="/service-area">Service Area</a>
             <a href="/about">About</a>
             <a href="/blog">Blog</a>
             <a href="/register">Vehicle Registration</a>
@@ -197,17 +201,28 @@ const gaId: string = 'G-T7RLXD05RW';
               <img src="/images/logo.jpg" alt="AllDent PDR" class="logo-img" />
               <div class="logo-text">
                 <span class="logo-mark" style="color:#fff;">AllDent PDR</span>
-                <span class="logo-sub">Mobile · Nationwide</span>
+                <span class="logo-sub">Bedford, OH Shop &amp; Mobile</span>
               </div>
             </div>
-            <p>Mobile paintless dent repair based in Cincinnati, OH. We travel nationwide to restore hail damage, door dings, and minor collision dents — preserving your factory finish.</p>
+            <p>Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, OH and all of Northeast Ohio. Mobile service also available nationwide for hail damage, door dings, and minor collision dents.</p>
           </div>
           <div>
             <h5>Services</h5>
             <p><a href="/services">Paintless Dent Repair</a></p>
             <p><a href="/services">Hail Damage Repair</a></p>
             <p><a href="/services">Door Ding Removal</a></p>
+            <p><a href="/hail-damage-repair-bedford-ohio">Bedford OH Hail Repair Shop</a></p>
+            <p><a href="/service-area">All Service Areas</a></p>
             <p><a href="/blog">PDR Blog</a></p>
+          </div>
+          <div>
+            <h5>Nearby Cities</h5>
+            <p><a href="/hail-damage-repair/garfield-heights">Garfield Heights</a></p>
+            <p><a href="/hail-damage-repair/maple-heights">Maple Heights</a></p>
+            <p><a href="/hail-damage-repair/parma">Parma</a></p>
+            <p><a href="/hail-damage-repair/independence">Independence</a></p>
+            <p><a href="/hail-damage-repair/solon">Solon</a></p>
+            <p><a href="/hail-damage-repair/warrensville-heights">Warrensville Heights</a></p>
           </div>
           <div>
             <h5>Contact</h5>
@@ -218,15 +233,21 @@ const gaId: string = 'G-T7RLXD05RW';
             <p><a href="/portal/admin-dashboard">Admin</a></p>
           </div>
           <div>
+            <h5>Shop Location</h5>
+            <p>7695 Granger Rd</p>
+            <p>Cleveland, OH 44125</p>
+            <p>(Serving Bedford &amp; NE Ohio)</p>
+          </div>
+          <div>
             <h5>Hours</h5>
             <p>Mon – Fri · 8am – 6pm</p>
             <p>Sat · 9am – 2pm</p>
-            <p>Cincinnati, OH &amp; Nationwide</p>
+            <p>Shop &amp; Mobile Nationwide</p>
           </div>
         </div>
         <div class="container footer-bottom">
-          <span>© 2026 AllDent PDR · Paintless Dent Repair Cincinnati</span>
-          <span><a href="/about">About</a> · <a href="/blog">Blog</a> · <a href="/contact">Contact</a></span>
+          <span>© 2026 AllDent PDR · Hail Damage Repair Shop — Bedford &amp; Cleveland, OH</span>
+          <span><a href="/about">About</a> · <a href="/service-area">Service Area</a> · <a href="/blog">Blog</a> · <a href="/contact">Contact</a></span>
         </div>
       </footer>
     )}

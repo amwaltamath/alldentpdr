@@ -1,0 +1,351 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { serviceAreas } from '../../data/serviceAreas';
+import type { CityData } from '../../data/serviceAreas';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return serviceAreas.map(city => ({
+    params: { city: city.slug },
+    props: { city },
+  }));
+}
+
+const { city } = Astro.props as { city: CityData };
+
+const shopAddress = '7695 Granger Rd, Cleveland, OH 44125';
+const shopPhone = '1-855-425-5336';
+const shopEmail = 'alldentpdr@gmail.com';
+
+const title = `Hail Damage Repair ${city.name} Ohio | AllDent PDR Shop | ${shopAddress}`;
+const description = `Hail damage repair near ${city.name}, OH — AllDent PDR's shop is only ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent repair, insurance billing, free estimates. Call ${shopPhone}.`;
+const canonical = `https://alldentpdr.com/hail-damage-repair/${city.slug}`;
+
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Service Area', url: 'https://alldentpdr.com/service-area' },
+  { name: `${city.name} Hail Damage Repair`, url: canonical },
+];
+
+const faqItems = [
+  {
+    question: `Where is the nearest hail damage repair shop to ${city.name}, Ohio?`,
+    answer: `AllDent PDR is located at 7695 Granger Rd, Cleveland, OH 44125 — approximately ${city.distanceMiles} miles and ${city.driveMinutes} minutes from ${city.name}. We offer free damage assessments and insurance direct billing.`,
+  },
+  {
+    question: `Does AllDent PDR serve ${city.name}, OH?`,
+    answer: `Yes! ${city.name} is one of our primary service communities. We serve ${city.name} and surrounding ${city.county} County areas including ${city.nearbyShops.join(', ')} from our Cleveland shop at ${shopAddress}.`,
+  },
+  {
+    question: `Does insurance cover hail damage repair for ${city.name} drivers?`,
+    answer: `In most cases, yes. Hail damage is covered under the comprehensive portion of your auto insurance policy. AllDent PDR works directly with State Farm, Allstate, Progressive, GEICO, Nationwide, and most other major carriers. You typically only pay your deductible.`,
+  },
+  {
+    question: `How long does hail damage repair take for ${city.name} vehicles?`,
+    answer: `Light hail repairs on 1–3 panels are typically completed in one day. Moderate to severe hail covering multiple panels usually takes 1–3 days. We provide a written timeline at the time of your inspection.`,
+  },
+  {
+    question: `Do I have to drop my car off at the shop, or can you come to ${city.name}?`,
+    answer: `Both options are available. Our shop at ${shopAddress} is only ${city.driveMinutes} minutes from ${city.name} and accepts walk-ins. For large hail events, we also offer mobile service and can come directly to your location.`,
+  },
+];
+
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': ['AutoRepair', 'LocalBusiness'],
+  name: `AllDent PDR — Hail Damage Repair serving ${city.name}, OH`,
+  description: `Expert paintless dent repair and hail damage repair serving ${city.name}, OH from our shop at ${shopAddress}.`,
+  url: canonical,
+  telephone: shopPhone,
+  email: shopEmail,
+  image: 'https://alldentpdr.com/images/logo-branded.svg',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '7695 Granger Rd',
+    addressLocality: 'Cleveland',
+    addressRegion: 'OH',
+    postalCode: '44125',
+    addressCountry: 'US',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 41.3960,
+    longitude: -81.6100,
+  },
+  openingHoursSpecification: [
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '08:00', closes: '18:00' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday'], opens: '09:00', closes: '14:00' },
+  ],
+  areaServed: [
+    city.name,
+    ...city.nearbyShops,
+    'Cleveland, OH',
+    'Bedford, OH',
+  ],
+  priceRange: '$$',
+  paymentAccepted: 'Cash, Credit Card, Insurance',
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '5',
+    reviewCount: '47',
+    bestRating: '5',
+    worstRating: '1',
+  },
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  breadcrumbs={breadcrumbs}
+  faqItems={faqItems}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
+  </Fragment>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="hero-pill">
+          Serving {city.name}, OH · {city.distanceMiles} mi from shop · {city.driveMinutes} min drive
+        </span>
+        <h1>Hail damage repair near {city.name}, Ohio</h1>
+        <p>
+          {city.tagline} AllDent PDR at <strong>{shopAddress}</strong> restores
+          hail-damaged vehicles with certified paintless dent repair — no repainting,
+          insurance approved, free written estimates before any work begins.
+        </p>
+        <div class="button-row">
+          <a class="button primary" href="/contact">Schedule at Our Shop</a>
+          <a class="button ghost" href={`tel:${shopPhone.replace(/-/g,'')}`}>Call {shopPhone}</a>
+        </div>
+        <p style="margin-top:16px;font-size:0.95rem;opacity:0.85;">
+          📍 {shopAddress} &nbsp;|&nbsp; Mon–Fri 8am–6pm · Sat 9am–2pm
+        </p>
+      </div>
+      <div class="hero-card">
+        <h3>Why {city.name} drivers choose AllDent PDR</h3>
+        <ul>
+          <li>Only {city.driveMinutes} minutes from {city.name}</li>
+          <li>Certified paintless dent repair technicians</li>
+          <li>Factory OEM finish preserved — no repaint</li>
+          <li>Insurance-approved repairs with direct billing</li>
+          <li>Written estimates before any work begins</li>
+          <li>Walk-ins welcome · Free damage assessments</li>
+        </ul>
+        <p class="tag">{shopAddress}</p>
+        <p>Trusted by {city.county} County drivers, dealerships, and insurance partners.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust strip -->
+  <div class="trust-strip">
+    <div class="trust-item"><strong>{city.driveMinutes} min</strong><span>From {city.name}</span></div>
+    <div class="trust-item"><strong>1,000+</strong><span>Vehicles Repaired</span></div>
+    <div class="trust-item"><strong>5★</strong><span>Customer Rating</span></div>
+    <div class="trust-item"><strong>Insurance</strong><span>Approved Repairs</span></div>
+  </div>
+
+  <!-- Local detail -->
+  <section class="section">
+    <div class="container">
+      <span class="section-label">Serving {city.name}</span>
+      <h2>Your local hail damage repair shop near {city.name}, OH</h2>
+      <p>{city.uniqueNote}</p>
+      <p>
+        Drivers in {city.name} can reach our shop via a quick {city.driveMinutes}-minute drive to
+        <strong>{shopAddress}</strong>. We also offer mobile service for large-scale hail events — 
+        just tell us your location when you contact us.
+      </p>
+      <div class="grid-3" style="margin-top:36px;">
+        <article class="card">
+          <h3>Free damage assessment</h3>
+          <p>Walk in or schedule an inspection. Our technician evaluates every panel under LED lighting — no charge, no pressure.</p>
+        </article>
+        <article class="card">
+          <h3>Direct insurance billing</h3>
+          <p>We handle your claim paperwork with most major carriers. Most {city.name} drivers only pay their deductible.</p>
+        </article>
+        <article class="card">
+          <h3>Factory paint preserved</h3>
+          <p>Paintless dent repair keeps your OEM finish intact — protecting {city.name} vehicle resale values from paint-flag depreciation.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop details -->
+  <section class="section alt">
+    <div class="container">
+      <span class="section-label">Shop Info</span>
+      <h2>Visit AllDent PDR — {city.driveMinutes} minutes from {city.name}</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;" class="responsive-two-col">
+        <div>
+          <p>
+            Dropping off your vehicle from {city.name} is quick and easy. Our shop sits along Granger Rd
+            in Cleveland with easy access from I-480, I-77, and Rockside Rd.
+          </p>
+          <p><strong>Address:</strong><br />7695 Granger Rd<br />Cleveland, OH 44125</p>
+          <p><strong>Hours:</strong><br />Mon–Fri: 8:00am – 6:00pm<br />Saturday: 9:00am – 2:00pm<br />Sunday: Closed</p>
+          <p>
+            <strong>Phone:</strong>{' '}
+            <a href={`tel:${shopPhone.replace(/-/g,'')}`} style="color:var(--rust);">{shopPhone}</a>
+          </p>
+          <p>
+            <strong>Email:</strong>{' '}
+            <a href={`mailto:${shopEmail}`} style="color:var(--rust);">{shopEmail}</a>
+          </p>
+          <div class="button-row" style="margin-top:20px;">
+            <a class="button primary" href="/contact">Schedule a Visit</a>
+            <a class="button ghost" href={`https://maps.google.com/?q=7695+Granger+Rd+Cleveland+OH+44125`} target="_blank" rel="noopener">Get Directions</a>
+          </div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden;border-radius:16px;">
+          <iframe
+            title={`AllDent PDR shop — hail damage repair near ${city.name} OH`}
+            src="https://maps.google.com/maps?q=7695+Granger+Rd+Cleveland+OH+44125&output=embed"
+            width="100%"
+            height="300"
+            style="border:0;display:block;"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Process -->
+  <section class="section">
+    <div class="container">
+      <span class="section-label">How It Works</span>
+      <h2>Hail damage repair process for {city.name} drivers</h2>
+      <div class="grid-3">
+        <article class="card">
+          <h3>1. Drive in or call ahead</h3>
+          <p>Walk-ins are welcome at our Cleveland shop — only {city.driveMinutes} minutes from {city.name}. Call {shopPhone} to reserve a time.</p>
+        </article>
+        <article class="card">
+          <h3>2. Free inspection & estimate</h3>
+          <p>We inspect every panel under specialized lighting and provide a written estimate. We also document the damage for your insurance claim.</p>
+        </article>
+        <article class="card">
+          <h3>3. Expert PDR repair</h3>
+          <p>Certified technicians work each dent panel by panel using precision tools — no shortcuts, no rushing, just quality results.</p>
+        </article>
+        <article class="card">
+          <h3>4. Insurance coordination</h3>
+          <p>We bill your insurance carrier directly and handle supplement negotiations if the initial estimate falls short.</p>
+        </article>
+        <article class="card">
+          <h3>5. Final quality check</h3>
+          <p>Every vehicle passes a final LED-light inspection before we call you. We don't hand back a car we wouldn't be proud of.</p>
+        </article>
+        <article class="card">
+          <h3>6. Drive home happy</h3>
+          <p>Your {city.name} vehicle is restored to pre-storm condition with factory paint fully intact.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nearby areas -->
+  <section class="section alt">
+    <div class="container">
+      <span class="section-label">Also Serving</span>
+      <h2>Other communities near {city.name} we serve</h2>
+      <p>
+        Our shop is the go-to hail damage repair destination for all of {city.county} County and beyond.
+        In addition to {city.name}, we regularly serve:
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin:24px 0;">
+        {city.nearbyShops.map(n => (
+          <a
+            href={`/hail-damage-repair/${n.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}`}
+            style="padding:10px 18px;background:var(--card);border-radius:8px;border:1px solid #e8e0d8;font-weight:600;color:var(--rust);text-decoration:none;"
+          >
+            {n}, OH →
+          </a>
+        ))}
+        <a
+          href="/service-area"
+          style="padding:10px 18px;background:var(--rust);border-radius:8px;color:#fff;font-weight:600;text-decoration:none;"
+        >
+          View all 20+ service areas →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="section">
+    <div class="container">
+      <span class="section-label">Reviews</span>
+      <h2>What Northeast Ohio customers say</h2>
+      <div class="grid-3">
+        <blockquote class="card">
+          <p>"The shop was easy to get to and the work was flawless. My hood and roof had dozens of hail dents and they got every single one. Insurance paid, I paid my deductible. That was it."</p>
+          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Northeast Ohio driver</footer>
+          <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
+        </blockquote>
+        <blockquote class="card">
+          <p>"I was nervous about paintless repair but they walked me through the whole thing before starting. My car looks exactly like it did before the storm. I'm a believer now."</p>
+          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Cuyahoga County vehicle owner</footer>
+          <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
+        </blockquote>
+        <blockquote class="card">
+          <p>"Fast, honest, and the work holds up. I've had body shop work before that looked fine at first and then you notice things. AllDent PDR's finish work is genuinely better."</p>
+          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Bedford area customer</footer>
+          <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section alt">
+    <div class="container">
+      <span class="section-label">FAQ</span>
+      <h2>Questions about hail damage repair near {city.name}, OH</h2>
+      <div style="display:flex;flex-direction:column;gap:16px;max-width:780px;margin:0 auto;">
+        {faqItems.map(item => (
+          <details style="background:var(--card);border-radius:12px;padding:20px 24px;border:1px solid #e8e0d8;">
+            <summary style="font-weight:600;cursor:pointer;font-size:1.05rem;">{item.question}</summary>
+            <p style="margin-top:12px;color:#4a3f35;">{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Ready to fix your hail damage? Visit us from {city.name} today.</h2>
+      <p>
+        AllDent PDR · {shopAddress} · Mon–Fri 8am–6pm · Sat 9am–2pm<br />
+        Walk-ins welcome · Free estimates · Insurance claims handled
+      </p>
+      <div class="button-row" style="justify-content:center;">
+        <a class="button primary" href="/contact">Schedule at Our Shop</a>
+        <a class="button ghost" href={`tel:${shopPhone.replace(/-/g,'')}`}>Call {shopPhone}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .responsive-two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 720px) {
+    .responsive-two-col {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

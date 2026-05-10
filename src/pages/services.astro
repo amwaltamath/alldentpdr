@@ -2,26 +2,31 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
 
-const title = 'Paintless Dent Repair Services | Hail Damage, Door Dings & More | AllDent PDR';
-const description = 'Professional paintless dent repair services from AllDent PDR. Mobile hail damage repair, door ding removal, and minor collision dent repair. We travel nationwide from Cincinnati. Inspection-based pricing.';
+const title = 'Paintless Dent Repair Services | Hail Damage Repair Shop Bedford &amp; Cleveland, OH | AllDent PDR';
+const description = 'Professional paintless dent repair and hail damage repair at AllDent PDR’s shop — 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, OH and 20+ Northeast Ohio communities. Call 1-855-425-5336.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Services', url: 'https://alldentpdr.com/services' }
 ];
 const faqItems = [
-  { question: 'How much does paintless dent repair cost in Cincinnati?', answer: 'PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75-$150, while hail damage is quoted per panel after an in-person inspection.' },
-  { question: 'How long does paintless dent repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Hail damage with multiple panels may take a full day. We provide realistic timelines upfront so you can plan.' },
+  { question: 'Where is AllDent PDR’s shop located?', answer: 'Our shop is at 7695 Granger Rd, Cleveland, OH 44125 — just minutes from Bedford, OH. We serve 20+ communities across Northeast Ohio and also offer mobile service nationwide for large hail events.' },
+  { question: 'How much does paintless dent repair cost near Bedford, Ohio?', answer: 'PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75-$150, while hail damage is quoted per panel after an in-person inspection at our shop.' },
+  { question: 'How long does paintless dent repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Hail damage with multiple panels may take 1-3 days. We provide realistic timelines upfront so you can plan.' },
   { question: 'Will PDR damage my factory paint?', answer: 'No. Paintless dent repair preserves your original factory finish. We reshape the metal from behind the panel without using fillers, sanding, or repainting.' },
   { question: 'What types of dents can be fixed with PDR?', answer: 'PDR works best on dents where the paint surface is intact — including door dings, hail dents, minor collision dents, and creases. Very sharp or stretched-metal dents may require conventional repair.' },
-  { question: 'Do you offer mobile paintless dent repair?', answer: 'Yes! AllDent PDR is a fully mobile service. We are based in Cincinnati but travel across the United States to repair hail damage on-site wherever storms occur. Contact us to check availability in your area.' }
+  { question: 'Do you work with insurance companies?', answer: 'Yes! AllDent PDR works directly with most major insurance carriers including State Farm, Allstate, Progressive, and GEICO. We handle documentation and billing — you typically only pay your deductible.' }
 ];
 ---
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services" breadcrumbs={breadcrumbs} faqItems={faqItems}>
   <section class="page-hero container">
-    <span class="section-label">Our Services</span>
-    <h1>Paintless dent repair services</h1>
-    <p>From one-off door dings to full hail storm recovery, AllDent PDR brings expert paintless dent repair services to you — anywhere in the U.S., including current storm response in Bedford, Ohio and surrounding areas.</p>
+    <span class="section-label">Our Services — Bedford &amp; Northeast Ohio</span>
+    <h1>Paintless dent repair &amp; hail damage repair in Northeast Ohio</h1>
+    <p>AllDent PDR's shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> serves Bedford, OH and 20+ surrounding communities. From single door dings to full hail storm recovery — expert PDR with insurance direct billing and free written estimates.</p>
+    <div class="button-row" style="justify-content:center;margin-top:16px;">
+      <a class="button primary" href="/service-area">View All Service Areas</a>
+      <a class="button ghost" href="/contact">Schedule a Visit</a>
+    </div>
   </section>
 
   <section class="section alt">
@@ -128,8 +133,9 @@ const faqItems = [
         the vehicle in proper lighting so the result looks right when you get it back.
       </p>
       <p>
-        For this Northeast Ohio response, we are prioritizing Bedford, Bedford Heights, Maple Heights, Garfield Heights,
-        Solon, Warrensville Heights, Oakwood Village, Northfield, and nearby communities.
+        We prioritize Bedford, Garfield Heights, Maple Heights, Independence, Parma, Solon,
+        Warrensville Heights, Oakwood Village, Northfield, and 15+ additional Northeast Ohio communities.
+        <a href="/service-area" style="color:var(--rust);font-weight:600;">See the full service area list.</a>
       </p>
       <div class="grid-3">
         <article class="card">
@@ -169,8 +175,8 @@ const faqItems = [
           <p>PDR works best on dents where the paint surface is intact — including door dings, hail dents, minor collision dents, and creases. Very sharp or stretched-metal dents may require conventional repair.</p>
         </details>
         <details class="faq-item">
-          <summary>Do you offer mobile paintless dent repair?</summary>
-          <p>Yes! AllDent PDR is a fully mobile service. We are based in Cincinnati but travel across the United States to repair hail damage on-site wherever storms occur. Contact us to check availability in your area.</p>
+          <summary>Do you work with insurance companies?</summary>
+          <p>Yes! AllDent PDR works directly with most major carriers including State Farm, Allstate, Progressive, and GEICO. We handle documentation and billing — you typically only pay your deductible.</p>
         </details>
       </div>
       <div class="button-row" style="justify-content: center;">
@@ -182,10 +188,10 @@ const faqItems = [
 
   <section class="cta-banner">
     <div class="container">
-      <h2>Need Bedford hail damage repair?</h2>
-      <p>Contact AllDent PDR for an inspection request and premium-quality paintless dent repair. We respond the same day.</p>
+      <h2>Visit our shop or call for a same-day response</h2>
+      <p>AllDent PDR · 7695 Granger Rd, Cleveland, OH 44125 · Serving Bedford, OH and 20+ Northeast Ohio communities</p>
       <div class="button-row" style="justify-content: center;">
-        <a class="button primary" href="/contact">Request an Inspection</a>
+        <a class="button primary" href="/contact">Schedule at Our Shop</a>
         <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
       </div>
     </div>
