@@ -20,7 +20,7 @@ import {
 
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
 const ADMIN_PASS = import.meta.env.PUBLIC_PORTAL_ADMIN_PASS || 'allDent2026';
-const STATUS_OPTIONS = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold - Waiting for Parts', 'Complete'];
+const STATUS_OPTIONS = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold', 'Complete'];
 
 const initialForm = {
   // Customer Information
@@ -66,7 +66,7 @@ function statusBadge(status) {
   if (status === 'Complete')                       return 'badge complete';
   if (status === 'In Repair')                      return 'badge progress';
   if (status === 'Pending Insurance')              return 'badge pending-ins';
-  if (status === 'On Hold - Waiting for Parts')    return 'badge on-hold';
+  if (status === 'On Hold')                        return 'badge on-hold';
   return 'badge registered'; // Estimate
 }
 
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
     const estimate = vehicles.filter((v) => v.status === 'Estimate').length;
     const pendingIns = vehicles.filter((v) => v.status === 'Pending Insurance').length;
     const inRepair = vehicles.filter((v) => v.status === 'In Repair').length;
-    const onHold = vehicles.filter((v) => v.status === 'On Hold - Waiting for Parts').length;
+    const onHold = vehicles.filter((v) => v.status === 'On Hold').length;
     const complete = vehicles.filter((v) => v.status === 'Complete').length;
     const completionRate = total ? Math.round((complete / total) * 100) : 0;
     return { total, estimate, pendingIns, inRepair, onHold, complete, completionRate };
@@ -820,7 +820,7 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
   );
 }
 
-const STATUS_COLUMNS = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold - Waiting for Parts', 'Complete'];
+const STATUS_COLUMNS = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold', 'Complete'];
 
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange }) {
   return (

@@ -22,7 +22,7 @@ const STATUS_MESSAGES: Record<string, { headline: string; body: string; color: s
     body: "Great news — your vehicle is now actively in our shop being worked on by our PDR technicians. We'll notify you as soon as repairs are complete.",
     color: '#4a7a5c',
   },
-  'On Hold - Waiting for Parts': {
+  'On Hold': {
     headline: 'Your repair is on hold.',
     body: "We're waiting on parts to complete your repair. We'll get started as soon as they arrive and keep you updated. Thank you for your patience.",
     color: '#d97706',

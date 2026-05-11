@@ -16,7 +16,7 @@ const CRON_SECRET = import.meta.env.CRON_SECRET as string | undefined;
 const REMINDER_HOURS = 48;
 
 // Statuses where we keep reminding the customer (not Complete)
-const REMINDER_STATUSES = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold - Waiting for Parts'];
+const REMINDER_STATUSES = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold'];
 
 const STATUS_MESSAGES: Record<string, { headline: string; body: string; color: string }> = {
   'Estimate': {
@@ -34,9 +34,9 @@ const STATUS_MESSAGES: Record<string, { headline: string; body: string; color: s
     body: 'Your vehicle is still actively being repaired by our PDR technicians. We will notify you as soon as the work is finished.',
     color: '#4a7a5c',
   },
-  'On Hold - Waiting for Parts': {
-    headline: 'Update: We are still waiting on parts for your repair.',
-    body: "We're waiting on parts to arrive before we can complete your repair. We appreciate your patience and will notify you as soon as we're ready to proceed.",
+  'On Hold': {
+    headline: 'Update: Your repair is currently on hold.',
+    body: "Your repair is temporarily on hold. We appreciate your patience and will notify you as soon as we are ready to proceed.",
     color: '#d97706',
   },
 };

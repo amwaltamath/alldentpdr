@@ -7,7 +7,7 @@ import {
   setSession
 } from './portal/storage';
 
-const STATUS_ORDER = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold - Waiting for Parts', 'Complete'];
+const STATUS_ORDER = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold', 'Complete'];
 
 function statusIndex(status) {
   const idx = STATUS_ORDER.indexOf(status);
@@ -18,7 +18,7 @@ function statusPillClass(status) {
   if (status === 'Complete') return 'status-pill is-complete';
   if (status === 'In Repair') return 'status-pill is-progress';
   if (status === 'Pending Insurance') return 'status-pill is-pending-ins';
-  if (status === 'On Hold - Waiting for Parts') return 'status-pill is-on-hold';
+  if (status === 'On Hold') return 'status-pill is-on-hold';
   return 'status-pill';
 }
 
