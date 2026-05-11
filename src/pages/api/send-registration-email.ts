@@ -41,10 +41,12 @@ export const POST: APIRoute = async ({ request }) => {
               <div style="background:#fffbf6;border:1px solid #e8e0d5;border-radius:8px;padding:20px;margin:20px 0">
                 <p style="margin:0 0 8px"><strong>Job ID:</strong> ${escHtml(jobId)}</p>
                 <p style="margin:0 0 8px"><strong>Vehicle:</strong> ${escHtml(vehicleLabel)}</p>
-                ${plate ? `<p style="margin:0 0 8px"><strong>Plate:</strong> ${escHtml(plate)}</p>` : ''}
+                <p style="margin:0 0 8px"><strong>License Plate:</strong> ${plate ? escHtml(plate) : '—'}</p>
                 ${phone ? `<p style="margin:0"><strong>Phone on file:</strong> ${escHtml(phone)}</p>` : ''}
               </div>
-              <p>Our team will be in touch shortly to schedule your repair. You can track your repair status anytime at <a href="https://alldentpdr.com/portal/customer-login" style="color:#b0522b">alldentpdr.com</a>.</p>
+              <div style="background:#fff3ee;border:1px solid #f5c9b3;border-radius:8px;padding:16px;margin:20px 0">
+                <p style="margin:0;font-size:14px"><strong>Track your repair online:</strong> Visit <a href="https://alldentpdr.com/portal/customer-login" style="color:#b0522b">alldentpdr.com/portal/customer-login</a> and log in with your email address and license plate number <strong>${plate ? escHtml(plate) : ''}</strong> to see real-time status updates.</p>
+              </div>
               <p>Questions? Call us at <strong>1-855-425-5336</strong> or reply to this email.</p>
               <div style="margin-top:32px;padding-top:24px;border-top:1px solid #e8e0d5;color:#888;font-size:12px">
                 <p style="margin:0">AllDent PDR · Mobile Paintless Dent Repair · alldentpdr.com</p>
