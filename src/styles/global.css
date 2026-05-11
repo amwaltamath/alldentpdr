@@ -1548,17 +1548,6 @@ p {
   box-shadow: 0 6px 20px rgba(74, 122, 92, 0.3);
 }
 
-.button.ghost {
-  border-color: rgba(255, 255, 255, 0.5);
-  color: #fff;
-  background: transparent;
-}
-
-.button.ghost:hover {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-}
-
 .section {
   padding: 80px 0;
 }
