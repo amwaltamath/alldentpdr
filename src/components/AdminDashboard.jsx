@@ -92,6 +92,7 @@ export default function AdminDashboard() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [saveMessage, setSaveMessage] = useState('');
+  const [pendingStatus, setPendingStatus] = useState(null); // { id, nextStatus }
 
   const remoteMode = isRemotePortalEnabled();
 
@@ -263,12 +264,24 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleStatusChange = async (id, nextStatus) => {
-    await updateVehicleStatus(id, nextStatus);
+  // Step 1: intercept status change — open the note modal
+  const handleStatusChange = (id, nextStatus) => {
+    setPendingStatus({ id, nextStatus });
+  };
+
+  // Step 2: confirmed from modal — do the update + send email
+  const handleConfirmStatusChange = async (note) => {
+    if (!pendingStatus) return;
+    const { id, nextStatus } = pendingStatus;
+    setPendingStatus(null);
+
+    // Save status (and note if provided) to the vehicle record
+    const updatePayload = { status: nextStatus, lastNotifiedAt: new Date().toISOString() };
+    if (note.trim()) updatePayload.notes = note.trim();
+    await updateVehicle(id, updatePayload);
     const updated = await getVehicles();
     setVehicles(updated);
 
-    // Send customer email if notifications are enabled
     const vehicle = updated.find((v) => v.id === id);
     if (vehicle?.notificationsEnabled && vehicle?.email) {
       fetch('/api/send-status-email', {
@@ -283,6 +296,7 @@ export default function AdminDashboard() {
           make: vehicle.make,
           model: vehicle.model,
           plate: vehicle.plate,
+          customNote: note.trim() || undefined,
         }),
       }).catch((err) => console.warn('[status email]', err));
     }
@@ -357,6 +371,13 @@ export default function AdminDashboard() {
 
   return (
     <div className="dash">
+      {pendingStatus && (
+        <StatusNoteModal
+          nextStatus={pendingStatus.nextStatus}
+          onConfirm={handleConfirmStatusChange}
+          onCancel={() => setPendingStatus(null)}
+        />
+      )}
       {navOpen && <div className="dash-overlay" onClick={() => setNavOpen(false)} aria-hidden="true" />}
       <aside className={`dash-aside${navOpen ? ' is-open' : ''}`}>
         <a href="/" className="dash-brand" title="Back to site">
@@ -488,6 +509,48 @@ export default function AdminDashboard() {
 
           {view === 'cards' && <CardsView />}
         </main>
+      </div>
+    </div>
+  );
+}
+
+/* ----------------- status note modal ----------------- */
+
+function StatusNoteModal({ nextStatus, onConfirm, onCancel }) {
+  const [note, setNote] = useState('');
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <h3 style={{ margin: 0 }}>Update Status</h3>
+          <button type="button" className="job-drawer-close" onClick={onCancel} aria-label="Close">✕</button>
+        </div>
+        <div className="modal-body">
+          <p style={{ marginTop: 0 }}>
+            Changing status to: <strong style={{ marginLeft: 6 }}>{nextStatus}</strong>
+          </p>
+          <label htmlFor="status-note" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>
+            Add a note for the customer <span style={{ fontWeight: 400, color: '#888' }}>(optional)</span>
+          </label>
+          <textarea
+            id="status-note"
+            rows={4}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="e.g. We received your insurance approval and are starting repairs tomorrow morning."
+            style={{ width: '100%', boxSizing: 'border-box', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, resize: 'vertical' }}
+            autoFocus
+          />
+          <p style={{ fontSize: 12, color: '#888', marginTop: 6 }}>
+            If a note is added, it will appear in the customer's status email and in their portal.
+          </p>
+        </div>
+        <div className="modal-foot">
+          <button type="button" className="button ghost" onClick={onCancel}>Cancel</button>
+          <button type="button" className="button primary" onClick={() => onConfirm(note)}>
+            Confirm &amp; Send
+          </button>
+        </div>
       </div>
     </div>
   );

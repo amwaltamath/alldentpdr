@@ -42,7 +42,7 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: 'Invalid request body' }), { status: 400 });
   }
 
-  const { jobId, customerName, email, status, year, make, model, plate } = body;
+  const { jobId, customerName, email, status, year, make, model, plate, customNote } = body;
 
   if (!jobId || !customerName || !email || !status) {
     return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 422 });
@@ -70,6 +70,11 @@ export const POST: APIRoute = async ({ request }) => {
             <div style="display:inline-block;background:${msg.color};color:#fff;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:16px">${escHtml(status)}</div>
             <h2 style="margin-top:0">${msg.headline}</h2>
             <p>${msg.body}</p>
+            ${customNote ? `
+            <div style="background:#fff8f0;border-left:4px solid #b0522b;border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0">
+              <p style="margin:0 0 6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#b0522b">Note from our team</p>
+              <p style="margin:0;font-size:15px;line-height:1.6">${escHtml(customNote)}</p>
+            </div>` : ''}
             <div style="background:#fffbf6;border:1px solid #e8e0d5;border-radius:8px;padding:20px;margin:20px 0">
               <p style="margin:0 0 8px"><strong>Job ID:</strong> ${escHtml(jobId)}</p>
               <p style="margin:0 0 8px"><strong>Customer:</strong> ${escHtml(customerName)}</p>
