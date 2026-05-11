@@ -331,7 +331,7 @@ export async function registerVehiclePublic(data) {
 }
 
 /* ============================================================
-   Pricing Matrix (per-tier × panel × size) — local-only for now
+   Pricing Matrix (per-tier ï¿½ panel ï¿½ size) ï¿½ local-only for now
    ============================================================ */
 export function getPricing() {
   if (typeof window === 'undefined') return null;
@@ -342,3 +342,51 @@ export function savePricing(pricing) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(PRICING_KEY, JSON.stringify(pricing));
 }
+
+/* ============================================================
+   Leads (contact form submissions with ad attribution)
+   ============================================================ */
+
+function mapRemoteLead(item) {
+  return {
+    id: item.id,
+    name: item.name,
+    email: item.email,
+    phone: item.phone || '',
+    location: item.location || '',
+    vehicle: item.vehicle || '',
+    message: item.message,
+    status: item.status || 'New',
+    utmSource: item.utm_source || '',
+    utmMedium: item.utm_medium || '',
+    utmCampaign: item.utm_campaign || '',
+    utmContent: item.utm_content || '',
+    utmTerm: item.utm_term || '',
+    referrer: item.referrer || '',
+    createdAt: item.created_at,
+    updatedAt: item.updated_at,
+  };
+}
+
+export async function getLeads() {
+  if (isSupabaseEnabled()) {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []).map(mapRemoteLead);
+  }
+  // Fallback: no local storage for leads (they come from server)
+  return [];
+}
+
+export async function updateLead(id, updates) {
+  if (isSupabaseEnabled()) {
+    const payload = { updated_at: new Date().toISOString() };
+    if (updates.status) payload.status = updates.status;
+    const { error } = await supabase.from('leads').update(payload).eq('id', id);
+    if (error) throw error;
+  }
+}
+

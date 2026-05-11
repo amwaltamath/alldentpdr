@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
+  getLeads,
   getPricing,
   getRemoteAuthUser,
   getSession,
@@ -12,6 +13,7 @@ import {
   setSession,
   signInRemoteAdmin,
   signOutRemoteAdmin,
+  updateLead,
   updateVehicle,
   updateVehicleStatus
 } from './portal/storage';
@@ -49,13 +51,15 @@ const initialForm = {
 };
 
 const NAV_ITEMS = [
-  { id: 'overview', label: 'Overview',          icon: '◧' },
-  { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
-  { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
-  { id: 'quote',    label: 'New Quote',         icon: '$' },
-  { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
-  { id: 'register', label: 'Register Vehicle',  icon: '+' },
-  { id: 'cards',    label: 'Business Cards',    icon: '▣' },
+  { id: 'overview',   label: 'Overview',          icon: '◧' },
+  { id: 'pipeline',   label: 'Pipeline',          icon: '▦' },
+  { id: 'jobs',       label: 'All Jobs',          icon: '☰' },
+  { id: 'leads',      label: 'Leads',             icon: '◎' },
+  { id: 'analytics',  label: 'Analytics',         icon: '▲' },
+  { id: 'quote',      label: 'New Quote',         icon: '$' },
+  { id: 'pricing',    label: 'Pricing Matrix',    icon: '☰£' },
+  { id: 'register',   label: 'Register Vehicle',  icon: '+' },
+  { id: 'cards',      label: 'Business Cards',    icon: '▣' },
 ];
 
 function statusBadge(status) {
@@ -82,6 +86,7 @@ export default function AdminDashboard() {
   const [pipelineMode, setPipelineMode] = useState('kanban');
   const [form, setForm] = useState(initialForm);
   const [vehicles, setVehicles] = useState([]);
+  const [leads, setLeads] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [saveMessage, setSaveMessage] = useState('');
@@ -128,8 +133,14 @@ export default function AdminDashboard() {
       }
       setLoading(true);
       try {
-        const next = await getVehicles();
-        if (active) setVehicles(next);
+        const [nextVehicles, nextLeads] = await Promise.all([
+          getVehicles(),
+          getLeads().catch(() => []),
+        ]);
+        if (active) {
+          setVehicles(nextVehicles);
+          setLeads(nextLeads);
+        }
       } catch {
         if (active) setAuthError('Unable to load vehicle data.');
       } finally {
@@ -260,6 +271,11 @@ export default function AdminDashboard() {
   const handleNotificationChange = async (id, field, value) => {
     await updateVehicle(id, { [field]: value });
     setVehicles(await getVehicles());
+  };
+
+  const handleLeadStatusChange = async (id, nextStatus) => {
+    await updateLead(id, { status: nextStatus });
+    setLeads((prev) => prev.map((l) => l.id === id ? { ...l, status: nextStatus } : l));
   };
 
   const handleLogout = () => {
@@ -419,6 +435,18 @@ export default function AdminDashboard() {
               onStatusChange={handleStatusChange}
               onNotificationChange={handleNotificationChange}
             />
+          )}
+
+          {view === 'leads' && (
+            <LeadsView
+              leads={leads}
+              loading={loading}
+              onStatusChange={handleLeadStatusChange}
+            />
+          )}
+
+          {view === 'analytics' && (
+            <AnalyticsView leads={leads} vehicles={vehicles} />
           )}
 
           {view === 'register' && (
@@ -744,8 +772,299 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange }) {
   );
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Leads View
+───────────────────────────────────────────────────────────── */
+const LEAD_STATUSES = ['New', 'Contacted', 'Quoted', 'Converted', 'Closed'];
+
+function leadSourceBadge(source) {
+  const s = (source || '').toLowerCase();
+  if (s === 'google' || s === 'google_ads' || s === 'googleads') return { label: 'Google Ads', bg: '#e8f5e9', color: '#2e7d32' };
+  if (s === 'facebook' || s === 'meta' || s === 'fb') return { label: 'Meta Ads', bg: '#e3f2fd', color: '#1565c0' };
+  if (s === 'instagram') return { label: 'Instagram', bg: '#fce4ec', color: '#880e4f' };
+  if (s === 'bing') return { label: 'Bing Ads', bg: '#fff3e0', color: '#e65100' };
+  if (s === 'email') return { label: 'Email', bg: '#f3e5f5', color: '#6a1b9a' };
+  if (s === 'referral') return { label: 'Referral', bg: '#fff8e1', color: '#f57f17' };
+  if (s) return { label: s, bg: '#f5f5f5', color: '#555' };
+  return { label: 'Organic', bg: '#eceff1', color: '#546e7a' };
+}
+
+function leadStatusColor(status) {
+  if (status === 'Converted') return { bg: '#e8f5e9', color: '#2e7d32' };
+  if (status === 'Contacted') return { bg: '#e3f2fd', color: '#1565c0' };
+  if (status === 'Quoted')    return { bg: '#fff8e1', color: '#f57f17' };
+  if (status === 'Closed')    return { bg: '#fce4ec', color: '#c62828' };
+  return { bg: '#fafafa', color: '#555' };
+}
+
+function LeadsView({ leads, loading, onStatusChange }) {
+  const [selected, setSelected] = useState(null);
+  const [sourceFilter, setSourceFilter] = useState('All');
+
+  const sources = ['All', ...Array.from(new Set(leads.map((l) => leadSourceBadge(l.utmSource).label)))];
+
+  const filtered = sourceFilter === 'All'
+    ? leads
+    : leads.filter((l) => leadSourceBadge(l.utmSource).label === sourceFilter);
+
+  const kpi = {
+    total: leads.length,
+    newCount: leads.filter((l) => l.status === 'New').length,
+    contacted: leads.filter((l) => l.status === 'Contacted').length,
+    converted: leads.filter((l) => l.status === 'Converted').length,
+  };
+
+  return (
+    <>
+      {selected && (
+        <div className="job-drawer-overlay" onClick={() => setSelected(null)}>
+          <aside className="job-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="job-drawer-head">
+              <div>
+                <p className="crumb" style={{ margin: 0 }}>{selected.id}</p>
+                <h3 style={{ margin: '2px 0 0' }}>{selected.name}</h3>
+              </div>
+              <button type="button" className="job-drawer-close" onClick={() => setSelected(null)} aria-label="Close">&#x2715;</button>
+            </div>
+            <div className="job-drawer-body">
+              <h4 className="form-section-label">Status</h4>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                {(() => { const c = leadStatusColor(selected.status); return <span style={{ background: c.bg, color: c.color, padding: '3px 10px', borderRadius: 20, fontWeight: 700, fontSize: 12 }}>{selected.status}</span>; })()}
+                <select value={selected.status} onChange={(e) => { onStatusChange(selected.id, e.target.value); setSelected((p) => ({ ...p, status: e.target.value })); }}>
+                  {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+
+              <h4 className="form-section-label" style={{ marginTop: 22 }}>Contact</h4>
+              <div className="job-drawer-grid">
+                <div><span className="jd-label">Name</span><span className="jd-val">{selected.name}</span></div>
+                <div><span className="jd-label">Email</span><span className="jd-val"><a href={`mailto:${selected.email}`}>{selected.email}</a></span></div>
+                {selected.phone && <div><span className="jd-label">Phone</span><span className="jd-val"><a href={`tel:${selected.phone}`}>{selected.phone}</a></span></div>}
+                {selected.location && <div><span className="jd-label">Location</span><span className="jd-val">{selected.location}</span></div>}
+                {selected.vehicle && <div><span className="jd-label">Vehicle</span><span className="jd-val">{selected.vehicle}</span></div>}
+              </div>
+
+              <h4 className="form-section-label" style={{ marginTop: 22 }}>Message</h4>
+              <p style={{ fontSize: 14, lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>{selected.message}</p>
+
+              <h4 className="form-section-label" style={{ marginTop: 22 }}>Ad Attribution</h4>
+              <div className="job-drawer-grid">
+                {(() => { const b = leadSourceBadge(selected.utmSource); return <div><span className="jd-label">Source</span><span style={{ background: b.bg, color: b.color, padding: '2px 8px', borderRadius: 12, fontWeight: 700, fontSize: 12 }}>{b.label}</span></div>; })()}
+                {selected.utmMedium   && <div><span className="jd-label">Medium</span><span className="jd-val">{selected.utmMedium}</span></div>}
+                {selected.utmCampaign && <div><span className="jd-label">Campaign</span><span className="jd-val">{selected.utmCampaign}</span></div>}
+                {selected.utmContent  && <div><span className="jd-label">Ad Content</span><span className="jd-val">{selected.utmContent}</span></div>}
+                {selected.utmTerm     && <div><span className="jd-label">Keyword</span><span className="jd-val">{selected.utmTerm}</span></div>}
+                {selected.referrer    && <div><span className="jd-label">Referrer</span><span className="jd-val" style={{ fontSize: 12, wordBreak: 'break-all' }}>{selected.referrer}</span></div>}
+              </div>
+
+              <p className="cell-sub" style={{ marginTop: 20 }}>
+                Received {new Date(selected.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      <div className="kpi-grid" style={{ marginBottom: 24 }}>
+        <div className="kpi"><span className="kpi-label">Total leads</span><span className="kpi-value">{kpi.total}</span><div className="kpi-sub">All time</div></div>
+        <div className="kpi kpi-accent"><span className="kpi-label">New</span><span className="kpi-value">{kpi.newCount}</span><div className="kpi-sub">Awaiting response</div></div>
+        <div className="kpi kpi-warn"><span className="kpi-label">Contacted</span><span className="kpi-value">{kpi.contacted}</span><div className="kpi-sub">In conversation</div></div>
+        <div className="kpi kpi-ok"><span className="kpi-label">Converted</span><span className="kpi-value">{kpi.converted}</span><div className="kpi-sub">{kpi.total ? Math.round((kpi.converted / kpi.total) * 100) : 0}% close rate</div></div>
+      </div>
+
+      <section className="panel">
+        <div className="panel-head">
+          <div>
+            <h3>All Leads</h3>
+            <p className="meta" style={{ margin: '2px 0 0' }}>{filtered.length} leads</p>
+          </div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <label style={{ margin: 0, fontSize: 13, color: '#888' }}>Source:</label>
+            <select value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value)} style={{ marginBottom: 0, fontSize: 13 }}>
+              {sources.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Lead</th>
+                <th>Contact</th>
+                <th>Vehicle / Location</th>
+                <th>Source</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((l) => {
+                const src = leadSourceBadge(l.utmSource);
+                const st  = leadStatusColor(l.status);
+                return (
+                  <tr key={l.id} className="job-row-clickable" onClick={() => setSelected(l)}>
+                    <td>
+                      <div className="cell-strong">{l.id}</div>
+                      <div className="cell-sub">{new Date(l.createdAt).toLocaleDateString()}</div>
+                    </td>
+                    <td>
+                      <div className="cell-strong">{l.name}</div>
+                      <div className="cell-sub">{l.email}</div>
+                    </td>
+                    <td>
+                      <div className="cell-strong">{l.vehicle || '—'}</div>
+                      <div className="cell-sub">{l.location || '—'}</div>
+                    </td>
+                    <td>
+                      <span style={{ background: src.bg, color: src.color, padding: '2px 8px', borderRadius: 12, fontWeight: 700, fontSize: 12, whiteSpace: 'nowrap' }}>{src.label}</span>
+                      {l.utmCampaign && <div className="cell-sub" style={{ marginTop: 2 }}>{l.utmCampaign}</div>}
+                    </td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <select
+                        value={l.status}
+                        onChange={(e) => onStatusChange(l.id, e.target.value)}
+                        style={{ background: st.bg, color: st.color, fontWeight: 700, fontSize: 12, border: 'none', borderRadius: 8, padding: '4px 8px' }}
+                      >
+                        {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </td>
+                  </tr>
+                );
+              })}
+              {!loading && !filtered.length && (
+                <tr><td colSpan={5} className="kanban-empty">{leads.length ? 'No leads match the current filter.' : 'No leads yet. Leads from your contact form will appear here.'}</td></tr>
+              )}
+              {loading && <tr><td colSpan={5} className="kanban-empty">Loading&#8230;</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Analytics View
+───────────────────────────────────────────────────────────── */
+function AnalyticsView({ leads, vehicles }) {
+  const bySource = leads.reduce((acc, l) => {
+    const label = leadSourceBadge(l.utmSource).label;
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, {});
+
+  const byStatus = leads.reduce((acc, l) => {
+    acc[l.status] = (acc[l.status] || 0) + 1;
+    return acc;
+  }, {});
+
+  const sortedSources = Object.entries(bySource).sort((a, b) => b[1] - a[1]);
+  const maxSourceCount = sortedSources[0]?.[1] || 1;
+
+  const now = new Date();
+  const months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+    return { label: d.toLocaleDateString('en-US', { month: 'short' }), year: d.getFullYear(), month: d.getMonth() };
+  });
+  const monthlyCounts = months.map(({ label, year, month }) => ({
+    label,
+    count: leads.filter((l) => {
+      const d = new Date(l.createdAt);
+      return d.getFullYear() === year && d.getMonth() === month;
+    }).length,
+  }));
+  const maxMonthlyCount = Math.max(...monthlyCounts.map((m) => m.count), 1);
+  const conversionRate = leads.length ? Math.round((byStatus['Converted'] || 0) / leads.length * 100) : 0;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div className="kpi-grid">
+        <div className="kpi"><span className="kpi-label">Total Leads</span><span className="kpi-value">{leads.length}</span><div className="kpi-sub">All time</div></div>
+        <div className="kpi kpi-ok"><span className="kpi-label">Converted</span><span className="kpi-value">{byStatus['Converted'] || 0}</span><div className="kpi-sub">{conversionRate}% close rate</div></div>
+        <div className="kpi kpi-warn"><span className="kpi-label">Total Jobs</span><span className="kpi-value">{vehicles.length}</span><div className="kpi-sub">Registered vehicles</div></div>
+        <div className="kpi kpi-accent"><span className="kpi-label">Complete Jobs</span><span className="kpi-value">{vehicles.filter((v) => v.status === 'Complete').length}</span><div className="kpi-sub">{vehicles.length ? Math.round(vehicles.filter((v) => v.status === 'Complete').length / vehicles.length * 100) : 0}% completion</div></div>
+      </div>
+
+      <div className="dash-grid-2">
+        <section className="panel">
+          <div className="panel-head"><h3>Leads by Source</h3></div>
+          <div style={{ padding: '16px 20px' }}>
+            {sortedSources.length === 0 && <p className="meta">No leads yet.</p>}
+            {sortedSources.map(([label, count]) => {
+              const src = leadSourceBadge(label === 'Organic' ? '' : label.toLowerCase());
+              return (
+                <div key={label} style={{ marginBottom: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 13 }}>
+                    <span style={{ background: src.bg, color: src.color, padding: '2px 8px', borderRadius: 10, fontWeight: 700, fontSize: 12 }}>{label}</span>
+                    <span style={{ fontWeight: 700 }}>{count} <span style={{ color: '#999', fontWeight: 400 }}>({Math.round(count / leads.length * 100)}%)</span></span>
+                  </div>
+                  <div style={{ background: '#f0f0f0', borderRadius: 6, height: 8, overflow: 'hidden' }}>
+                    <div style={{ background: src.color, height: '100%', width: `${Math.round(count / maxSourceCount * 100)}%`, borderRadius: 6 }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-head"><h3>Monthly Lead Volume</h3></div>
+          <div style={{ padding: '16px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 120 }}>
+              {monthlyCounts.map(({ label, count }) => (
+                <div key={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#b0522b' }}>{count || ''}</span>
+                  <div style={{ width: '100%', background: count ? '#b0522b' : '#eee', borderRadius: '4px 4px 0 0', height: `${Math.max(count / maxMonthlyCount * 90, count ? 8 : 4)}px` }} />
+                  <span style={{ fontSize: 11, color: '#888' }}>{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section className="panel">
+        <div className="panel-head"><h3>Lead Funnel</h3></div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12, padding: '16px 20px' }}>
+          {LEAD_STATUSES.map((s) => {
+            const count = byStatus[s] || 0;
+            const c = leadStatusColor(s);
+            return (
+              <div key={s} style={{ background: c.bg, borderRadius: 12, padding: '14px 16px', textAlign: 'center' }}>
+                <div style={{ fontSize: 28, fontWeight: 800, color: c.color }}>{count}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: c.color, marginTop: 2 }}>{s}</div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-head"><h3>Ad Platform Dashboards</h3></div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, padding: '16px 20px' }}>
+          {[
+            { label: 'Google Ads', url: 'https://ads.google.com/', bg: '#e8f5e9', color: '#2e7d32', desc: 'Campaigns, keywords, spend' },
+            { label: 'Meta Ads Manager', url: 'https://www.facebook.com/adsmanager/', bg: '#e3f2fd', color: '#1565c0', desc: 'Facebook & Instagram ads' },
+            { label: 'Google Analytics 4', url: 'https://analytics.google.com/', bg: '#fff3e0', color: '#e65100', desc: 'Traffic, sessions, conversions' },
+            { label: 'Google Search Console', url: 'https://search.google.com/search-console/', bg: '#f3e5f5', color: '#6a1b9a', desc: 'Organic rankings, impressions' },
+          ].map((link) => (
+            <a
+              key={link.label}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ background: link.bg, borderRadius: 12, padding: '16px 18px', textDecoration: 'none', display: 'block' }}
+            >
+              <div style={{ fontWeight: 700, color: link.color, marginBottom: 4 }}>{link.label} &#8599;</div>
+              <div style={{ fontSize: 12, color: '#666' }}>{link.desc}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
 const TEAM_CARDS = [
-  { slug: 'zachary', name: 'Zachary', title: 'PDR Specialist', email: 'zachary@alldentpdr.com' },
   { slug: 'kevin',   name: 'Kevin',   title: 'PDR Specialist', email: 'kevin@alldentpdr.com' },
   { slug: 'patrick', name: 'Patrick', title: 'PDR Specialist', email: 'patrick@alldentpdr.com' },
 ];
