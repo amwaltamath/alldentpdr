@@ -23,7 +23,7 @@ function mapRemoteVehicle(item) {
     city: item.city || '',
     state: item.state || '',
     zip: item.zip || '',
-    howHeardAboutUs: item.how_heard_about_us || '',
+    howHeardAboutUs: item.how_heard || item.how_heard_about_us || '',
     insuranceCompany: item.insurance_company || '',
     deductible: item.deductible || '',
     claimNumber: item.claim_number || '',
@@ -37,6 +37,10 @@ function mapRemoteVehicle(item) {
     notes: item.notes || '',
     notificationsEnabled: Boolean(item.notifications_enabled),
     notificationChannel: item.notification_channel || 'email',
+    directionToPaySigned: Boolean(item.direction_to_pay_signed),
+    repairAuthSigned: Boolean(item.repair_auth_signed),
+    insuranceAuthName: item.insurance_auth_name || '',
+    signatureName: item.signature_name || '',
     createdAt: item.created_at,
     updatedAt: item.updated_at
   };

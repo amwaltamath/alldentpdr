@@ -556,6 +556,140 @@ function StatusNoteModal({ nextStatus, onConfirm, onCancel }) {
   );
 }
 
+/* ----------------- job download ----------------- */
+
+function downloadJobRecord(v) {
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const check = (val) => val ? '&#x2611;' : '&#x2610;';
+  const fmt = (iso) => { try { return new Date(iso).toLocaleString(); } catch { return iso; } };
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Job Record ${esc(v.id)} – AllDent PDR</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: system-ui, Arial, sans-serif; color: #1a1410; margin: 0; padding: 32px 40px; font-size: 13px; line-height: 1.55; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #b0522b; padding-bottom: 14px; margin-bottom: 22px; }
+  header h1 { margin: 0; font-size: 22px; color: #b0522b; }
+  header .meta { text-align: right; font-size: 11px; color: #666; }
+  .job-id { font-size: 17px; font-weight: 700; letter-spacing: .04em; }
+  .status-pill { display: inline-block; background: #b0522b; color: #fff; border-radius: 20px; padding: 2px 12px; font-size: 11px; font-weight: 700; margin-left: 10px; vertical-align: middle; }
+  section { margin-bottom: 20px; break-inside: avoid; }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #b0522b; margin: 0 0 8px; border-bottom: 1px solid #e8e0d5; padding-bottom: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px; }
+  .field { }
+  .label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: #888; display: block; margin-bottom: 2px; }
+  .val { font-weight: 600; font-size: 13px; }
+  .notes-box { background: #fffbf6; border: 1px solid #e8e0d5; border-radius: 6px; padding: 10px 14px; white-space: pre-wrap; }
+  .auth-block { background: #f9f6f2; border: 1px solid #e0d8ce; border-radius: 8px; padding: 14px 18px; font-size: 12px; }
+  .auth-block p { margin: 6px 0; }
+  .check { font-size: 16px; margin-right: 6px; }
+  .sig-line { border-bottom: 1px solid #333; width: 280px; display: inline-block; margin-left: 8px; vertical-align: bottom; }
+  footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #e0d8ce; font-size: 10px; color: #aaa; display: flex; justify-content: space-between; }
+  @media print {
+    body { padding: 20px 28px; }
+    @page { margin: 0.6in; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>AllDent PDR</h1>
+    <p style="margin:4px 0 0;font-size:12px;color:#555">7695 Granger Rd, Cleveland, OH 44125 &nbsp;|&nbsp; 1-855-425-5336 &nbsp;|&nbsp; alldentpdr.com</p>
+  </div>
+  <div class="meta">
+    <p style="margin:0;font-size:15px;font-weight:700">Vehicle Work Order</p>
+    <p style="margin:2px 0 0">Printed: ${fmt(new Date().toISOString())}</p>
+  </div>
+</header>
+
+<section>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+    <span class="job-id">${esc(v.id)}</span>
+    <span class="status-pill">${esc(v.status)}</span>
+  </div>
+  <div class="grid">
+    <div class="field"><span class="label">Registered</span><span class="val">${fmt(v.createdAt)}</span></div>
+    <div class="field"><span class="label">Last Updated</span><span class="val">${fmt(v.updatedAt)}</span></div>
+    <div class="field"><span class="label">Notifications</span><span class="val">${v.notificationsEnabled ? 'Enabled (' + esc(v.notificationChannel) + ')' : 'Disabled'}</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Customer Information</h2>
+  <div class="grid">
+    <div class="field"><span class="label">Full Name</span><span class="val">${esc(v.customerName)}</span></div>
+    <div class="field"><span class="label">Email</span><span class="val">${esc(v.email)}</span></div>
+    <div class="field"><span class="label">Cell Phone</span><span class="val">${esc(v.phone) || '—'}</span></div>
+    <div class="field"><span class="label">Home Phone</span><span class="val">${esc(v.homePhone) || '—'}</span></div>
+    <div class="field" style="grid-column:span 2"><span class="label">Address</span><span class="val">${esc([v.address, v.city, v.state, v.zip].filter(Boolean).join(', ')) || '—'}</span></div>
+    <div class="field"><span class="label">How Heard</span><span class="val">${esc(v.howHeardAboutUs) || '—'}</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Vehicle Information</h2>
+  <div class="grid">
+    <div class="field"><span class="label">Year</span><span class="val">${esc(v.year)}</span></div>
+    <div class="field"><span class="label">Make</span><span class="val">${esc(v.make)}</span></div>
+    <div class="field"><span class="label">Model</span><span class="val">${esc(v.model)}</span></div>
+    <div class="field"><span class="label">Color</span><span class="val">${esc(v.color) || '—'}</span></div>
+    <div class="field"><span class="label">License Plate</span><span class="val">${esc(v.plate)}</span></div>
+    <div class="field"><span class="label">VIN</span><span class="val" style="font-family:monospace">${esc(v.vin) || '—'}</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Insurance Information</h2>
+  <div class="grid">
+    <div class="field"><span class="label">Insurance Company</span><span class="val">${esc(v.insuranceCompany) || '—'}</span></div>
+    <div class="field"><span class="label">Deductible</span><span class="val">${esc(v.deductible) || '—'}</span></div>
+    <div class="field"><span class="label">Claim Number</span><span class="val">${esc(v.claimNumber) || '—'}</span></div>
+  </div>
+</section>
+
+${v.notes ? `
+<section>
+  <h2>Technician Notes</h2>
+  <div class="notes-box">${esc(v.notes)}</div>
+</section>` : ''}
+
+<section>
+  <h2>Authorizations &amp; Agreements</h2>
+  <div class="auth-block">
+    <p><span class="check">${check(v.directionToPaySigned)}</span><strong>Direction to Pay</strong>
+      ${v.insuranceAuthName ? ` — Authorized by: <strong>${esc(v.insuranceAuthName)}</strong>` : ''}
+    </p>
+    <p style="font-size:11px;color:#666;margin-left:26px">Customer authorizes insurance payment directly to AllDent PDR to cover repair charges.</p>
+
+    <p style="margin-top:12px"><span class="check">${check(v.repairAuthSigned)}</span><strong>Repair Authorization</strong></p>
+    <p style="font-size:11px;color:#666;margin-left:26px">Customer authorizes AllDent PDR to perform all necessary repairs to the vehicle listed above.</p>
+
+    <p style="margin-top:14px">
+      <span class="label" style="display:inline">Customer Signature:</span>
+      <span class="sig-line">&nbsp;${v.signatureName ? esc(v.signatureName) : ''}&nbsp;</span>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <span>AllDent PDR · 7695 Granger Rd, Cleveland, OH 44125</span>
+  <span>Job ID: ${esc(v.id)} · Generated ${fmt(new Date().toISOString())}</span>
+</footer>
+
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  // Release blob URL after window opens
+  if (win) win.addEventListener('load', () => URL.revokeObjectURL(url), { once: true });
+}
+
 /* ----------------- subviews ----------------- */
 
 function OverviewView({ metrics, recent, loading, onJump, remoteMode }) {
@@ -697,7 +831,17 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange }) {
             <p className="crumb" style={{ margin: 0 }}>{v.id}</p>
             <h3 style={{ margin: '2px 0 0' }}>{v.year} {v.make} {v.model}</h3>
           </div>
-          <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <button
+              type="button"
+              className="button ghost sm"
+              title="Download work order"
+              onClick={() => downloadJobRecord(v)}
+            >
+              ⬇ Download
+            </button>
+            <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
+          </div>
         </div>
 
         <div className="job-drawer-body">
