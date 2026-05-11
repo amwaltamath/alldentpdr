@@ -187,7 +187,7 @@ export const POST: APIRoute = async ({ request }) => {
     <!-- Footer -->
     <div style="background:#f6efe7;border-top:1px solid #e8e2db;padding:20px 32px;text-align:center;font-size:11px;color:#9e8f84;line-height:1.8">
       <strong style="color:#4a3f36">AllDent PDR &middot; Mobile Paintless Dent Repair</strong><br/>
-      1-855-425-5336 &middot; <a href="https://alldentpdr.com" style="color:#b0522b">alldentpdr.com</a> &middot; alldentpdr@gmail.com<br/>
+      1-855-425-5336 &middot; <a href="https://alldentpdr.com" style="color:#b0522b">alldentpdr.com</a> &middot; admin@alldentpdr.com<br/>
       This estimate is valid for 30 days. Prices subject to change upon physical inspection.<br/>
       Method key: PDR = Paintless Dent Repair &nbsp;|&nbsp; R&amp;I = Remove &amp; Install &nbsp;|&nbsp; R&amp;R = Remove &amp; Replace
     </div>
