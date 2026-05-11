@@ -41,6 +41,7 @@ function mapRemoteVehicle(item) {
     repairAuthSigned: Boolean(item.repair_auth_signed),
     insuranceAuthName: item.insurance_auth_name || '',
     signatureName: item.signature_name || '',
+    signedAt: item.signed_at || null,
     createdAt: item.created_at,
     updatedAt: item.updated_at
   };
@@ -316,7 +317,8 @@ export async function registerVehiclePublic(data) {
       p_direction_to_pay_signed: Boolean(data.directionToPaySigned),
       p_repair_auth_signed:      Boolean(data.repairAuthSigned),
       p_insurance_auth_name:     data.insuranceAuthName || '',
-      p_signature_name:          data.signatureName    || ''
+      p_signature_name:          data.signatureName    || '',
+      p_signed_at:               data.signedAt         || new Date().toISOString()
     });
     if (error) throw error;
     return result;

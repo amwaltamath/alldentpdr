@@ -672,6 +672,12 @@ ${v.notes ? `
       <span class="label" style="display:inline">Customer Signature:</span>
       <span class="sig-line">&nbsp;${v.signatureName ? esc(v.signatureName) : ''}&nbsp;</span>
     </p>
+    ${v.signedAt ? `
+    <p style="margin-top:10px;font-size:12px">
+      <span class="label" style="display:inline">Electronically signed:</span>
+      <strong style="margin-left:8px;font-family:monospace">${fmt(v.signedAt)}</strong>
+      <span style="margin-left:10px;font-size:10px;color:#888">(UTC: ${esc(v.signedAt)})</span>
+    </p>` : ''}
   </div>
 </section>
 
@@ -876,6 +882,14 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange }) {
             <div><span className="jd-label">Company</span><span className="jd-val">{v.insuranceCompany || '—'}</span></div>
             <div><span className="jd-label">Deductible</span><span className="jd-val">{v.deductible || '—'}</span></div>
             <div><span className="jd-label">Claim #</span><span className="jd-val">{v.claimNumber || '—'}</span></div>
+          </div>
+
+          <h4 className="form-section-label" style={{ marginTop: 22 }}>Authorizations</h4>
+          <div className="job-drawer-grid">
+            <div><span className="jd-label">Direction to Pay</span><span className="jd-val">{v.directionToPaySigned ? '✅ Signed' : '☐ Not signed'}</span></div>
+            <div><span className="jd-label">Repair Auth</span><span className="jd-val">{v.repairAuthSigned ? '✅ Signed' : '☐ Not signed'}</span></div>
+            <div><span className="jd-label">Signature Name</span><span className="jd-val">{v.signatureName || '—'}</span></div>
+            {v.signedAt && <div style={{ gridColumn: 'span 2' }}><span className="jd-label">Signed At</span><span className="jd-val" style={{ fontFamily: 'monospace', fontSize: 12 }}>{new Date(v.signedAt).toLocaleString()} <span style={{ color: '#999', fontSize: 11 }}>(UTC: {v.signedAt})</span></span></div>}
           </div>
 
           {v.notes && (

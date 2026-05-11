@@ -14,7 +14,7 @@ const BLANK = {
   year: '', make: '', model: '', plate: '', vin: '', color: '',
   insuranceCompany: '', deductible: '', claimNumber: '',
   notes: '',
-  insuranceAuthName: '', signatureName: '',
+  insuranceAuthName: '', signatureName: '', signedAt: '',
   directionToPaySigned: false, repairAuthSigned: false
 };
 
@@ -27,7 +27,14 @@ export default function RegistrationForm() {
 
   const set = (key) => (e) => {
     const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    setForm((prev) => ({ ...prev, [key]: val }));
+    setForm((prev) => {
+      const next = { ...prev, [key]: val };
+      // Capture a precise timestamp the first time either agreement is checked
+      if ((key === 'directionToPaySigned' || key === 'repairAuthSigned') && val && !prev.signedAt) {
+        next.signedAt = new Date().toISOString();
+      }
+      return next;
+    });
   };
 
   const canNext1 = form.customerName.trim() && form.email.trim() && form.phone.trim();
@@ -269,8 +276,13 @@ export default function RegistrationForm() {
                 <input id="r-sig" type="text" value={form.signatureName} onChange={set('signatureName')} required placeholder="Jane Smith" className="reg-sig-input" />
               </div>
               <div className="reg-field">
-                <label>Date</label>
-                <input type="text" value={new Date().toLocaleDateString()} readOnly />
+                <label>Date &amp; Time Signed</label>
+                <input
+                  type="text"
+                  value={form.signedAt ? new Date(form.signedAt).toLocaleString() : new Date().toLocaleDateString()}
+                  readOnly
+                  style={{ fontFamily: 'monospace', fontSize: 13 }}
+                />
               </div>
             </div>
             <p className="reg-legal" style={{ marginTop: 8 }}>
