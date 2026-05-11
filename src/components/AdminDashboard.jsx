@@ -1323,6 +1323,7 @@ function AnalyticsView({ leads, vehicles }) {
 }
 
 const TEAM_CARDS = [
+  { slug: 'zachary', name: 'Zachary', title: 'PDR Specialist', email: 'zachary@alldentpdr.com' },
   { slug: 'kevin',   name: 'Kevin',   title: 'PDR Specialist', email: 'kevin@alldentpdr.com' },
   { slug: 'patrick', name: 'Patrick', title: 'PDR Specialist', email: 'patrick@alldentpdr.com' },
 ];
