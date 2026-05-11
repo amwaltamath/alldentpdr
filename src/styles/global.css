@@ -607,11 +607,13 @@ select {
   border: 1px solid #c7daf9;
   margin: 4px 0 !important;
 }
-.status-pill.is-progress { background: var(--warn-50); color: var(--warn); border-color: #f3d49a; }
-.status-pill.is-complete { background: var(--ok-50);   color: var(--ok);   border-color: #b7dfc4; }
+.status-pill.is-progress    { background: var(--warn-50); color: var(--warn); border-color: #f3d49a; }
+.status-pill.is-complete    { background: var(--ok-50);   color: var(--ok);   border-color: #b7dfc4; }
+.status-pill.is-pending-ins { background: #ede9fe; color: #6a5acd; border-color: #c4b5fd; }
+.status-pill.is-on-hold     { background: #fff7ed; color: #d97706; border-color: #fcd34d; }
 
 .portal-timeline {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
   margin-top: 8px;
   padding: 22px 0 4px;
   position: relative;

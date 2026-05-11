@@ -233,10 +233,30 @@ export default function AdminDashboard() {
     event.preventDefault();
     setSaveMessage('');
     try {
-      await registerVehicle(form);
+      const saved = await registerVehicle(form);
       setVehicles(await getVehicles());
+
+      // Send confirmation email to customer (same as public registration form)
+      const jobId = saved?.id || form.id;
+      if (form.email && jobId) {
+        fetch('/api/send-registration-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jobId,
+            customerName: form.customerName,
+            email: form.email,
+            phone: form.phone,
+            year: form.year,
+            make: form.make,
+            model: form.model,
+            plate: form.plate,
+          }),
+        }).catch((err) => console.warn('[registration email]', err));
+      }
+
       setForm(initialForm);
-      setSaveMessage('Vehicle registered successfully.');
+      setSaveMessage('Vehicle registered successfully. Confirmation email sent to customer.');
       setView('jobs');
     } catch {
       setSaveMessage('Unable to save the vehicle right now.');
