@@ -912,16 +912,19 @@ select {
   font-size: 11.5px; font-weight: 700; letter-spacing: .04em;
   border: 1px solid transparent;
 }
-.badge.registered { background: var(--info-50); color: var(--info); border-color: #cfdcf6; }
-.badge.progress  { background: var(--warn-50); color: var(--warn); border-color: #f3d49a; }
-.badge.complete  { background: var(--ok-50);   color: var(--ok);   border-color: #b7dfc4; }
+.badge.registered  { background: var(--info-50); color: var(--info); border-color: #cfdcf6; }
+.badge.progress    { background: var(--warn-50); color: var(--warn); border-color: #f3d49a; }
+.badge.complete    { background: var(--ok-50);   color: var(--ok);   border-color: #b7dfc4; }
+.badge.pending-ins { background: #ede9fe; color: #6a5acd; border-color: #c4b5fd; }
+.badge.on-hold     { background: #fff7ed; color: #d97706; border-color: #fcd34d; }
 
 /* Kanban */
 .kanban {
   display: grid; gap: 18px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
-@media (max-width: 920px) { .kanban { grid-template-columns: 1fr; } }
+@media (max-width: 1300px) { .kanban { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 920px)  { .kanban { grid-template-columns: 1fr; } }
 
 .kanban-col {
   background: var(--surface-2);

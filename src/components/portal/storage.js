@@ -220,6 +220,7 @@ export async function updateVehicle(id, updates) {
     if (nextUpdates.notes !== undefined) remoteUpdates.notes = nextUpdates.notes;
     if (nextUpdates.notificationsEnabled !== undefined) remoteUpdates.notifications_enabled = Boolean(nextUpdates.notificationsEnabled);
     if (nextUpdates.notificationChannel !== undefined) remoteUpdates.notification_channel = nextUpdates.notificationChannel;
+    if (nextUpdates.lastNotifiedAt !== undefined) remoteUpdates.last_notified_at = nextUpdates.lastNotifiedAt;
     remoteUpdates.updated_at = nextUpdates.updatedAt;
 
     const { data, error } = await supabase
@@ -246,7 +247,7 @@ export async function updateVehicle(id, updates) {
 }
 
 export async function updateVehicleStatus(id, status) {
-  return updateVehicle(id, { status });
+  return updateVehicle(id, { status, lastNotifiedAt: new Date().toISOString() });
 }
 
 export function setSession(session) {

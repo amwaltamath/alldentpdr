@@ -7,20 +7,30 @@ const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const FROM = 'noreply@alldentpdr.com';
 
 const STATUS_MESSAGES: Record<string, { headline: string; body: string; color: string }> = {
-  'In Progress': {
-    headline: 'Your repair is underway!',
-    body: "Great news — your vehicle is now actively being worked on by our PDR technicians. We'll notify you again when it's complete.",
+  'Estimate': {
+    headline: 'Your estimate is ready.',
+    body: "We've assessed your vehicle and prepared an estimate. Please review it and let us know how you'd like to proceed. Call us at 1-855-425-5336 or reply to this email with any questions.",
+    color: '#b0522b',
+  },
+  'Pending Insurance': {
+    headline: 'Your claim is in progress.',
+    body: "We're currently working with your insurance company to process your claim. This can take a few business days depending on your carrier. We'll update you as soon as we have approval to begin repairs.",
+    color: '#6a5acd',
+  },
+  'In Repair': {
+    headline: 'Your vehicle is being repaired!',
+    body: "Great news — your vehicle is now actively in our shop being worked on by our PDR technicians. We'll notify you as soon as repairs are complete.",
     color: '#4a7a5c',
   },
-  Complete: {
-    headline: 'Your repair is complete!',
-    body: 'Your vehicle repair has been finished. Thank you for choosing AllDent PDR. If you have any questions about the work performed, please don\'t hesitate to reach out.',
-    color: '#2563eb',
+  'On Hold - Waiting for Parts': {
+    headline: 'Your repair is on hold.',
+    body: "We're waiting on parts to complete your repair. We'll get started as soon as they arrive and keep you updated. Thank you for your patience.",
+    color: '#d97706',
   },
-  Registered: {
-    headline: 'Your registration has been confirmed.',
-    body: "We've received your vehicle registration. Our team will be in touch shortly to schedule your repair appointment.",
-    color: '#b0522b',
+  'Complete': {
+    headline: 'Your repair is complete!',
+    body: "Your vehicle repair has been finished. Thank you for choosing AllDent PDR! If you have any questions about the work performed, please don't hesitate to reach out.",
+    color: '#2563eb',
   },
 };
 

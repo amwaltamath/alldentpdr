@@ -20,7 +20,7 @@ import {
 
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
 const ADMIN_PASS = import.meta.env.PUBLIC_PORTAL_ADMIN_PASS || 'allDent2026';
-const STATUS_OPTIONS = ['Registered', 'In Progress', 'Complete'];
+const STATUS_OPTIONS = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold - Waiting for Parts', 'Complete'];
 
 const initialForm = {
   // Customer Information
@@ -44,7 +44,7 @@ const initialForm = {
   color: '',
   plate: '',
   // Job Settings
-  status: 'Registered',
+  status: 'Estimate',
   notes: '',
   notificationsEnabled: true,
   notificationChannel: 'email'
@@ -63,9 +63,11 @@ const NAV_ITEMS = [
 ];
 
 function statusBadge(status) {
-  if (status === 'Complete') return 'badge complete';
-  if (status === 'In Progress') return 'badge progress';
-  return 'badge registered';
+  if (status === 'Complete')                       return 'badge complete';
+  if (status === 'In Repair')                      return 'badge progress';
+  if (status === 'Pending Insurance')              return 'badge pending-ins';
+  if (status === 'On Hold - Waiting for Parts')    return 'badge on-hold';
+  return 'badge registered'; // Estimate
 }
 
 function initials(email = '') {
@@ -166,20 +168,18 @@ export default function AdminDashboard() {
 
   const metrics = useMemo(() => {
     const total = vehicles.length;
-    const registered = vehicles.filter((v) => v.status === 'Registered').length;
-    const inProgress = vehicles.filter((v) => v.status === 'In Progress').length;
+    const estimate = vehicles.filter((v) => v.status === 'Estimate').length;
+    const pendingIns = vehicles.filter((v) => v.status === 'Pending Insurance').length;
+    const inRepair = vehicles.filter((v) => v.status === 'In Repair').length;
+    const onHold = vehicles.filter((v) => v.status === 'On Hold - Waiting for Parts').length;
     const complete = vehicles.filter((v) => v.status === 'Complete').length;
     const completionRate = total ? Math.round((complete / total) * 100) : 0;
-    return { total, registered, inProgress, complete, completionRate };
+    return { total, estimate, pendingIns, inRepair, onHold, complete, completionRate };
   }, [vehicles]);
 
   const grouped = useMemo(() => {
     const list = filteredVehicles;
-    return {
-      Registered: list.filter((v) => v.status === 'Registered'),
-      'In Progress': list.filter((v) => v.status === 'In Progress'),
-      Complete: list.filter((v) => v.status === 'Complete')
-    };
+    return STATUS_COLUMNS.reduce((acc, s) => { acc[s] = list.filter((v) => v.status === s); return acc; }, {});
   }, [filteredVehicles]);
 
   const recent = useMemo(() => filteredVehicles.slice(0, 5), [filteredVehicles]);
@@ -480,8 +480,8 @@ function OverviewView({ metrics, recent, loading, onJump, remoteMode }) {
     <>
       <div className="kpi-grid">
         <div className="kpi"><span className="kpi-label">Total jobs</span><span className="kpi-value">{metrics.total}</span><div className="kpi-sub">{remoteMode ? 'Live across all admins' : 'Local-only data'}</div></div>
-        <div className="kpi kpi-accent"><span className="kpi-label">Registered</span><span className="kpi-value">{metrics.registered}</span><div className="kpi-sub">Awaiting work</div></div>
-        <div className="kpi kpi-warn"><span className="kpi-label">In progress</span><span className="kpi-value">{metrics.inProgress}</span><div className="kpi-sub">Active right now</div></div>
+        <div className="kpi kpi-accent"><span className="kpi-label">Estimate</span><span className="kpi-value">{metrics.estimate}</span><div className="kpi-sub">Awaiting approval</div></div>
+        <div className="kpi kpi-warn"><span className="kpi-label">In Repair</span><span className="kpi-value">{metrics.inRepair}</span><div className="kpi-sub">Active right now</div></div>
         <div className="kpi kpi-ok"><span className="kpi-label">Completed</span><span className="kpi-value">{metrics.complete}</span><div className="kpi-sub">{metrics.completionRate}% completion rate</div></div>
       </div>
 
@@ -603,7 +603,7 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
   );
 }
 
-const STATUS_COLUMNS = ['Registered', 'In Progress', 'Complete'];
+const STATUS_COLUMNS = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold - Waiting for Parts', 'Complete'];
 
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange }) {
   return (
