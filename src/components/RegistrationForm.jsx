@@ -37,9 +37,12 @@ export default function RegistrationForm() {
     });
   };
 
-  const canNext1 = form.customerName.trim() && form.email.trim() && form.phone.trim();
-  const canNext2 = form.year.trim() && form.make.trim() && form.model.trim() && form.plate.trim();
-  const canSubmit = form.directionToPaySigned && form.repairAuthSigned && form.signatureName.trim();
+  const canNext1 = form.customerName.trim() && form.email.trim() && form.phone.trim() &&
+    form.address.trim() && form.city.trim() && form.zip.trim() && form.homePhone.trim() && form.howHeard.trim();
+  const canNext2 = form.year.trim() && form.make.trim() && form.model.trim() && form.plate.trim() &&
+    form.insuranceCompany.trim() && form.deductible.trim() && form.claimNumber.trim() &&
+    form.color.trim() && form.vin.trim() && form.notes.trim();
+  const canSubmit = form.directionToPaySigned && form.repairAuthSigned && form.signatureName.trim() && form.insuranceAuthName.trim();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -138,14 +141,14 @@ export default function RegistrationForm() {
           </div>
 
           <div className="reg-field full">
-            <label htmlFor="r-address">Street address</label>
-            <input id="r-address" type="text" value={form.address} onChange={set('address')} placeholder="123 Main St" />
+              <label htmlFor="r-address">Street address <span aria-hidden>*</span></label>
+              <input id="r-address" type="text" value={form.address} onChange={set('address')} required placeholder="123 Main St" />
           </div>
 
           <div className="reg-row reg-row-3">
             <div className="reg-field">
-              <label htmlFor="r-city">City</label>
-              <input id="r-city" type="text" value={form.city} onChange={set('city')} />
+              <label htmlFor="r-city">City <span aria-hidden>*</span></label>
+              <input id="r-city" type="text" value={form.city} onChange={set('city')} required />
             </div>
             <div className="reg-field">
               <label htmlFor="r-state">State</label>
@@ -154,8 +157,8 @@ export default function RegistrationForm() {
               </select>
             </div>
             <div className="reg-field">
-              <label htmlFor="r-zip">ZIP</label>
-              <input id="r-zip" type="text" inputMode="numeric" value={form.zip} onChange={set('zip')} maxLength={10} />
+              <label htmlFor="r-zip">ZIP <span aria-hidden>*</span></label>
+              <input id="r-zip" type="text" inputMode="numeric" value={form.zip} onChange={set('zip')} required maxLength={10} />
             </div>
           </div>
 
@@ -165,8 +168,8 @@ export default function RegistrationForm() {
               <input id="r-cell" type="tel" value={form.phone} onChange={set('phone')} required placeholder="(513) 555-0100" />
             </div>
             <div className="reg-field">
-              <label htmlFor="r-home">Home phone</label>
-              <input id="r-home" type="tel" value={form.homePhone} onChange={set('homePhone')} placeholder="(513) 555-0200" />
+              <label htmlFor="r-home">Home phone <span aria-hidden>*</span></label>
+              <input id="r-home" type="tel" value={form.homePhone} onChange={set('homePhone')} required placeholder="(513) 555-0200" />
             </div>
           </div>
 
@@ -176,8 +179,8 @@ export default function RegistrationForm() {
           </div>
 
           <div className="reg-field full">
-            <label htmlFor="r-heard">How did you hear about us?</label>
-            <input id="r-heard" type="text" value={form.howHeard} onChange={set('howHeard')} placeholder="Google, referral, social media…" />
+            <label htmlFor="r-heard">How did you hear about us? <span aria-hidden>*</span></label>
+            <input id="r-heard" type="text" value={form.howHeard} onChange={set('howHeard')} required placeholder="Google, referral, social media…" />
           </div>
         </fieldset>
       )}
@@ -189,16 +192,16 @@ export default function RegistrationForm() {
             <legend>Insurance Information</legend>
             <div className="reg-row reg-row-3">
               <div className="reg-field">
-                <label htmlFor="r-ins-co">Insurance company</label>
-                <input id="r-ins-co" type="text" value={form.insuranceCompany} onChange={set('insuranceCompany')} />
+                <label htmlFor="r-ins-co">Insurance company <span aria-hidden>*</span></label>
+                <input id="r-ins-co" type="text" value={form.insuranceCompany} onChange={set('insuranceCompany')} required />
               </div>
               <div className="reg-field">
-                <label htmlFor="r-deduct">Deductible</label>
-                <input id="r-deduct" type="text" value={form.deductible} onChange={set('deductible')} placeholder="$500" />
+                <label htmlFor="r-deduct">Deductible <span aria-hidden>*</span></label>
+                <input id="r-deduct" type="text" value={form.deductible} onChange={set('deductible')} required placeholder="$500" />
               </div>
               <div className="reg-field">
-                <label htmlFor="r-claim">Claim #</label>
-                <input id="r-claim" type="text" value={form.claimNumber} onChange={set('claimNumber')} />
+                <label htmlFor="r-claim">Claim # <span aria-hidden>*</span></label>
+                <input id="r-claim" type="text" value={form.claimNumber} onChange={set('claimNumber')} required />
               </div>
             </div>
           </fieldset>
@@ -225,17 +228,17 @@ export default function RegistrationForm() {
                 <input id="r-plate" type="text" value={form.plate} onChange={set('plate')} required placeholder="ABC1234" />
               </div>
               <div className="reg-field">
-                <label htmlFor="r-color">Color</label>
-                <input id="r-color" type="text" value={form.color} onChange={set('color')} placeholder="White" />
+                <label htmlFor="r-color">Color <span aria-hidden>*</span></label>
+                <input id="r-color" type="text" value={form.color} onChange={set('color')} required placeholder="White" />
               </div>
             </div>
             <div className="reg-field full">
-              <label htmlFor="r-vin">VIN #</label>
-              <input id="r-vin" type="text" value={form.vin} onChange={set('vin')} placeholder="1HGCM82633A004352" maxLength={17} />
+              <label htmlFor="r-vin">VIN # <span aria-hidden>*</span></label>
+              <input id="r-vin" type="text" value={form.vin} onChange={set('vin')} required placeholder="1HGCM82633A004352" maxLength={17} />
             </div>
             <div className="reg-field full">
-              <label htmlFor="r-notes">Additional notes</label>
-              <textarea id="r-notes" rows={3} value={form.notes} onChange={set('notes')} placeholder="Describe the damage, number of dents, area of vehicle…" />
+              <label htmlFor="r-notes">Additional notes <span aria-hidden>*</span></label>
+              <textarea id="r-notes" rows={3} value={form.notes} onChange={set('notes')} required placeholder="Describe the damage, number of dents, area of vehicle…" />
             </div>
           </fieldset>
         </>
@@ -253,6 +256,7 @@ export default function RegistrationForm() {
                 className="reg-inline-input"
                 value={form.insuranceAuthName}
                 onChange={set('insuranceAuthName')}
+                required
                 placeholder="Insurance company name"
               /> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.
             </p>
