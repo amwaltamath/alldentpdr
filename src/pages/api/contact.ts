@@ -62,8 +62,11 @@ export const POST: APIRoute = async ({ request }) => {
         <table style="border-collapse:collapse;width:100%;max-width:600px">
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Name</td><td style="padding:8px">${escHtml(name)}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Email</td><td style="padding:8px"><a href="mailto:${escHtml(email)}">${escHtml(email)}</a></td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Phone</td><td style="padding:8px">${escHtml(body.phone || '—')}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Location</td><td style="padding:8px">${escHtml(location || '—')}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Vehicle</td><td style="padding:8px">${escHtml(vehicle || '—')}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Insurance Co.</td><td style="padding:8px">${escHtml(body.insurance_company || '—')}</td></tr>
+          <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Has Estimate</td><td style="padding:8px">${body.has_estimate === 'yes' ? '✅ Yes — estimate already written' : '☐ No'}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5;vertical-align:top">Message</td><td style="padding:8px;white-space:pre-wrap">${escHtml(message)}</td></tr>
           <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Source</td><td style="padding:8px;color:#888;font-size:12px">${escHtml([utm_source,utm_medium,utm_campaign].filter(Boolean).join(' / ') || 'organic / direct')}</td></tr>
         </table>
