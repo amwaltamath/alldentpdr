@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
+  deleteVehicle,
   getPricing,
   getRemoteAuthUser,
   getSession,
@@ -269,6 +270,16 @@ export default function AdminDashboard() {
     setReleaseJob(null);
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Permanently delete this job? This cannot be undone.')) return;
+    try {
+      await deleteVehicle(id);
+      setVehicles((prev) => prev.filter((v) => v.id !== id));
+    } catch (err) {
+      alert('Delete failed: ' + err.message);
+    }
+  };
+
   const handleLogout = () => {
     if (remoteMode) signOutRemoteAdmin();
     clearSession();
@@ -433,6 +444,7 @@ export default function AdminDashboard() {
               onStatusChange={handleStatusChange}
               onNotificationChange={handleNotificationChange}
               onRelease={setReleaseJob}
+              onDelete={handleDelete}
             />
           )}
 
@@ -592,7 +604,7 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
 
 const STATUS_COLUMNS = ['Registered', 'In Progress', 'Complete'];
 
-function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease }) {
+function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
   return (
     <div className="job-inline-detail">
       <div className="jid-header">
@@ -600,7 +612,10 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
           <p className="crumb" style={{ margin: 0 }}>{v.id} &nbsp;·&nbsp; {v.plate}</p>
           <h3 style={{ margin: '2px 0 0' }}>{v.year} {v.make} {v.model}</h3>
         </div>
-        <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Collapse detail">✕ Close</button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <button type="button" className="button ghost sm jid-delete" onClick={() => onDelete(v.id)} title="Delete this job">🗑 Delete job</button>
+          <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Collapse detail">✕ Close</button>
+        </div>
       </div>
 
       <div className="jid-body">
@@ -687,17 +702,34 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
   );
 }
 
-function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onRelease }) {
+function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onRelease, onDelete }) {
   const [selectedId, setSelectedId] = useState(null);
+  const [queue, setQueue] = useState('open');
 
   const toggle = (id) => setSelectedId((cur) => cur === id ? null : id);
+
+  const openJobs   = vehicles.filter((v) => v.status !== 'Complete');
+  const closedJobs = vehicles.filter((v) => v.status === 'Complete');
+  const shown      = queue === 'open' ? openJobs : closedJobs;
 
   return (
     <section className="panel">
       <div className="panel-head">
         <div>
           <h3>All jobs</h3>
-          <p className="meta" style={{ margin: '2px 0 0' }}>{vehicles.length} {vehicles.length === 1 ? 'job' : 'jobs'} &mdash; click a row to expand details</p>
+          <p className="meta" style={{ margin: '2px 0 0' }}>{shown.length} {shown.length === 1 ? 'job' : 'jobs'} &mdash; click a row to expand details</p>
+        </div>
+        <div className="queue-tabs">
+          <button
+            type="button"
+            className={`queue-tab${queue === 'open' ? ' active' : ''}`}
+            onClick={() => { setQueue('open'); setSelectedId(null); }}
+          >Open <span className="queue-count">{openJobs.length}</span></button>
+          <button
+            type="button"
+            className={`queue-tab${queue === 'closed' ? ' active' : ''}`}
+            onClick={() => { setQueue('closed'); setSelectedId(null); }}
+          >Closed <span className="queue-count">{closedJobs.length}</span></button>
         </div>
       </div>
       <div className="table-scroll">
@@ -711,10 +743,11 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
               <th>Status</th>
               <th>Notifications</th>
               <th>Release</th>
+              <th style={{ width: 48 }}></th>
             </tr>
           </thead>
           <tbody>
-            {vehicles.map((v) => {
+            {shown.map((v) => {
               const isOpen = selectedId === v.id;
               return (
                 <Fragment key={v.id}>
@@ -771,16 +804,26 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
                         {v.releaseFormData ? '✓ Release' : '📋 Release'}
                       </button>
                     </td>
+                    <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
+                      <button
+                        type="button"
+                        className="btn-delete-job"
+                        onClick={() => onDelete(v.id)}
+                        title="Delete job"
+                        aria-label="Delete job"
+                      >🗑</button>
+                    </td>
                   </tr>
                   {isOpen && (
                     <tr className="job-detail-tr">
-                      <td colSpan={7} className="job-detail-td">
+                      <td colSpan={8} className="job-detail-td">
                         <JobDetail
                           v={v}
                           onClose={() => setSelectedId(null)}
                           onStatusChange={onStatusChange}
                           onNotificationChange={onNotificationChange}
                           onRelease={(job) => { setSelectedId(null); onRelease(job); }}
+                          onDelete={(id) => { setSelectedId(null); onDelete(id); }}
                         />
                       </td>
                     </tr>
@@ -788,11 +831,11 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
                 </Fragment>
               );
             })}
-            {!loading && !vehicles.length && (
-              <tr><td colSpan={7} className="kanban-empty">No jobs match your search yet.</td></tr>
+            {!loading && !shown.length && (
+              <tr><td colSpan={8} className="kanban-empty">{queue === 'open' ? 'No open jobs.' : 'No closed jobs yet.'}</td></tr>
             )}
             {loading && (
-              <tr><td colSpan={7} className="kanban-empty">Loading…</td></tr>
+              <tr><td colSpan={8} className="kanban-empty">Loading…</td></tr>
             )}
           </tbody>
         </table>

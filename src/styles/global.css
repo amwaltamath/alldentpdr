@@ -803,6 +803,65 @@ select {
   .jid-body { grid-template-columns: 1fr; gap: 20px; }
 }
 
+/* ── Queue tabs (Open / Closed) ─────────────────────── */
+.queue-tabs {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.queue-tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--line, #e8e2db);
+  background: var(--surface, #fff);
+  color: var(--ink, #1a1410);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition, 0.3s);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.queue-tab:hover { border-color: var(--rust, #b0522b); color: var(--rust, #b0522b); }
+.queue-tab.active {
+  background: var(--rust, #b0522b);
+  border-color: var(--rust, #b0522b);
+  color: #fff;
+}
+.queue-count {
+  background: rgba(0,0,0,.12);
+  color: inherit;
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+}
+.queue-tab.active .queue-count { background: rgba(255,255,255,.25); }
+
+/* ── Row delete button ───────────────────────────────── */
+.btn-delete-job {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  opacity: .45;
+  transition: opacity .2s, background .2s;
+  line-height: 1;
+}
+.btn-delete-job:hover { opacity: 1; background: #fde8e8; }
+
+/* ── Inline detail delete button ─────────────────────── */
+.jid-delete {
+  color: #c0392b !important;
+  border-color: #c0392b !important;
+}
+.jid-delete:hover { background: #fde8e8 !important; }
+
 .dash-main { display: flex; flex-direction: column; min-width: 0; }
 
 .dash-topbar {
