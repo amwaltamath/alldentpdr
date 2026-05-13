@@ -42,6 +42,7 @@ function mapRemoteVehicle(item) {
     insuranceAuthName: item.insurance_auth_name || '',
     signatureName: item.signature_name || '',
     signedAt: item.signed_at || null,
+    releaseFormData: item.release_form_data || null,
     createdAt: item.created_at,
     updatedAt: item.updated_at
   };
@@ -226,6 +227,7 @@ export async function updateVehicle(id, updates) {
     if (nextUpdates.notificationsEnabled !== undefined) remoteUpdates.notifications_enabled = Boolean(nextUpdates.notificationsEnabled);
     if (nextUpdates.notificationChannel !== undefined) remoteUpdates.notification_channel = nextUpdates.notificationChannel;
     if (nextUpdates.lastNotifiedAt !== undefined) remoteUpdates.last_notified_at = nextUpdates.lastNotifiedAt;
+    if (nextUpdates.releaseFormData !== undefined) remoteUpdates.release_form_data = nextUpdates.releaseFormData;
     remoteUpdates.updated_at = nextUpdates.updatedAt;
 
     const { data, error } = await supabase
@@ -253,6 +255,10 @@ export async function updateVehicle(id, updates) {
 
 export async function updateVehicleStatus(id, status) {
   return updateVehicle(id, { status, lastNotifiedAt: new Date().toISOString() });
+}
+
+export async function saveReleaseForm(id, releaseData) {
+  return updateVehicle(id, { releaseFormData: releaseData });
 }
 
 export async function deleteVehicle(id) {

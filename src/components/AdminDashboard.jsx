@@ -1,8 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
-  deleteVehicle,
-  getLeads,
   getPricing,
   getRemoteAuthUser,
   getSession,
@@ -10,18 +8,18 @@ import {
   isRemoteAdmin,
   isRemotePortalEnabled,
   registerVehicle,
+  saveReleaseForm,
   savePricing,
   setSession,
   signInRemoteAdmin,
   signOutRemoteAdmin,
-  updateLead,
   updateVehicle,
   updateVehicleStatus
 } from './portal/storage';
 
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
 const ADMIN_PASS = import.meta.env.PUBLIC_PORTAL_ADMIN_PASS || 'allDent2026';
-const STATUS_OPTIONS = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold', 'Complete'];
+const STATUS_OPTIONS = ['Registered', 'In Progress', 'Complete'];
 
 const initialForm = {
   // Customer Information
@@ -45,30 +43,26 @@ const initialForm = {
   color: '',
   plate: '',
   // Job Settings
-  status: 'Estimate',
+  status: 'Registered',
   notes: '',
   notificationsEnabled: true,
   notificationChannel: 'email'
 };
 
 const NAV_ITEMS = [
-  { id: 'overview',   label: 'Overview',          icon: '◧' },
-  { id: 'pipeline',   label: 'Pipeline',          icon: '▦' },
-  { id: 'jobs',       label: 'All Jobs',          icon: '☰' },
-  { id: 'leads',      label: 'Leads',             icon: '◎' },
-  { id: 'analytics',  label: 'Analytics',         icon: '▲' },
-  { id: 'quote',      label: 'New Quote',         icon: '$' },
-  { id: 'pricing',    label: 'Pricing Matrix',    icon: '☰£' },
-  { id: 'register',   label: 'Register Vehicle',  icon: '+' },
-  { id: 'cards',      label: 'Business Cards',    icon: '▣' },
+  { id: 'overview', label: 'Overview',          icon: '◧' },
+  { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
+  { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
+  { id: 'quote',    label: 'New Quote',         icon: '$' },
+  { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
+  { id: 'register', label: 'Register Vehicle',  icon: '+' },
+  { id: 'cards',    label: 'Business Cards',    icon: '▣' },
 ];
 
 function statusBadge(status) {
-  if (status === 'Complete')                       return 'badge complete';
-  if (status === 'In Repair')                      return 'badge progress';
-  if (status === 'Pending Insurance')              return 'badge pending-ins';
-  if (status === 'On Hold')                        return 'badge on-hold';
-  return 'badge registered'; // Estimate
+  if (status === 'Complete') return 'badge complete';
+  if (status === 'In Progress') return 'badge progress';
+  return 'badge registered';
 }
 
 function initials(email = '') {
@@ -89,12 +83,10 @@ export default function AdminDashboard() {
   const [pipelineMode, setPipelineMode] = useState('kanban');
   const [form, setForm] = useState(initialForm);
   const [vehicles, setVehicles] = useState([]);
-  const [leads, setLeads] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [saveMessage, setSaveMessage] = useState('');
-  const [pendingStatus, setPendingStatus] = useState(null); // { id, nextStatus }
-  const [pendingDelete, setPendingDelete] = useState(null);  // vehicle object
+  const [releaseJob, setReleaseJob] = useState(null);
 
   const remoteMode = isRemotePortalEnabled();
 
@@ -138,14 +130,8 @@ export default function AdminDashboard() {
       }
       setLoading(true);
       try {
-        const [nextVehicles, nextLeads] = await Promise.all([
-          getVehicles(),
-          getLeads().catch(() => []),
-        ]);
-        if (active) {
-          setVehicles(nextVehicles);
-          setLeads(nextLeads);
-        }
+        const next = await getVehicles();
+        if (active) setVehicles(next);
       } catch {
         if (active) setAuthError('Unable to load vehicle data.');
       } finally {
@@ -171,18 +157,20 @@ export default function AdminDashboard() {
 
   const metrics = useMemo(() => {
     const total = vehicles.length;
-    const estimate = vehicles.filter((v) => v.status === 'Estimate').length;
-    const pendingIns = vehicles.filter((v) => v.status === 'Pending Insurance').length;
-    const inRepair = vehicles.filter((v) => v.status === 'In Repair').length;
-    const onHold = vehicles.filter((v) => v.status === 'On Hold').length;
+    const registered = vehicles.filter((v) => v.status === 'Registered').length;
+    const inProgress = vehicles.filter((v) => v.status === 'In Progress').length;
     const complete = vehicles.filter((v) => v.status === 'Complete').length;
     const completionRate = total ? Math.round((complete / total) * 100) : 0;
-    return { total, estimate, pendingIns, inRepair, onHold, complete, completionRate };
+    return { total, registered, inProgress, complete, completionRate };
   }, [vehicles]);
 
   const grouped = useMemo(() => {
     const list = filteredVehicles;
-    return STATUS_COLUMNS.reduce((acc, s) => { acc[s] = list.filter((v) => v.status === s); return acc; }, {});
+    return {
+      Registered: list.filter((v) => v.status === 'Registered'),
+      'In Progress': list.filter((v) => v.status === 'In Progress'),
+      Complete: list.filter((v) => v.status === 'Complete')
+    };
   }, [filteredVehicles]);
 
   const recent = useMemo(() => filteredVehicles.slice(0, 5), [filteredVehicles]);
@@ -236,71 +224,22 @@ export default function AdminDashboard() {
     event.preventDefault();
     setSaveMessage('');
     try {
-      const saved = await registerVehicle(form);
+      await registerVehicle(form);
       setVehicles(await getVehicles());
-
-      // Send confirmation email to customer (same as public registration form)
-      const jobId = saved?.id || form.id;
-      if (form.email && jobId) {
-        fetch('/api/send-registration-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jobId,
-            customerName: form.customerName,
-            email: form.email,
-            phone: form.phone,
-            homePhone: form.homePhone,
-            address: form.address,
-            city: form.city,
-            state: form.state,
-            zip: form.zip,
-            year: form.year,
-            make: form.make,
-            model: form.model,
-            plate: form.plate,
-            vin: form.vin,
-            color: form.color,
-            insuranceCompany: form.insuranceCompany,
-            deductible: form.deductible,
-            claimNumber: form.claimNumber,
-            notes: form.notes,
-            directionToPaySigned: form.directionToPaySigned,
-            repairAuthSigned: form.repairAuthSigned,
-            insuranceAuthName: form.insuranceAuthName,
-            signatureName: form.signatureName,
-            signedAt: form.signedAt,
-            howHeard: form.howHeard,
-          }),
-        }).catch((err) => console.warn('[registration email]', err));
-      }
-
       setForm(initialForm);
-      setSaveMessage('Vehicle registered successfully. Confirmation email sent to customer.');
+      setSaveMessage('Vehicle registered successfully.');
       setView('jobs');
     } catch {
       setSaveMessage('Unable to save the vehicle right now.');
     }
   };
 
-  // Step 1: intercept status change — open the note modal
-  const handleStatusChange = (id, nextStatus) => {
-    setPendingStatus({ id, nextStatus });
-  };
-
-  // Step 2: confirmed from modal — do the update + send email
-  const handleConfirmStatusChange = async (note) => {
-    if (!pendingStatus) return;
-    const { id, nextStatus } = pendingStatus;
-    setPendingStatus(null);
-
-    // Save status (and note if provided) to the vehicle record
-    const updatePayload = { status: nextStatus, lastNotifiedAt: new Date().toISOString() };
-    if (note.trim()) updatePayload.notes = note.trim();
-    await updateVehicle(id, updatePayload);
+  const handleStatusChange = async (id, nextStatus) => {
+    await updateVehicleStatus(id, nextStatus);
     const updated = await getVehicles();
     setVehicles(updated);
 
+    // Send customer email if notifications are enabled
     const vehicle = updated.find((v) => v.id === id);
     if (vehicle?.notificationsEnabled && vehicle?.email) {
       fetch('/api/send-status-email', {
@@ -315,7 +254,6 @@ export default function AdminDashboard() {
           make: vehicle.make,
           model: vehicle.model,
           plate: vehicle.plate,
-          customNote: note.trim() || undefined,
         }),
       }).catch((err) => console.warn('[status email]', err));
     }
@@ -326,25 +264,9 @@ export default function AdminDashboard() {
     setVehicles(await getVehicles());
   };
 
-  const handleLeadStatusChange = async (id, nextStatus) => {
-    await updateLead(id, { status: nextStatus });
-    setLeads((prev) => prev.map((l) => l.id === id ? { ...l, status: nextStatus } : l));
-  };
-
-  const handleDeleteVehicle = async (vehicle) => {
-    setPendingDelete(vehicle);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!pendingDelete) return;
-    const { id } = pendingDelete;
-    setPendingDelete(null);
-    try {
-      await deleteVehicle(id);
-      setVehicles((prev) => prev.filter((v) => v.id !== id));
-    } catch {
-      alert('Unable to delete this record. Please try again.');
-    }
+  const handleReleaseSaved = (updatedJob) => {
+    setVehicles((prev) => prev.map((v) => v.id === updatedJob.id ? { ...v, releaseFormData: updatedJob.releaseFormData } : v));
+    setReleaseJob(null);
   };
 
   const handleLogout = () => {
@@ -406,18 +328,11 @@ export default function AdminDashboard() {
 
   return (
     <div className="dash">
-      {pendingStatus && (
-        <StatusNoteModal
-          nextStatus={pendingStatus.nextStatus}
-          onConfirm={handleConfirmStatusChange}
-          onCancel={() => setPendingStatus(null)}
-        />
-      )}
-      {pendingDelete && (
-        <DeleteConfirmModal
-          vehicle={pendingDelete}
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setPendingDelete(null)}
+      {releaseJob && (
+        <VehicleReleaseModal
+          job={releaseJob}
+          onClose={() => setReleaseJob(null)}
+          onSaved={handleReleaseSaved}
         />
       )}
       {navOpen && <div className="dash-overlay" onClick={() => setNavOpen(false)} aria-hidden="true" />}
@@ -517,20 +432,8 @@ export default function AdminDashboard() {
               loading={loading}
               onStatusChange={handleStatusChange}
               onNotificationChange={handleNotificationChange}
-              onDelete={handleDeleteVehicle}
+              onRelease={setReleaseJob}
             />
-          )}
-
-          {view === 'leads' && (
-            <LeadsView
-              leads={leads}
-              loading={loading}
-              onStatusChange={handleLeadStatusChange}
-            />
-          )}
-
-          {view === 'analytics' && (
-            <AnalyticsView leads={leads} vehicles={vehicles} />
           )}
 
           {view === 'register' && (
@@ -557,222 +460,6 @@ export default function AdminDashboard() {
   );
 }
 
-/* ----------------- status note modal ----------------- */
-
-function StatusNoteModal({ nextStatus, onConfirm, onCancel }) {
-  const [note, setNote] = useState('');
-  return (
-    <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-head">
-          <h3 style={{ margin: 0 }}>Update Status</h3>
-          <button type="button" className="job-drawer-close" onClick={onCancel} aria-label="Close">✕</button>
-        </div>
-        <div className="modal-body">
-          <p style={{ marginTop: 0 }}>
-            Changing status to: <strong style={{ marginLeft: 6 }}>{nextStatus}</strong>
-          </p>
-          <label htmlFor="status-note" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>
-            Add a note for the customer <span style={{ fontWeight: 400, color: '#888' }}>(optional)</span>
-          </label>
-          <textarea
-            id="status-note"
-            rows={4}
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="e.g. We received your insurance approval and are starting repairs tomorrow morning."
-            style={{ width: '100%', boxSizing: 'border-box', padding: '10px 12px', borderRadius: 8, border: '1px solid #ddd', fontSize: 14, resize: 'vertical' }}
-            autoFocus
-          />
-          <p style={{ fontSize: 12, color: '#888', marginTop: 6 }}>
-            If a note is added, it will appear in the customer's status email and in their portal.
-          </p>
-        </div>
-        <div className="modal-foot">
-          <button type="button" className="button ghost" onClick={onCancel}>Cancel</button>
-          <button type="button" className="button primary" onClick={() => onConfirm(note)}>
-            Confirm &amp; Send
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ----------------- delete confirm modal ----------------- */
-
-function DeleteConfirmModal({ vehicle, onConfirm, onCancel }) {
-  return (
-    <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-head">
-          <h3 style={{ margin: 0 }}>Delete Job Record</h3>
-          <button type="button" className="job-drawer-close" onClick={onCancel} aria-label="Close">✕</button>
-        </div>
-        <div className="modal-body">
-          <p style={{ marginTop: 0 }}>
-            Permanently delete <strong>{vehicle.id}</strong> — {vehicle.year} {vehicle.make} {vehicle.model} ({vehicle.customerName})?
-          </p>
-          <p style={{ fontSize: 13, color: '#c0392b', margin: 0 }}>
-            This cannot be undone. All customer data for this job will be removed.
-          </p>
-        </div>
-        <div className="modal-foot">
-          <button type="button" className="button ghost" onClick={onCancel}>Cancel</button>
-          <button
-            type="button"
-            className="button"
-            style={{ background: '#c0392b', color: '#fff', borderColor: '#c0392b' }}
-            onClick={onConfirm}
-          >
-            Delete permanently
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ----------------- job download ----------------- */
-
-function downloadJobRecord(v) {
-  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const check = (val) => val ? '&#x2611;' : '&#x2610;';
-  const fmt = (iso) => { try { return new Date(iso).toLocaleString(); } catch { return iso; } };
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Job Record ${esc(v.id)} – AllDent PDR</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; }
-  body { font-family: system-ui, Arial, sans-serif; color: #1a1410; margin: 0; padding: 32px 40px; font-size: 13px; line-height: 1.55; }
-  header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #b0522b; padding-bottom: 14px; margin-bottom: 22px; }
-  header h1 { margin: 0; font-size: 22px; color: #b0522b; }
-  header .meta { text-align: right; font-size: 11px; color: #666; }
-  .job-id { font-size: 17px; font-weight: 700; letter-spacing: .04em; }
-  .status-pill { display: inline-block; background: #b0522b; color: #fff; border-radius: 20px; padding: 2px 12px; font-size: 11px; font-weight: 700; margin-left: 10px; vertical-align: middle; }
-  section { margin-bottom: 20px; break-inside: avoid; }
-  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: #b0522b; margin: 0 0 8px; border-bottom: 1px solid #e8e0d5; padding-bottom: 4px; }
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 16px; }
-  .field { }
-  .label { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: #888; display: block; margin-bottom: 2px; }
-  .val { font-weight: 600; font-size: 13px; }
-  .notes-box { background: #fffbf6; border: 1px solid #e8e0d5; border-radius: 6px; padding: 10px 14px; white-space: pre-wrap; }
-  .auth-block { background: #f9f6f2; border: 1px solid #e0d8ce; border-radius: 8px; padding: 14px 18px; font-size: 12px; }
-  .auth-block p { margin: 6px 0; }
-  .check { font-size: 16px; margin-right: 6px; }
-  .sig-line { border-bottom: 1px solid #333; width: 280px; display: inline-block; margin-left: 8px; vertical-align: bottom; }
-  footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #e0d8ce; font-size: 10px; color: #aaa; display: flex; justify-content: space-between; }
-  @media print {
-    body { padding: 20px 28px; }
-    @page { margin: 0.6in; }
-  }
-</style>
-</head>
-<body>
-<header>
-  <div>
-    <h1>AllDent PDR</h1>
-    <p style="margin:4px 0 0;font-size:12px;color:#555">7695 Granger Rd, Cleveland, OH 44125 &nbsp;|&nbsp; 1-855-425-5336 &nbsp;|&nbsp; alldentpdr.com</p>
-  </div>
-  <div class="meta">
-    <p style="margin:0;font-size:15px;font-weight:700">Vehicle Work Order</p>
-    <p style="margin:2px 0 0">Printed: ${fmt(new Date().toISOString())}</p>
-  </div>
-</header>
-
-<section>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-    <span class="job-id">${esc(v.id)}</span>
-    <span class="status-pill">${esc(v.status)}</span>
-  </div>
-  <div class="grid">
-    <div class="field"><span class="label">Registered</span><span class="val">${fmt(v.createdAt)}</span></div>
-    <div class="field"><span class="label">Last Updated</span><span class="val">${fmt(v.updatedAt)}</span></div>
-    <div class="field"><span class="label">Notifications</span><span class="val">${v.notificationsEnabled ? 'Enabled (' + esc(v.notificationChannel) + ')' : 'Disabled'}</span></div>
-  </div>
-</section>
-
-<section>
-  <h2>Customer Information</h2>
-  <div class="grid">
-    <div class="field"><span class="label">Full Name</span><span class="val">${esc(v.customerName)}</span></div>
-    <div class="field"><span class="label">Email</span><span class="val">${esc(v.email)}</span></div>
-    <div class="field"><span class="label">Cell Phone</span><span class="val">${esc(v.phone) || '—'}</span></div>
-    <div class="field"><span class="label">Home Phone</span><span class="val">${esc(v.homePhone) || '—'}</span></div>
-    <div class="field" style="grid-column:span 2"><span class="label">Address</span><span class="val">${esc([v.address, v.city, v.state, v.zip].filter(Boolean).join(', ')) || '—'}</span></div>
-    <div class="field"><span class="label">How Heard</span><span class="val">${esc(v.howHeardAboutUs) || '—'}</span></div>
-  </div>
-</section>
-
-<section>
-  <h2>Vehicle Information</h2>
-  <div class="grid">
-    <div class="field"><span class="label">Year</span><span class="val">${esc(v.year)}</span></div>
-    <div class="field"><span class="label">Make</span><span class="val">${esc(v.make)}</span></div>
-    <div class="field"><span class="label">Model</span><span class="val">${esc(v.model)}</span></div>
-    <div class="field"><span class="label">Color</span><span class="val">${esc(v.color) || '—'}</span></div>
-    <div class="field"><span class="label">License Plate</span><span class="val">${esc(v.plate)}</span></div>
-    <div class="field"><span class="label">VIN</span><span class="val" style="font-family:monospace">${esc(v.vin) || '—'}</span></div>
-  </div>
-</section>
-
-<section>
-  <h2>Insurance Information</h2>
-  <div class="grid">
-    <div class="field"><span class="label">Insurance Company</span><span class="val">${esc(v.insuranceCompany) || '—'}</span></div>
-    <div class="field"><span class="label">Deductible</span><span class="val">${esc(v.deductible) || '—'}</span></div>
-    <div class="field"><span class="label">Claim Number</span><span class="val">${esc(v.claimNumber) || '—'}</span></div>
-  </div>
-</section>
-
-${v.notes ? `
-<section>
-  <h2>Technician Notes</h2>
-  <div class="notes-box">${esc(v.notes)}</div>
-</section>` : ''}
-
-<section>
-  <h2>Authorizations &amp; Agreements</h2>
-  <div class="auth-block">
-    <p><span class="check">${check(v.directionToPaySigned)}</span><strong>Direction to Pay</strong>
-      ${v.insuranceAuthName ? ` — Authorized by: <strong>${esc(v.insuranceAuthName)}</strong>` : ''}
-    </p>
-    <p style="font-size:11px;color:#666;margin-left:26px">Customer authorizes insurance payment directly to AllDent PDR to cover repair charges.</p>
-
-    <p style="margin-top:12px"><span class="check">${check(v.repairAuthSigned)}</span><strong>Repair Authorization</strong></p>
-    <p style="font-size:11px;color:#666;margin-left:26px">Customer authorizes AllDent PDR to perform all necessary repairs to the vehicle listed above.</p>
-
-    <p style="margin-top:14px">
-      <span class="label" style="display:inline">Customer Signature:</span>
-      <span class="sig-line">&nbsp;${v.signatureName ? esc(v.signatureName) : ''}&nbsp;</span>
-    </p>
-    ${v.signedAt ? `
-    <p style="margin-top:10px;font-size:12px">
-      <span class="label" style="display:inline">Electronically signed:</span>
-      <strong style="margin-left:8px;font-family:monospace">${fmt(v.signedAt)}</strong>
-      <span style="margin-left:10px;font-size:10px;color:#888">(UTC: ${esc(v.signedAt)})</span>
-    </p>` : ''}
-  </div>
-</section>
-
-<footer>
-  <span>AllDent PDR · 7695 Granger Rd, Cleveland, OH 44125</span>
-  <span>Job ID: ${esc(v.id)} · Generated ${fmt(new Date().toISOString())}</span>
-</footer>
-
-</body>
-</html>`;
-
-  const blob = new Blob([html], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
-  const win = window.open(url, '_blank');
-  // Release blob URL after window opens
-  if (win) win.addEventListener('load', () => URL.revokeObjectURL(url), { once: true });
-}
-
 /* ----------------- subviews ----------------- */
 
 function OverviewView({ metrics, recent, loading, onJump, remoteMode }) {
@@ -780,8 +467,8 @@ function OverviewView({ metrics, recent, loading, onJump, remoteMode }) {
     <>
       <div className="kpi-grid">
         <div className="kpi"><span className="kpi-label">Total jobs</span><span className="kpi-value">{metrics.total}</span><div className="kpi-sub">{remoteMode ? 'Live across all admins' : 'Local-only data'}</div></div>
-        <div className="kpi kpi-accent"><span className="kpi-label">Estimate</span><span className="kpi-value">{metrics.estimate}</span><div className="kpi-sub">Awaiting approval</div></div>
-        <div className="kpi kpi-warn"><span className="kpi-label">In Repair</span><span className="kpi-value">{metrics.inRepair}</span><div className="kpi-sub">Active right now</div></div>
+        <div className="kpi kpi-accent"><span className="kpi-label">Registered</span><span className="kpi-value">{metrics.registered}</span><div className="kpi-sub">Awaiting work</div></div>
+        <div className="kpi kpi-warn"><span className="kpi-label">In progress</span><span className="kpi-value">{metrics.inProgress}</span><div className="kpi-sub">Active right now</div></div>
         <div className="kpi kpi-ok"><span className="kpi-label">Completed</span><span className="kpi-value">{metrics.complete}</span><div className="kpi-sub">{metrics.completionRate}% completion rate</div></div>
       </div>
 
@@ -903,40 +590,22 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
   );
 }
 
-const STATUS_COLUMNS = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold', 'Complete'];
+const STATUS_COLUMNS = ['Registered', 'In Progress', 'Complete'];
 
-function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onDelete }) {
+function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease }) {
   return (
-    <div className="job-drawer-overlay" onClick={onClose}>
-      <aside className="job-drawer" onClick={(e) => e.stopPropagation()}>
-        <div className="job-drawer-head">
-          <div>
-            <p className="crumb" style={{ margin: 0 }}>{v.id}</p>
-            <h3 style={{ margin: '2px 0 0' }}>{v.year} {v.make} {v.model}</h3>
-          </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <button
-              type="button"
-              className="button ghost sm"
-              title="Download work order"
-              onClick={() => downloadJobRecord(v)}
-            >
-              ⬇ Download
-            </button>
-            <button
-              type="button"
-              className="button sm"
-              title="Delete this job record"
-              style={{ background: '#c0392b', color: '#fff', borderColor: '#c0392b' }}
-              onClick={() => onDelete(v)}
-            >
-              🗑 Delete
-            </button>
-            <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
-          </div>
+    <div className="job-inline-detail">
+      <div className="jid-header">
+        <div>
+          <p className="crumb" style={{ margin: 0 }}>{v.id} &nbsp;·&nbsp; {v.plate}</p>
+          <h3 style={{ margin: '2px 0 0' }}>{v.year} {v.make} {v.model}</h3>
         </div>
+        <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Collapse detail">✕ Close</button>
+      </div>
 
-        <div className="job-drawer-body">
+      <div className="jid-body">
+        {/* Left column */}
+        <div className="jid-col">
           <h4 className="form-section-label">Status</h4>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
             <span className={statusBadge(v.status)}>{v.status}</span>
@@ -945,7 +614,17 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onDelete 
             </select>
           </div>
 
-          <h4 className="form-section-label" style={{ marginTop: 22 }}>Customer</h4>
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Vehicle Release</h4>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            {v.releaseFormData && (
+              <span style={{ fontSize: 12, color: 'var(--sage,#4a7a5c)', fontWeight: 600 }}>✓ Signed {v.releaseFormData.signedAt || ''}</span>
+            )}
+            <button type="button" className="button primary sm" onClick={() => onRelease(v)}>
+              {v.releaseFormData ? '📋 View / Re-sign Release' : '📋 Issue Vehicle Release'}
+            </button>
+          </div>
+
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Customer</h4>
           <div className="job-drawer-grid">
             <div><span className="jd-label">Name</span><span className="jd-val">{v.customerName || '—'}</span></div>
             <div><span className="jd-label">Email</span><span className="jd-val">{v.email || '—'}</span></div>
@@ -954,8 +633,11 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onDelete 
             <div><span className="jd-label">Address</span><span className="jd-val">{[v.address, v.city, v.state, v.zip].filter(Boolean).join(', ') || '—'}</span></div>
             <div><span className="jd-label">How heard</span><span className="jd-val">{v.howHeardAboutUs || '—'}</span></div>
           </div>
+        </div>
 
-          <h4 className="form-section-label" style={{ marginTop: 22 }}>Vehicle</h4>
+        {/* Right column */}
+        <div className="jid-col">
+          <h4 className="form-section-label">Vehicle</h4>
           <div className="job-drawer-grid">
             <div><span className="jd-label">Year / Make / Model</span><span className="jd-val">{v.year} {v.make} {v.model}</span></div>
             <div><span className="jd-label">Color</span><span className="jd-val">{v.color || '—'}</span></div>
@@ -963,29 +645,21 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onDelete 
             <div><span className="jd-label">VIN</span><span className="jd-val" style={{ fontFamily: 'monospace', fontSize: 13 }}>{v.vin || '—'}</span></div>
           </div>
 
-          <h4 className="form-section-label" style={{ marginTop: 22 }}>Insurance</h4>
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Insurance</h4>
           <div className="job-drawer-grid">
             <div><span className="jd-label">Company</span><span className="jd-val">{v.insuranceCompany || '—'}</span></div>
             <div><span className="jd-label">Deductible</span><span className="jd-val">{v.deductible || '—'}</span></div>
             <div><span className="jd-label">Claim #</span><span className="jd-val">{v.claimNumber || '—'}</span></div>
           </div>
 
-          <h4 className="form-section-label" style={{ marginTop: 22 }}>Authorizations</h4>
-          <div className="job-drawer-grid">
-            <div><span className="jd-label">Direction to Pay</span><span className="jd-val">{v.directionToPaySigned ? '✅ Signed' : '☐ Not signed'}</span></div>
-            <div><span className="jd-label">Repair Auth</span><span className="jd-val">{v.repairAuthSigned ? '✅ Signed' : '☐ Not signed'}</span></div>
-            <div><span className="jd-label">Signature Name</span><span className="jd-val">{v.signatureName || '—'}</span></div>
-            {v.signedAt && <div style={{ gridColumn: 'span 2' }}><span className="jd-label">Signed At</span><span className="jd-val" style={{ fontFamily: 'monospace', fontSize: 12 }}>{new Date(v.signedAt).toLocaleString()} <span style={{ color: '#999', fontSize: 11 }}>(UTC: {v.signedAt})</span></span></div>}
-          </div>
-
           {v.notes && (
             <>
-              <h4 className="form-section-label" style={{ marginTop: 22 }}>Notes</h4>
+              <h4 className="form-section-label" style={{ marginTop: 18 }}>Notes</h4>
               <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0 }}>{v.notes}</p>
             </>
           )}
 
-          <h4 className="form-section-label" style={{ marginTop: 22 }}>Notifications</h4>
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Notifications</h4>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
             <label className="checkbox-row" style={{ margin: 0 }}>
               <input
@@ -1004,391 +678,126 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onDelete 
             </select>
           </div>
 
-          <p className="cell-sub" style={{ marginTop: 20 }}>
+          <p className="cell-sub" style={{ marginTop: 16 }}>
             Registered {new Date(v.createdAt).toLocaleDateString()} · Updated {new Date(v.updatedAt).toLocaleDateString()}
           </p>
         </div>
-      </aside>
+      </div>
     </div>
   );
 }
 
-function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onDelete }) {
-  const [selected, setSelected] = useState(null);
+function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onRelease }) {
+  const [selectedId, setSelectedId] = useState(null);
+
+  const toggle = (id) => setSelectedId((cur) => cur === id ? null : id);
 
   return (
-    <>
-      {selected && (
-        <JobDetail
-          v={selected}
-          onClose={() => setSelected(null)}
-          onStatusChange={(id, s) => { onStatusChange(id, s); setSelected((prev) => prev ? { ...prev, status: s } : null); }}
-          onNotificationChange={(id, field, val) => { onNotificationChange(id, field, val); setSelected((prev) => prev ? { ...prev, [field]: val } : null); }}
-          onDelete={(v) => { setSelected(null); onDelete(v); }}
-        />
-      )}
-      <section className="panel">
-        <div className="panel-head">
-          <div>
-            <h3>All jobs</h3>
-            <p className="meta" style={{ margin: '2px 0 0' }}>{vehicles.length} {vehicles.length === 1 ? 'job' : 'jobs'}</p>
-          </div>
+    <section className="panel">
+      <div className="panel-head">
+        <div>
+          <h3>All jobs</h3>
+          <p className="meta" style={{ margin: '2px 0 0' }}>{vehicles.length} {vehicles.length === 1 ? 'job' : 'jobs'} &mdash; click a row to expand details</p>
         </div>
-        <div className="table-scroll">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Job</th>
-                <th>Vehicle</th>
-                <th>Customer</th>
-                <th>Status</th>
-                <th>Notifications</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vehicles.map((v) => (
-                <tr key={v.id} className="job-row-clickable" onClick={() => setSelected(v)}>
-                  <td>
-                    <div className="cell-strong">{v.id}</div>
-                    <div className="cell-sub">{v.plate}</div>
-                  </td>
-                  <td>
-                    <div className="cell-strong">{v.year} {v.make} {v.model}</div>
-                    <div className="cell-sub">Updated {new Date(v.updatedAt).toLocaleDateString()}</div>
-                  </td>
-                  <td>
-                    <div className="cell-strong">{v.customerName}</div>
-                    <div className="cell-sub">{v.email}</div>
-                  </td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <select value={v.status} onChange={(e) => onStatusChange(v.id, e.target.value)}>
-                      {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <div className="row-actions">
-                      <label className="checkbox-row" style={{ margin: 0 }}>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(v.notificationsEnabled)}
-                          onChange={(e) => onNotificationChange(v.id, 'notificationsEnabled', e.target.checked)}
-                        />
-                        <span style={{ fontSize: 13 }}>Alerts</span>
-                      </label>
-                      <select
-                        value={v.notificationChannel || 'email'}
-                        onChange={(e) => onNotificationChange(v.id, 'notificationChannel', e.target.value)}
-                      >
-                        <option value="email">Email</option>
-                        <option value="web-push">Web Push</option>
-                      </select>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {!loading && !vehicles.length && (
-                <tr><td colSpan={5} className="kanban-empty">No jobs match your search yet.</td></tr>
-              )}
-              {loading && (
-                <tr><td colSpan={5} className="kanban-empty">Loading…</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   Leads View
-───────────────────────────────────────────────────────────── */
-const LEAD_STATUSES = ['New', 'Contacted', 'Quoted', 'Converted', 'Closed'];
-
-function leadSourceBadge(source) {
-  const s = (source || '').toLowerCase();
-  if (s === 'google' || s === 'google_ads' || s === 'googleads') return { label: 'Google Ads', bg: '#e8f5e9', color: '#2e7d32' };
-  if (s === 'facebook' || s === 'meta' || s === 'fb') return { label: 'Meta Ads', bg: '#e3f2fd', color: '#1565c0' };
-  if (s === 'instagram') return { label: 'Instagram', bg: '#fce4ec', color: '#880e4f' };
-  if (s === 'bing') return { label: 'Bing Ads', bg: '#fff3e0', color: '#e65100' };
-  if (s === 'email') return { label: 'Email', bg: '#f3e5f5', color: '#6a1b9a' };
-  if (s === 'referral') return { label: 'Referral', bg: '#fff8e1', color: '#f57f17' };
-  if (s) return { label: s, bg: '#f5f5f5', color: '#555' };
-  return { label: 'Organic', bg: '#eceff1', color: '#546e7a' };
-}
-
-function leadStatusColor(status) {
-  if (status === 'Converted') return { bg: '#e8f5e9', color: '#2e7d32' };
-  if (status === 'Contacted') return { bg: '#e3f2fd', color: '#1565c0' };
-  if (status === 'Quoted')    return { bg: '#fff8e1', color: '#f57f17' };
-  if (status === 'Closed')    return { bg: '#fce4ec', color: '#c62828' };
-  return { bg: '#fafafa', color: '#555' };
-}
-
-function LeadsView({ leads, loading, onStatusChange }) {
-  const [selected, setSelected] = useState(null);
-  const [sourceFilter, setSourceFilter] = useState('All');
-
-  const sources = ['All', ...Array.from(new Set(leads.map((l) => leadSourceBadge(l.utmSource).label)))];
-
-  const filtered = sourceFilter === 'All'
-    ? leads
-    : leads.filter((l) => leadSourceBadge(l.utmSource).label === sourceFilter);
-
-  const kpi = {
-    total: leads.length,
-    newCount: leads.filter((l) => l.status === 'New').length,
-    contacted: leads.filter((l) => l.status === 'Contacted').length,
-    converted: leads.filter((l) => l.status === 'Converted').length,
-  };
-
-  return (
-    <>
-      {selected && (
-        <div className="job-drawer-overlay" onClick={() => setSelected(null)}>
-          <aside className="job-drawer" onClick={(e) => e.stopPropagation()}>
-            <div className="job-drawer-head">
-              <div>
-                <p className="crumb" style={{ margin: 0 }}>{selected.id}</p>
-                <h3 style={{ margin: '2px 0 0' }}>{selected.name}</h3>
-              </div>
-              <button type="button" className="job-drawer-close" onClick={() => setSelected(null)} aria-label="Close">&#x2715;</button>
-            </div>
-            <div className="job-drawer-body">
-              <h4 className="form-section-label">Status</h4>
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-                {(() => { const c = leadStatusColor(selected.status); return <span style={{ background: c.bg, color: c.color, padding: '3px 10px', borderRadius: 20, fontWeight: 700, fontSize: 12 }}>{selected.status}</span>; })()}
-                <select value={selected.status} onChange={(e) => { onStatusChange(selected.id, e.target.value); setSelected((p) => ({ ...p, status: e.target.value })); }}>
-                  {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-
-              <h4 className="form-section-label" style={{ marginTop: 22 }}>Contact</h4>
-              <div className="job-drawer-grid">
-                <div><span className="jd-label">Name</span><span className="jd-val">{selected.name}</span></div>
-                <div><span className="jd-label">Email</span><span className="jd-val"><a href={`mailto:${selected.email}`}>{selected.email}</a></span></div>
-                {selected.phone && <div><span className="jd-label">Phone</span><span className="jd-val"><a href={`tel:${selected.phone}`}>{selected.phone}</a></span></div>}
-                {selected.location && <div><span className="jd-label">Location</span><span className="jd-val">{selected.location}</span></div>}
-                {selected.vehicle && <div><span className="jd-label">Vehicle</span><span className="jd-val">{selected.vehicle}</span></div>}
-              </div>
-
-              <h4 className="form-section-label" style={{ marginTop: 22 }}>Message</h4>
-              <p style={{ fontSize: 14, lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>{selected.message}</p>
-
-              <h4 className="form-section-label" style={{ marginTop: 22 }}>Ad Attribution</h4>
-              <div className="job-drawer-grid">
-                {(() => { const b = leadSourceBadge(selected.utmSource); return <div><span className="jd-label">Source</span><span style={{ background: b.bg, color: b.color, padding: '2px 8px', borderRadius: 12, fontWeight: 700, fontSize: 12 }}>{b.label}</span></div>; })()}
-                {selected.utmMedium   && <div><span className="jd-label">Medium</span><span className="jd-val">{selected.utmMedium}</span></div>}
-                {selected.utmCampaign && <div><span className="jd-label">Campaign</span><span className="jd-val">{selected.utmCampaign}</span></div>}
-                {selected.utmContent  && <div><span className="jd-label">Ad Content</span><span className="jd-val">{selected.utmContent}</span></div>}
-                {selected.utmTerm     && <div><span className="jd-label">Keyword</span><span className="jd-val">{selected.utmTerm}</span></div>}
-                {selected.referrer    && <div><span className="jd-label">Referrer</span><span className="jd-val" style={{ fontSize: 12, wordBreak: 'break-all' }}>{selected.referrer}</span></div>}
-              </div>
-
-              <p className="cell-sub" style={{ marginTop: 20 }}>
-                Received {new Date(selected.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-              </p>
-            </div>
-          </aside>
-        </div>
-      )}
-
-      <div className="kpi-grid" style={{ marginBottom: 24 }}>
-        <div className="kpi"><span className="kpi-label">Total leads</span><span className="kpi-value">{kpi.total}</span><div className="kpi-sub">All time</div></div>
-        <div className="kpi kpi-accent"><span className="kpi-label">New</span><span className="kpi-value">{kpi.newCount}</span><div className="kpi-sub">Awaiting response</div></div>
-        <div className="kpi kpi-warn"><span className="kpi-label">Contacted</span><span className="kpi-value">{kpi.contacted}</span><div className="kpi-sub">In conversation</div></div>
-        <div className="kpi kpi-ok"><span className="kpi-label">Converted</span><span className="kpi-value">{kpi.converted}</span><div className="kpi-sub">{kpi.total ? Math.round((kpi.converted / kpi.total) * 100) : 0}% close rate</div></div>
       </div>
-
-      <section className="panel">
-        <div className="panel-head">
-          <div>
-            <h3>All Leads</h3>
-            <p className="meta" style={{ margin: '2px 0 0' }}>{filtered.length} leads</p>
-          </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <label style={{ margin: 0, fontSize: 13, color: '#888' }}>Source:</label>
-            <select value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value)} style={{ marginBottom: 0, fontSize: 13 }}>
-              {sources.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
-        </div>
-        <div className="table-scroll">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Lead</th>
-                <th>Contact</th>
-                <th>Vehicle / Location</th>
-                <th>Source</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((l) => {
-                const src = leadSourceBadge(l.utmSource);
-                const st  = leadStatusColor(l.status);
-                return (
-                  <tr key={l.id} className="job-row-clickable" onClick={() => setSelected(l)}>
-                    <td>
-                      <div className="cell-strong">{l.id}</div>
-                      <div className="cell-sub">{new Date(l.createdAt).toLocaleDateString()}</div>
+      <div className="table-scroll">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th style={{ width: 28 }}></th>
+              <th>Job</th>
+              <th>Vehicle</th>
+              <th>Customer</th>
+              <th>Status</th>
+              <th>Notifications</th>
+              <th>Release</th>
+            </tr>
+          </thead>
+          <tbody>
+            {vehicles.map((v) => {
+              const isOpen = selectedId === v.id;
+              return (
+                <Fragment key={v.id}>
+                  <tr
+                    className={`job-row-clickable${isOpen ? ' is-expanded' : ''}`}
+                    onClick={() => toggle(v.id)}
+                  >
+                    <td style={{ textAlign: 'center', color: 'var(--muted)', fontSize: 10, paddingRight: 0 }}>
+                      {isOpen ? '▼' : '▶'}
                     </td>
                     <td>
-                      <div className="cell-strong">{l.name}</div>
-                      <div className="cell-sub">{l.email}</div>
+                      <div className="cell-strong">{v.id}</div>
+                      <div className="cell-sub">{v.plate}</div>
                     </td>
                     <td>
-                      <div className="cell-strong">{l.vehicle || '—'}</div>
-                      <div className="cell-sub">{l.location || '—'}</div>
+                      <div className="cell-strong">{v.year} {v.make} {v.model}</div>
+                      <div className="cell-sub">Updated {new Date(v.updatedAt).toLocaleDateString()}</div>
                     </td>
                     <td>
-                      <span style={{ background: src.bg, color: src.color, padding: '2px 8px', borderRadius: 12, fontWeight: 700, fontSize: 12, whiteSpace: 'nowrap' }}>{src.label}</span>
-                      {l.utmCampaign && <div className="cell-sub" style={{ marginTop: 2 }}>{l.utmCampaign}</div>}
+                      <div className="cell-strong">{v.customerName}</div>
+                      <div className="cell-sub">{v.email}</div>
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
-                      <select
-                        value={l.status}
-                        onChange={(e) => onStatusChange(l.id, e.target.value)}
-                        style={{ background: st.bg, color: st.color, fontWeight: 700, fontSize: 12, border: 'none', borderRadius: 8, padding: '4px 8px' }}
-                      >
-                        {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                      <select value={v.status} onChange={(e) => onStatusChange(v.id, e.target.value)}>
+                        {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <div className="row-actions">
+                        <label className="checkbox-row" style={{ margin: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={Boolean(v.notificationsEnabled)}
+                            onChange={(e) => onNotificationChange(v.id, 'notificationsEnabled', e.target.checked)}
+                          />
+                          <span style={{ fontSize: 13 }}>Alerts</span>
+                        </label>
+                        <select
+                          value={v.notificationChannel || 'email'}
+                          onChange={(e) => onNotificationChange(v.id, 'notificationChannel', e.target.value)}
+                        >
+                          <option value="email">Email</option>
+                          <option value="web-push">Web Push</option>
+                        </select>
+                      </div>
+                    </td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        className={`button sm ${v.releaseFormData ? 'ghost' : 'primary'}`}
+                        onClick={() => onRelease(v)}
+                        title={v.releaseFormData ? 'View signed release' : 'Issue vehicle release form'}
+                      >
+                        {v.releaseFormData ? '✓ Release' : '📋 Release'}
+                      </button>
+                    </td>
                   </tr>
-                );
-              })}
-              {!loading && !filtered.length && (
-                <tr><td colSpan={5} className="kanban-empty">{leads.length ? 'No leads match the current filter.' : 'No leads yet. Leads from your contact form will appear here.'}</td></tr>
-              )}
-              {loading && <tr><td colSpan={5} className="kanban-empty">Loading&#8230;</td></tr>}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   Analytics View
-───────────────────────────────────────────────────────────── */
-function AnalyticsView({ leads, vehicles }) {
-  const bySource = leads.reduce((acc, l) => {
-    const label = leadSourceBadge(l.utmSource).label;
-    acc[label] = (acc[label] || 0) + 1;
-    return acc;
-  }, {});
-
-  const byStatus = leads.reduce((acc, l) => {
-    acc[l.status] = (acc[l.status] || 0) + 1;
-    return acc;
-  }, {});
-
-  const sortedSources = Object.entries(bySource).sort((a, b) => b[1] - a[1]);
-  const maxSourceCount = sortedSources[0]?.[1] || 1;
-
-  const now = new Date();
-  const months = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
-    return { label: d.toLocaleDateString('en-US', { month: 'short' }), year: d.getFullYear(), month: d.getMonth() };
-  });
-  const monthlyCounts = months.map(({ label, year, month }) => ({
-    label,
-    count: leads.filter((l) => {
-      const d = new Date(l.createdAt);
-      return d.getFullYear() === year && d.getMonth() === month;
-    }).length,
-  }));
-  const maxMonthlyCount = Math.max(...monthlyCounts.map((m) => m.count), 1);
-  const conversionRate = leads.length ? Math.round((byStatus['Converted'] || 0) / leads.length * 100) : 0;
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <div className="kpi-grid">
-        <div className="kpi"><span className="kpi-label">Total Leads</span><span className="kpi-value">{leads.length}</span><div className="kpi-sub">All time</div></div>
-        <div className="kpi kpi-ok"><span className="kpi-label">Converted</span><span className="kpi-value">{byStatus['Converted'] || 0}</span><div className="kpi-sub">{conversionRate}% close rate</div></div>
-        <div className="kpi kpi-warn"><span className="kpi-label">Total Jobs</span><span className="kpi-value">{vehicles.length}</span><div className="kpi-sub">Registered vehicles</div></div>
-        <div className="kpi kpi-accent"><span className="kpi-label">Complete Jobs</span><span className="kpi-value">{vehicles.filter((v) => v.status === 'Complete').length}</span><div className="kpi-sub">{vehicles.length ? Math.round(vehicles.filter((v) => v.status === 'Complete').length / vehicles.length * 100) : 0}% completion</div></div>
-      </div>
-
-      <div className="dash-grid-2">
-        <section className="panel">
-          <div className="panel-head"><h3>Leads by Source</h3></div>
-          <div style={{ padding: '16px 20px' }}>
-            {sortedSources.length === 0 && <p className="meta">No leads yet.</p>}
-            {sortedSources.map(([label, count]) => {
-              const src = leadSourceBadge(label === 'Organic' ? '' : label.toLowerCase());
-              return (
-                <div key={label} style={{ marginBottom: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 13 }}>
-                    <span style={{ background: src.bg, color: src.color, padding: '2px 8px', borderRadius: 10, fontWeight: 700, fontSize: 12 }}>{label}</span>
-                    <span style={{ fontWeight: 700 }}>{count} <span style={{ color: '#999', fontWeight: 400 }}>({Math.round(count / leads.length * 100)}%)</span></span>
-                  </div>
-                  <div style={{ background: '#f0f0f0', borderRadius: 6, height: 8, overflow: 'hidden' }}>
-                    <div style={{ background: src.color, height: '100%', width: `${Math.round(count / maxSourceCount * 100)}%`, borderRadius: 6 }} />
-                  </div>
-                </div>
+                  {isOpen && (
+                    <tr className="job-detail-tr">
+                      <td colSpan={7} className="job-detail-td">
+                        <JobDetail
+                          v={v}
+                          onClose={() => setSelectedId(null)}
+                          onStatusChange={onStatusChange}
+                          onNotificationChange={onNotificationChange}
+                          onRelease={(job) => { setSelectedId(null); onRelease(job); }}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
               );
             })}
-          </div>
-        </section>
-
-        <section className="panel">
-          <div className="panel-head"><h3>Monthly Lead Volume</h3></div>
-          <div style={{ padding: '16px 20px' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 120 }}>
-              {monthlyCounts.map(({ label, count }) => (
-                <div key={label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#b0522b' }}>{count || ''}</span>
-                  <div style={{ width: '100%', background: count ? '#b0522b' : '#eee', borderRadius: '4px 4px 0 0', height: `${Math.max(count / maxMonthlyCount * 90, count ? 8 : 4)}px` }} />
-                  <span style={{ fontSize: 11, color: '#888' }}>{label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+            {!loading && !vehicles.length && (
+              <tr><td colSpan={7} className="kanban-empty">No jobs match your search yet.</td></tr>
+            )}
+            {loading && (
+              <tr><td colSpan={7} className="kanban-empty">Loading…</td></tr>
+            )}
+          </tbody>
+        </table>
       </div>
-
-      <section className="panel">
-        <div className="panel-head"><h3>Lead Funnel</h3></div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12, padding: '16px 20px' }}>
-          {LEAD_STATUSES.map((s) => {
-            const count = byStatus[s] || 0;
-            const c = leadStatusColor(s);
-            return (
-              <div key={s} style={{ background: c.bg, borderRadius: 12, padding: '14px 16px', textAlign: 'center' }}>
-                <div style={{ fontSize: 28, fontWeight: 800, color: c.color }}>{count}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: c.color, marginTop: 2 }}>{s}</div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="panel">
-        <div className="panel-head"><h3>Ad Platform Dashboards</h3></div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, padding: '16px 20px' }}>
-          {[
-            { label: 'Google Ads', url: 'https://ads.google.com/', bg: '#e8f5e9', color: '#2e7d32', desc: 'Campaigns, keywords, spend' },
-            { label: 'Meta Ads Manager', url: 'https://www.facebook.com/adsmanager/', bg: '#e3f2fd', color: '#1565c0', desc: 'Facebook & Instagram ads' },
-            { label: 'Google Analytics 4', url: 'https://analytics.google.com/', bg: '#fff3e0', color: '#e65100', desc: 'Traffic, sessions, conversions' },
-            { label: 'Google Search Console', url: 'https://search.google.com/search-console/', bg: '#f3e5f5', color: '#6a1b9a', desc: 'Organic rankings, impressions' },
-          ].map((link) => (
-            <a
-              key={link.label}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ background: link.bg, borderRadius: 12, padding: '16px 18px', textDecoration: 'none', display: 'block' }}
-            >
-              <div style={{ fontWeight: 700, color: link.color, marginBottom: 4 }}>{link.label} &#8599;</div>
-              <div style={{ fontSize: 12, color: '#666' }}>{link.desc}</div>
-            </a>
-          ))}
-        </div>
-      </section>
-    </div>
+    </section>
   );
 }
 
@@ -2355,6 +1764,332 @@ function QuoteView({ vehicles }) {
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Vehicle Release Form Modal
+───────────────────────────────────────────────────────────── */
+function buildReleaseHtml(job, data) {
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const vehicle = [job.year, job.make, job.model].filter(Boolean).join(' ') || '—';
+  const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>AllDent PDR — Vehicle Release — ${esc(job.id)}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
+    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:3px solid #b0522b;margin-bottom:24px}
+    .hd-brand strong{font-size:22px;font-weight:800;color:#b0522b}
+    .hd-brand span{display:block;font-size:12px;color:#888;margin-top:2px}
+    .hd-meta{text-align:right;font-size:12px;color:#555;line-height:1.7}
+    .hd-meta .title{font-size:18px;font-weight:800;color:#1a1410;display:block;margin-bottom:4px}
+    .info-row{display:flex;gap:0;border:1px solid #e8e2db;border-radius:8px;overflow:hidden;margin-bottom:20px}
+    .info-cell{flex:1;padding:10px 14px;border-right:1px solid #e8e2db}
+    .info-cell:last-child{border-right:none}
+    .info-cell .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;display:block;margin-bottom:3px}
+    .info-cell .val{font-size:13px;color:#1a1410}
+    .agreement{background:#fffbf6;border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;line-height:1.7;margin-bottom:24px}
+    .notes-box{background:#fffbf6;border:1px solid #e8e2db;border-radius:8px;padding:12px 14px;margin-bottom:20px}
+    .notes-box .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;margin-bottom:6px}
+    .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px}
+    .sig-line{border-top:1.5px solid #1a1410;padding-top:6px;font-size:11px;color:#888;margin-top:44px}
+    .sig-line .sig-val{display:block;font-size:16px;font-style:italic;color:#1a1410;margin-bottom:6px;margin-top:-36px}
+    .footer{font-size:11px;color:#9e8f84;text-align:center;padding-top:14px;border-top:1px solid #e8e2db;line-height:1.8}
+    @media print{body{padding:16px 20px}}
+  </style>
+</head>
+<body>
+  <div class="hd">
+    <div class="hd-brand">
+      <strong>AllDent PDR</strong>
+      <span>Mobile Paintless Dent Repair</span>
+      <span style="margin-top:2px;color:#555">1-855-425-5336 &nbsp;·&nbsp; alldentpdr@gmail.com</span>
+    </div>
+    <div class="hd-meta">
+      <span class="title">VEHICLE RELEASE FORM</span>
+      <span>Job #${esc(job.id)}</span><br/>
+      <span>Date: ${esc(dateStr)}</span>
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="info-cell"><span class="lbl">Customer</span><span class="val">${esc(job.customerName)}</span></div>
+    <div class="info-cell"><span class="lbl">Year</span><span class="val">${esc(job.year)}</span></div>
+    <div class="info-cell"><span class="lbl">Make</span><span class="val">${esc(job.make)}</span></div>
+    <div class="info-cell"><span class="lbl">Model</span><span class="val">${esc(job.model)}</span></div>
+  </div>
+  <div class="info-row">
+    <div class="info-cell" style="flex:3"><span class="lbl">VIN</span><span class="val" style="font-family:monospace">${esc(job.vin || '—')}</span></div>
+    <div class="info-cell"><span class="lbl">Deductible</span><span class="val">${esc(job.deductible || '—')}</span></div>
+    <div class="info-cell"><span class="lbl">Paid</span><span class="val">${esc(data.paid || '—')}</span></div>
+  </div>
+
+  ${job.notes ? `<div class="notes-box"><div class="lbl">Repair Notes</div><p style="font-size:13px;line-height:1.6;white-space:pre-wrap">${esc(job.notes)}</p></div>` : ''}
+
+  <p class="agreement">
+    The repairs on the vehicle listed above have been completed, as explained to me by All Dent PDR.
+    I am fully satisfied with the outcome of the repairs on the vehicle listed above. I understand
+    the limited lifetime warranty, and payment for the work has been paid in full.
+  </p>
+
+  <div class="sig-grid">
+    <div>
+      <div class="sig-line">
+        ${data.custSig ? `<span class="sig-val">${esc(data.custSig)}</span>` : ''}
+        Customer Signature &nbsp;&nbsp; Date: ${esc(data.signedAt || '')}
+      </div>
+    </div>
+    <div>
+      <div class="sig-line">
+        ${data.witnessedBy ? `<span class="sig-val">${esc(data.witnessedBy)}</span>` : ''}
+        Witnessed By (AllDent PDR) &nbsp;&nbsp; Date: ${esc(data.witnessedAt || '')}
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>AllDent PDR · Mobile Paintless Dent Repair</strong><br/>
+    1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com
+  </div>
+
+  <script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
+}
+
+function VehicleReleaseModal({ job, onClose, onSaved }) {
+  const existing = job.releaseFormData || {};
+  const today = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+
+  const [paid, setPaid]             = useState(existing.paid    || job.deductible || '');
+  const [custSig, setCustSig]       = useState(existing.custSig || '');
+  const [signedAt, setSignedAt]     = useState(existing.signedAt || '');
+  const [witnessedBy, setWitnessBy] = useState(existing.witnessedBy || '');
+  const [witnessedAt, setWitnessAt] = useState(existing.witnessedAt || '');
+  const [saving, setSaving]         = useState(false);
+  const [sending, setSending]       = useState(false);
+  const [sendMsg, setSendMsg]       = useState(null);
+
+  const handleCustSig = (e) => {
+    setCustSig(e.target.value);
+    if (e.target.value && !signedAt) setSignedAt(today);
+  };
+
+  const handleWitness = (e) => {
+    setWitnessBy(e.target.value);
+    if (e.target.value && !witnessedAt) setWitnessAt(today);
+  };
+
+  const releaseData = {
+    paid,
+    custSig,
+    signedAt:    signedAt    || today,
+    witnessedBy,
+    witnessedAt: witnessedAt || today,
+    savedAt:     new Date().toISOString(),
+  };
+
+  const handleExportPDF = () => {
+    const html = buildReleaseHtml(job, releaseData);
+    const win = window.open('', '_blank', 'width=820,height=680');
+    if (win) { win.document.write(html); win.document.close(); }
+  };
+
+  const handleSendEmail = async () => {
+    if (!job.email) {
+      setSendMsg({ type: 'err', text: 'No customer email on file for this job.' });
+      return;
+    }
+    setSending(true);
+    setSendMsg(null);
+    try {
+      const res = await fetch('/api/send-release-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId:        job.id,
+          customerName: job.customerName,
+          email:        job.email,
+          year:         job.year,
+          make:         job.make,
+          model:        job.model,
+          vin:          job.vin,
+          deductible:   job.deductible,
+          paid,
+          notes:        job.notes,
+          custSig,
+          signedAt:     releaseData.signedAt,
+          witnessedBy,
+          witnessedAt:  releaseData.witnessedAt,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Send failed');
+      setSendMsg({ type: 'ok', text: `Release form sent to ${job.email}` });
+    } catch (err) {
+      setSendMsg({ type: 'err', text: err.message || 'Failed to send — try again.' });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await saveReleaseForm(job.id, releaseData);
+      onSaved({ ...job, releaseFormData: releaseData });
+    } catch (err) {
+      console.error('[saveRelease]', err);
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="release-modal-overlay" onClick={onClose}>
+      <div className="release-modal" onClick={(e) => e.stopPropagation()}>
+
+        {/* Header */}
+        <div className="release-modal-head">
+          <div>
+            <p className="crumb" style={{ margin: 0 }}>Job {job.id} · {job.year} {job.make} {job.model}</p>
+            <h3 style={{ margin: '2px 0 0' }}>Vehicle Release Form</h3>
+          </div>
+          <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+
+        {/* Body */}
+        <div className="release-modal-body">
+
+          {/* Contact header */}
+          <div style={{ textAlign: 'center', marginBottom: 16, paddingBottom: 14, borderBottom: '1px solid var(--line,#e8e2db)' }}>
+            <p style={{ fontSize: 13, color: 'var(--muted,#9e8f84)', marginBottom: 4 }}>
+              855-425-5336 &nbsp;·&nbsp; alldentpdr@gmail.com
+            </p>
+            <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--rust,#b0522b)' }}>
+              Vehicle Release Form
+            </p>
+          </div>
+
+          {/* Pre-filled vehicle / customer info (read-only) */}
+          <div className="release-info-grid">
+            <div className="release-info-row">
+              <span className="release-info-label">Customer</span>
+              <span className="release-info-val">{job.customerName}</span>
+            </div>
+            <div className="release-info-row three">
+              <div><span className="release-info-label">Year</span><span className="release-info-val">{job.year}</span></div>
+              <div><span className="release-info-label">Make</span><span className="release-info-val">{job.make}</span></div>
+              <div><span className="release-info-label">Model</span><span className="release-info-val">{job.model}</span></div>
+            </div>
+            <div className="release-info-row">
+              <span className="release-info-label">VIN</span>
+              <span className="release-info-val" style={{ fontFamily: 'monospace', fontSize: 13 }}>{job.vin || '—'}</span>
+            </div>
+          </div>
+
+          {/* Deductible / Paid */}
+          <div className="form-grid-2" style={{ marginTop: 14 }}>
+            <div>
+              <label>Deductible</label>
+              <input type="text" value={job.deductible || ''} readOnly tabIndex={-1}
+                style={{ background: 'var(--sky,#eef5fb)', color: 'var(--muted)' }} />
+            </div>
+            <div>
+              <label>Paid <span aria-hidden>*</span></label>
+              <input type="text" value={paid} onChange={(e) => setPaid(e.target.value)} placeholder="$500.00" />
+            </div>
+          </div>
+
+          {/* Notes (read-only) */}
+          {job.notes && (
+            <div style={{ marginTop: 12 }}>
+              <label>Repair Notes</label>
+              <textarea rows={3} value={job.notes} readOnly tabIndex={-1}
+                style={{ background: 'var(--sky,#eef5fb)', color: 'var(--muted)', resize: 'none' }} />
+            </div>
+          )}
+
+          {/* Agreement text */}
+          <div className="reg-legal-box" style={{ marginTop: 14 }}>
+            <p className="reg-legal" style={{ marginBottom: 0 }}>
+              The repairs on the vehicle listed above have been completed, as explained to me by All Dent PDR.
+              I am fully satisfied with the outcome of the repairs on the vehicle listed above. I understand
+              the limited lifetime warranty, and payment for the work has been paid in full.
+            </p>
+          </div>
+
+          {/* Signature row */}
+          <div className="form-grid-2" style={{ marginTop: 16 }}>
+            <div>
+              <label>Customer Signature — type full name <span aria-hidden>*</span></label>
+              <input
+                type="text"
+                value={custSig}
+                onChange={handleCustSig}
+                placeholder="Customer full name"
+                className="reg-sig-input"
+              />
+            </div>
+            <div>
+              <label>Date Signed</label>
+              <input type="text" value={signedAt || today} readOnly
+                style={{ fontFamily: 'monospace', fontSize: 13, background: 'var(--sky,#eef5fb)' }} />
+            </div>
+          </div>
+
+          {/* Witness row */}
+          <div className="form-grid-2" style={{ marginTop: 10 }}>
+            <div>
+              <label>Witnessed By (AllDent PDR Rep) <span aria-hidden>*</span></label>
+              <input
+                type="text"
+                value={witnessedBy}
+                onChange={handleWitness}
+                placeholder="Technician / representative name"
+              />
+            </div>
+            <div>
+              <label>Date Witnessed</label>
+              <input type="text" value={witnessedAt || today} readOnly
+                style={{ fontFamily: 'monospace', fontSize: 13, background: 'var(--sky,#eef5fb)' }} />
+            </div>
+          </div>
+
+          {sendMsg && (
+            <p style={{ marginTop: 12, fontSize: 13, fontWeight: 600,
+              color: sendMsg.type === 'ok' ? 'var(--sage,#4a7a5c)' : 'var(--rust,#b0522b)' }}>
+              {sendMsg.text}
+            </p>
+          )}
+        </div>
+
+        {/* Footer actions */}
+        <div className="release-modal-foot">
+          <button type="button" className="button ghost sm" onClick={onClose}>Cancel</button>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button type="button" className="button ghost sm" onClick={handleExportPDF}>
+              Export PDF / Print
+            </button>
+            <button type="button" className="button ghost sm" onClick={handleSendEmail} disabled={sending}>
+              {sending ? 'Sending…' : '✉ Send Email'}
+            </button>
+            <button
+              type="button"
+              className="button primary sm"
+              onClick={handleSave}
+              disabled={saving || !custSig.trim() || !witnessedBy.trim()}
+            >
+              {saving ? 'Saving…' : '✓ Save & Sign'}
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   );
