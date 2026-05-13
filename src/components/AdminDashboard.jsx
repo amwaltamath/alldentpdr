@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
+  deleteVehicle,
   getLeads,
   getPricing,
   getRemoteAuthUser,
@@ -93,6 +94,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [saveMessage, setSaveMessage] = useState('');
   const [pendingStatus, setPendingStatus] = useState(null); // { id, nextStatus }
+  const [pendingDelete, setPendingDelete] = useState(null);  // vehicle object
 
   const remoteMode = isRemotePortalEnabled();
 
@@ -329,6 +331,22 @@ export default function AdminDashboard() {
     setLeads((prev) => prev.map((l) => l.id === id ? { ...l, status: nextStatus } : l));
   };
 
+  const handleDeleteVehicle = async (vehicle) => {
+    setPendingDelete(vehicle);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return;
+    const { id } = pendingDelete;
+    setPendingDelete(null);
+    try {
+      await deleteVehicle(id);
+      setVehicles((prev) => prev.filter((v) => v.id !== id));
+    } catch {
+      alert('Unable to delete this record. Please try again.');
+    }
+  };
+
   const handleLogout = () => {
     if (remoteMode) signOutRemoteAdmin();
     clearSession();
@@ -393,6 +411,13 @@ export default function AdminDashboard() {
           nextStatus={pendingStatus.nextStatus}
           onConfirm={handleConfirmStatusChange}
           onCancel={() => setPendingStatus(null)}
+        />
+      )}
+      {pendingDelete && (
+        <DeleteConfirmModal
+          vehicle={pendingDelete}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setPendingDelete(null)}
         />
       )}
       {navOpen && <div className="dash-overlay" onClick={() => setNavOpen(false)} aria-hidden="true" />}
@@ -492,6 +517,7 @@ export default function AdminDashboard() {
               loading={loading}
               onStatusChange={handleStatusChange}
               onNotificationChange={handleNotificationChange}
+              onDelete={handleDeleteVehicle}
             />
           )}
 
@@ -566,6 +592,40 @@ function StatusNoteModal({ nextStatus, onConfirm, onCancel }) {
           <button type="button" className="button ghost" onClick={onCancel}>Cancel</button>
           <button type="button" className="button primary" onClick={() => onConfirm(note)}>
             Confirm &amp; Send
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ----------------- delete confirm modal ----------------- */
+
+function DeleteConfirmModal({ vehicle, onConfirm, onCancel }) {
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <h3 style={{ margin: 0 }}>Delete Job Record</h3>
+          <button type="button" className="job-drawer-close" onClick={onCancel} aria-label="Close">✕</button>
+        </div>
+        <div className="modal-body">
+          <p style={{ marginTop: 0 }}>
+            Permanently delete <strong>{vehicle.id}</strong> — {vehicle.year} {vehicle.make} {vehicle.model} ({vehicle.customerName})?
+          </p>
+          <p style={{ fontSize: 13, color: '#c0392b', margin: 0 }}>
+            This cannot be undone. All customer data for this job will be removed.
+          </p>
+        </div>
+        <div className="modal-foot">
+          <button type="button" className="button ghost" onClick={onCancel}>Cancel</button>
+          <button
+            type="button"
+            className="button"
+            style={{ background: '#c0392b', color: '#fff', borderColor: '#c0392b' }}
+            onClick={onConfirm}
+          >
+            Delete permanently
           </button>
         </div>
       </div>
@@ -845,7 +905,7 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
 
 const STATUS_COLUMNS = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hold', 'Complete'];
 
-function JobDetail({ v, onClose, onStatusChange, onNotificationChange }) {
+function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onDelete }) {
   return (
     <div className="job-drawer-overlay" onClick={onClose}>
       <aside className="job-drawer" onClick={(e) => e.stopPropagation()}>
@@ -862,6 +922,15 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange }) {
               onClick={() => downloadJobRecord(v)}
             >
               ⬇ Download
+            </button>
+            <button
+              type="button"
+              className="button sm"
+              title="Delete this job record"
+              style={{ background: '#c0392b', color: '#fff', borderColor: '#c0392b' }}
+              onClick={() => onDelete(v)}
+            >
+              🗑 Delete
             </button>
             <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
           </div>
@@ -944,7 +1013,7 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange }) {
   );
 }
 
-function JobsView({ vehicles, loading, onStatusChange, onNotificationChange }) {
+function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onDelete }) {
   const [selected, setSelected] = useState(null);
 
   return (
@@ -955,6 +1024,7 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange }) {
           onClose={() => setSelected(null)}
           onStatusChange={(id, s) => { onStatusChange(id, s); setSelected((prev) => prev ? { ...prev, status: s } : null); }}
           onNotificationChange={(id, field, val) => { onNotificationChange(id, field, val); setSelected((prev) => prev ? { ...prev, [field]: val } : null); }}
+          onDelete={(v) => { setSelected(null); onDelete(v); }}
         />
       )}
       <section className="panel">

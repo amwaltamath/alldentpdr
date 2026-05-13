@@ -255,6 +255,21 @@ export async function updateVehicleStatus(id, status) {
   return updateVehicle(id, { status, lastNotifiedAt: new Date().toISOString() });
 }
 
+export async function deleteVehicle(id) {
+  if (isSupabaseEnabled()) {
+    const { error } = await supabase
+      .from('vehicle_jobs')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return;
+  }
+
+  const list = getLocalVehicles().filter((item) => item.id !== id);
+  saveLocalVehicles(list);
+}
+
 export function setSession(session) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(SESSION_KEY, JSON.stringify(session));
