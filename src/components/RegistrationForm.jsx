@@ -41,10 +41,10 @@ export default function RegistrationForm() {
   };
 
   const canNext1 = form.customerName.trim() && form.email.trim() && form.phone.trim() &&
-    form.address.trim() && form.city.trim() && form.zip.trim() && form.homePhone.trim() && form.howHeard.trim();
+    form.address.trim() && form.city.trim() && form.zip.trim() && form.howHeard.trim();
   const canNext2 = form.year.trim() && form.make.trim() && form.model.trim() && form.plate.trim() &&
     form.insuranceCompany.trim() && form.deductible.trim() && form.claimNumber.trim() &&
-    form.color.trim() && form.vin.trim() && form.notes.trim() &&
+    form.color.trim() && form.vin.trim() &&
     (!form.requiresLoaner || (form.dlNumber.trim() && form.dlExpiration.trim()));
   const canSubmit = form.directionToPaySigned && form.repairAuthSigned && form.signatureName.trim() && form.insuranceAuthName.trim() &&
     (!form.requiresLoaner || form.loanerAgreementSigned);
@@ -390,15 +390,20 @@ export default function RegistrationForm() {
           {/* Direction to Pay */}
           <fieldset className="reg-fieldset">
             <legend>Direction to Pay</legend>
+            <div className="reg-row" style={{ marginBottom: 14 }}>
+              <div className="reg-field">
+                <label htmlFor="r-ins-auth">Insurance Company Name <span aria-hidden>*</span></label>
+                <input
+                  id="r-ins-auth"
+                  type="text"
+                  value={form.insuranceAuthName}
+                  onChange={set('insuranceAuthName')}
+                  placeholder="e.g. State Farm"
+                />
+              </div>
+            </div>
             <p className="reg-legal">
-              I authorize <input
-                type="text"
-                className="reg-inline-input"
-                value={form.insuranceAuthName}
-                onChange={set('insuranceAuthName')}
-                required
-                placeholder="Insurance company name"
-              /> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.
+              I authorize <strong>{form.insuranceAuthName || '[ Insurance Company ]'}</strong> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.
             </p>
             <p className="reg-legal">
               I do hereby appoint All Dent PDR to accept on my behalf, any and all checks/drafts and to endorse all such checks/drafts for deposit to All Dent PDR account for payment for repairs to said vehicle, which have been accepted and released. The total amount of repair charges must be paid in full before the vehicle can be released for delivery or picked up. If insurance coverage pays either a portion of or the total amount due, I acknowledge that the insurance check/draft must be obtained by me or sent in advance by the insurance company and received by All Dent PDR. I also acknowledge that I must make arrangements with any lien holder or other payees to endorse the insurance check/draft prior to the release of the above repaired vehicle. I authorize any and all supplements payable directly to All Dent PDR for the consideration of repairs made to the vehicle. If I remove my vehicle from the shop prior to the completion of repairs, I agree to pay for parts, labor, handling fees, service charges, and rental car fees associated with the repair. To secure payment in amount of repairs, an expressed mechanics lien on the vehicle is acknowledged and I further agree to pay reasonable attorney's fees and court costs in the event legal action becomes necessary to enforce this contract. All Dent PDR may repossess my vehicle if payment is not secured.
