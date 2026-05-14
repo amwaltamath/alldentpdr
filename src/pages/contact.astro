@@ -97,6 +97,10 @@ const breadcrumbs = [
                 form.reset();
                 status.textContent = '✓ Request sent! We\'ll reply within 24 hours.';
                 status.style.color = '#4a7a5c';
+                // Google Ads conversion — contact form submitted
+                if (typeof gtag === 'function') {
+                  gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
+                }
               } else {
                 status.textContent = 'Something went wrong. Please call 1-855-425-5336.';
                 status.style.color = '#c0392b';
