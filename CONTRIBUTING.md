@@ -1,6 +1,6 @@
-# Contributing to AllDent PDR Website
+# Contributing to All Dent PDR Website
 
-Thanks for helping improve the AllDent PDR website! Here's how to contribute.
+Thanks for helping improve the All Dent PDR website! Here's how to contribute.
 
 ## Getting Started
 
@@ -32,7 +32,7 @@ For the main development flow, you can work directly on `main`.
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = 'Page Title | AllDent PDR';
+const title = 'Page Title | All Dent PDR';
 const description = 'Meta description for search engines.';
 ---
 
@@ -221,4 +221,4 @@ No manual deployment needed for the `main` branch!
 
 ---
 
-**Thank you for contributing to AllDent PDR! 🚗**
+**Thank you for contributing to All Dent PDR! 🚗**

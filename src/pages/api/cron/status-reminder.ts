@@ -95,11 +95,11 @@ export const GET: APIRoute = async ({ request }) => {
       await resend.emails.send({
         from: FROM,
         to: job.email,
-        subject: `AllDent PDR Update – ${job.status} (Job ${job.id})`,
+        subject: `All Dent PDR Update – ${job.status} (Job ${job.id})`,
         html: `
           <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;color:#1a1410">
             <div style="background:#b0522b;padding:24px 32px">
-              <h1 style="margin:0;color:#fff;font-size:22px">AllDent PDR</h1>
+              <h1 style="margin:0;color:#fff;font-size:22px">All Dent PDR</h1>
             </div>
             <div style="padding:32px">
               <div style="display:inline-block;background:${msg.color};color:#fff;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:16px">${escHtml(job.status)}</div>
@@ -114,7 +114,7 @@ export const GET: APIRoute = async ({ request }) => {
               <p>Track your repair anytime at <a href="https://alldentpdr.com/portal/customer-login" style="color:#b0522b">alldentpdr.com/portal/customer-login</a>.</p>
               <p>Questions? Call us at <strong>1-855-425-5336</strong>.</p>
               <div style="margin-top:32px;padding-top:24px;border-top:1px solid #e8e0d5;color:#888;font-size:12px">
-                <p style="margin:0">AllDent PDR &middot; 7695 Granger Rd, Cleveland, OH 44125 &middot; alldentpdr.com</p>
+                <p style="margin:0">All Dent PDR &middot; 7695 Granger Rd, Cleveland, OH 44125 &middot; alldentpdr.com</p>
               </div>
             </div>
           </div>

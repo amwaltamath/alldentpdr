@@ -1,5 +1,5 @@
 /* =========================================================
-   AllDent PDR — Design System (v3, clean-SaaS refresh)
+   All Dent PDR — Design System (v3, clean-SaaS refresh)
    ========================================================= */
 
 :root {
@@ -919,6 +919,59 @@ select {
 .source-badge.meta    { background: #ede8fd; color: #6c3fc5; }
 .source-badge.organic { background: #e6f4ec; color: #3a6b4a; }
 .source-badge.other   { background: var(--sky, #eef5fb); color: var(--ink, #1a1410); }
+
+/* ── Analytics view ─────────────────────────────────── */
+.analytics-setup-notice {
+  background: var(--sky);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px 28px;
+  line-height: 1.7;
+  max-width: 640px;
+}
+.analytics-setup-notice ol { padding-left: 20px; margin: 12px 0 0; }
+.analytics-setup-notice li { margin-bottom: 8px; }
+.analytics-setup-notice code {
+  background: #e8e2db;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+/* Sparkline bar chart */
+.analytics-sparkline {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 52px;
+  padding: 4px 0;
+}
+.spark-bar-wrap {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  cursor: default;
+}
+.spark-bar {
+  width: 100%;
+  background: #bcd4f7;
+  border-radius: 2px 2px 0 0;
+  transition: background 0.15s;
+  min-height: 4px;
+}
+.spark-bar-wrap:hover .spark-bar { background: #1a6fd4; }
+
+/* Two-column analytics layout */
+.analytics-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 800px) {
+  .analytics-two-col { grid-template-columns: 1fr; }
+}
 
 .dash-main { display: flex; flex-direction: column; min-width: 0; }
 

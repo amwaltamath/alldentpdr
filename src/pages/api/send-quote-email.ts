@@ -95,7 +95,7 @@ export const POST: APIRoute = async ({ request }) => {
     <!-- Header -->
     <div style="background:#b0522b;padding:28px 32px;display:flex;justify-content:space-between;align-items:flex-start">
       <div>
-        <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">AllDent PDR</div>
+        <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">All Dent PDR</div>
         <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:2px">Mobile Paintless Dent Repair</div>
       </div>
       <div style="text-align:right">
@@ -109,7 +109,7 @@ export const POST: APIRoute = async ({ request }) => {
     <div style="padding:28px 32px">
       <p style="margin:0 0 20px;font-size:15px">Hi ${customerName ? escHtml(customerName) : 'there'},</p>
       <p style="margin:0 0 24px;line-height:1.6;color:#4a3f36">
-        Here is your paintless dent repair estimate from AllDent PDR. Please review the details below.
+        Here is your paintless dent repair estimate from All Dent PDR. Please review the details below.
         This estimate is valid for <strong>30 days</strong> from the date above.
       </p>
 
@@ -186,7 +186,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     <!-- Footer -->
     <div style="background:#f6efe7;border-top:1px solid #e8e2db;padding:20px 32px;text-align:center;font-size:11px;color:#9e8f84;line-height:1.8">
-      <strong style="color:#4a3f36">AllDent PDR &middot; Mobile Paintless Dent Repair</strong><br/>
+      <strong style="color:#4a3f36">All Dent PDR &middot; Mobile Paintless Dent Repair</strong><br/>
       1-855-425-5336 &middot; <a href="https://alldentpdr.com" style="color:#b0522b">alldentpdr.com</a> &middot; alldentpdr@gmail.com<br/>
       This estimate is valid for 30 days. Prices subject to change upon physical inspection.<br/>
       Method key: PDR = Paintless Dent Repair &nbsp;|&nbsp; R&amp;I = Remove &amp; Install &nbsp;|&nbsp; R&amp;R = Remove &amp; Replace
@@ -199,7 +199,7 @@ export const POST: APIRoute = async ({ request }) => {
     await resend.emails.send({
       from:    FROM,
       to:      customerEmail,
-      subject: `Your AllDent PDR Estimate – ${quoteNum} (${vehicle})`,
+      subject: `Your All Dent PDR Estimate – ${quoteNum} (${vehicle})`,
       html,
     });
 

@@ -1,4 +1,4 @@
----
+﻿---
 export const prerender = true;
 
 export function getStaticPaths() {
@@ -34,7 +34,7 @@ const vcardLines = [
   'VERSION:3.0',
   `FN:${displayName}`,
   `N:${lastName};${name};;;`,
-  'ORG:AllDent PDR',
+  'ORG:All Dent PDR',
   `TITLE:${title}`,
   `TEL;TYPE=WORK,VOICE:${phoneRaw}`,
   `EMAIL;TYPE=WORK:${email}`,
@@ -44,7 +44,7 @@ const vcardLines = [
 ].join('\n');
 
 const vcardHref = `data:text/vcard;charset=utf-8,${encodeURIComponent(vcardLines)}`;
-const pageTitle = `${displayName} — AllDent PDR`;
+const pageTitle = `${displayName} — All Dent PDR`;
 const canonical = `${website}/card/${slug}`;
 ---
 
@@ -54,13 +54,13 @@ const canonical = `${website}/card/${slug}`;
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{pageTitle}</title>
-  <meta name="description" content={`Digital business card for ${displayName}, ${title} at AllDent PDR. Mobile paintless dent repair.`} />
+  <meta name="description" content={`Digital business card for ${displayName}, ${title} at All Dent PDR. Mobile paintless dent repair.`} />
   <link rel="canonical" href={canonical} />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
   <!-- Open Graph for shareable preview -->
   <meta property="og:title" content={pageTitle} />
-  <meta property="og:description" content={`${title} · AllDent PDR · ${phone}`} />
+  <meta property="og:description" content={`${title} · All Dent PDR · ${phone}`} />
   <meta property="og:url" content={canonical} />
   <meta property="og:type" content="profile" />
   <meta property="og:image" content={`${website}/images/logo.jpg`} />
@@ -277,8 +277,8 @@ const canonical = `${website}/card/${slug}`;
   <div class="biz-card">
     <div class="biz-header">
       <div class="biz-logo-row">
-        <img src="/images/logo.jpg" alt="AllDent PDR logo" />
-        <span class="biz-company">AllDent PDR</span>
+        <img src="/images/logo.jpg" alt="All Dent PDR logo" />
+        <span class="biz-company">All Dent PDR</span>
       </div>
       <p class="biz-name">{displayName}</p>
       <p class="biz-title">{title}</p>

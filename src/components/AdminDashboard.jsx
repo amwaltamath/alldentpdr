@@ -56,7 +56,8 @@ const NAV_ITEMS = [
   { id: 'overview', label: 'Overview',          icon: '◧' },
   { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
   { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
-  { id: 'leads',    label: 'Leads & Analytics',  icon: '◎' },
+  { id: 'leads',    label: 'Leads',             icon: '◎' },
+  { id: 'analytics',label: 'Analytics',          icon: '📈' },
   { id: 'quote',    label: 'New Quote',         icon: '$' },
   { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
   { id: 'register', label: 'Register Vehicle',  icon: '+' },
@@ -483,6 +484,8 @@ export default function AdminDashboard() {
               onStatusChange={handleLeadStatusChange}
             />
           )}
+
+          {view === 'analytics' && <AnalyticsView />}
 
           {view === 'cards' && <CardsView />}
         </main>
@@ -987,6 +990,171 @@ function LeadsView({ leads, loading, onStatusChange }) {
       </div>
     </section>
   );
+}
+
+function AnalyticsView() {
+  const [data, setData]       = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/analytics');
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Failed to load analytics');
+        if (active) setData(json);
+      } catch (e) {
+        if (active) setError(e.message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => { active = false; };
+  }, []);
+
+  if (loading) return <section className="panel"><div className="kanban-empty">Loading analytics…</div></section>;
+  if (error === 'not_configured') return (
+    <section className="panel">
+      <div className="panel-head"><h3>Analytics</h3></div>
+      <div className="analytics-setup-notice">
+        <p><strong>GA4 not configured yet.</strong> To connect Google Analytics:</p>
+        <ol>
+          <li>In <a href="https://console.cloud.google.com" target="_blank" rel="noopener">Google Cloud Console</a> — enable the <strong>Google Analytics Data API</strong> and create a <strong>Service Account</strong>. Download its JSON key.</li>
+          <li>In <a href="https://analytics.google.com" target="_blank" rel="noopener">GA4 Admin</a> → Property Access Management — add the service account email as <strong>Viewer</strong>.</li>
+          <li>In <a href="https://vercel.com" target="_blank" rel="noopener">Vercel</a> → Project Settings → Environment Variables — add:<br /><code>GA4_SERVICE_ACCOUNT_KEY</code> = (paste the entire JSON key as one line)<br /><code>GA4_PROPERTY_ID</code> = (your numeric GA4 property ID, e.g. <code>123456789</code>)</li>
+          <li>Redeploy — analytics will appear here automatically.</li>
+        </ol>
+      </div>
+    </section>
+  );
+  if (error) return <section className="panel"><div className="kanban-empty" style={{color:'#c0392b'}}>Error: {error}</div></section>;
+
+  // Parse summary KPIs
+  const kpiRow  = data?.summary?.rows?.[0]?.metricValues || [];
+  const sessions   = parseInt(kpiRow[0]?.value || 0).toLocaleString();
+  const users      = parseInt(kpiRow[1]?.value || 0).toLocaleString();
+  const pageviews  = parseInt(kpiRow[2]?.value || 0).toLocaleString();
+  const bounceRaw  = parseFloat(kpiRow[3]?.value || 0);
+  const bounce     = (bounceRaw * 100).toFixed(1) + '%';
+  const durRaw     = parseFloat(kpiRow[4]?.value || 0);
+  const dur        = durRaw >= 60 ? `${Math.floor(durRaw/60)}m ${Math.round(durRaw%60)}s` : `${Math.round(durRaw)}s`;
+
+  // Traffic sources
+  const sourceRows = data?.sources?.rows || [];
+
+  // Top pages
+  const pageRows = data?.pages?.rows || [];
+
+  // Daily sparkline (simple bar chart via CSS)
+  const dailyRows = data?.daily?.rows || [];
+  const maxSessions = Math.max(...dailyRows.map(r => parseInt(r.metricValues[0].value)), 1);
+
+  return (
+    <section className="panel">
+      <div className="panel-head">
+        <div>
+          <h3>Analytics</h3>
+          <p className="meta" style={{ margin: '2px 0 0' }}>Last 30 days · Google Analytics 4</p>
+        </div>
+      </div>
+
+      {/* KPI strip */}
+      <div className="leads-kpi-row">
+        <div className="leads-kpi accent-google"><span className="leads-kpi-val">{sessions}</span><span className="leads-kpi-lbl">Sessions</span></div>
+        <div className="leads-kpi accent-sage"><span className="leads-kpi-val">{users}</span><span className="leads-kpi-lbl">Users</span></div>
+        <div className="leads-kpi"><span className="leads-kpi-val">{pageviews}</span><span className="leads-kpi-lbl">Page Views</span></div>
+        <div className="leads-kpi accent-muted"><span className="leads-kpi-val">{bounce}</span><span className="leads-kpi-lbl">Bounce Rate</span></div>
+        <div className="leads-kpi"><span className="leads-kpi-val">{dur}</span><span className="leads-kpi-lbl">Avg Session</span></div>
+      </div>
+
+      {/* Daily sparkline */}
+      {dailyRows.length > 0 && (
+        <div style={{ marginBottom: 24 }}>
+          <p className="cell-sub" style={{ marginBottom: 8 }}>Daily sessions (last 30 days)</p>
+          <div className="analytics-sparkline">
+            {dailyRows.map((r) => {
+              const val = parseInt(r.metricValues[0].value);
+              const h   = Math.max(4, Math.round((val / maxSessions) * 48));
+              const d   = r.dimensionValues[0].value;
+              const label = `${d.slice(4,6)}/${d.slice(6,8)}: ${val} sessions`;
+              return (
+                <div key={d} className="spark-bar-wrap" title={label}>
+                  <div className="spark-bar" style={{ height: h + 'px' }} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="analytics-two-col">
+        {/* Traffic sources */}
+        <div>
+          <h4 style={{ marginBottom: 10 }}>Traffic by Channel</h4>
+          <table className="data-table">
+            <thead>
+              <tr><th>Channel</th><th>Sessions</th><th>Users</th><th>Conversions</th></tr>
+            </thead>
+            <tbody>
+              {sourceRows.map((r) => {
+                const ch = r.dimensionValues[0].value;
+                return (
+                  <tr key={ch}>
+                    <td><span className={`source-badge ${channelClass(ch)}`}>{ch}</span></td>
+                    <td>{parseInt(r.metricValues[0].value).toLocaleString()}</td>
+                    <td>{parseInt(r.metricValues[1].value).toLocaleString()}</td>
+                    <td>{parseInt(r.metricValues[2].value).toLocaleString()}</td>
+                  </tr>
+                );
+              })}
+              {!sourceRows.length && <tr><td colSpan={4} className="kanban-empty">No data</td></tr>}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Top pages */}
+        <div>
+          <h4 style={{ marginBottom: 10 }}>Top Pages</h4>
+          <table className="data-table">
+            <thead>
+              <tr><th>Page</th><th>Views</th><th>Users</th><th>Avg Time</th></tr>
+            </thead>
+            <tbody>
+              {pageRows.map((r, i) => {
+                const path  = r.dimensionValues[0].value;
+                const title = r.dimensionValues[1].value;
+                const dur2  = parseFloat(r.metricValues[2].value);
+                const t     = dur2 >= 60 ? `${Math.floor(dur2/60)}m ${Math.round(dur2%60)}s` : `${Math.round(dur2)}s`;
+                return (
+                  <tr key={i}>
+                    <td>
+                      <div className="cell-strong" style={{ maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={title}>{title || path}</div>
+                      <div className="cell-sub">{path}</div>
+                    </td>
+                    <td>{parseInt(r.metricValues[0].value).toLocaleString()}</td>
+                    <td>{parseInt(r.metricValues[1].value).toLocaleString()}</td>
+                    <td>{t}</td>
+                  </tr>
+                );
+              })}
+              {!pageRows.length && <tr><td colSpan={4} className="kanban-empty">No data</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function channelClass(ch) {
+  if (!ch) return 'other';
+  const c = ch.toLowerCase();
+  if (c.includes('paid search') || c.includes('google')) return 'google';
+  if (c.includes('paid social') || c.includes('organic social')) return 'meta';
+  if (c.includes('organic')) return 'organic';
+  return 'other';
 }
 
 const TEAM_CARDS = [
@@ -1613,7 +1781,7 @@ function QuoteView({ vehicles }) {
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>AllDent PDR Estimate – ${quoteNum}</title>
+  <title>All Dent PDR Estimate – ${quoteNum}</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
@@ -1651,7 +1819,7 @@ function QuoteView({ vehicles }) {
 <body>
   <div class="hd">
     <div class="hd-brand">
-      <strong>AllDent PDR</strong>
+      <strong>All Dent PDR</strong>
       <span>Mobile Paintless Dent Repair</span>
       <span style="margin-top:4px;color:#555">1-855-425-5336 · alldentpdr.com</span>
     </div>
@@ -1715,7 +1883,7 @@ function QuoteView({ vehicles }) {
       <div class="sig-line">Date</div>
     </div>
     <div>
-      <div class="sig-line">AllDent PDR Technician</div>
+      <div class="sig-line">All Dent PDR Technician</div>
     </div>
     <div>
       <div class="sig-line">Date</div>
@@ -1723,7 +1891,7 @@ function QuoteView({ vehicles }) {
   </div>
 
   <div class="footer">
-    <strong>AllDent PDR · Mobile Paintless Dent Repair</strong><br/>
+    <strong>All Dent PDR · Mobile Paintless Dent Repair</strong><br/>
     1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com<br/>
     This estimate is valid for 30 days from the date above. Prices subject to change upon physical inspection.<br/>
     Method key: PDR = Paintless Dent Repair &nbsp;|&nbsp; R&amp;I = Remove &amp; Install &nbsp;|&nbsp; R&amp;R = Remove &amp; Replace
@@ -1943,7 +2111,7 @@ function QuoteView({ vehicles }) {
           <div className="quote-total-box">
             <div className="quote-total-label">Estimated Total</div>
             <div className="quote-total-amount">${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-            <div className="quote-total-meta">{affectedCount} panel{affectedCount !== 1 ? 's' : ''} · AllDent PDR</div>
+            <div className="quote-total-meta">{affectedCount} panel{affectedCount !== 1 ? 's' : ''} · All Dent PDR</div>
             <button type="button" className="button ghost" style={{ width: '100%', marginTop: 14 }} onClick={handleExportPDF}>
               Export PDF
             </button>
@@ -1968,7 +2136,7 @@ function buildReleaseHtml(job, data) {
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>AllDent PDR — Vehicle Release — ${esc(job.id)}</title>
+  <title>All Dent PDR — Vehicle Release — ${esc(job.id)}</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
@@ -1995,7 +2163,7 @@ function buildReleaseHtml(job, data) {
 <body>
   <div class="hd">
     <div class="hd-brand">
-      <strong>AllDent PDR</strong>
+      <strong>All Dent PDR</strong>
       <span>Mobile Paintless Dent Repair</span>
       <span style="margin-top:2px;color:#555">1-855-425-5336 &nbsp;·&nbsp; alldentpdr@gmail.com</span>
     </div>
@@ -2036,13 +2204,13 @@ function buildReleaseHtml(job, data) {
     <div>
       <div class="sig-line">
         ${data.witnessedBy ? `<span class="sig-val">${esc(data.witnessedBy)}</span>` : ''}
-        Witnessed By (AllDent PDR) &nbsp;&nbsp; Date: ${esc(data.witnessedAt || '')}
+        Witnessed By (All Dent PDR) &nbsp;&nbsp; Date: ${esc(data.witnessedAt || '')}
       </div>
     </div>
   </div>
 
   <div class="footer">
-    <strong>AllDent PDR · Mobile Paintless Dent Repair</strong><br/>
+    <strong>All Dent PDR · Mobile Paintless Dent Repair</strong><br/>
     1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com
   </div>
 
@@ -2234,7 +2402,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
           {/* Witness row */}
           <div className="form-grid-2" style={{ marginTop: 10 }}>
             <div>
-              <label>Witnessed By (AllDent PDR Rep) <span aria-hidden>*</span></label>
+              <label>Witnessed By (All Dent PDR Rep) <span aria-hidden>*</span></label>
               <input
                 type="text"
                 value={witnessedBy}

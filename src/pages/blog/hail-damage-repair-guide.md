@@ -43,7 +43,7 @@ Paintless dent repair is the industry-standard method for hail damage restoratio
 
 ## How mobile hail repair works
 
-At AllDent PDR, we are a **mobile repair service** — meaning we travel to storm-affected areas across the United States to perform repairs on-site. Here's what that looks like:
+At All Dent PDR, we are a **mobile repair service** — meaning we travel to storm-affected areas across the United States to perform repairs on-site. Here's what that looks like:
 
 1. **You contact us** with your location, vehicle details, and storm information.
 2. **We inspect the vehicle** and provide a repair plan based on the number of panels and severity.
@@ -82,10 +82,10 @@ Not all PDR technicians are equal. When choosing a repair provider after a storm
 - **Will they work with your insurance company directly?**
 - **Do they guarantee their work?**
 
-AllDent PDR has extensive experience with storm damage repair across the country. We travel to where storms hit, bring our full tool setup, and deliver factory-quality results on-site.
+All Dent PDR has extensive experience with storm damage repair across the country. We travel to where storms hit, bring our full tool setup, and deliver factory-quality results on-site.
 
 ## Request a hail damage inspection
 
-If your vehicle was caught in a hail storm, [contact AllDent PDR](/contact) to request an inspection. Share your location and vehicle details, and we'll reply with pricing guidance, timing, and next steps after inspection.
+If your vehicle was caught in a hail storm, [contact All Dent PDR](/contact) to request an inspection. Share your location and vehicle details, and we'll reply with pricing guidance, timing, and next steps after inspection.
 
 Based in Cincinnati and serving storm-affected areas nationwide.

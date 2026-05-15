@@ -48,12 +48,12 @@ export const POST: APIRoute = async ({ request }) => {
       resend.emails.send({
         from: FROM,
         to: email,
-        subject: `Your AllDent PDR Registration – Job ID ${jobId}`,
+        subject: `Your All Dent PDR Registration – Job ID ${jobId}`,
         html: `
 <div style="font-family:system-ui,sans-serif;max-width:620px;margin:0 auto;color:#1a1410">
   <!-- Header -->
   <div style="background:#b0522b;padding:24px 32px">
-    <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700">AllDent PDR</h1>
+    <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700">All Dent PDR</h1>
     <p style="margin:4px 0 0;color:#f5c9b3;font-size:13px">Mobile Paintless Dent Repair</p>
   </div>
 
@@ -108,8 +108,8 @@ export const POST: APIRoute = async ({ request }) => {
     <!-- ── Authorization ── -->
     <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#b0522b">Authorization Agreements</h3>
     <div style="background:#faf7f4;border:1px solid #ede8e2;border-radius:8px;padding:16px 20px;margin-bottom:20px">
-      <p style="margin:0 0 10px;font-size:14px">${dtpCheck} <strong>Direction to Pay</strong> — I authorize AllDent PDR to collect payment directly from my insurance carrier.</p>
-      <p style="margin:0 0 14px;font-size:14px">${raCheck} <strong>Repair Authorization</strong> — I authorize AllDent PDR to perform paintless dent repair on my vehicle.</p>
+      <p style="margin:0 0 10px;font-size:14px">${dtpCheck} <strong>Direction to Pay</strong> — I authorize All Dent PDR to collect payment directly from my insurance carrier.</p>
+      <p style="margin:0 0 14px;font-size:14px">${raCheck} <strong>Repair Authorization</strong> — I authorize All Dent PDR to perform paintless dent repair on my vehicle.</p>
       <table style="border-collapse:collapse;width:100%">
         ${row('Signature Name', signatureName)}
         <tr>
@@ -128,7 +128,7 @@ export const POST: APIRoute = async ({ request }) => {
     <p style="color:#555">Questions? Call us at <strong>1-855-425-5336</strong> or reply to this email.</p>
 
     <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e8e0d5;color:#aaa;font-size:12px">
-      <p style="margin:0">AllDent PDR · Mobile Paintless Dent Repair · alldentpdr.com</p>
+      <p style="margin:0">All Dent PDR · Mobile Paintless Dent Repair · alldentpdr.com</p>
     </div>
   </div>
 </div>`,

@@ -63,7 +63,7 @@ PDR has limits. You'll need a traditional body shop when:
 
 ## The mobile advantage
 
-One major benefit of PDR that body shops can't match: **it can be done anywhere**. AllDent PDR is a fully mobile service — we bring our tools and expertise directly to your location. No towing, no rental car, no waiting for a shop appointment.
+One major benefit of PDR that body shops can't match: **it can be done anywhere**. All Dent PDR is a fully mobile service — we bring our tools and expertise directly to your location. No towing, no rental car, no waiting for a shop appointment.
 
 Whether you're at home, at work, or in a storm-affected area hundreds of miles from the nearest shop, we come to you.
 

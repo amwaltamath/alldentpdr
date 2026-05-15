@@ -66,7 +66,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     <!-- Header -->
     <div style="background:#b0522b;padding:28px 32px">
-      <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">AllDent PDR</div>
+      <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">All Dent PDR</div>
       <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:2px">Mobile Paintless Dent Repair</div>
       <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:6px">855-425-5336 · alldentpdr@gmail.com</div>
     </div>
@@ -123,7 +123,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     <!-- Footer -->
     <div style="margin:28px 32px 32px;padding-top:20px;border-top:1px solid #e8e2db;text-align:center;font-size:11px;color:#9e8f84;line-height:1.8">
-      <strong style="color:#1a1410">AllDent PDR · Mobile Paintless Dent Repair</strong><br/>
+      <strong style="color:#1a1410">All Dent PDR · Mobile Paintless Dent Repair</strong><br/>
       1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com
     </div>
   </div>

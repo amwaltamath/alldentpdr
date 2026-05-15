@@ -1,4 +1,4 @@
-# AllDent PDR Website — Development Guide
+﻿# All Dent PDR Website — Development Guide
 
 ## Project Setup Checklist
 
@@ -14,7 +14,7 @@
 
 ## Project Overview
 
-**AllDent PDR** is a modern, SEO-optimized marketing website for a mobile paintless dent repair service. The site ranks for "Paintless Dent Repair" keywords and serves both customers and dealership partners.
+**All Dent PDR** is a modern, SEO-optimized marketing website for a mobile paintless dent repair service. The site ranks for "Paintless Dent Repair" keywords and serves both customers and dealership partners.
 
 **Tech Stack**: Astro 5 + React 19 + CSS3  
 **Hosting**: Vercel (auto-deploy from `main` branch)  
@@ -133,4 +133,4 @@ Push to `main` → Auto-builds → Manually promote in Vercel if needed
 ---
 
 **Last Updated**: March 21, 2026  
-**Maintained by**: AllDent PDR Development Team
+**Maintained by**: All Dent PDR Development Team

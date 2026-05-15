@@ -1,6 +1,6 @@
-# AllDent PDR Website
+# All Dent PDR Website
 
-Fast, modern marketing site and blog for **AllDent PDR** — a mobile paintless dent repair service based in Cincinnati, serving nationwide.
+Fast, modern marketing site and blog for **All Dent PDR** — a mobile paintless dent repair service based in Cincinnati, serving nationwide.
 
 Built with **Astro 5**, **React**, and **CSS3** for optimal performance and SEO.
 

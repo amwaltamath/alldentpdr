@@ -1,4 +1,4 @@
----
+﻿---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { serviceAreas } from '../../data/serviceAreas';
 import type { CityData } from '../../data/serviceAreas';
@@ -18,8 +18,8 @@ const shopAddress = '7695 Granger Rd, Cleveland, OH 44125';
 const shopPhone = '1-855-425-5336';
 const shopEmail = 'alldentpdr@gmail.com';
 
-const title = `Hail Damage Repair ${city.name} Ohio | AllDent PDR Shop | ${shopAddress}`;
-const description = `Hail damage repair near ${city.name}, OH — AllDent PDR's shop is only ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent repair, insurance billing, free estimates. Call ${shopPhone}.`;
+const title = `Hail Damage Repair ${city.name} Ohio | All Dent PDR Shop | ${shopAddress}`;
+const description = `Hail damage repair near ${city.name}, OH — All Dent PDR's shop is only ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent repair, insurance billing, free estimates. Call ${shopPhone}.`;
 const canonical = `https://alldentpdr.com/hail-damage-repair/${city.slug}`;
 
 const breadcrumbs = [
@@ -31,15 +31,15 @@ const breadcrumbs = [
 const faqItems = [
   {
     question: `Where is the nearest hail damage repair shop to ${city.name}, Ohio?`,
-    answer: `AllDent PDR is located at 7695 Granger Rd, Cleveland, OH 44125 — approximately ${city.distanceMiles} miles and ${city.driveMinutes} minutes from ${city.name}. We offer free damage assessments and insurance direct billing.`,
+    answer: `All Dent PDR is located at 7695 Granger Rd, Cleveland, OH 44125 — approximately ${city.distanceMiles} miles and ${city.driveMinutes} minutes from ${city.name}. We offer free damage assessments and insurance direct billing.`,
   },
   {
-    question: `Does AllDent PDR serve ${city.name}, OH?`,
+    question: `Does All Dent PDR serve ${city.name}, OH?`,
     answer: `Yes! ${city.name} is one of our primary service communities. We serve ${city.name} and surrounding ${city.county} County areas including ${city.nearbyShops.join(', ')} from our Cleveland shop at ${shopAddress}.`,
   },
   {
     question: `Does insurance cover hail damage repair for ${city.name} drivers?`,
-    answer: `In most cases, yes. Hail damage is covered under the comprehensive portion of your auto insurance policy. AllDent PDR works directly with State Farm, Allstate, Progressive, GEICO, Nationwide, and most other major carriers. You typically only pay your deductible.`,
+    answer: `In most cases, yes. Hail damage is covered under the comprehensive portion of your auto insurance policy. All Dent PDR works directly with State Farm, Allstate, Progressive, GEICO, Nationwide, and most other major carriers. You typically only pay your deductible.`,
   },
   {
     question: `How long does hail damage repair take for ${city.name} vehicles?`,
@@ -54,7 +54,7 @@ const faqItems = [
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': ['AutoRepair', 'LocalBusiness'],
-  name: `AllDent PDR — Hail Damage Repair serving ${city.name}, OH`,
+  name: `All Dent PDR — Hail Damage Repair serving ${city.name}, OH`,
   description: `Expert paintless dent repair and hail damage repair serving ${city.name}, OH from our shop at ${shopAddress}.`,
   url: canonical,
   telephone: shopPhone,
@@ -115,7 +115,7 @@ const localBusinessSchema = {
         </span>
         <h1>Hail damage repair near {city.name}, Ohio</h1>
         <p>
-          {city.tagline} AllDent PDR at <strong>{shopAddress}</strong> restores
+          {city.tagline} All Dent PDR at <strong>{shopAddress}</strong> restores
           hail-damaged vehicles with certified paintless dent repair — no repainting,
           insurance approved, free written estimates before any work begins.
         </p>
@@ -128,7 +128,7 @@ const localBusinessSchema = {
         </p>
       </div>
       <div class="hero-card">
-        <h3>Why {city.name} drivers choose AllDent PDR</h3>
+        <h3>Why {city.name} drivers choose All Dent PDR</h3>
         <ul>
           <li>Only {city.driveMinutes} minutes from {city.name}</li>
           <li>Certified paintless dent repair technicians</li>
@@ -183,7 +183,7 @@ const localBusinessSchema = {
   <section class="section alt">
     <div class="container">
       <span class="section-label">Shop Info</span>
-      <h2>Visit AllDent PDR — {city.driveMinutes} minutes from {city.name}</h2>
+      <h2>Visit All Dent PDR — {city.driveMinutes} minutes from {city.name}</h2>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;" class="responsive-two-col">
         <div>
           <p>
@@ -207,7 +207,7 @@ const localBusinessSchema = {
         </div>
         <div class="card" style="padding:0;overflow:hidden;border-radius:16px;">
           <iframe
-            title={`AllDent PDR shop — hail damage repair near ${city.name} OH`}
+            title={`All Dent PDR shop — hail damage repair near ${city.name} OH`}
             src="https://maps.google.com/maps?q=7695+Granger+Rd+Cleveland+OH+44125&output=embed"
             width="100%"
             height="300"
@@ -299,7 +299,7 @@ const localBusinessSchema = {
           <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
         </blockquote>
         <blockquote class="card">
-          <p>"Fast, honest, and the work holds up. I've had body shop work before that looked fine at first and then you notice things. AllDent PDR's finish work is genuinely better."</p>
+          <p>"Fast, honest, and the work holds up. I've had body shop work before that looked fine at first and then you notice things. All Dent PDR's finish work is genuinely better."</p>
           <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Bedford area customer</footer>
           <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
         </blockquote>
@@ -328,7 +328,7 @@ const localBusinessSchema = {
     <div class="container">
       <h2>Ready to fix your hail damage? Visit us from {city.name} today.</h2>
       <p>
-        AllDent PDR · {shopAddress} · Mon–Fri 8am–6pm · Sat 9am–2pm<br />
+        All Dent PDR · {shopAddress} · Mon–Fri 8am–6pm · Sat 9am–2pm<br />
         Walk-ins welcome · Free estimates · Insurance claims handled
       </p>
       <div class="button-row" style="justify-content:center;">

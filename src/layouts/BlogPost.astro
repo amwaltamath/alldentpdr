@@ -1,8 +1,8 @@
-﻿---
+﻿﻿---
 import BaseLayout from './BaseLayout.astro';
 
 const { title, description, pubDate } = Astro.props;
-const fullTitle = `${title} | AllDent PDR`;
+const fullTitle = `${title} | All Dent PDR`;
 const canonical = `https://alldentpdr.com${Astro.url.pathname}`;
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
@@ -25,7 +25,7 @@ const breadcrumbs = [
         <meta itemprop="headline" content={title} />
         <meta itemprop="description" content={description} />
         <meta itemprop="datePublished" content={pubDate} />
-        <meta itemprop="author" content="AllDent PDR" />
+        <meta itemprop="author" content="All Dent PDR" />
 
         <nav class="breadcrumb" aria-label="Breadcrumb">
           <ol>

@@ -7,7 +7,7 @@ pubDate: "2026-04-20"
 
 If your vehicle was caught in the recent hail storm near **Bedford, Ohio**, you are likely dealing with dozens of dents across the hood, roof, trunk, and upper door panels. The good news is that many of these dents can be repaired without sanding, filling, or repainting when the factory finish is still intact.
 
-AllDent PDR provides **mobile hail damage repair in Bedford and surrounding areas**, bringing professional paintless dent repair directly to storm-affected drivers.
+All Dent PDR provides **mobile hail damage repair in Bedford and surrounding areas**, bringing professional paintless dent repair directly to storm-affected drivers.
 
 ## Bedford-area hail damage: what to do first
 
@@ -50,7 +50,7 @@ For Bedford-area hail damage, that means your car can often be restored without 
 
 ## Why quality matters after a hail storm
 
-Storm season brings a lot of repair companies into the market quickly. Some focus mainly on promotions, fast intake, and high repair volume. That is not how AllDent PDR approaches the work.
+Storm season brings a lot of repair companies into the market quickly. Some focus mainly on promotions, fast intake, and high repair volume. That is not how All Dent PDR approaches the work.
 
 We are a **premium dent removal service**. Our reputation depends on the quality of the finished vehicle, not on getting as many cars through the process as possible. That means:
 
@@ -69,7 +69,7 @@ Just as important: you generally **have the right to choose your own repair prov
 
 ## Mobile hail damage repair in Bedford, Ohio
 
-AllDent PDR is based in Cincinnati and travels to storm-affected areas to perform on-site repair. If your vehicle was hit in Bedford or the surrounding region, we can help with:
+All Dent PDR is based in Cincinnati and travels to storm-affected areas to perform on-site repair. If your vehicle was hit in Bedford or the surrounding region, we can help with:
 
 - In-person inspections
 - Hail dent assessment
@@ -79,6 +79,6 @@ AllDent PDR is based in Cincinnati and travels to storm-affected areas to perfor
 
 ## Request Bedford hail damage inspection
 
-If your car was damaged in the recent Bedford-area storm, [contact AllDent PDR](/contact) to request an inspection. Send your location, vehicle details, and storm information, and we will respond with next steps.
+If your car was damaged in the recent Bedford-area storm, [contact All Dent PDR](/contact) to request an inspection. Send your location, vehicle details, and storm information, and we will respond with next steps.
 
-If you want a repair company that values workmanship over gimmicks, AllDent PDR is ready to help.
+If you want a repair company that values workmanship over gimmicks, All Dent PDR is ready to help.

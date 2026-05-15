@@ -39,7 +39,7 @@ Since repairs happen at your location and take hours rather than days, you typic
 
 After a major hail storm, local body shops get overwhelmed with months-long backlogs. Mobile PDR technicians can **deploy to storm-affected areas immediately** and start repairing vehicles on-site — in driveways, parking lots, or dealer lots.
 
-This is exactly what AllDent PDR does. We're based in Cincinnati and travel across the U.S. to wherever storms hit, bringing our full tool setup to repair hail damage on location.
+This is exactly what All Dent PDR does. We're based in Cincinnati and travel across the U.S. to wherever storms hit, bringing our full tool setup to repair hail damage on location.
 
 ### 5. Perfect for dealerships and fleets
 
@@ -63,7 +63,7 @@ Mobile PDR is the best option when:
 - **You can't easily get to a shop** — whether due to distance, schedule, or logistics
 - **Your paint is intact** — PDR works when the finish hasn't cracked or chipped
 
-## How AllDent PDR's mobile service works
+## How All Dent PDR's mobile service works
 
 1. **Contact us** with your damage details and location via our [contact form](/contact) or email
 2. **Schedule the right inspection** so pricing and timeline are based on the actual repair
@@ -77,7 +77,7 @@ No middlemen, no waiting lists, no surprises.
 
 One of the fastest-growing segments of mobile PDR is **storm-chasing** — technicians who follow severe weather patterns across the country to help communities recover from hail damage quickly.
 
-AllDent PDR is part of this mobile-first approach. When a major hail event hits — whether in Texas, Colorado, the Midwest, or the Southeast — we deploy to the area and set up on-site to serve affected vehicle owners directly.
+All Dent PDR is part of this mobile-first approach. When a major hail event hits — whether in Texas, Colorado, the Midwest, or the Southeast — we deploy to the area and set up on-site to serve affected vehicle owners directly.
 
 This model benefits everyone:
 - **Drivers** get faster repairs without fighting for a spot at an overwhelmed local shop
@@ -88,4 +88,4 @@ This model benefits everyone:
 
 Mobile PDR eliminates the friction of traditional shop-based repair. It's faster, more convenient, and delivers the same factory-quality results — wherever you are.
 
-If your vehicle has dents or hail damage, [contact AllDent PDR](/contact) to request a mobile inspection. We come to you.
+If your vehicle has dents or hail damage, [contact All Dent PDR](/contact) to request a mobile inspection. We come to you.

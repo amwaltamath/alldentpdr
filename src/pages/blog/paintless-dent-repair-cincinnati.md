@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/BlogPost.astro
 title: "Paintless Dent Repair Cincinnati: What to Know Before You Book"
-description: "A complete guide to paintless dent repair in Cincinnati, OH. Learn about PDR cost, repair timelines, what dents qualify, and how inspections shape accurate pricing from AllDent PDR."
+description: "A complete guide to paintless dent repair in Cincinnati, OH. Learn about PDR cost, repair timelines, what dents qualify, and how inspections shape accurate pricing from All Dent PDR."
 pubDate: "2026-02-13"
 ---
 
@@ -29,7 +29,7 @@ PDR pricing depends on several factors:
 - **Number of dents** — hail damage with dozens of dents is priced per panel
 - **Accessibility** — some panels require interior trim removal for tool access
 
-Small door dings in Cincinnati typically range from **$75–$150**. Hail damage is quoted per panel after inspection. AllDent PDR provides free, no-obligation evaluations so the repair plan reflects the actual vehicle condition.
+Small door dings in Cincinnati typically range from **$75–$150**. Hail damage is quoted per panel after inspection. All Dent PDR provides free, no-obligation evaluations so the repair plan reflects the actual vehicle condition.
 
 ## Typical PDR repair timelines
 
@@ -51,9 +51,9 @@ Most Cincinnati drivers have their vehicle back the same day for single-dent rep
 
 PDR is not only faster and more affordable — it also **preserves your vehicle's resale value** by keeping the original factory finish intact.
 
-## About AllDent PDR
+## About All Dent PDR
 
-AllDent PDR is a mobile paintless dent repair service based in Cincinnati, OH that travels across the United States to repair hail storm damage on-site. Whether you need a quick door ding fix locally or full hail damage recovery after a major storm, we bring our tools and expertise directly to you — wherever you are. We provide transparent quotes, fast turnaround, and factory-quality results.
+All Dent PDR is a mobile paintless dent repair service based in Cincinnati, OH that travels across the United States to repair hail storm damage on-site. Whether you need a quick door ding fix locally or full hail damage recovery after a major storm, we bring our tools and expertise directly to you — wherever you are. We provide transparent quotes, fast turnaround, and factory-quality results.
 
 **Hours**: Monday–Friday 8am–6pm, Saturday 9am–2pm  
 **Phone**: [1-855-425-5336](tel:18554255336)  
@@ -63,4 +63,4 @@ AllDent PDR is a mobile paintless dent repair service based in Cincinnati, OH th
 
 Ready to fix that dent? [Request an inspection](/contact) and we'll help you schedule the right next step for pricing and availability.
 
-Looking for more details about our repair options? [View all services](/services) or [learn more about AllDent PDR](/about).
+Looking for more details about our repair options? [View all services](/services) or [learn more about All Dent PDR](/about).
