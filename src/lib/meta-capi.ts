@@ -36,7 +36,7 @@ export interface CapiEvent {
 }
 
 export async function sendCapiEvent(event: CapiEvent): Promise<void> {
-  const pixelId = process.env.META_PIXEL_ID ?? import.meta.env.META_PIXEL_ID;
+  const pixelId = process.env.META_PIXEL_ID ?? import.meta.env.META_PIXEL_ID ?? '1284377713827510';
   const token   = process.env.META_CONVERSIONS_TOKEN ?? import.meta.env.META_CONVERSIONS_TOKEN;
 
   if (!pixelId || !token) {
