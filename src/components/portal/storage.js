@@ -276,6 +276,25 @@ export async function deleteVehicle(id) {
   saveLocalVehicles(list);
 }
 
+export async function getLeads() {
+  if (!isSupabaseEnabled()) return [];
+  const { data, error } = await supabase
+    .from('leads')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function updateLeadStatus(id, status) {
+  if (!isSupabaseEnabled()) return;
+  const { error } = await supabase
+    .from('leads')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', id);
+  if (error) throw error;
+}
+
 export function setSession(session) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(SESSION_KEY, JSON.stringify(session));
@@ -394,19 +413,6 @@ function mapRemoteLead(item) {
     createdAt: item.created_at,
     updatedAt: item.updated_at,
   };
-}
-
-export async function getLeads() {
-  if (isSupabaseEnabled()) {
-    const { data, error } = await supabase
-      .from('leads')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    return (data || []).map(mapRemoteLead);
-  }
-  // Fallback: no local storage for leads (they come from server)
-  return [];
 }
 
 export async function updateLead(id, updates) {

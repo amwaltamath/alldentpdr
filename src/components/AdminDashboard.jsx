@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
   deleteVehicle,
+  getLeads,
   getPricing,
   getRemoteAuthUser,
   getSession,
@@ -14,6 +15,7 @@ import {
   setSession,
   signInRemoteAdmin,
   signOutRemoteAdmin,
+  updateLeadStatus,
   updateVehicle,
   updateVehicleStatus
 } from './portal/storage';
@@ -54,6 +56,7 @@ const NAV_ITEMS = [
   { id: 'overview', label: 'Overview',          icon: '◧' },
   { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
   { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
+  { id: 'leads',    label: 'Leads',             icon: '◎' },
   { id: 'quote',    label: 'New Quote',         icon: '$' },
   { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
   { id: 'register', label: 'Register Vehicle',  icon: '+' },
@@ -88,6 +91,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [saveMessage, setSaveMessage] = useState('');
   const [releaseJob, setReleaseJob] = useState(null);
+  const [leads, setLeads] = useState([]);
+  const [leadsLoading, setLeadsLoading] = useState(false);
 
   const remoteMode = isRemotePortalEnabled();
 
@@ -130,13 +135,14 @@ export default function AdminDashboard() {
         return;
       }
       setLoading(true);
+      setLeadsLoading(true);
       try {
-        const next = await getVehicles();
-        if (active) setVehicles(next);
+        const [next, leadsNext] = await Promise.all([getVehicles(), getLeads()]);
+        if (active) { setVehicles(next); setLeads(leadsNext); }
       } catch {
         if (active) setAuthError('Unable to load vehicle data.');
       } finally {
-        if (active) setLoading(false);
+        if (active) { setLoading(false); setLeadsLoading(false); }
       }
     }
 
@@ -268,6 +274,11 @@ export default function AdminDashboard() {
   const handleReleaseSaved = (updatedJob) => {
     setVehicles((prev) => prev.map((v) => v.id === updatedJob.id ? { ...v, releaseFormData: updatedJob.releaseFormData } : v));
     setReleaseJob(null);
+  };
+
+  const handleLeadStatusChange = async (id, status) => {
+    await updateLeadStatus(id, status);
+    setLeads((prev) => prev.map((l) => l.id === id ? { ...l, status } : l));
   };
 
   const handleDelete = async (id) => {
@@ -463,6 +474,14 @@ export default function AdminDashboard() {
 
           {view === 'pricing' && (
             <PricingView />
+          )}
+
+          {view === 'leads' && (
+            <LeadsView
+              leads={leads}
+              loading={leadsLoading}
+              onStatusChange={handleLeadStatusChange}
+            />
           )}
 
           {view === 'cards' && <CardsView />}
@@ -836,6 +855,132 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
             )}
             {loading && (
               <tr><td colSpan={8} className="kanban-empty">Loading…</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+const LEAD_STATUSES = ['New', 'Contacted', 'Quoted', 'Converted', 'Closed'];
+
+function sourceLabel(src) {
+  if (!src) return 'Organic';
+  const s = src.toLowerCase();
+  if (s.includes('google')) return 'Google';
+  if (s.includes('facebook') || s.includes('meta') || s.includes('fb') || s.includes('instagram') || s.includes('ig')) return 'Meta';
+  return src.charAt(0).toUpperCase() + src.slice(1);
+}
+
+function sourceBadgeClass(src) {
+  const lbl = sourceLabel(src);
+  if (lbl === 'Google') return 'source-badge google';
+  if (lbl === 'Meta') return 'source-badge meta';
+  if (!src) return 'source-badge organic';
+  return 'source-badge other';
+}
+
+function LeadsView({ leads, loading, onStatusChange }) {
+  const [filter, setFilter] = useState('all');
+
+  const total = leads.length;
+  const byStatus = Object.fromEntries(LEAD_STATUSES.map((s) => [s, 0]));
+  leads.forEach((l) => { if (byStatus[l.status] !== undefined) byStatus[l.status]++; });
+
+  const googleCount = leads.filter((l) => sourceLabel(l.utm_source) === 'Google').length;
+  const metaCount   = leads.filter((l) => sourceLabel(l.utm_source) === 'Meta').length;
+  const organicCount = leads.filter((l) => !l.utm_source).length;
+  const otherCount  = total - googleCount - metaCount - organicCount;
+
+  const shown = filter === 'all' ? leads : leads.filter((l) => l.status === filter);
+
+  return (
+    <section className="panel">
+      <div className="panel-head">
+        <div>
+          <h3>Leads &amp; Analytics</h3>
+          <p className="meta" style={{ margin: '2px 0 0' }}>{total} total leads from contact form · click a status to filter</p>
+        </div>
+      </div>
+
+      {/* Source + status KPIs */}
+      <div className="leads-kpi-row">
+        <div className="leads-kpi"><span className="leads-kpi-val">{total}</span><span className="leads-kpi-lbl">Total Leads</span></div>
+        <div className="leads-kpi accent-rust"><span className="leads-kpi-val">{byStatus['New']}</span><span className="leads-kpi-lbl">New</span></div>
+        <div className="leads-kpi accent-sage"><span className="leads-kpi-val">{byStatus['Converted']}</span><span className="leads-kpi-lbl">Converted</span></div>
+        <div className="leads-kpi accent-google"><span className="leads-kpi-val">{googleCount}</span><span className="leads-kpi-lbl">Google Ads</span></div>
+        <div className="leads-kpi accent-meta"><span className="leads-kpi-val">{metaCount}</span><span className="leads-kpi-lbl">Meta / FB</span></div>
+        <div className="leads-kpi accent-muted"><span className="leads-kpi-val">{organicCount}</span><span className="leads-kpi-lbl">Organic / Direct</span></div>
+        {otherCount > 0 && <div className="leads-kpi"><span className="leads-kpi-val">{otherCount}</span><span className="leads-kpi-lbl">Other</span></div>}
+      </div>
+
+      {/* Status filter tabs */}
+      <div className="queue-tabs" style={{ padding: '16px 0', borderBottom: '1px solid var(--line)', marginBottom: 16 }}>
+        <button type="button" className={`queue-tab${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>
+          All <span className="queue-count">{total}</span>
+        </button>
+        {LEAD_STATUSES.map((s) => (
+          <button key={s} type="button" className={`queue-tab${filter === s ? ' active' : ''}`} onClick={() => setFilter(s)}>
+            {s} <span className="queue-count">{byStatus[s]}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="table-scroll">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Contact</th>
+              <th>Vehicle / Note</th>
+              <th>Source</th>
+              <th>Campaign / Keyword</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {shown.map((l) => (
+              <tr key={l.id}>
+                <td>
+                  <div className="cell-strong">{new Date(l.created_at).toLocaleDateString()}</div>
+                  <div className="cell-sub">{l.id}</div>
+                </td>
+                <td>
+                  <div className="cell-strong">{l.name}</div>
+                  <div className="cell-sub">{l.location || '—'}</div>
+                </td>
+                <td>
+                  <div className="cell-strong">{l.email}</div>
+                  <div className="cell-sub">{l.phone || '—'}</div>
+                </td>
+                <td>
+                  <div className="cell-strong">{l.vehicle || '—'}</div>
+                  <div className="cell-sub" title={l.message}>{l.message?.slice(0, 55)}{l.message?.length > 55 ? '…' : ''}</div>
+                </td>
+                <td>
+                  <span className={sourceBadgeClass(l.utm_source)}>{sourceLabel(l.utm_source)}</span>
+                  {l.utm_medium && <div className="cell-sub">{l.utm_medium}</div>}
+                  {l.referrer && !l.utm_source && <div className="cell-sub" title={l.referrer} style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.referrer.replace(/^https?:\/\//, '')}</div>}
+                </td>
+                <td>
+                  <div className="cell-strong">{l.utm_campaign || '—'}</div>
+                  {l.utm_term && <div className="cell-sub">🔑 {l.utm_term}</div>}
+                  {l.utm_content && <div className="cell-sub">{l.utm_content}</div>}
+                </td>
+                <td>
+                  <select value={l.status} onChange={(e) => onStatusChange(l.id, e.target.value)}>
+                    {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </td>
+              </tr>
+            ))}
+            {!loading && !shown.length && (
+              <tr><td colSpan={7} className="kanban-empty">{filter === 'all' ? 'No leads yet — contact form submissions will appear here.' : `No leads with status "${filter}".`}</td></tr>
+            )}
+            {loading && (
+              <tr><td colSpan={7} className="kanban-empty">Loading…</td></tr>
             )}
           </tbody>
         </table>
