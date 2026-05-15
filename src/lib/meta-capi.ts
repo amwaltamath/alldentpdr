@@ -72,7 +72,7 @@ export async function sendCapiEvent(event: CapiEvent): Promise<void> {
         ...(event.customData ? { custom_data: event.customData } : {}),
       },
     ],
-    // test_event_code: 'TEST12345', // uncomment for Meta test events tool
+    test_event_code: 'TEST85056', // ⚠️ REMOVE before production
   };
 
   try {
