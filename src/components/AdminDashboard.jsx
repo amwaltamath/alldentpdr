@@ -56,7 +56,7 @@ const NAV_ITEMS = [
   { id: 'overview', label: 'Overview',          icon: '◧' },
   { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
   { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
-  { id: 'leads',    label: 'Leads',             icon: '◎' },
+  { id: 'leads',    label: 'Leads & Analytics',  icon: '◎' },
   { id: 'quote',    label: 'New Quote',         icon: '$' },
   { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
   { id: 'register', label: 'Register Vehicle',  icon: '+' },
