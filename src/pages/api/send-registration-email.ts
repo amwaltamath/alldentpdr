@@ -2,12 +2,13 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
+import { sendCapiEvent } from '../../lib/meta-capi';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const FROM = 'noreply@alldentpdr.com';
 const ADMIN_EMAIL = 'admin@alldentpdr.com';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   let body: Record<string, string>;
   try {
     body = await request.json();
@@ -155,6 +156,32 @@ export const POST: APIRoute = async ({ request }) => {
         `,
       }),
     ]);
+
+    // Fire Meta Conversions API CompleteRegistration event (best-effort, non-blocking)
+    const nameParts = customerName.trim().split(/\s+/);
+    const userAgent = request.headers.get('user-agent') ?? undefined;
+    sendCapiEvent({
+      eventName:      'CompleteRegistration',
+      eventSourceUrl: 'https://alldentpdr.com/register',
+      userData: {
+        email,
+        phone:     phone || undefined,
+        firstName: nameParts[0],
+        lastName:  nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined,
+        city:      city  || undefined,
+        state:     state || undefined,
+        zip:       zip   || undefined,
+        clientIp:  clientAddress,
+        userAgent,
+        fbc:       body.fbc || undefined,
+        fbp:       body.fbp || undefined,
+      },
+      customData: {
+        content_name:      vehicleLabel,
+        registration_id:   jobId,
+        insurance_company: insuranceCompany || undefined,
+      },
+    });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (err) {

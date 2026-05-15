@@ -3,6 +3,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { sendCapiEvent } from '../../lib/meta-capi';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const FROM = 'noreply@alldentpdr.com';
@@ -13,7 +14,7 @@ const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL as string | undefined;
 const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string | undefined;
 const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   let body: Record<string, string>;
   try {
     body = await request.json();
@@ -22,7 +23,8 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const { name, email, location, vehicle, message,
-          utm_source, utm_medium, utm_campaign, utm_content, utm_term, referrer } = body;
+          utm_source, utm_medium, utm_campaign, utm_content, utm_term, referrer,
+          fbc, fbp, event_id } = body;
 
   if (!name || !email || !message) {
     return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 422 });
@@ -72,6 +74,32 @@ export const POST: APIRoute = async ({ request }) => {
         </table>
         <p style="margin-top:20px;color:#888;font-size:12px">Sent from alldentpdr.com contact form</p>
       `,
+    });
+
+    // Fire Meta Conversions API Lead event (best-effort, non-blocking)
+    const nameParts = name.trim().split(/\s+/);
+    const userAgent = request.headers.get('user-agent') ?? undefined;
+    sendCapiEvent({
+      eventName:      'Lead',
+      eventSourceUrl: 'https://alldentpdr.com/contact',
+      eventId:        event_id || undefined,
+      userData: {
+        email:     email,
+        phone:     body.phone || undefined,
+        firstName: nameParts[0],
+        lastName:  nameParts.length > 1 ? nameParts[nameParts.length - 1] : undefined,
+        city:      location || undefined,
+        clientIp:  clientAddress,
+        userAgent,
+        fbc:       fbc || undefined,
+        fbp:       fbp || undefined,
+      },
+      customData: {
+        lead_type: 'inspection_request',
+        utm_source:   utm_source   || undefined,
+        utm_medium:   utm_medium   || undefined,
+        utm_campaign: utm_campaign || undefined,
+      },
     });
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
