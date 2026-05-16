@@ -82,6 +82,15 @@ const breadcrumbs = [
 
             const data = Object.fromEntries(new FormData(form));
 
+            // Shared event ID for Meta pixel ↔ CAPI deduplication
+            const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+            data.event_id = eventId;
+
+            // Attach _fbc / _fbp cookies for better CAPI matching
+            const getCookie = (n) => (document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)') || [])[2] || '';
+            data.fbc = getCookie('_fbc');
+            data.fbp = getCookie('_fbp');
+
             // Attach UTM attribution stored from any page visit in this session
             const utm = JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
             Object.assign(data, utm);
@@ -97,6 +106,10 @@ const breadcrumbs = [
                 form.reset();
                 status.textContent = '✓ Request sent! We\'ll reply within 24 hours.';
                 status.style.color = '#4a7a5c';
+                // Meta Pixel — Lead (eventID matches CAPI for deduplication)
+                if (typeof fbq === 'function') {
+                  fbq('track', 'Lead', {}, { eventID: eventId });
+                }
                 // Google Ads conversion — contact form submitted
                 if (typeof gtag === 'function') {
                   gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
@@ -136,4 +149,22 @@ const breadcrumbs = [
       </div>
     </div>
   </section>
-</BaseLayout>
+
+  <section class="section alt">
+    <div class="container">
+      <h2>Find our shop</h2>
+      <p>7695 Granger Rd, Cleveland, OH 44125 — near Garfield Heights and Cuyahoga Heights, convenient to I-77 and I-480.</p>
+      <div style="margin-top:24px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+        <iframe
+          title="All Dent PDR shop location map"
+          src="https://maps.google.com/maps?q=7695+Granger+Rd,+Cleveland,+OH+44125&output=embed"
+          width="100%"
+          height="400"
+          style="border:0;display:block;"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+    </div>
+  </section>

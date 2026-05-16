@@ -3,8 +3,8 @@ import '../styles/global.css';
 import MobileMenu from '../components/MobileMenu.jsx';
 
 const {
-  title = 'All Dent PDR | Paintless Dent Repair Cincinnati',
-  description = 'Mobile paintless dent repair based in Cincinnati. We travel nationwide to repair hail storm damage on-site. Fast, affordable PDR for door dings, hail damage, and minor collision dents.',
+  title = 'All Dent PDR | Paintless Dent Repair Cleveland OH',
+  description = 'Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, Garfield Heights, Parma, Solon, and all of Northeast Ohio. Hail damage repair, door ding removal, insurance billing. Call 1-855-425-5336.',
   canonical = 'https://alldentpdr.com',
   ogImage = '/images/logo-branded.svg',
   noindex = false,
@@ -136,6 +136,10 @@ const gaId: string = 'G-T7RLXD05RW';
           "paymentAccepted": "Cash, Credit Card, Debit Card",
           "priceRange": "$$",
           "openingHours": "Mo-Fr 08:00-18:00, Sa 09:00-14:00",
+          "openingHoursSpecification": [
+            { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "18:00" },
+            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "14:00" }
+          ],
           "image": "https://alldentpdr.com/images/logo-branded.svg",
           "sameAs": ["https://www.facebook.com/alldentpdr/"],
           "aggregateRating": {
@@ -194,7 +198,7 @@ const gaId: string = 'G-T7RLXD05RW';
       <header class="site-header">
         <div class="container header-inner">
           <a class="logo" href="/">
-            <img src="/images/logo.jpg" alt="All Dent PDR - Paintless Dent Repair Cincinnati" class="logo-img" />
+            <img src="/images/logo.jpg" alt="All Dent PDR - Paintless Dent Repair Cleveland OH" class="logo-img" />
             <div class="logo-text">
               <span class="logo-mark">All Dent PDR</span>
               <span class="logo-sub">Bedford, OH Shop &amp; Mobile</span>
