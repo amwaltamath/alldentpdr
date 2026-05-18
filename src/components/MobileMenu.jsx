@@ -22,10 +22,11 @@ export default function MobileMenu() {
       {isOpen && (
         <nav className="mobile-nav" role="navigation">
           <a href="/services" onClick={closeMenu}>Services</a>
+          <a href="/service-area" onClick={closeMenu}>Service Area</a>
           <a href="/about" onClick={closeMenu}>About</a>
           <a href="/blog" onClick={closeMenu}>Blog</a>
-          <a href="/register" onClick={closeMenu}>Vehicle Registration</a>
-          <a href="/portal/customer-login" onClick={closeMenu}>Customer Login</a>
+          <a href="/register" onClick={closeMenu}>Register</a>
+          <a href="/portal/customer-login" onClick={closeMenu}>Login</a>
           <a className="nav-cta" href="/contact" onClick={closeMenu}>Request Inspection</a>
         </nav>
       )}
