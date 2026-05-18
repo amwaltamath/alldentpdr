@@ -19,6 +19,7 @@ const staticPages = [
   `${BASE}/bedford-hail-damage-repair`,
   `${BASE}/bedford-door-ding-repair`,
   `${BASE}/hail-damage-repair-bedford-ohio`,
+  `${BASE}/hail-damage-repair-cleveland`,
   `${BASE}/blog`,
   `${BASE}/blog/bedford-ohio-hail-damage-repair`,
   `${BASE}/blog/hail-damage-repair-guide`,

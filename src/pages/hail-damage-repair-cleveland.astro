@@ -1,0 +1,246 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BeforeAfter from '../components/BeforeAfter.jsx';
+
+const title = 'Hail Damage Repair Cleveland OH | Free Inspection | All Dent PDR';
+const description = 'Hail hit your car? All Dent PDR at 7695 Granger Rd, Cleveland, OH 44125 restores hail-damaged vehicles with paintless dent repair. Free inspection, insurance billing, factory finish preserved. Call 1-855-425-5336.';
+const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} bare={true}>
+
+  <!-- Minimal header: logo + phone only, no nav -->
+  <header style="background:#fff;border-bottom:2px solid #b0522b;padding:14px 0;">
+    <div style="max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <img src="/images/logo.jpg" alt="All Dent PDR" style="height:44px;width:auto;border-radius:6px;" />
+        <div>
+          <div style="font-weight:700;font-size:1.1rem;color:#1a1410;">All Dent PDR</div>
+          <div style="font-size:0.78rem;color:#6b5c52;">Cleveland &amp; Northeast Ohio</div>
+        </div>
+      </a>
+      <a href="tel:18554255336" style="background:#b0522b;color:#fff;padding:12px 24px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;box-shadow:0 2px 8px rgba(176,82,43,0.3);">
+        &#128222; 1-855-425-5336
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero + Form -->
+  <section style="background:linear-gradient(135deg,#1a1410 0%,#2d1f17 100%);color:#fff;padding:60px 24px;">
+    <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
+
+      <div>
+        <span style="background:#b0522b;color:#fff;font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;border-radius:999px;">Hail Damage Specialists — Cleveland, OH</span>
+        <h1 style="font-size:clamp(1.9rem,4vw,2.8rem);margin:16px 0 12px;line-height:1.15;font-family:Georgia,serif;">
+          Your car took a hail hit.<br />We'll make it look factory-new.
+        </h1>
+        <p style="font-size:1.1rem;color:rgba(255,255,255,0.8);margin-bottom:24px;line-height:1.6;">
+          All Dent PDR at <strong style="color:#fff;">7695 Granger Rd, Cleveland, OH 44125</strong> specializes in paintless hail damage restoration — no repainting, factory finish preserved, full insurance billing handled for you.
+        </p>
+
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="color:#b0522b;font-size:1.2rem;font-weight:700;">✓</span>
+            <span>Free in-person inspection &amp; itemized quote</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="color:#b0522b;font-size:1.2rem;font-weight:700;">✓</span>
+            <span>Direct billing with State Farm, Progressive, Allstate &amp; more</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="color:#b0522b;font-size:1.2rem;font-weight:700;">✓</span>
+            <span>OEM factory paint preserved — no sanding, no repainting</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="color:#b0522b;font-size:1.2rem;font-weight:700;">✓</span>
+            <span>Serving Bedford, Parma, Solon, Garfield Heights &amp; all of NE Ohio</span>
+          </div>
+        </div>
+
+        <a href="tel:18554255336" style="display:inline-block;background:#b0522b;color:#fff;padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.1rem;text-decoration:none;box-shadow:0 4px 16px rgba(176,82,43,0.4);">
+          Call Now for a Free Inspection
+        </a>
+
+        <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.12);padding-top:20px;">
+          <BeforeAfter
+            client:load
+            before="/images/alldentbefore.jpg"
+            after="/images/alldentafter.jpg"
+            alt="Hail damage repair Cleveland OH — All Dent PDR before and after restoration"
+          />
+          <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-top:8px;text-align:center;">Actual repair by All Dent PDR — drag to compare</p>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div style="background:#fff;border-radius:16px;padding:32px;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <h2 style="color:#1a1410;font-size:1.35rem;margin:0 0 6px;font-family:Georgia,serif;">Request your free inspection</h2>
+        <p style="color:#6b5c52;font-size:0.9rem;margin:0 0 20px;">We'll reply within 2 hours during business hours.</p>
+
+        <form id="lp-form" style="display:flex;flex-direction:column;gap:14px;">
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:0.88rem;font-weight:600;color:#3a2e28;">
+            Name *
+            <input type="text" name="name" placeholder="Your name" required style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:0.88rem;font-weight:600;color:#3a2e28;">
+            Phone
+            <input type="tel" name="phone" placeholder="(216) 555-5555" style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:0.88rem;font-weight:600;color:#3a2e28;">
+            Email *
+            <input type="email" name="email" placeholder="you@email.com" required style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:0.88rem;font-weight:600;color:#3a2e28;">
+            Vehicle (year, make, model)
+            <input type="text" name="vehicle" placeholder="e.g. 2022 Honda Accord" style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:0.88rem;font-weight:600;color:#3a2e28;">
+            Insurance Company
+            <input type="text" name="insurance_company" placeholder="e.g. State Farm, Progressive" style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+          </label>
+          <label style="display:flex;flex-direction:column;gap:4px;font-size:0.88rem;font-weight:600;color:#3a2e28;">
+            Describe the hail damage *
+            <textarea name="message" rows="3" placeholder="Which panels were hit? Any other details?" required style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;resize:vertical;"></textarea>
+          </label>
+          <button id="lp-submit" type="submit" style="background:#b0522b;color:#fff;border:none;padding:14px;border-radius:999px;font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 4px 12px rgba(176,82,43,0.3);">
+            Request Free Inspection
+          </button>
+          <p id="lp-status" style="display:none;text-align:center;font-size:0.9rem;margin:0;"></p>
+        </form>
+
+        <p style="font-size:0.78rem;color:#a0907e;text-align:center;margin-top:14px;">
+          Or call us directly: <a href="tel:18554255336" style="color:#b0522b;font-weight:700;">1-855-425-5336</a>
+        </p>
+
+        <script>
+          (function () {
+            const p = new URLSearchParams(window.location.search);
+            const keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
+            const stored = JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
+            let changed = false;
+            keys.forEach((k) => { if (p.get(k)) { stored[k] = p.get(k); changed = true; } });
+            if (!stored.referrer) { stored.referrer = document.referrer || ''; changed = true; }
+            if (changed) sessionStorage.setItem('alldent_utm', JSON.stringify(stored));
+
+            const form = document.getElementById('lp-form');
+            const btn  = document.getElementById('lp-submit');
+            const stat = document.getElementById('lp-status');
+
+            form.addEventListener('submit', async (e) => {
+              e.preventDefault();
+              btn.disabled = true;
+              btn.textContent = 'Sending…';
+
+              const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+              const data = Object.fromEntries(new FormData(form));
+              data.event_id = eventId;
+              data.location  = data.location || 'Cleveland, OH';
+
+              const getCookie = (n) => (document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)') || [])[2] || '';
+              data.fbc = getCookie('_fbc');
+              data.fbp = getCookie('_fbp');
+              Object.assign(data, JSON.parse(sessionStorage.getItem('alldent_utm') || '{}'));
+
+              try {
+                const res = await fetch('/api/contact', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(data),
+                });
+                if (res.ok) {
+                  form.reset();
+                  stat.textContent = '✓ Request sent! We\'ll be in touch within 2 hours.';
+                  stat.style.color = '#4a7a5c';
+                  if (typeof fbq === 'function') fbq('track', 'Lead', {}, { eventID: eventId });
+                  if (typeof gtag === 'function') gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
+                } else {
+                  stat.textContent = 'Something went wrong — please call 1-855-425-5336.';
+                  stat.style.color = '#c0392b';
+                  btn.disabled = false;
+                  btn.textContent = 'Request Free Inspection';
+                }
+              } catch {
+                stat.textContent = 'Something went wrong — please call 1-855-425-5336.';
+                stat.style.color = '#c0392b';
+                btn.disabled = false;
+                btn.textContent = 'Request Free Inspection';
+              }
+              stat.style.display = 'block';
+            });
+          })();
+        </script>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust bar -->
+  <section style="background:#fffbf6;border-top:1px solid #e8e0d8;border-bottom:1px solid #e8e0d8;padding:28px 24px;">
+    <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:32px;text-align:center;">
+      <div><strong style="display:block;font-size:1.4rem;color:#b0522b;">1,000+</strong><span style="font-size:0.85rem;color:#6b5c52;">Vehicles Restored</span></div>
+      <div><strong style="display:block;font-size:1.4rem;color:#b0522b;">Cleveland, OH</strong><span style="font-size:0.85rem;color:#6b5c52;">Local Shop</span></div>
+      <div><strong style="display:block;font-size:1.4rem;color:#b0522b;">100%</strong><span style="font-size:0.85rem;color:#6b5c52;">Paint Preserved</span></div>
+      <div><strong style="display:block;font-size:1.4rem;color:#b0522b;">Insurance</strong><span style="font-size:0.85rem;color:#6b5c52;">Direct Billing</span></div>
+      <div><strong style="display:block;font-size:1.4rem;color:#b0522b;">Same-Week</strong><span style="font-size:0.85rem;color:#6b5c52;">Scheduling Available</span></div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section style="padding:60px 24px;background:#fff;">
+    <div style="max-width:900px;margin:0 auto;text-align:center;">
+      <span style="background:#eef5fb;color:#2563a8;font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;border-radius:999px;">Simple Process</span>
+      <h2 style="font-size:clamp(1.5rem,3vw,2rem);margin:14px 0 40px;font-family:Georgia,serif;color:#1a1410;">From inspection to flawless finish — 4 steps</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:24px;text-align:left;">
+        <div style="background:#fffbf6;border:1px solid #e8e0d8;border-radius:12px;padding:24px;">
+          <div style="font-size:1.8rem;font-weight:700;color:#b0522b;margin-bottom:8px;">1</div>
+          <h3 style="font-size:1rem;margin:0 0 6px;color:#1a1410;">Stop in or call</h3>
+          <p style="font-size:0.88rem;color:#6b5c52;margin:0;">7695 Granger Rd, Cleveland — no appointment needed for an assessment.</p>
+        </div>
+        <div style="background:#fffbf6;border:1px solid #e8e0d8;border-radius:12px;padding:24px;">
+          <div style="font-size:1.8rem;font-weight:700;color:#b0522b;margin-bottom:8px;">2</div>
+          <h3 style="font-size:1rem;margin:0 0 6px;color:#1a1410;">Get your quote</h3>
+          <p style="font-size:0.88rem;color:#6b5c52;margin:0;">Transparent, panel-by-panel pricing with no hidden fees.</p>
+        </div>
+        <div style="background:#fffbf6;border:1px solid #e8e0d8;border-radius:12px;padding:24px;">
+          <div style="font-size:1.8rem;font-weight:700;color:#b0522b;margin-bottom:8px;">3</div>
+          <h3 style="font-size:1rem;margin:0 0 6px;color:#1a1410;">We handle insurance</h3>
+          <p style="font-size:0.88rem;color:#6b5c52;margin:0;">Direct billing with most major carriers — we manage the paperwork.</p>
+        </div>
+        <div style="background:#fffbf6;border:1px solid #e8e0d8;border-radius:12px;padding:24px;">
+          <div style="font-size:1.8rem;font-weight:700;color:#b0522b;margin-bottom:8px;">4</div>
+          <h3 style="font-size:1rem;margin:0 0 6px;color:#1a1410;">Flawless finish</h3>
+          <p style="font-size:0.88rem;color:#6b5c52;margin:0;">Drive away with factory-quality results, original paint intact.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom CTA -->
+  <section style="background:linear-gradient(135deg,#b0522b,#8a3e20);color:#fff;padding:60px 24px;text-align:center;">
+    <div style="max-width:700px;margin:0 auto;">
+      <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);margin:0 0 12px;font-family:Georgia,serif;">Don't wait — hail damage gets worse over time</h2>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.85);margin-bottom:28px;">Schedule your free inspection at our Cleveland shop today. We'll assess every panel and give you a clear repair plan the same day.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <a href="tel:18554255336" style="background:#fff;color:#b0522b;padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;">
+          &#128222; Call 1-855-425-5336
+        </a>
+        <a href="#lp-form" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.6);padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;">
+          Fill Out the Form
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Minimal footer -->
+  <footer style="background:#1a1410;color:rgba(255,255,255,0.5);text-align:center;padding:20px 24px;font-size:0.82rem;">
+    <p style="margin:0;">© 2026 All Dent PDR · 7695 Granger Rd, Cleveland, OH 44125 · <a href="tel:18554255336" style="color:rgba(255,255,255,0.65);">1-855-425-5336</a></p>
+  </footer>
+
+  <style>
+    @media (max-width: 768px) {
+      section > div[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+
+</BaseLayout>
