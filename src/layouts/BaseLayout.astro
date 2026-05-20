@@ -211,7 +211,8 @@ const gaId: string = 'G-T7RLXD05RW';
             <a href="/blog">Blog</a>
             <a href="/register">Register</a>
             <a href="/portal/customer-login">Login</a>
-            <a class="nav-cta" href="/contact">Request Inspection</a>
+            <a href="tel:18554255336" style="padding:6px 10px;border-radius:999px;color:var(--rust);font-weight:700;white-space:nowrap;transition:background 0.3s;">📞 855-425-5336</a>
+            <a class="nav-cta" href="/contact">Get Free Estimate</a>
           </nav>
           <MobileMenu client:load />
         </div>
@@ -258,7 +259,7 @@ const gaId: string = 'G-T7RLXD05RW';
             <p><a href="tel:18554255336">1-855-425-5336</a></p>
             <p><a href="mailto:admin@alldentpdr.com">admin@alldentpdr.com</a></p>
             <p><a href="https://www.facebook.com/alldentpdr/" target="_blank" rel="noopener noreferrer">Facebook</a></p>
-            <p><a href="/contact">Request Inspection</a></p>
+            <p><a href="/contact">Contact Us</a></p>
             <p><a href="/portal/customer-login">Customer Login</a></p>
             <p><a href="/portal/admin-dashboard">Admin</a></p>
           </div>
@@ -283,6 +284,12 @@ const gaId: string = 'G-T7RLXD05RW';
           <span style="font-size:0.82rem;color:rgba(255,255,255,0.45);">Interested in a site like this? <a href="https://www.premierdigitalsolution.com/" target="_blank" rel="noopener noreferrer" style="color:rgba(255,255,255,0.65);text-decoration:underline;text-underline-offset:3px;">Visit Premier Digital Solution LLC</a></span>
         </div>
       </footer>
+    )}
+    {!bare && (
+      <div class="mobile-cta-bar" aria-label="Quick contact">
+        <a class="mcta-call" href="tel:18554255336">📞 Call Now</a>
+        <a class="mcta-quote" href="/contact">Get Free Estimate</a>
+      </div>
     )}
   </body>
 </html>

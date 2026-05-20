@@ -2701,6 +2701,73 @@ label {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   Sticky mobile CTA bar
+═══════════════════════════════════════════════════════════════ */
+.mobile-cta-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: var(--ink, #0b1220);
+  border-top: 2px solid var(--rust, #c95a2b);
+  padding: 10px 16px;
+  gap: 10px;
+}
+.mobile-cta-bar a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 13px 10px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: filter 0.2s;
+}
+.mobile-cta-bar a:hover { filter: brightness(1.1); }
+.mobile-cta-bar .mcta-call {
+  background: var(--rust, #c95a2b);
+  color: #fff;
+}
+.mobile-cta-bar .mcta-quote {
+  background: var(--sage, #2f7a5c);
+  color: #fff;
+}
+
+@media (max-width: 767px) {
+  .mobile-cta-bar { display: flex; }
+  /* Prevent content from hiding behind the bar */
+  body { padding-bottom: 76px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Inline urgency CTA strip
+═══════════════════════════════════════════════════════════════ */
+.inline-cta-strip {
+  background: linear-gradient(135deg, var(--rust-50, #fbeee6) 0%, #fff8f4 100%);
+  border: 1px solid rgba(176, 82, 43, 0.18);
+  border-radius: 16px;
+  padding: 32px 36px;
+  text-align: center;
+  margin: 40px 0 0;
+}
+.inline-cta-strip h3 {
+  margin: 0 0 8px;
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  color: var(--ink, #0b1220);
+}
+.inline-cta-strip p {
+  margin: 0 0 20px;
+  color: var(--muted, #5b6577);
+  font-size: 0.95rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    Quote builder
 ═══════════════════════════════════════════════════════════════ */
 .quote-wrap { display: flex; flex-direction: column; gap: 0; }
