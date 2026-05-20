@@ -27,7 +27,7 @@ export default function MobileMenu() {
           <a href="/blog" onClick={closeMenu}>Blog</a>
           <a href="/register" onClick={closeMenu}>Register</a>
           <a href="/portal/customer-login" onClick={closeMenu}>Login</a>
-          <a className="nav-cta" href="/contact" onClick={closeMenu}>Request Inspection</a>
+          <a className="nav-cta" href="/contact" onClick={closeMenu}>Get Free Estimate</a>
         </nav>
       )}
     </>
