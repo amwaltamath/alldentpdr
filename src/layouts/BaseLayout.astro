@@ -1,6 +1,7 @@
 ﻿---
 import '../styles/global.css';
 import MobileMenu from '../components/MobileMenu.jsx';
+import ChatWidget from '../components/ChatWidget.jsx';
 
 const {
   title = 'All Dent PDR | Paintless Dent Repair Cleveland OH',
@@ -291,5 +292,6 @@ const gaId: string = 'G-T7RLXD05RW';
         <a class="mcta-quote" href="/contact">Get Free Estimate</a>
       </div>
     )}
+    {!bare && <ChatWidget client:idle />}
   </body>
 </html>
