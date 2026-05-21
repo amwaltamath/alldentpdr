@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
+  deleteChatConversation,
   deleteVehicle,
   getChatConversations,
   getChatMessages,
@@ -227,6 +228,17 @@ export default function AdminDashboard() {
     setChatMessages(msgs);
     const list = await getChatConversations();
     setConversations(list);
+  };
+
+  const handleChatDelete = async (id) => {
+    if (!window.confirm('Delete this conversation? This cannot be undone.')) return;
+    try {
+      await deleteChatConversation(id);
+      if (activeConvId === id) setActiveConvId(null);
+      setConversations((prev) => prev.filter((c) => c.id !== id));
+    } catch (err) {
+      alert('Delete failed: ' + err.message);
+    }
   };
 
   const totalUnreadChat = useMemo(
@@ -579,6 +591,7 @@ export default function AdminDashboard() {
               messages={chatMessages}
               loading={chatLoading}
               onReply={handleChatReply}
+              onDelete={handleChatDelete}
             />
           )}
 
@@ -2709,7 +2722,7 @@ function formatChatTime(iso) {
     ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
 
-function MessagesView({ conversations, activeId, onSelect, messages, loading, onReply }) {
+function MessagesView({ conversations, activeId, onSelect, messages, loading, onReply, onDelete }) {
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState('');
@@ -2753,24 +2766,31 @@ function MessagesView({ conversations, activeId, onSelect, messages, loading, on
             </div>
           )}
           {conversations.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              className={`chat-admin-row${activeId === c.id ? ' is-active' : ''}`}
-              onClick={() => onSelect(c.id)}
-            >
-              <div className="chat-admin-row-top">
-                <span className="cell-strong">{c.visitor_name || c.visitor_email || 'Anonymous visitor'}</span>
-                <span className="cell-sub">{formatChatTime(c.last_message_at)}</span>
-              </div>
-              <div className="chat-admin-row-preview">
-                {c.last_message_preview || '—'}
-              </div>
-              <div className="chat-admin-row-foot">
-                {c.visitor_email && <span className="cell-sub">{c.visitor_email}</span>}
-                {c.unread_admin > 0 && <span className="chat-admin-unread">{c.unread_admin}</span>}
-              </div>
-            </button>
+            <div key={c.id} className={`chat-admin-row${activeId === c.id ? ' is-active' : ''}`}>
+              <button
+                type="button"
+                className="chat-admin-row-body"
+                onClick={() => onSelect(c.id)}
+              >
+                <div className="chat-admin-row-top">
+                  <span className="cell-strong">{c.visitor_name || c.visitor_email || 'Anonymous visitor'}</span>
+                  <span className="cell-sub">{formatChatTime(c.last_message_at)}</span>
+                </div>
+                <div className="chat-admin-row-preview">
+                  {c.last_message_preview || '—'}
+                </div>
+                <div className="chat-admin-row-foot">
+                  {c.visitor_email && <span className="cell-sub">{c.visitor_email}</span>}
+                  {c.unread_admin > 0 && <span className="chat-admin-unread">{c.unread_admin}</span>}
+                </div>
+              </button>
+              <button
+                type="button"
+                className="chat-admin-row-delete"
+                title="Delete conversation"
+                onClick={() => onDelete(c.id)}
+              >🗑</button>
+            </div>
           ))}
         </aside>
 

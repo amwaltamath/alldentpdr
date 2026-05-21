@@ -336,6 +336,15 @@ export async function markChatRead(conversationId) {
   if (error) throw error;
 }
 
+export async function deleteChatConversation(conversationId) {
+  if (!isSupabaseEnabled() || !conversationId) return;
+  const { error } = await supabase
+    .from('chat_conversations')
+    .delete()
+    .eq('id', conversationId);
+  if (error) throw error;
+}
+
 export function subscribeChatChanges(onChange) {
   if (!isSupabaseEnabled()) return () => {};
   const channel = supabase

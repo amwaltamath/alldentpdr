@@ -3297,20 +3297,34 @@ label {
   background: #fff;
 }
 .chat-admin-row {
-  width: 100%;
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--line, #eee);
+}
+.chat-admin-row.is-active { background: #fff1ea; box-shadow: inset 3px 0 0 var(--rust, #b0522b); }
+.chat-admin-row:hover { background: #f0ebe4; }
+.chat-admin-row-body {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
   padding: 12px 16px;
   border: 0;
   background: transparent;
-  border-bottom: 1px solid var(--line, #eee);
   text-align: left;
   cursor: pointer;
-  transition: background 0.15s;
 }
-.chat-admin-row:hover { background: #f0ebe4; }
-.chat-admin-row.is-active { background: #fff1ea; box-shadow: inset 3px 0 0 var(--rust, #b0522b); }
+.chat-admin-row-delete {
+  border: 0;
+  background: transparent;
+  padding: 0 12px;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+  color: #c0392b;
+}
+.chat-admin-row:hover .chat-admin-row-delete { opacity: 1; }
 .chat-admin-row-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
 .chat-admin-row-preview {
   font-size: 13px;
