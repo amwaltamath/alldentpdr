@@ -1,13 +1,13 @@
 ---
 layout: ../../layouts/BlogPost.astro
-title: "Bedford, Ohio Hail Damage Repair: What to Do After the Storm"
-description: "Need hail damage repair in Bedford, Ohio or surrounding areas? Learn what to do after the storm, how mobile PDR works, and why quality workmanship matters when choosing a repair company."
-pubDate: "2026-04-20"
+title: "Bedford, Ohio Hail Damage Repair Guide (44146): What to Do After the Storm"
+description: "Vehicle caught in a Bedford, OH hail storm? Learn what to do immediately, how PDR works, and why All Dent PDR at 7695 Granger Rd, Cleveland is Bedford's go-to repair shop."
+pubDate: "2026-05-01"
 ---
 
-If your vehicle was caught in the recent hail storm near **Bedford, Ohio**, you are likely dealing with dozens of dents across the hood, roof, trunk, and upper door panels. The good news is that many of these dents can be repaired without sanding, filling, or repainting when the factory finish is still intact.
+If your vehicle was caught in a hail storm near **Bedford, Ohio (44146)**, you are likely dealing with dozens of dents across the hood, roof, trunk, and upper door panels. The good news is that many of these dents can be repaired without sanding, filling, or repainting when the factory finish is still intact.
 
-All Dent PDR provides **mobile hail damage repair in Bedford and surrounding areas**, bringing professional paintless dent repair directly to storm-affected drivers.
+All Dent PDR provides **hail damage repair at our shop at 7695 Granger Rd, Cleveland, OH 44125** — just minutes from Bedford. Visit our dedicated [hail damage repair page for Bedford, Ohio](/hail-damage-repair-bedford-ohio) for shop hours, directions, and a free estimate.
 
 ## Bedford-area hail damage: what to do first
 
@@ -67,18 +67,23 @@ Most hail claims fall under **comprehensive coverage**. If your policy includes 
 
 Just as important: you generally **have the right to choose your own repair provider**. Even if an insurer suggests a shop, you do not have to settle for a rushed repair if you want higher-quality workmanship.
 
-## Mobile hail damage repair in Bedford, Ohio
+## Hail damage repair shop near Bedford, Ohio
 
-All Dent PDR is based in Cincinnati and travels to storm-affected areas to perform on-site repair. If your vehicle was hit in Bedford or the surrounding region, we can help with:
+All Dent PDR operates a **full-service repair shop at 7695 Granger Rd, Cleveland, OH 44125** — just minutes from Bedford (44146). You can drop your vehicle off directly at our shop, or we can schedule an assessment quickly after you contact us.
 
-- In-person inspections
-- Hail dent assessment
-- Mobile scheduling where available
-- Clear communication on repair timing
-- Factory-paint-preserving PDR whenever the damage qualifies
+Our shop-based service for Bedford-area customers includes:
 
-## Request Bedford hail damage inspection
+- In-person hail damage inspection under specialized LED lighting
+- Written estimate before any work begins
+- Direct insurance billing with most major carriers
+- Panel-by-panel PDR using factory-paint-preserving techniques
+- 1–3 day turnaround on most hail repairs
+- Walk-ins welcome Monday–Friday 8am–6pm, Saturday 9am–2pm
 
-If your car was damaged in the recent Bedford-area storm, [contact All Dent PDR](/contact) to request an inspection. Send your location, vehicle details, and storm information, and we will respond with next steps.
+Bedford is approximately 5 miles from our Cleveland shop — a quick, easy drive down Rockside Road or Broadway Avenue.
 
-If you want a repair company that values workmanship over gimmicks, All Dent PDR is ready to help.
+## Request a Bedford hail damage assessment
+
+Visit our [hail damage repair page for Bedford, Ohio](/hail-damage-repair-bedford-ohio) for full shop details, hours, directions, and to get a free estimate. You can also [contact us here](/contact) with your vehicle details and we will respond promptly.
+
+If you want a repair company that values workmanship over gimmicks, All Dent PDR is ready to help. We are a local Cleveland-area shop — established, accountable, and here to stay.
