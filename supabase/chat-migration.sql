@@ -52,6 +52,12 @@ for update to authenticated
 using (public.is_portal_admin())
 with check (public.is_portal_admin());
 
+drop policy if exists "Admins delete conversations" on public.chat_conversations;
+create policy "Admins delete conversations"
+on public.chat_conversations
+for delete to authenticated
+using (public.is_portal_admin());
+
 drop policy if exists "Admins read messages" on public.chat_messages;
 create policy "Admins read messages"
 on public.chat_messages
