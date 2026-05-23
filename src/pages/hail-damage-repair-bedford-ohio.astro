@@ -13,7 +13,7 @@ const breadcrumbs = [
 const faqItems = [
   {
     question: 'Where is the All Dent PDR hail damage repair shop near Bedford, Ohio?',
-    answer: 'Our shop is located at 7695 Granger Rd, Cleveland, OH 44125 — just minutes from Bedford, Ohio. We serve all of Northeast Ohio including Bedford, Bedford Heights, Maple Heights, Garfield Heights, Solon, Warrensville Heights, Northfield, Twinsburg, and Walton Hills.'
+    answer: 'Our shop is located at 7695 Granger Rd, Cleveland, OH 44125 — just minutes from Bedford, Ohio (44146). We serve all of Northeast Ohio including Bedford, Bedford Heights, Maple Heights, Garfield Heights, Solon, Warrensville Heights, Northfield, Twinsburg, and Walton Hills.'
   },
   {
     question: 'How much does hail damage repair cost in Bedford, Ohio?',
@@ -34,6 +34,18 @@ const faqItems = [
   {
     question: 'Do you accept walk-ins at your Bedford Ohio area shop?',
     answer: 'Yes! Walk-ins are welcome at our Cleveland shop at 7695 Granger Rd, Cleveland, OH 44125. Hours are Monday–Friday 8am–6pm and Saturday 9am–2pm. Scheduling an appointment in advance helps us give you the fastest service.'
+  },
+  {
+    question: 'What zip code does your shop serve for Bedford, Ohio?',
+    answer: 'We serve Bedford, OH 44146 and all surrounding zip codes including 44125 (Garfield Heights / our shop), 44137 (Maple Heights), 44128 (Warrensville Heights), and 44131 (Independence). If you are in Cuyahoga County, we almost certainly serve your area.'
+  },
+  {
+    question: 'Can you come to Bedford for a mobile hail inspection?',
+    answer: 'Yes — during active hail storm events we can dispatch a mobile technician to Bedford, OH 44146. For everyday repairs, our shop at 7695 Granger Rd in Cleveland is only about 10 minutes from Bedford and offers free walk-in damage assessments with no appointment needed.'
+  },
+  {
+    question: 'How soon after a hail storm should I get my car repaired in Bedford, OH?',
+    answer: 'The sooner the better. Insurance claims should be filed promptly, typically within 30–60 days of the storm event. Waiting too long can make it harder to link the damage to a specific storm on your claim. Call us right after the storm and we can advise on documenting the damage while your claim is fresh.'
   }
 ];
 
@@ -70,6 +82,7 @@ const localBusinessSchema = {
   ],
   "priceRange": "$$",
   "paymentAccepted": "Cash, Credit Card, Insurance",
+  "sameAs": ["https://share.google/7cCa7EhinPDCM8Owu", "https://www.facebook.com/alldentpdr/"],
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "5",
@@ -381,6 +394,11 @@ const localBusinessSchema = {
           <div class="stars" aria-label="5 stars">★★★★★</div>
         </blockquote>
       </div>
+      <div style="margin-top:40px;background:var(--sky);border-radius:16px;padding:28px 32px;text-align:center;border:1px solid #d0e4f0;">
+        <p style="font-size:1.05rem;font-weight:600;margin:0 0 8px;">Happy with your repair? Leave us a Google review.</p>
+        <p style="margin:0 0 18px;color:#4a3f35;">It only takes 60 seconds and it helps other Bedford drivers find a trustworthy shop.</p>
+        <a href="https://share.google/7cCa7EhinPDCM8Owu" target="_blank" rel="noopener noreferrer" class="button primary">⭐ Review us on Google</a>
+      </div>
     </div>
   </section>
 
@@ -395,6 +413,49 @@ const localBusinessSchema = {
       <div class="button-row" style="justify-content:center;">
         <a class="button primary" href="/contact">Get a Free Estimate</a>
         <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Driving Directions -->
+  <section class="section alt">
+    <div class="container">
+      <span class="section-label">Getting Here</span>
+      <h2>Driving to All Dent PDR from Bedford, Ohio</h2>
+      <p>Our shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> is approximately 5 miles and 10 minutes from Bedford (44146). Here are the quickest routes:</p>
+      <div class="grid-3" style="margin-top:28px;">
+        <article class="card">
+          <h3>Via Broadway Ave (recommended)</h3>
+          <ol style="padding-left:1.2em;line-height:1.9;">
+            <li>Head northwest on Broadway Ave from Bedford</li>
+            <li>Continue on Broadway Ave through Garfield Heights</li>
+            <li>Turn left on Granger Rd</li>
+            <li>Shop is on the right — <strong>7695 Granger Rd</strong></li>
+          </ol>
+          <p style="margin-top:12px;font-size:0.9rem;color:#7a6a5a;">~10 min, 5.2 miles</p>
+        </article>
+        <article class="card">
+          <h3>Via Turney Rd / I-480</h3>
+          <ol style="padding-left:1.2em;line-height:1.9;">
+            <li>Take Turney Rd north from Bedford</li>
+            <li>Merge onto I-480 W briefly</li>
+            <li>Exit at Granger Rd (Exit 23)</li>
+            <li>Turn right — <strong>7695 Granger Rd</strong> on left</li>
+          </ol>
+          <p style="margin-top:12px;font-size:0.9rem;color:#7a6a5a;">~12 min, 6.1 miles</p>
+        </article>
+        <article class="card">
+          <h3>Shop hours &amp; parking</h3>
+          <ul style="line-height:2;">
+            <li><strong>Mon–Fri:</strong> 8:00am – 6:00pm</li>
+            <li><strong>Saturday:</strong> 9:00am – 2:00pm</li>
+            <li><strong>Sunday:</strong> Closed</li>
+          </ul>
+          <p style="margin-top:8px;">Free parking on-site. Walk-ins welcome — no appointment needed for a free damage assessment.</p>
+        </article>
+      </div>
+      <div style="margin-top:24px;text-align:center;">
+        <a class="button primary" href="https://maps.google.com/maps?q=7695+Granger+Rd+Cleveland+OH+44125" target="_blank" rel="noopener">Open in Google Maps</a>
       </div>
     </div>
   </section>

@@ -22,6 +22,7 @@ const staticPages = [
   `${BASE}/hail-damage-repair-cleveland`,
   `${BASE}/blog`,
   `${BASE}/blog/bedford-ohio-hail-damage-repair`,
+  `${BASE}/blog/hail-damage-repair-bedford-ohio-2026`,
   `${BASE}/blog/hail-damage-repair-guide`,
   `${BASE}/blog/hail-damage-insurance-claim-guide`,
   `${BASE}/blog/pdr-vs-body-shop`,
