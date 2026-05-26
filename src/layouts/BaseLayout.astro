@@ -17,6 +17,88 @@ const {
 } = Astro.props;
 
 const gaId: string = 'G-T7RLXD05RW';
+
+const metaPixelScript = `
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window,document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init','1284377713827510');
+  fbq('track','PageView');
+`;
+
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'AutoRepair',
+  name: 'All Dent PDR',
+  description: 'Expert paintless dent repair and hail damage repair shop at 7695 Granger Rd, Cleveland, OH 44125, serving Bedford and Northeast Ohio.',
+  url: 'https://alldentpdr.com',
+  telephone: '1-855-425-5336',
+  email: 'alldentpdr@gmail.com',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '7695 Granger Rd',
+    addressLocality: 'Cleveland',
+    addressRegion: 'OH',
+    postalCode: '44125',
+    addressCountry: 'US',
+  },
+  areaServed: [
+    { '@type': 'City', name: 'Bedford' },
+    { '@type': 'City', name: 'Cleveland' },
+    { '@type': 'City', name: 'Bedford Heights' },
+    { '@type': 'City', name: 'Maple Heights' },
+    { '@type': 'City', name: 'Garfield Heights' },
+    { '@type': 'City', name: 'Solon' },
+    { '@type': 'City', name: 'Warrensville Heights' },
+  ],
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: 41.3960,
+    longitude: -81.6100,
+  },
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Paintless Dent Repair Services',
+    itemListElement: [
+      {
+        '@type': 'Offer',
+        name: 'Door Ding Repair',
+        description: 'Quick PDR fixes for small dents and creases without fillers or repaint',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Hail Damage Repair',
+        description: 'Panel-by-panel hail dent restoration that preserves your OEM finish',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Minor Collision Dent Repair',
+        description: 'Correct dents from low-speed impacts when paint is undamaged',
+      },
+    ],
+  },
+  paymentAccepted: 'Cash, Credit Card, Debit Card',
+  priceRange: '$$',
+  openingHours: 'Mo-Fr 08:00-18:00, Sa 09:00-14:00',
+  openingHoursSpecification: [
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '18:00' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Saturday', opens: '09:00', closes: '14:00' },
+  ],
+  image: 'https://alldentpdr.com/images/logo-branded.svg',
+  sameAs: ['https://www.facebook.com/alldentpdr/', 'https://share.google/7cCa7EhinPDCM8Owu'],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '5',
+    reviewCount: '47',
+    bestRating: '5',
+    worstRating: '1',
+  },
+};
 ---
 
 <!DOCTYPE html>
@@ -64,95 +146,12 @@ const gaId: string = 'G-T7RLXD05RW';
     )}
 
     <!-- Meta Pixel -->
-    <script is:inline>{`
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window,document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init','1284377713827510');
-      fbq('track','PageView');
-    `}</script>
+    <script is:inline set:html={metaPixelScript}></script>
     <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=1284377713827510&ev=PageView&noscript=1" /></noscript>
 
     <!-- Structured Data for Local SEO -->
-    <script type="application/ld+json">
-      {`
-        {
-          "@context": "https://schema.org",
-          "@type": "AutoRepair",
-          "name": "All Dent PDR",
-          "description": "Expert paintless dent repair and hail damage repair shop at 7695 Granger Rd, Cleveland, OH 44125, serving Bedford and Northeast Ohio.",
-          "url": "https://alldentpdr.com",
-          "telephone": "1-855-425-5336",
-          "email": "alldentpdr@gmail.com",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "7695 Granger Rd",
-            "addressLocality": "Cleveland",
-            "addressRegion": "OH",
-            "postalCode": "44125",
-            "addressCountry": "US"
-          },
-          "areaServed": [
-            { "@type": "City", "name": "Bedford" },
-            { "@type": "City", "name": "Cleveland" },
-            { "@type": "City", "name": "Bedford Heights" },
-            { "@type": "City", "name": "Maple Heights" },
-            { "@type": "City", "name": "Garfield Heights" },
-            { "@type": "City", "name": "Solon" },
-            { "@type": "City", "name": "Warrensville Heights" },
-            { "@type": "Country", "name": "United States" }
-          ],
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": 41.3960,
-            "longitude": -81.6100
-          },
-          "hasOfferCatalog": {
-            "@type": "OfferCatalog",
-            "name": "Paintless Dent Repair Services",
-            "itemListElement": [
-              {
-                "@type": "OfferCatalog",
-                "name": "Door Ding Repair",
-                "description": "Quick PDR fixes for small dents and creases without fillers or repaint"
-              },
-              {
-                "@type": "OfferCatalog",
-                "name": "Hail Damage Repair",
-                "description": "Panel-by-panel hail dent restoration that preserves your OEM finish"
-              },
-              {
-                "@type": "OfferCatalog",
-                "name": "Minor Collision Dent Repair",
-                "description": "Correct dents from low-speed impacts when paint is undamaged"
-              }
-            ]
-          },
-          "paymentAccepted": "Cash, Credit Card, Debit Card",
-          "priceRange": "$$",
-          "openingHours": "Mo-Fr 08:00-18:00, Sa 09:00-14:00",
-          "openingHoursSpecification": [
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "08:00", "closes": "18:00" },
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "14:00" }
-          ],
-          "image": "https://alldentpdr.com/images/logo-branded.svg",
-          "sameAs": ["https://www.facebook.com/alldentpdr/", "https://share.google/7cCa7EhinPDCM8Owu"],
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "5",
-            "reviewCount": "47",
-            "bestRating": "5",
-            "worstRating": "1"
-          }
-        }
-      `}
-    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
 
     {/* Breadcrumb Schema */}
     {breadcrumbs.length > 0 && (
