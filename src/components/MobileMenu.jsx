@@ -22,6 +22,7 @@ export default function MobileMenu() {
       {isOpen && (
         <nav className="mobile-nav" role="navigation">
           <a href="/services" onClick={closeMenu}>Services</a>
+          <a href="/our-work" onClick={closeMenu}>Our Work</a>
           <a href="/service-area" onClick={closeMenu}>Service Area</a>
           <a href="/about" onClick={closeMenu}>About</a>
           <a href="/blog" onClick={closeMenu}>Blog</a>
