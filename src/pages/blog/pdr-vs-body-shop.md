@@ -61,14 +61,14 @@ PDR has limits. You'll need a traditional body shop when:
 - **Structural damage** — Frame or structural components require welding and alignment that PDR cannot address.
 - **Large collision repairs** — Significant impacts with bumper, frame, or multi-panel damage go beyond PDR scope.
 
-## The mobile advantage
+## The speed advantage
 
-One major benefit of PDR that body shops can't match: **it can be done anywhere**. All Dent PDR is a fully mobile service — we bring our tools and expertise directly to your location. No towing, no rental car, no waiting for a shop appointment.
+One major benefit of PDR that body shops often can't match: **it avoids the paint and bodywork bottleneck**. All Dent PDR repairs qualifying dents without sanding, body filler, primer, or repainting, which means many vehicles can be completed much faster than conventional repair.
 
-Whether you're at home, at work, or in a storm-affected area hundreds of miles from the nearest shop, we come to you.
+Our Cleveland-area shop gives Bedford and Northeast Ohio drivers a local option for hail damage inspections, insurance documentation, and fast PDR repair timelines.
 
 ## The bottom line
 
-If your dent has intact paint, PDR is almost always the better choice — it's faster, more affordable, preserves your factory finish, and can be done on-site. Save the body shop for damage that truly requires repainting or structural work.
+If your dent has intact paint, PDR is almost always the better choice — it's faster, more affordable, and preserves your factory finish. Save the body shop for damage that truly requires repainting or structural work.
 
 Not sure which option your dent needs? [Contact us for a free assessment](/contact) and we'll give you an honest recommendation after evaluating the vehicle.

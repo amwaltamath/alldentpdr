@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/blog/paintless-dent-repair-cincinnati",
+      "destination": "/blog",
+      "permanent": true
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/status-reminder",

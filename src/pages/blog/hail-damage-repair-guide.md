@@ -41,17 +41,17 @@ Paintless dent repair is the industry-standard method for hail damage restoratio
 | **Resale value** | Maintained | May show on vehicle history |
 | **Filler used** | None | Yes |
 
-## How mobile hail repair works
+## How hail repair works at our Cleveland-area shop
 
-At All Dent PDR, we are a **mobile repair service** — meaning we travel to storm-affected areas across the United States to perform repairs on-site. Here's what that looks like:
+At All Dent PDR, we operate from our shop at **7695 Granger Rd, Cleveland, OH 44125**, just minutes from Bedford and surrounding Northeast Ohio communities. Here's what that looks like:
 
 1. **You contact us** with your location, vehicle details, and storm information.
 2. **We inspect the vehicle** and provide a repair plan based on the number of panels and severity.
-3. **We come to you** — whether that's your driveway, dealership, or parking lot.
-4. **Repairs are completed on-site** using specialized PDR tools.
+3. **You visit our shop** for a written estimate and repair timeline.
+4. **Repairs are completed at the shop** using specialized PDR tools and LED inspection lighting.
 5. **You drive away** with a factory-quality finish restored.
 
-No need to tow your car to a shop or wait weeks for a slot to open. We bring the shop to you.
+No need to wait weeks for a traditional body shop slot. Our PDR process is built for faster hail damage turnaround while preserving your factory finish.
 
 ## How long does hail damage repair take?
 
@@ -78,14 +78,14 @@ Not all PDR technicians are equal. When choosing a repair provider after a storm
 
 - **How many years of hail repair experience do they have?**
 - **Can they show before-and-after photos of previous hail jobs?**
-- **Do they offer mobile, on-site service?**
+- **Do they have a local shop with proper lighting and insurance documentation?**
 - **Will they work with your insurance company directly?**
 - **Do they guarantee their work?**
 
-All Dent PDR has extensive experience with storm damage repair across the country. We travel to where storms hit, bring our full tool setup, and deliver factory-quality results on-site.
+All Dent PDR has extensive experience with storm damage repair for Bedford, Cleveland, and Northeast Ohio drivers. We inspect each panel carefully and deliver factory-quality results without sanding, filling, or repainting when PDR is the right method.
 
 ## Request a hail damage inspection
 
 If your vehicle was caught in a hail storm, [contact All Dent PDR](/contact) to request an inspection. Share your location and vehicle details, and we'll reply with pricing guidance, timing, and next steps after inspection.
 
-Based in Cincinnati and serving storm-affected areas nationwide.
+Based at 7695 Granger Rd, Cleveland, OH 44125 and serving Bedford, Cleveland, and Northeast Ohio.
