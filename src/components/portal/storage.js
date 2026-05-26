@@ -484,3 +484,118 @@ export async function updateLead(id, updates) {
   }
 }
 
+
+
+
+
+/* -------------------------------------------------------------
+   Projects Gallery (admin-managed, public read)
+------------------------------------------------------------- */
+
+const PROJECT_BUCKET = 'project-photos';
+
+function mapRemoteProject(item) {
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description || '',
+    vehicle: item.vehicle || '',
+    category: item.category || '',
+    imageUrl: item.image_url,
+    beforeUrl: item.before_url || '',
+    displayOrder: item.display_order ?? 0,
+    isPublished: Boolean(item.is_published),
+    createdAt: item.created_at,
+    updatedAt: item.updated_at,
+  };
+}
+
+export async function getProjects({ publishedOnly = false } = {}) {
+  if (!isSupabaseEnabled()) return [];
+  let query = supabase
+    .from('projects')
+    .select('*')
+    .order('display_order', { ascending: false })
+    .order('created_at', { ascending: false });
+  if (publishedOnly) query = query.eq('is_published', true);
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data || []).map(mapRemoteProject);
+}
+
+async function uploadProjectImage(file) {
+  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
+  if (!file) return '';
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const safe = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+  const { error } = await supabase
+    .storage
+    .from(PROJECT_BUCKET)
+    .upload(safe, file, { cacheControl: '31536000', upsert: false, contentType: file.type || undefined });
+  if (error) throw error;
+  const { data } = supabase.storage.from(PROJECT_BUCKET).getPublicUrl(safe);
+  return data.publicUrl;
+}
+
+export async function addProject({
+  title,
+  description = '',
+  vehicle = '',
+  category = '',
+  imageFile,
+  beforeFile = null,
+  displayOrder = 0,
+  isPublished = true,
+}) {
+  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
+  if (!title || !imageFile) throw new Error('Title and main image are required');
+
+  const imageUrl  = await uploadProjectImage(imageFile);
+  const beforeUrl = beforeFile ? await uploadProjectImage(beforeFile) : null;
+
+  const { data, error } = await supabase
+    .from('projects')
+    .insert({
+      title: title.trim(),
+      description: description.trim() || null,
+      vehicle: vehicle.trim() || null,
+      category: category.trim() || null,
+      image_url: imageUrl,
+      before_url: beforeUrl,
+      display_order: Number(displayOrder) || 0,
+      is_published: Boolean(isPublished),
+    })
+    .select('*')
+    .single();
+  if (error) throw error;
+  return mapRemoteProject(data);
+}
+
+export async function updateProject(id, updates) {
+  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
+  const payload = {};
+  if (updates.title !== undefined)        payload.title         = updates.title.trim();
+  if (updates.description !== undefined)  payload.description   = updates.description.trim() || null;
+  if (updates.vehicle !== undefined)      payload.vehicle       = updates.vehicle.trim() || null;
+  if (updates.category !== undefined)     payload.category      = updates.category.trim() || null;
+  if (updates.displayOrder !== undefined) payload.display_order = Number(updates.displayOrder) || 0;
+  if (updates.isPublished !== undefined)  payload.is_published  = Boolean(updates.isPublished);
+  if (updates.imageFile)                  payload.image_url     = await uploadProjectImage(updates.imageFile);
+  if (updates.beforeFile)                 payload.before_url    = await uploadProjectImage(updates.beforeFile);
+
+  const { data, error } = await supabase
+    .from('projects')
+    .update(payload)
+    .eq('id', id)
+    .select('*')
+    .single();
+  if (error) throw error;
+  return mapRemoteProject(data);
+}
+
+export async function deleteProject(id) {
+  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
+  const { error } = await supabase.from('projects').delete().eq('id', id);
+  if (error) throw error;
+  return true;
+}

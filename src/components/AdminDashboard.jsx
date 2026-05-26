@@ -1,10 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
-  deleteChatConversation,
   deleteVehicle,
-  getChatConversations,
-  getChatMessages,
   getLeads,
   getPricing,
   getRemoteAuthUser,
@@ -12,18 +9,19 @@ import {
   getVehicles,
   isRemoteAdmin,
   isRemotePortalEnabled,
-  markChatRead,
   registerVehicle,
   saveReleaseForm,
   savePricing,
-  sendChatReply,
   setSession,
   signInRemoteAdmin,
   signOutRemoteAdmin,
-  subscribeChatChanges,
   updateLeadStatus,
   updateVehicle,
-  updateVehicleStatus
+  updateVehicleStatus,
+  getProjects,
+  addProject,
+  updateProject,
+  deleteProject,
 } from './portal/storage';
 
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
@@ -63,11 +61,11 @@ const NAV_ITEMS = [
   { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
   { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
   { id: 'leads',    label: 'Leads',             icon: '◎' },
-  { id: 'messages', label: 'Messages',          icon: '💬' },
   { id: 'analytics',label: 'Analytics',          icon: '📈' },
   { id: 'quote',    label: 'New Quote',         icon: '$' },
   { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
   { id: 'register', label: 'Register Vehicle',  icon: '+' },
+  { id: 'projects', label: 'Our Work',          icon: '🖼' },
   { id: 'cards',    label: 'Business Cards',    icon: '▣' },
 ];
 
@@ -84,10 +82,7 @@ function initials(email = '') {
 }
 
 export default function AdminDashboard() {
-  // Hydration-safe: start with null on both server and first client render,
-  // then load any saved session after mount.
-  const [session, setLocalSession] = useState(null);
-  const [hydrated, setHydrated] = useState(false);
+  const [session, setLocalSession] = useState(() => getSession());
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
@@ -104,25 +99,10 @@ export default function AdminDashboard() {
   const [releaseJob, setReleaseJob] = useState(null);
   const [leads, setLeads] = useState([]);
   const [leadsLoading, setLeadsLoading] = useState(false);
-  const [conversations, setConversations] = useState([]);
-  const [activeConvId, setActiveConvId] = useState(null);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [chatLoading, setChatLoading] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(false);
 
   const remoteMode = isRemotePortalEnabled();
-
-  // Hydrate session from localStorage after mount (avoids SSR/CSR mismatch)
-  useEffect(() => {
-    setLocalSession(getSession());
-    setHydrated(true);
-  }, []);
-
-  // Honor ?view= query param on initial load
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const v = new URLSearchParams(window.location.search).get('view');
-    if (v && NAV_ITEMS.some((n) => n.id === v)) setView(v);
-  }, []);
 
   // Bootstrap remote session
   useEffect(() => {
@@ -165,86 +145,28 @@ export default function AdminDashboard() {
       setLoading(true);
       setLeadsLoading(true);
       try {
-        const [next, leadsNext, convNext] = await Promise.all([
-          getVehicles(),
-          getLeads(),
-          getChatConversations().catch(() => []),
-        ]);
-        if (active) { setVehicles(next); setLeads(leadsNext); setConversations(convNext); }
+        const [next, leadsNext] = await Promise.all([getVehicles(), getLeads()]);
+        if (active) { setVehicles(next); setLeads(leadsNext); }
       } catch {
         if (active) setAuthError('Unable to load vehicle data.');
       } finally {
         if (active) { setLoading(false); setLeadsLoading(false); }
+      }
+      // Load projects separately (non-critical)
+      try {
+        if (active) setProjectsLoading(true);
+        const projectsNext = await getProjects();
+        if (active) setProjects(projectsNext);
+      } catch {
+        // non-fatal
+      } finally {
+        if (active) setProjectsLoading(false);
       }
     }
 
     load();
     return () => { active = false; };
   }, [remoteMode, session]);
-
-  // Realtime chat updates for admin
-  useEffect(() => {
-    if (remoteMode && (!session || session.role !== 'admin')) return;
-    const unsub = subscribeChatChanges(async () => {
-      try {
-        const list = await getChatConversations();
-        setConversations(list);
-        if (activeConvId) {
-          const msgs = await getChatMessages(activeConvId);
-          setChatMessages(msgs);
-        }
-      } catch { /* ignore */ }
-    });
-    return unsub;
-  }, [remoteMode, session, activeConvId]);
-
-  // Load messages when opening a conversation
-  useEffect(() => {
-    if (!activeConvId) { setChatMessages([]); return; }
-    let active = true;
-    (async () => {
-      setChatLoading(true);
-      try {
-        const msgs = await getChatMessages(activeConvId);
-        if (active) setChatMessages(msgs);
-        await markChatRead(activeConvId);
-        if (active) {
-          setConversations((prev) => prev.map((c) =>
-            c.id === activeConvId ? { ...c, unread_admin: 0 } : c
-          ));
-        }
-      } finally {
-        if (active) setChatLoading(false);
-      }
-    })();
-    return () => { active = false; };
-  }, [activeConvId]);
-
-  const handleChatReply = async (body) => {
-    if (!activeConvId || !body.trim()) return;
-    const senderName = session?.email?.split('@')[0] || 'All Dent PDR';
-    await sendChatReply(activeConvId, body.trim(), senderName);
-    const msgs = await getChatMessages(activeConvId);
-    setChatMessages(msgs);
-    const list = await getChatConversations();
-    setConversations(list);
-  };
-
-  const handleChatDelete = async (id) => {
-    if (!window.confirm('Delete this conversation? This cannot be undone.')) return;
-    try {
-      await deleteChatConversation(id);
-      if (activeConvId === id) setActiveConvId(null);
-      setConversations((prev) => prev.filter((c) => c.id !== id));
-    } catch (err) {
-      alert('Delete failed: ' + err.message);
-    }
-  };
-
-  const totalUnreadChat = useMemo(
-    () => conversations.reduce((sum, c) => sum + (c.unread_admin || 0), 0),
-    [conversations]
-  );
 
   const filteredVehicles = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -474,9 +396,6 @@ export default function AdminDashboard() {
             >
               <span aria-hidden="true" style={{ width: 16, opacity: .7 }}>{item.icon}</span>
               {item.label}
-              {item.id === 'messages' && totalUnreadChat > 0 && (
-                <span className="nav-badge">{totalUnreadChat}</span>
-              )}
             </button>
           ))}
         </nav>
@@ -583,19 +502,31 @@ export default function AdminDashboard() {
             />
           )}
 
-          {view === 'messages' && (
-            <MessagesView
-              conversations={conversations}
-              activeId={activeConvId}
-              onSelect={setActiveConvId}
-              messages={chatMessages}
-              loading={chatLoading}
-              onReply={handleChatReply}
-              onDelete={handleChatDelete}
+          {view === 'analytics' && <AnalyticsView />}
+
+          {view === 'projects' && (
+            <ProjectsView
+              projects={projects}
+              loading={projectsLoading}
+              onAdd={async (data) => {
+                const created = await addProject(data);
+                setProjects((prev) => [created, ...prev]);
+              }}
+              onUpdate={async (id, data) => {
+                const updated = await updateProject(id, data);
+                setProjects((prev) => prev.map((p) => p.id === id ? updated : p));
+              }}
+              onDelete={async (id) => {
+                if (!window.confirm('Delete this project? This cannot be undone.')) return;
+                await deleteProject(id);
+                setProjects((prev) => prev.filter((p) => p.id !== id));
+              }}
+              onTogglePublished={async (proj) => {
+                const updated = await updateProject(proj.id, { isPublished: !proj.isPublished });
+                setProjects((prev) => prev.map((p) => p.id === proj.id ? updated : p));
+              }}
             />
           )}
-
-          {view === 'analytics' && <AnalyticsView />}
 
           {view === 'cards' && <CardsView />}
         </main>
@@ -1267,6 +1198,241 @@ function channelClass(ch) {
   return 'other';
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Our Work / Projects Gallery — admin management
+───────────────────────────────────────────────────────────── */
+const PROJECT_CATEGORIES = ['Hail Damage', 'Door Ding', 'Crease', 'Bumper', 'Other'];
+
+const BLANK_PROJECT = {
+  title: '',
+  description: '',
+  vehicle: '',
+  category: '',
+  displayOrder: 0,
+  isPublished: true,
+  imageFile: null,
+  beforeFile: null,
+};
+
+function ProjectsView({ projects, loading, onAdd, onUpdate, onDelete, onTogglePublished }) {
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState(BLANK_PROJECT);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [imagePreview, setImagePreview] = useState('');
+  const [beforePreview, setBeforePreview] = useState('');
+
+  const isEditing = Boolean(editingId);
+
+  const openNew = () => {
+    setForm(BLANK_PROJECT);
+    setImagePreview('');
+    setBeforePreview('');
+    setEditingId(null);
+    setError('');
+    setShowForm(true);
+  };
+
+  const openEdit = (proj) => {
+    setForm({
+      title: proj.title,
+      description: proj.description,
+      vehicle: proj.vehicle,
+      category: proj.category,
+      displayOrder: proj.displayOrder,
+      isPublished: proj.isPublished,
+      imageFile: null,
+      beforeFile: null,
+    });
+    setImagePreview(proj.imageUrl);
+    setBeforePreview(proj.beforeUrl || '');
+    setEditingId(proj.id);
+    setError('');
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(BLANK_PROJECT);
+    setImagePreview('');
+    setBeforePreview('');
+    setError('');
+  };
+
+  const setField = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
+
+  const handleImageChange = (e, key, setPreview) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setForm((f) => ({ ...f, [key]: file }));
+    const reader = new FileReader();
+    reader.onload = (ev) => setPreview(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.title.trim()) { setError('Title is required.'); return; }
+    if (!isEditing && !form.imageFile) { setError('An after/main photo is required.'); return; }
+    setSaving(true);
+    setError('');
+    try {
+      if (isEditing) {
+        await onUpdate(editingId, form);
+      } else {
+        await onAdd(form);
+      }
+      closeForm();
+    } catch (err) {
+      setError(err.message || 'Save failed. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="panel-head" style={{ marginBottom: 18, background: 'transparent', border: 'none', padding: 0 }}>
+        <div>
+          <h3 style={{ marginBottom: 4 }}>Our Work — Project Gallery</h3>
+          <p className="meta" style={{ margin: 0 }}>
+            {projects.length} project{projects.length !== 1 ? 's' : ''} · Published ones appear on the public <a href="/our-work" target="_blank" rel="noopener" style={{ color: 'var(--rust,#b0522b)' }}>/our-work</a> page.
+          </p>
+        </div>
+        <button type="button" className="button primary sm" onClick={openNew}>+ Add project</button>
+      </div>
+
+      {/* Add / Edit form */}
+      {showForm && (
+        <div className="panel" style={{ marginBottom: 24 }}>
+          <div className="panel-head">
+            <h4 style={{ margin: 0 }}>{isEditing ? 'Edit project' : 'New project'}</h4>
+            <button type="button" className="button ghost sm" onClick={closeForm}>Cancel</button>
+          </div>
+          <form onSubmit={handleSubmit} style={{ padding: '16px 0 0' }}>
+            <div className="dash-grid-2" style={{ gap: 16 }}>
+              {/* Left: text fields */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div>
+                  <label>Title <span style={{ color: 'var(--rust,#b0522b)' }}>*</span></label>
+                  <input type="text" value={form.title} onChange={setField('title')} placeholder="e.g. 2022 Honda Accord Hail Repair" required />
+                </div>
+                <div>
+                  <label>Vehicle</label>
+                  <input type="text" value={form.vehicle} onChange={setField('vehicle')} placeholder="e.g. 2022 Honda Accord" />
+                </div>
+                <div>
+                  <label>Category</label>
+                  <select value={form.category} onChange={setField('category')}>
+                    <option value="">— choose —</option>
+                    {PROJECT_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label>Description</label>
+                  <textarea value={form.description} onChange={setField('description')} rows={3} placeholder="Short description shown on the gallery card…" style={{ resize: 'vertical' }} />
+                </div>
+                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, minWidth: 120 }}>
+                    <label>Display order</label>
+                    <input type="number" value={form.displayOrder} onChange={setField('displayOrder')} min={0} style={{ marginBottom: 0 }} />
+                    <p className="cell-sub" style={{ marginTop: 4 }}>Higher = shown first</p>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 28 }}>
+                    <label className="checkbox-row" style={{ margin: 0 }}>
+                      <input type="checkbox" checked={form.isPublished} onChange={setField('isPublished')} />
+                      <span>Published (visible to public)</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: image uploads */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label>After / Main photo {!isEditing && <span style={{ color: 'var(--rust,#b0522b)' }}>*</span>}</label>
+                  {imagePreview && (
+                    <img src={imagePreview} alt="After preview" style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8, marginBottom: 8, border: '1px solid var(--line,#e8e2db)' }} />
+                  )}
+                  <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'imageFile', setImagePreview)} />
+                  {isEditing && <p className="cell-sub" style={{ marginTop: 4 }}>Leave blank to keep existing photo</p>}
+                </div>
+                <div>
+                  <label>Before photo <span className="cell-sub">(optional)</span></label>
+                  {beforePreview && (
+                    <img src={beforePreview} alt="Before preview" style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8, marginBottom: 8, border: '1px solid var(--line,#e8e2db)' }} />
+                  )}
+                  <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'beforeFile', setBeforePreview)} />
+                </div>
+              </div>
+            </div>
+
+            {error && <p className="portal-error" style={{ marginTop: 12 }}>{error}</p>}
+
+            <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+              <button type="submit" className="button primary" disabled={saving}>
+                {saving ? 'Saving…' : isEditing ? 'Save changes' : 'Add project'}
+              </button>
+              <button type="button" className="button ghost" onClick={closeForm}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Projects grid */}
+      {loading && <div className="kanban-empty">Loading projects…</div>}
+
+      {!loading && projects.length === 0 && !showForm && (
+        <div className="panel" style={{ textAlign: 'center', padding: '48px 24px' }}>
+          <p style={{ fontSize: 15, marginBottom: 12, color: 'var(--muted,#9e8f84)' }}>No projects yet.</p>
+          <button type="button" className="button primary sm" onClick={openNew}>+ Add your first project</button>
+        </div>
+      )}
+
+      {!loading && projects.length > 0 && (
+        <div className="projects-admin-grid">
+          {projects.map((proj) => (
+            <div key={proj.id} className={`proj-admin-card${proj.isPublished ? '' : ' is-draft'}`}>
+              <div className="proj-admin-img">
+                {proj.imageUrl
+                  ? <img src={proj.imageUrl} alt={proj.title} loading="lazy" />
+                  : <div className="proj-admin-img-placeholder">No image</div>
+                }
+                {proj.beforeUrl && (
+                  <span className="proj-before-badge">Before+After</span>
+                )}
+              </div>
+              <div className="proj-admin-body">
+                <div className="proj-admin-top">
+                  <div>
+                    <strong className="proj-admin-title">{proj.title}</strong>
+                    {proj.vehicle && <span className="cell-sub" style={{ display: 'block' }}>{proj.vehicle}</span>}
+                  </div>
+                  <span className={`badge ${proj.isPublished ? 'complete' : 'registered'}`}>
+                    {proj.isPublished ? 'Live' : 'Draft'}
+                  </span>
+                </div>
+                {proj.category && <span className="source-badge other" style={{ marginTop: 4 }}>{proj.category}</span>}
+                {proj.description && <p className="cell-sub" style={{ marginTop: 6, WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{proj.description}</p>}
+              </div>
+              <div className="proj-admin-foot">
+                <button type="button" className="button ghost sm" onClick={() => onTogglePublished(proj)}>
+                  {proj.isPublished ? 'Unpublish' : 'Publish'}
+                </button>
+                <button type="button" className="button ghost sm" onClick={() => openEdit(proj)}>Edit</button>
+                <button type="button" className="btn-delete-job" onClick={() => onDelete(proj.id)} title="Delete project" aria-label="Delete project">🗑</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const TEAM_CARDS = [
   { slug: 'zachary', name: 'Zachary', title: 'PDR Specialist', email: 'zachary@alldentpdr.com' },
   { slug: 'kevin',   name: 'Kevin',   title: 'PDR Specialist', email: 'kevin@alldentpdr.com' },
@@ -1891,7 +2057,7 @@ function QuoteView({ vehicles }) {
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>All Dent PDR Estimate – ${quoteNum}</title>
+  <title>AllDent PDR Estimate – ${quoteNum}</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
@@ -1929,7 +2095,7 @@ function QuoteView({ vehicles }) {
 <body>
   <div class="hd">
     <div class="hd-brand">
-      <strong>All Dent PDR</strong>
+      <strong>AllDent PDR</strong>
       <span>Mobile Paintless Dent Repair</span>
       <span style="margin-top:4px;color:#555">1-855-425-5336 · alldentpdr.com</span>
     </div>
@@ -1993,7 +2159,7 @@ function QuoteView({ vehicles }) {
       <div class="sig-line">Date</div>
     </div>
     <div>
-      <div class="sig-line">All Dent PDR Technician</div>
+      <div class="sig-line">AllDent PDR Technician</div>
     </div>
     <div>
       <div class="sig-line">Date</div>
@@ -2001,7 +2167,7 @@ function QuoteView({ vehicles }) {
   </div>
 
   <div class="footer">
-    <strong>All Dent PDR · Mobile Paintless Dent Repair</strong><br/>
+    <strong>AllDent PDR · Mobile Paintless Dent Repair</strong><br/>
     1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com<br/>
     This estimate is valid for 30 days from the date above. Prices subject to change upon physical inspection.<br/>
     Method key: PDR = Paintless Dent Repair &nbsp;|&nbsp; R&amp;I = Remove &amp; Install &nbsp;|&nbsp; R&amp;R = Remove &amp; Replace
@@ -2221,7 +2387,7 @@ function QuoteView({ vehicles }) {
           <div className="quote-total-box">
             <div className="quote-total-label">Estimated Total</div>
             <div className="quote-total-amount">${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-            <div className="quote-total-meta">{affectedCount} panel{affectedCount !== 1 ? 's' : ''} · All Dent PDR</div>
+            <div className="quote-total-meta">{affectedCount} panel{affectedCount !== 1 ? 's' : ''} · AllDent PDR</div>
             <button type="button" className="button ghost" style={{ width: '100%', marginTop: 14 }} onClick={handleExportPDF}>
               Export PDF
             </button>
@@ -2246,7 +2412,7 @@ function buildReleaseHtml(job, data) {
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>All Dent PDR — Vehicle Release — ${esc(job.id)}</title>
+  <title>AllDent PDR — Vehicle Release — ${esc(job.id)}</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
@@ -2273,7 +2439,7 @@ function buildReleaseHtml(job, data) {
 <body>
   <div class="hd">
     <div class="hd-brand">
-      <strong>All Dent PDR</strong>
+      <strong>AllDent PDR</strong>
       <span>Mobile Paintless Dent Repair</span>
       <span style="margin-top:2px;color:#555">1-855-425-5336 &nbsp;·&nbsp; alldentpdr@gmail.com</span>
     </div>
@@ -2314,13 +2480,13 @@ function buildReleaseHtml(job, data) {
     <div>
       <div class="sig-line">
         ${data.witnessedBy ? `<span class="sig-val">${esc(data.witnessedBy)}</span>` : ''}
-        Witnessed By (All Dent PDR) &nbsp;&nbsp; Date: ${esc(data.witnessedAt || '')}
+        Witnessed By (AllDent PDR) &nbsp;&nbsp; Date: ${esc(data.witnessedAt || '')}
       </div>
     </div>
   </div>
 
   <div class="footer">
-    <strong>All Dent PDR · Mobile Paintless Dent Repair</strong><br/>
+    <strong>AllDent PDR · Mobile Paintless Dent Repair</strong><br/>
     1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com
   </div>
 
@@ -2512,7 +2678,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
           {/* Witness row */}
           <div className="form-grid-2" style={{ marginTop: 10 }}>
             <div>
-              <label>Witnessed By (All Dent PDR Rep) <span aria-hidden>*</span></label>
+              <label>Witnessed By (AllDent PDR Rep) <span aria-hidden>*</span></label>
               <input
                 type="text"
                 value={witnessedBy}
@@ -2709,149 +2875,3 @@ function RegisterView({ form, setForm, onSubmit, saveMessage }) {
     </section>
   );
 }
-
-/* ----------------- MessagesView ----------------- */
-
-function formatChatTime(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  const now = new Date();
-  const sameDay = d.toDateString() === now.toDateString();
-  if (sameDay) return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) +
-    ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-}
-
-function MessagesView({ conversations, activeId, onSelect, messages, loading, onReply, onDelete }) {
-  const [draft, setDraft] = useState('');
-  const [sending, setSending] = useState(false);
-  const [err, setErr] = useState('');
-  const scrollerRef = useRef(null);
-  const active = conversations.find((c) => c.id === activeId) || null;
-
-  useEffect(() => { setDraft(''); setErr(''); }, [activeId]);
-
-  useEffect(() => {
-    if (scrollerRef.current) {
-      scrollerRef.current.scrollTop = scrollerRef.current.scrollHeight;
-    }
-  }, [messages.length, activeId]);
-
-  async function submitReply(e) {
-    e.preventDefault();
-    if (!draft.trim() || sending) return;
-    setSending(true);
-    setErr('');
-    try {
-      await onReply(draft);
-      setDraft('');
-    } catch (e2) {
-      setErr(e2.message || 'Could not send');
-    } finally {
-      setSending(false);
-    }
-  }
-
-  return (
-    <section className="panel chat-admin">
-      <div className="chat-admin-grid">
-        <aside className="chat-admin-list">
-          <div className="chat-admin-list-head">
-            <strong>Conversations</strong>
-            <span className="meta">{conversations.length}</span>
-          </div>
-          {!conversations.length && (
-            <div className="kanban-empty" style={{ padding: 24 }}>
-              No messages yet. When a visitor opens the website chat box, their conversation appears here.
-            </div>
-          )}
-          {conversations.map((c) => (
-            <div key={c.id} className={`chat-admin-row${activeId === c.id ? ' is-active' : ''}`}>
-              <button
-                type="button"
-                className="chat-admin-row-body"
-                onClick={() => onSelect(c.id)}
-              >
-                <div className="chat-admin-row-top">
-                  <span className="cell-strong">{c.visitor_name || c.visitor_email || 'Anonymous visitor'}</span>
-                  <span className="cell-sub">{formatChatTime(c.last_message_at)}</span>
-                </div>
-                <div className="chat-admin-row-preview">
-                  {c.last_message_preview || '—'}
-                </div>
-                <div className="chat-admin-row-foot">
-                  {c.visitor_email && <span className="cell-sub">{c.visitor_email}</span>}
-                  {c.unread_admin > 0 && <span className="chat-admin-unread">{c.unread_admin}</span>}
-                </div>
-              </button>
-              <button
-                type="button"
-                className="chat-admin-row-delete"
-                title="Delete conversation"
-                onClick={() => onDelete(c.id)}
-              >🗑</button>
-            </div>
-          ))}
-        </aside>
-
-        <div className="chat-admin-thread">
-          {!active && (
-            <div className="kanban-empty" style={{ padding: 32 }}>
-              {conversations.length ? 'Select a conversation to start replying.' : 'Waiting for the first visitor message…'}
-            </div>
-          )}
-          {active && (
-            <>
-              <header className="chat-admin-thread-head">
-                <div>
-                  <strong>{active.visitor_name || 'Anonymous visitor'}</strong>
-                  <div className="cell-sub">
-                    {[active.visitor_email, active.visitor_phone].filter(Boolean).join(' · ') || '—'}
-                  </div>
-                  {active.page_url && (
-                    <div className="cell-sub" title={active.page_url}>
-                      From: {active.page_url.length > 60 ? active.page_url.slice(0, 60) + '…' : active.page_url}
-                    </div>
-                  )}
-                </div>
-              </header>
-              <div className="chat-admin-log" ref={scrollerRef}>
-                {loading && <div className="kanban-empty">Loading…</div>}
-                {!loading && messages.map((m) => (
-                  <div key={m.id} className={`chat-msg chat-msg-${m.sender === 'admin' ? 'admin-out' : 'visitor-in'}`}>
-                    <div className="chat-bubble">{m.body}</div>
-                    <div className="chat-meta">
-                      {m.sender === 'admin' ? (m.sender_name || 'You') : (m.sender_name || 'Visitor')} · {formatChatTime(m.created_at)}
-                    </div>
-                  </div>
-                ))}
-                {!loading && !messages.length && (
-                  <div className="kanban-empty">No messages in this conversation.</div>
-                )}
-              </div>
-              <form className="chat-composer" onSubmit={submitReply}>
-                {err && <div className="chat-error">{err}</div>}
-                <textarea
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  placeholder="Type your reply…"
-                  rows={2}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      submitReply(e);
-                    }
-                  }}
-                />
-                <button type="submit" className="button primary" disabled={sending || !draft.trim()}>
-                  {sending ? 'Sending…' : 'Send reply'}
-                </button>
-              </form>
-            </>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
-

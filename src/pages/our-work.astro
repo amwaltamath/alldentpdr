@@ -1,0 +1,316 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { createClient } from '@supabase/supabase-js';
+
+const title = 'Our Work — Before & After Paintless Dent Repair | All Dent PDR';
+const description = 'See real before and after photos from All Dent PDR. Our technicians restore hail damage, door dings, and dents — preserving your factory paint finish. Serving Bedford & Northeast Ohio.';
+const canonical = 'https://alldentpdr.com/our-work';
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Our Work', url: canonical }
+];
+
+// Fetch published projects at build/request time from Supabase
+let projects: Array<{
+  id: string;
+  title: string;
+  description: string | null;
+  vehicle: string | null;
+  category: string | null;
+  image_url: string;
+  before_url: string | null;
+  display_order: number;
+}> = [];
+
+try {
+  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+  const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+  if (supabaseUrl && supabaseKey) {
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { data } = await supabase
+      .from('projects')
+      .select('id, title, description, vehicle, category, image_url, before_url, display_order')
+      .eq('is_published', true)
+      .order('display_order', { ascending: false })
+      .order('created_at', { ascending: false });
+    if (data) projects = data;
+  }
+} catch {
+  // fail silently — page still renders without projects
+}
+
+const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))];
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs}>
+  <section class="page-hero container">
+    <span class="section-label">Gallery — Bedford &amp; Northeast Ohio</span>
+    <h1>Our work — real results, real vehicles</h1>
+    <p>Every project in our gallery was completed by All Dent PDR technicians using paintless dent repair techniques that preserve your factory finish. Hail damage, door dings, creases — see the difference for yourself.</p>
+    <div class="button-row" style="justify-content:center;margin-top:16px;">
+      <a class="button primary" href="/contact">Get a Free Estimate</a>
+      <a class="button ghost" href="/services">Our Services</a>
+    </div>
+  </section>
+
+  {projects.length > 0 ? (
+    <section class="section">
+      <div class="container">
+        {categories.length > 0 && (
+          <div class="ow-filter-row" id="ow-filters">
+            <button class="ow-filter is-active" data-filter="all">All</button>
+            {categories.map((cat) => (
+              <button class="ow-filter" data-filter={cat}>{cat}</button>
+            ))}
+          </div>
+        )}
+
+        <div class="ow-grid" id="ow-grid">
+          {projects.map((proj) => (
+            <article class="ow-card" data-category={proj.category || ''}>
+              {proj.before_url ? (
+                <div class="ow-ba-wrap">
+                  <div class="ow-ba-slider" aria-label="Before and after comparison">
+                    <img class="ow-img ow-after" src={proj.image_url} alt={`After — ${proj.title}`} loading="lazy" />
+                    <div class="ow-before-reveal">
+                      <img class="ow-img ow-before" src={proj.before_url} alt={`Before — ${proj.title}`} loading="lazy" />
+                    </div>
+                    <div class="ow-ba-labels">
+                      <span class="ow-ba-label after">After</span>
+                      <span class="ow-ba-label before">Before</span>
+                    </div>
+                    <input
+                      type="range"
+                      class="ow-ba-range"
+                      min="0"
+                      max="100"
+                      value="50"
+                      aria-label="Drag to compare before and after"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div class="ow-img-wrap">
+                  <img class="ow-img" src={proj.image_url} alt={proj.title} loading="lazy" />
+                </div>
+              )}
+              <div class="ow-card-body">
+                {proj.category && <span class="tag">{proj.category}</span>}
+                <h3 class="ow-card-title">{proj.title}</h3>
+                {proj.vehicle && <p class="ow-card-vehicle">{proj.vehicle}</p>}
+                {proj.description && <p class="ow-card-desc">{proj.description}</p>}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : (
+    <section class="section">
+      <div class="container" style="text-align:center;padding:60px 24px;">
+        <p style="font-size:1.1rem;color:var(--muted);">Projects coming soon — check back after our next repair session!</p>
+        <a class="button primary" href="/contact" style="margin-top:20px;display:inline-block;">Request a Free Estimate</a>
+      </div>
+    </section>
+  )}
+
+  <section class="section alt">
+    <div class="container">
+      <span class="section-label">Ready to get started?</span>
+      <h2>Get a free estimate today</h2>
+      <p>All Dent PDR serves Bedford, OH and 20+ Northeast Ohio communities. We work with all major insurance carriers.</p>
+      <div class="button-row" style="justify-content:center;margin-top:20px;">
+        <a class="button primary" href="/contact">Contact Us</a>
+        <a class="button ghost" href="/service-area">View Service Areas</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Filter buttons */
+  .ow-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .ow-filter {
+    background: var(--card, #fffbf6);
+    border: 1.5px solid var(--line, #e8e2db);
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ink, #1a1410);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .ow-filter:hover,
+  .ow-filter.is-active {
+    background: var(--rust, #b0522b);
+    border-color: var(--rust, #b0522b);
+    color: #fff;
+  }
+
+  /* Projects grid */
+  .ow-grid {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+  .ow-card {
+    background: var(--card, #fffbf6);
+    border: 1px solid var(--line, #e8e2db);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .ow-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  }
+  .ow-card.is-hidden { display: none; }
+
+  /* Single image */
+  .ow-img-wrap {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--sky, #eef5fb);
+  }
+  .ow-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .ow-card:hover .ow-img { transform: scale(1.03); }
+
+  /* Before/After slider */
+  .ow-ba-wrap {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    position: relative;
+    background: #111;
+  }
+  .ow-ba-slider {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+  }
+  .ow-ba-slider .ow-after {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .ow-before-reveal {
+    position: absolute;
+    inset: 0;
+    width: 50%;
+    overflow: hidden;
+    border-right: 2px solid #fff;
+  }
+  .ow-ba-slider .ow-before {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-width: none;
+  }
+  .ow-ba-labels {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 14px;
+    pointer-events: none;
+  }
+  .ow-ba-label {
+    background: rgba(0,0,0,.55);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .ow-ba-range {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: ew-resize;
+    margin: 0;
+  }
+
+  /* Card body */
+  .ow-card-body {
+    padding: 16px 18px 18px;
+  }
+  .ow-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 6px 0 2px;
+    color: var(--ink, #1a1410);
+    line-height: 1.3;
+  }
+  .ow-card-vehicle {
+    font-size: 13px;
+    color: var(--muted, #9e8f84);
+    margin: 0 0 6px;
+  }
+  .ow-card-desc {
+    font-size: 14px;
+    color: var(--ink, #1a1410);
+    line-height: 1.55;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  // Category filter
+  const filters = document.querySelectorAll<HTMLButtonElement>('.ow-filter');
+  const cards   = document.querySelectorAll<HTMLElement>('.ow-card');
+
+  filters.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filters.forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      const filter = btn.dataset.filter || 'all';
+      cards.forEach((card) => {
+        const match = filter === 'all' || card.dataset.category === filter;
+        card.classList.toggle('is-hidden', !match);
+      });
+    });
+  });
+
+  // Before/After range slider
+  document.querySelectorAll<HTMLElement>('.ow-ba-slider').forEach((slider) => {
+    const range = slider.querySelector<HTMLInputElement>('.ow-ba-range');
+    const reveal = slider.querySelector<HTMLElement>('.ow-before-reveal');
+    if (!range || !reveal) return;
+
+    const update = (val: number) => {
+      reveal.style.width = val + '%';
+      const divider = slider.querySelector<HTMLElement>('.ow-before-reveal');
+      if (divider) divider.style.borderRightWidth = val > 0 && val < 100 ? '2px' : '0';
+    };
+
+    range.addEventListener('input', () => update(Number(range.value)));
+    update(50);
+  });
+</script>
