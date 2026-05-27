@@ -1018,6 +1018,126 @@ select {
 }
 .proj-admin-foot .btn-delete-job { margin-left: auto; }
 
+/* ─────────────────────────────────────────────────────────────
+   Promo Popup
+───────────────────────────────────────────────────────────── */
+.promo-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(26, 20, 16, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.promo-overlay.is-visible { opacity: 1; }
+.promo-overlay[hidden] { display: none; }
+
+.promo-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  max-width: 480px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  text-align: center;
+  transform: translateY(24px);
+  transition: transform 0.35s ease;
+}
+.promo-overlay.is-visible .promo-card { transform: translateY(0); }
+
+.promo-close {
+  position: absolute;
+  top: 14px; right: 16px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #9e8f84;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1;
+  transition: color 0.2s, background 0.2s;
+}
+.promo-close:hover { color: var(--ink, #1a1410); background: #f0ece7; }
+
+.promo-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #b0522b, #c96a3a);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+
+.promo-icon {
+  font-size: 44px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.promo-title {
+  font-size: clamp(1.4rem, 4vw, 1.75rem);
+  font-weight: 800;
+  color: var(--ink, #1a1410);
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.promo-body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #4a3f38;
+  margin: 0 0 16px;
+}
+
+.promo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 22px;
+  text-align: left;
+  display: inline-block;
+}
+.promo-list li {
+  font-size: 14px;
+  color: #4a3f38;
+  padding: 3px 0;
+}
+.promo-list li::marker { content: ''; }
+
+.promo-cta {
+  display: block;
+  width: 100%;
+  font-size: 16px;
+  padding: 14px 24px;
+  margin-bottom: 12px;
+  text-decoration: none;
+}
+
+.promo-dismiss {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #9e8f84;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 4px;
+}
+.promo-dismiss:hover { color: var(--ink, #1a1410); }
+
+@media (max-width: 480px) {
+  .promo-card { padding: 28px 20px 22px; }
+}
+
 /* Sparkline bar chart */
 .analytics-sparkline {
   display: flex;
