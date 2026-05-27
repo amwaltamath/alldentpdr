@@ -160,19 +160,20 @@ p { margin: 0 0 1rem; color: var(--muted); }
 /* Hero -------------------------------------------------------- */
 .hero {
   position: relative;
-  padding: 96px 0 80px;
-  background:
-    radial-gradient(1000px 500px at 80% -10%, rgba(201,90,43,.10), transparent 60%),
-    radial-gradient(700px 400px at 0% 110%, rgba(47,122,92,.08), transparent 60%),
-    linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+  padding: 100px 0 80px;
+  background-image: linear-gradient(160deg, rgba(28,22,18,0.82), rgba(28,22,18,0.65)), url('/images/hail.jpg');
+  background-size: cover;
+  background-position: center;
   border-bottom: 1px solid var(--line);
   overflow: hidden;
 }
-.hero-inner { display: grid; gap: 48px; align-items: center; grid-template-columns: 1.05fr 1fr; }
-@media (max-width: 920px) { .hero { padding: 64px 0 56px; } .hero-inner { grid-template-columns: 1fr; gap: 32px; } }
+.hero > * { position: relative; z-index: 1; }
+.hero-inner { display: grid; gap: 40px; align-items: center; grid-template-columns: 1.05fr 1fr; }
+@media (max-width: 920px) { .hero { padding: 70px 0 50px; background-attachment: scroll; } .hero-inner { grid-template-columns: 1fr; gap: 32px; } }
 
-.hero h1 { color: var(--ink); }
-.hero p  { color: var(--muted); font-size: 1.05rem; max-width: 56ch; }
+.hero h1, .hero p { color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.hero p  { font-size: 1.05rem; max-width: 56ch; }
+.hero-card p, .hero-card .tag { color: var(--ink); text-shadow: none; }
 
 .hero-pill {
   display: inline-flex; align-items: center; gap: 8px;
@@ -2206,4 +2207,4 @@ select {
 
 /* Utility */
 .muted { color: var(--muted); }
-.center { text-align: center; }
+.center { text-align: center; }
