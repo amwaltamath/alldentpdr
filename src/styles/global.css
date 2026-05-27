@@ -940,6 +940,222 @@ select {
 }
 
 /* ─────────────────────────────────────────────────────────────
+   Admin Messages inbox
+───────────────────────────────────────────────────────────── */
+.msgs-shell {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: calc(100vh - 72px);
+  min-height: 500px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
+}
+.msgs-sidebar {
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg, #faf7f4);
+}
+.msgs-sidebar-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid var(--line);
+  gap: 8px;
+}
+.msgs-filter-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.msgs-filter-tabs .queue-tab { flex: 1; text-align: center; padding: 5px 6px; font-size: 12px; }
+.msgs-list {
+  flex: 1;
+  overflow-y: auto;
+}
+.msgs-conv-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.msgs-conv-row:hover { background: var(--sky, #eef5fb); }
+.msgs-conv-row.is-active { background: var(--sky, #eef5fb); }
+.msgs-conv-row.has-unread .msgs-conv-name { font-weight: 700; }
+.msgs-conv-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--rust, #b0522b);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.msgs-conv-info { flex: 1; min-width: 0; }
+.msgs-conv-name {
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.msgs-conv-preview {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+.msgs-conv-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.msgs-conv-time { font-size: 11px; color: var(--muted); }
+.msgs-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rust, #b0522b);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  padding: 0 5px;
+  line-height: 1;
+}
+
+/* Thread pane */
+.msgs-thread {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+}
+.msgs-thread-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  gap: 12px;
+  font-size: 15px;
+}
+.msgs-thread-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  gap: 12px;
+  background: var(--surface);
+}
+.msgs-bubble-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.msgs-bubble {
+  max-width: 72%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.msgs-bubble-visitor { align-self: flex-start; }
+.msgs-bubble-admin   { align-self: flex-end; }
+.msgs-bubble-system  { align-self: center; max-width: 90%; }
+.msgs-bubble-body {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.msgs-bubble-visitor .msgs-bubble-body {
+  background: var(--sky, #eef5fb);
+  border-bottom-left-radius: 4px;
+  color: var(--ink);
+}
+.msgs-bubble-admin .msgs-bubble-body {
+  background: var(--rust, #b0522b);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.msgs-bubble-system .msgs-bubble-body {
+  background: #f0ece7;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+.msgs-bubble-meta {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 0 4px;
+}
+.msgs-bubble-admin .msgs-bubble-meta { text-align: right; }
+.msgs-reply-bar {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--line);
+  align-items: flex-end;
+  background: var(--surface);
+}
+.msgs-reply-input {
+  flex: 1;
+  resize: none;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.5;
+  transition: border-color 0.2s;
+  background: #fff;
+  margin-bottom: 0;
+}
+.msgs-reply-input:focus { outline: none; border-color: var(--rust, #b0522b); }
+
+@media (max-width: 700px) {
+  .msgs-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: 220px 1fr;
+    height: auto;
+  }
+  .msgs-sidebar { border-right: none; border-bottom: 1px solid var(--line); }
+}
+
+/* ─────────────────────────────────────────────────────────────
    Projects admin grid
 ───────────────────────────────────────────────────────────── */
 .projects-admin-grid {

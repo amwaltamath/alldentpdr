@@ -22,6 +22,11 @@ import {
   addProject,
   updateProject,
   deleteProject,
+  getConversations,
+  getConversationMessages,
+  adminReply,
+  closeConversation,
+  reopenConversation,
 } from './portal/storage';
 
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
@@ -66,6 +71,7 @@ const NAV_ITEMS = [
   { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
   { id: 'register', label: 'Register Vehicle',  icon: '+' },
   { id: 'projects', label: 'Our Work',          icon: '🖼' },
+  { id: 'messages', label: 'Messages',           icon: '💬' },
   { id: 'cards',    label: 'Business Cards',    icon: '▣' },
 ];
 
@@ -101,6 +107,8 @@ export default function AdminDashboard() {
   const [leadsLoading, setLeadsLoading] = useState(false);
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
+  const [conversations, setConversations] = useState([]);
+  const [convLoading, setConvLoading] = useState(false);
 
   const remoteMode = isRemotePortalEnabled();
 
@@ -161,6 +169,16 @@ export default function AdminDashboard() {
         // non-fatal
       } finally {
         if (active) setProjectsLoading(false);
+      }
+      // Load conversations
+      try {
+        if (active) setConvLoading(true);
+        const convNext = await getConversations();
+        if (active) setConversations(convNext);
+      } catch {
+        // non-fatal
+      } finally {
+        if (active) setConvLoading(false);
       }
     }
 
@@ -503,6 +521,33 @@ export default function AdminDashboard() {
           )}
 
           {view === 'analytics' && <AnalyticsView />}
+
+          {view === 'messages' && (
+            <MessagesView
+              conversations={conversations}
+              loading={convLoading}
+              adminEmail={session?.email || 'All Dent PDR'}
+              onRefresh={async () => {
+                setConvLoading(true);
+                try { setConversations(await getConversations()); } finally { setConvLoading(false); }
+              }}
+              onClose={async (id) => {
+                await closeConversation(id);
+                setConversations((prev) => prev.map((c) => c.id === id ? { ...c, status: 'closed' } : c));
+              }}
+              onReopen={async (id) => {
+                await reopenConversation(id);
+                setConversations((prev) => prev.map((c) => c.id === id ? { ...c, status: 'open' } : c));
+              }}
+              onReply={async (id, body, senderName) => {
+                await adminReply(id, body, senderName);
+                setConversations(await getConversations());
+              }}
+              onMessagesRead={(id) => {
+                setConversations((prev) => prev.map((c) => c.id === id ? { ...c, unreadAdmin: 0 } : c));
+              }}
+            />
+          )}
 
           {view === 'projects' && (
             <ProjectsView
@@ -1196,6 +1241,185 @@ function channelClass(ch) {
   if (c.includes('paid social') || c.includes('organic social')) return 'meta';
   if (c.includes('organic')) return 'organic';
   return 'other';
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Messages — admin chat inbox
+───────────────────────────────────────────────────────────── */
+function timeAgo(iso) {
+  if (!iso) return '';
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+function MessagesView({ conversations, loading, adminEmail, onRefresh, onClose, onReopen, onReply, onMessagesRead }) {
+  const [activeId, setActiveId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [msgsLoading, setMsgsLoading] = useState(false);
+  const [draft, setDraft] = useState('');
+  const [sending, setSending] = useState(false);
+  const [filter, setFilter] = useState('open');
+  const scrollRef = useRef(null);
+
+  const shown = conversations.filter((c) => filter === 'all' || c.status === filter);
+  const activeConv = conversations.find((c) => c.id === activeId) || null;
+
+  const openConv = async (id) => {
+    setActiveId(id);
+    setMessages([]);
+    setMsgsLoading(true);
+    try {
+      const msgs = await getConversationMessages(id);
+      setMessages(msgs);
+      onMessagesRead(id);
+    } catch {
+      // ignore
+    } finally {
+      setMsgsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+    if (!draft.trim() || !activeId) return;
+    setSending(true);
+    try {
+      const senderName = adminEmail?.split('@')[0] || 'All Dent PDR';
+      await onReply(activeId, draft.trim(), senderName);
+      setMessages(await getConversationMessages(activeId));
+      setDraft('');
+    } catch (err) {
+      alert('Send failed: ' + err.message);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const totalUnread = conversations.reduce((n, c) => n + (c.unreadAdmin || 0), 0);
+
+  return (
+    <div className="msgs-shell">
+      {/* Sidebar */}
+      <aside className="msgs-sidebar">
+        <div className="msgs-sidebar-head">
+          <div>
+            <h3 style={{ margin: 0 }}>Messages {totalUnread > 0 && <span className="msgs-badge">{totalUnread}</span>}</h3>
+            <p className="meta" style={{ margin: '2px 0 0' }}>Visitor chat inbox</p>
+          </div>
+          <button type="button" className="button ghost sm" onClick={onRefresh} title="Refresh">↻</button>
+        </div>
+
+        <div className="msgs-filter-tabs">
+          {['open', 'closed', 'all'].map((f) => (
+            <button key={f} type="button" className={`queue-tab${filter === f ? ' active' : ''}`} onClick={() => setFilter(f)}>
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+              <span className="queue-count">{f === 'all' ? conversations.length : conversations.filter((c) => c.status === f).length}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="msgs-list">
+          {loading && <div className="kanban-empty" style={{ padding: 24 }}>Loading…</div>}
+          {!loading && shown.length === 0 && (
+            <div className="kanban-empty" style={{ padding: 24 }}>No {filter} conversations.</div>
+          )}
+          {shown.map((conv) => (
+            <button
+              key={conv.id}
+              type="button"
+              className={`msgs-conv-row${activeId === conv.id ? ' is-active' : ''}${conv.unreadAdmin > 0 ? ' has-unread' : ''}`}
+              onClick={() => openConv(conv.id)}
+            >
+              <div className="msgs-conv-avatar">
+                {(conv.visitorName || '?').charAt(0).toUpperCase()}
+              </div>
+              <div className="msgs-conv-info">
+                <div className="msgs-conv-name">
+                  {conv.visitorName || 'Anonymous'}
+                  {conv.unreadAdmin > 0 && <span className="msgs-badge">{conv.unreadAdmin}</span>}
+                </div>
+                <div className="msgs-conv-preview">{conv.lastMessagePreview || '—'}</div>
+              </div>
+              <div className="msgs-conv-meta">
+                <span className="msgs-conv-time">{timeAgo(conv.lastMessageAt)}</span>
+                {conv.status === 'closed' && <span className="badge registered" style={{ fontSize: 10, padding: '1px 6px' }}>Closed</span>}
+              </div>
+            </button>
+          ))}
+        </div>
+      </aside>
+
+      {/* Thread */}
+      <div className="msgs-thread">
+        {!activeConv && (
+          <div className="msgs-thread-empty">
+            <span style={{ fontSize: 40 }}>💬</span>
+            <p>Select a conversation to view messages</p>
+          </div>
+        )}
+
+        {activeConv && (
+          <>
+            <div className="msgs-thread-head">
+              <div>
+                <strong>{activeConv.visitorName || 'Anonymous'}</strong>
+                {activeConv.visitorEmail && <span className="cell-sub" style={{ display: 'block' }}>{activeConv.visitorEmail}</span>}
+                {activeConv.visitorPhone && <span className="cell-sub" style={{ display: 'block' }}>{activeConv.visitorPhone}</span>}
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {activeConv.status === 'open'
+                  ? <button type="button" className="button ghost sm" onClick={() => onClose(activeConv.id)}>Close chat</button>
+                  : <button type="button" className="button ghost sm" onClick={() => onReopen(activeConv.id)}>Reopen</button>
+                }
+              </div>
+            </div>
+
+            <div className="msgs-bubble-list" ref={scrollRef}>
+              {msgsLoading && <div className="kanban-empty">Loading messages…</div>}
+              {!msgsLoading && messages.length === 0 && <div className="kanban-empty">No messages yet.</div>}
+              {messages.map((msg) => (
+                <div key={msg.id} className={`msgs-bubble msgs-bubble-${msg.sender}`}>
+                  <div className="msgs-bubble-body">{msg.body}</div>
+                  <div className="msgs-bubble-meta">
+                    {msg.senderName || (msg.sender === 'admin' ? 'You' : 'Visitor')} · {timeAgo(msg.createdAt)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {activeConv.status === 'open' ? (
+              <form className="msgs-reply-bar" onSubmit={handleSend}>
+                <textarea
+                  className="msgs-reply-input"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder="Type a reply…"
+                  rows={2}
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
+                />
+                <button type="submit" className="button primary" disabled={sending || !draft.trim()}>
+                  {sending ? '…' : 'Send'}
+                </button>
+              </form>
+            ) : (
+              <div className="msgs-reply-bar" style={{ justifyContent: 'center', color: 'var(--muted)' }}>
+                This conversation is closed. <button type="button" className="button ghost sm" style={{ marginLeft: 8 }} onClick={() => onReopen(activeConv.id)}>Reopen to reply</button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 
 /* ─────────────────────────────────────────────────────────────

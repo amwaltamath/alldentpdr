@@ -599,3 +599,88 @@ export async function deleteProject(id) {
   if (error) throw error;
   return true;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Chat — admin inbox
+───────────────────────────────────────────────────────────── */
+
+function mapConversation(row) {
+  return {
+    id: row.id,
+    visitorName: row.visitor_name || '',
+    visitorEmail: row.visitor_email || '',
+    visitorPhone: row.visitor_phone || '',
+    pageUrl: row.page_url || '',
+    status: row.status,
+    unreadAdmin: row.unread_admin || 0,
+    unreadVisitor: row.unread_visitor || 0,
+    lastMessageAt: row.last_message_at,
+    lastMessagePreview: row.last_message_preview || '',
+    createdAt: row.created_at,
+  };
+}
+
+function mapMessage(row) {
+  return {
+    id: row.id,
+    sender: row.sender,
+    senderName: row.sender_name || '',
+    body: row.body,
+    createdAt: row.created_at,
+  };
+}
+
+export async function getConversations() {
+  if (!isSupabaseEnabled()) return [];
+  const { data, error } = await supabase
+    .from('chat_conversations')
+    .select('*')
+    .order('last_message_at', { ascending: false });
+  if (error) throw error;
+  return (data || []).map(mapConversation);
+}
+
+export async function getConversationMessages(conversationId) {
+  if (!isSupabaseEnabled()) return [];
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .select('*')
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  // Mark admin unread as read
+  await supabase
+    .from('chat_conversations')
+    .update({ unread_admin: 0 })
+    .eq('id', conversationId);
+  return (data || []).map(mapMessage);
+}
+
+export async function adminReply(conversationId, body, senderName = 'All Dent PDR') {
+  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
+  const { data, error } = await supabase.rpc('chat_admin_reply', {
+    p_conversation_id: conversationId,
+    p_body: body,
+    p_sender_name: senderName,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function closeConversation(conversationId) {
+  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
+  const { error } = await supabase
+    .from('chat_conversations')
+    .update({ status: 'closed' })
+    .eq('id', conversationId);
+  if (error) throw error;
+}
+
+export async function reopenConversation(conversationId) {
+  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
+  const { error } = await supabase
+    .from('chat_conversations')
+    .update({ status: 'open' })
+    .eq('id', conversationId);
+  if (error) throw error;
+}
