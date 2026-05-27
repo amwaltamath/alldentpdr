@@ -295,5 +295,52 @@ const localBusinessSchema = {
       </div>
     )}
     {!bare && <ChatWidget client:idle />}
+
+    {!bare && (
+      <div id="promo-popup" class="promo-overlay" role="dialog" aria-modal="true" aria-labelledby="promo-title" hidden>
+        <div class="promo-card">
+          <button class="promo-close" id="promo-close" aria-label="Close promotion">✕</button>
+          <div class="promo-badge">Limited Time Offer</div>
+          <div class="promo-icon">🛡️</div>
+          <h2 class="promo-title" id="promo-title">Free Deductible — Up to $500</h2>
+          <p class="promo-body">
+            Qualified insured vehicles may be eligible for a <strong>deductible waiver up to $500</strong> on hail damage or dent repair claims. Don't pay out of pocket — let us help.
+          </p>
+          <ul class="promo-list">
+            <li>✓ Works with most major insurance carriers</li>
+            <li>✓ No hidden fees — we handle the paperwork</li>
+            <li>✓ Free estimate, same-day appointments available</li>
+          </ul>
+          <a href="/contact" class="button primary promo-cta">Claim This Offer →</a>
+          <button class="promo-dismiss" id="promo-dismiss">No thanks, I'll pay my deductible</button>
+        </div>
+      </div>
+    )}
+
+    <script>
+      (function () {
+        const SESSION_KEY = 'alldentpdr_promo_dismissed';
+        if (sessionStorage.getItem(SESSION_KEY)) return;
+
+        const overlay = document.getElementById('promo-popup');
+        if (!overlay) return;
+
+        const dismiss = () => {
+          overlay.classList.remove('is-visible');
+          overlay.addEventListener('transitionend', () => { overlay.hidden = true; }, { once: true });
+          sessionStorage.setItem(SESSION_KEY, '1');
+        };
+
+        setTimeout(() => {
+          overlay.hidden = false;
+          requestAnimationFrame(() => overlay.classList.add('is-visible'));
+        }, 3500);
+
+        document.getElementById('promo-close')?.addEventListener('click', dismiss);
+        document.getElementById('promo-dismiss')?.addEventListener('click', dismiss);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) dismiss(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') dismiss(); });
+      })();
+    </script>
   </body>
 </html>
