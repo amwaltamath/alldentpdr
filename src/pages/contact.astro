@@ -1,4 +1,4 @@
-﻿---
+---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const title = 'Contact All Dent PDR | Hail Damage Repair Shop — Bedford &amp; Cleveland, OH';
@@ -109,7 +109,7 @@ const breadcrumbs = [
               if (res.ok) {
                 form.reset();
                 status.textContent = '✓ Request sent! We\'ll reply within 24 hours.';
-                status.style.color = '#4a7a5c';
+                status.style.color = '#0a71d0';
                 // Meta Pixel — Lead (eventID matches CAPI for deduplication)
                 if (typeof fbq === 'function') {
                   fbq('track', 'Lead', {}, { eventID: eventId });

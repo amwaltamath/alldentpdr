@@ -66,10 +66,10 @@ export const POST: APIRoute = async ({ request }) => {
         subject: `💬 New chat message from visitor`,
         html: `
           <h2>New live chat message</h2>
-          <blockquote style="border-left:4px solid #b0522b;padding:10px 14px;background:#fffbf6;white-space:pre-wrap;margin:14px 0">${esc(message)}</blockquote>
+          <blockquote style="border-left:4px solid #fc1317;padding:10px 14px;background:#fffbf6;white-space:pre-wrap;margin:14px 0">${esc(message)}</blockquote>
           <p>
             <a href="https://alldentpdr.com/portal/admin-dashboard?view=messages"
-               style="background:#b0522b;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600">
+               style="background:#fc1317;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600">
               Reply in admin dashboard →
             </a>
           </p>

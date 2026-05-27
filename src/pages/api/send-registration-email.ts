@@ -53,7 +53,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         html: `
 <div style="font-family:system-ui,sans-serif;max-width:620px;margin:0 auto;color:#1a1410">
   <!-- Header -->
-  <div style="background:#b0522b;padding:24px 32px">
+  <div style="background:#fc1317;padding:24px 32px">
     <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700">All Dent PDR</h1>
     <p style="margin:4px 0 0;color:#f5c9b3;font-size:13px">Mobile Paintless Dent Repair</p>
   </div>
@@ -63,7 +63,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     <p style="margin:0 0 20px;color:#555">This is your full copy of the registration on file. Please save this email for your records.</p>
 
     <!-- Job ID banner -->
-    <div style="background:#b0522b;color:#fff;border-radius:8px;padding:14px 20px;margin-bottom:24px;display:flex;align-items:center;gap:16px">
+    <div style="background:#fc1317;color:#fff;border-radius:8px;padding:14px 20px;margin-bottom:24px;display:flex;align-items:center;gap:16px">
       <div>
         <div style="font-size:11px;opacity:.8;text-transform:uppercase;letter-spacing:.05em">Job ID</div>
         <div style="font-size:22px;font-weight:700;font-family:monospace;letter-spacing:.08em">${escHtml(jobId)}</div>
@@ -72,7 +72,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     </div>
 
     <!-- ── Customer Info ── -->
-    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#b0522b">Customer Information</h3>
+    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#fc1317">Customer Information</h3>
     <table style="border-collapse:collapse;width:100%;margin-bottom:20px;border:1px solid #ede8e2;border-radius:8px;overflow:hidden">
       ${row('Name', customerName)}
       ${row('Email', email)}
@@ -83,7 +83,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     </table>
 
     <!-- ── Vehicle Info ── -->
-    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#b0522b">Vehicle</h3>
+    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#fc1317">Vehicle</h3>
     <table style="border-collapse:collapse;width:100%;margin-bottom:20px;border:1px solid #ede8e2;border-radius:8px;overflow:hidden">
       ${row('Year / Make / Model', vehicleLabel)}
       ${row('License Plate', plate)}
@@ -93,7 +93,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
     <!-- ── Insurance ── -->
     ${(insuranceCompany || deductible || claimNumber) ? `
-    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#b0522b">Insurance</h3>
+    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#fc1317">Insurance</h3>
     <table style="border-collapse:collapse;width:100%;margin-bottom:20px;border:1px solid #ede8e2;border-radius:8px;overflow:hidden">
       ${row('Insurance Company', insuranceCompany)}
       ${row('Deductible', deductible)}
@@ -103,11 +103,11 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
     <!-- ── Notes ── -->
     ${notes ? `
-    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#b0522b">Notes</h3>
+    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#fc1317">Notes</h3>
     <div style="background:#faf7f4;border:1px solid #ede8e2;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#444">${escHtml(notes)}</div>` : ''}
 
     <!-- ── Authorization ── -->
-    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#b0522b">Authorization Agreements</h3>
+    <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#fc1317">Authorization Agreements</h3>
     <div style="background:#faf7f4;border:1px solid #ede8e2;border-radius:8px;padding:16px 20px;margin-bottom:20px">
       <p style="margin:0 0 10px;font-size:14px">${dtpCheck} <strong>Direction to Pay</strong> — I authorize All Dent PDR to collect payment directly from my insurance carrier.</p>
       <p style="margin:0 0 14px;font-size:14px">${raCheck} <strong>Repair Authorization</strong> — I authorize All Dent PDR to perform paintless dent repair on my vehicle.</p>
@@ -123,7 +123,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
     <!-- ── Track online ── -->
     <div style="background:#fff3ee;border:2px solid #f5c9b3;border-radius:8px;padding:16px 20px;margin-bottom:24px">
-      <p style="margin:0;font-size:14px"><strong>Track your repair online:</strong> Visit <a href="https://alldentpdr.com/portal/customer-login" style="color:#b0522b">alldentpdr.com/portal/customer-login</a> and log in with your email and license plate <strong>${plate ? escHtml(plate) : ''}</strong> to see real-time status updates.</p>
+      <p style="margin:0;font-size:14px"><strong>Track your repair online:</strong> Visit <a href="https://alldentpdr.com/portal/customer-login" style="color:#fc1317">alldentpdr.com/portal/customer-login</a> and log in with your email and license plate <strong>${plate ? escHtml(plate) : ''}</strong> to see real-time status updates.</p>
     </div>
 
     <p style="color:#555">Questions? Call us at <strong>1-855-425-5336</strong> or reply to this email.</p>

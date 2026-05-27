@@ -65,7 +65,7 @@ export const POST: APIRoute = async ({ request }) => {
   <div style="max-width:600px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)">
 
     <!-- Header -->
-    <div style="background:#b0522b;padding:28px 32px">
+    <div style="background:#fc1317;padding:28px 32px">
       <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">All Dent PDR</div>
       <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:2px">Mobile Paintless Dent Repair</div>
       <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:6px">855-425-5336 · alldentpdr@gmail.com</div>
@@ -73,7 +73,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     <!-- Title -->
     <div style="padding:24px 32px 0">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#b0522b;margin-bottom:6px">Job ${escHtml(jobId)}</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#fc1317;margin-bottom:6px">Job ${escHtml(jobId)}</div>
       <h2 style="margin:0 0 4px;font-size:20px;font-weight:800;color:#1a1410">Vehicle Release Form</h2>
       <p style="margin:0;font-size:13px;color:#9e8f84">Your vehicle has been repaired. Please review and retain this form for your records.</p>
     </div>
@@ -98,7 +98,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     <!-- Agreement text -->
     <div style="padding:20px 32px 0">
-      <p style="margin:0;font-size:13px;line-height:1.7;color:#1a1410;background:#fffbf6;border-left:3px solid #b0522b;padding:14px 16px;border-radius:0 8px 8px 0">
+      <p style="margin:0;font-size:13px;line-height:1.7;color:#1a1410;background:#fffbf6;border-left:3px solid #fc1317;padding:14px 16px;border-radius:0 8px 8px 0">
         The repairs on the vehicle listed above have been completed, as explained to me by All Dent PDR.
         I am fully satisfied with the outcome of the repairs on the vehicle listed above. I understand
         the limited lifetime warranty, and payment for the work has been paid in full.

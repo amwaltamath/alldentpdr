@@ -74,7 +74,7 @@ export const POST: APIRoute = async ({ request }) => {
         </table>
         <p style="margin-top:18px">
           <a href="https://alldentpdr.com/portal/admin-dashboard?view=messages"
-             style="background:#b0522b;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600">
+             style="background:#fc1317;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:600">
             Open admin chat →
           </a>
         </p>
