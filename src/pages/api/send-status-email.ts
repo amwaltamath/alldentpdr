@@ -10,7 +10,7 @@ const STATUS_MESSAGES: Record<string, { headline: string; body: string; color: s
   'Estimate': {
     headline: 'Your estimate is ready.',
     body: "We've assessed your vehicle and prepared an estimate. Please review it and let us know how you'd like to proceed. Call us at 1-855-425-5336 or reply to this email with any questions.",
-    color: '#b0522b',
+    color: '#fc1317',
   },
   'Pending Insurance': {
     headline: 'Your claim is in progress.',
@@ -20,7 +20,7 @@ const STATUS_MESSAGES: Record<string, { headline: string; body: string; color: s
   'In Repair': {
     headline: 'Your vehicle is being repaired!',
     body: "Great news — your vehicle is now actively in our shop being worked on by our PDR technicians. We'll notify you as soon as repairs are complete.",
-    color: '#4a7a5c',
+    color: '#0a71d0',
   },
   'On Hold': {
     headline: 'Your repair is on hold.',
@@ -51,7 +51,7 @@ export const POST: APIRoute = async ({ request }) => {
   const msg = STATUS_MESSAGES[status] ?? {
     headline: `Status updated to: ${status}`,
     body: `Your vehicle repair status has been updated to <strong>${escHtml(status)}</strong>.`,
-    color: '#b0522b',
+    color: '#fc1317',
   };
 
   const vehicleLabel = [year, make, model].filter(Boolean).join(' ') || 'your vehicle';
@@ -63,7 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
       subject: `All Dent PDR Update – ${status} (Job ${jobId})`,
       html: `
         <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;color:#1a1410">
-          <div style="background:#b0522b;padding:24px 32px">
+          <div style="background:#fc1317;padding:24px 32px">
             <h1 style="margin:0;color:#fff;font-size:22px">All Dent PDR</h1>
           </div>
           <div style="padding:32px">
@@ -71,8 +71,8 @@ export const POST: APIRoute = async ({ request }) => {
             <h2 style="margin-top:0">${msg.headline}</h2>
             <p>${msg.body}</p>
             ${customNote ? `
-            <div style="background:#fff8f0;border-left:4px solid #b0522b;border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0">
-              <p style="margin:0 0 6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#b0522b">Note from our team</p>
+            <div style="background:#fff8f0;border-left:4px solid #fc1317;border-radius:0 8px 8px 0;padding:16px 20px;margin:20px 0">
+              <p style="margin:0 0 6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#fc1317">Note from our team</p>
               <p style="margin:0;font-size:15px;line-height:1.6">${escHtml(customNote)}</p>
             </div>` : ''}
             <div style="background:#fffbf6;border:1px solid #e8e0d5;border-radius:8px;padding:20px;margin:20px 0">
@@ -81,7 +81,7 @@ export const POST: APIRoute = async ({ request }) => {
               <p style="margin:0 0 8px"><strong>Vehicle:</strong> ${escHtml(vehicleLabel)}</p>
               ${plate ? `<p style="margin:0"><strong>Plate:</strong> ${escHtml(plate)}</p>` : ''}
             </div>
-            <p>Track your repair anytime at <a href="https://alldentpdr.com/portal/customer-login" style="color:#b0522b">alldentpdr.com/portal/customer-login</a>.</p>
+            <p>Track your repair anytime at <a href="https://alldentpdr.com/portal/customer-login" style="color:#fc1317">alldentpdr.com/portal/customer-login</a>.</p>
             <p>Questions? Call us at <strong>1-855-425-5336</strong>.</p>
             <div style="margin-top:32px;padding-top:24px;border-top:1px solid #e8e0d5;color:#888;font-size:12px">
               <p style="margin:0">All Dent PDR · Mobile Paintless Dent Repair · alldentpdr.com</p>

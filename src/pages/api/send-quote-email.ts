@@ -93,7 +93,7 @@ export const POST: APIRoute = async ({ request }) => {
   <div style="max-width:620px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)">
 
     <!-- Header -->
-    <div style="background:#b0522b;padding:28px 32px;display:flex;justify-content:space-between;align-items:flex-start">
+    <div style="background:#fc1317;padding:28px 32px;display:flex;justify-content:space-between;align-items:flex-start">
       <div>
         <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">AllDent PDR</div>
         <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:2px">Mobile Paintless Dent Repair</div>
@@ -149,7 +149,7 @@ export const POST: APIRoute = async ({ request }) => {
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9e8f84;padding-bottom:6px;border-bottom:1px solid #e8e2db;margin-bottom:0">Panel Assessment</div>
       <table style="width:100%;border-collapse:collapse;margin-bottom:24px;font-size:13px">
         <thead>
-          <tr style="background:#b0522b">
+          <tr style="background:#fc1317">
             <th style="padding:8px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.05em;color:#fff">Panel</th>
             <th style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.05em;color:#fff">Method</th>
             <th style="padding:8px 10px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.05em;color:#fff">Dents</th>
@@ -160,8 +160,8 @@ export const POST: APIRoute = async ({ request }) => {
         <tbody>
           ${panelRows || '<tr><td colspan="5" style="text-align:center;color:#9e8f84;padding:20px">No panels marked as affected.</td></tr>'}
           <tr>
-            <td colspan="4" style="padding:10px;font-weight:700;font-size:14px;background:#fff3ee;border-top:2px solid #b0522b">Estimated Total</td>
-            <td style="padding:10px;font-weight:700;font-size:18px;color:#b0522b;text-align:right;background:#fff3ee;border-top:2px solid #b0522b">${fmtMoney(total)}</td>
+            <td colspan="4" style="padding:10px;font-weight:700;font-size:14px;background:#fff3ee;border-top:2px solid #fc1317">Estimated Total</td>
+            <td style="padding:10px;font-weight:700;font-size:18px;color:#fc1317;text-align:right;background:#fff3ee;border-top:2px solid #fc1317">${fmtMoney(total)}</td>
           </tr>
         </tbody>
       </table>
@@ -178,7 +178,7 @@ export const POST: APIRoute = async ({ request }) => {
       </p>
 
       <div style="text-align:center;margin-bottom:8px">
-        <a href="tel:18554255336" style="display:inline-block;background:#b0522b;color:#fff;padding:12px 28px;border-radius:24px;font-weight:700;text-decoration:none;font-size:15px">
+        <a href="tel:18554255336" style="display:inline-block;background:#fc1317;color:#fff;padding:12px 28px;border-radius:24px;font-weight:700;text-decoration:none;font-size:15px">
           Call to Schedule
         </a>
       </div>
@@ -187,7 +187,7 @@ export const POST: APIRoute = async ({ request }) => {
     <!-- Footer -->
     <div style="background:#f6efe7;border-top:1px solid #e8e2db;padding:20px 32px;text-align:center;font-size:11px;color:#9e8f84;line-height:1.8">
       <strong style="color:#4a3f36">AllDent PDR &middot; Mobile Paintless Dent Repair</strong><br/>
-      1-855-425-5336 &middot; <a href="https://alldentpdr.com" style="color:#b0522b">alldentpdr.com</a> &middot; alldentpdr@gmail.com<br/>
+      1-855-425-5336 &middot; <a href="https://alldentpdr.com" style="color:#fc1317">alldentpdr.com</a> &middot; alldentpdr@gmail.com<br/>
       This estimate is valid for 30 days. Prices subject to change upon physical inspection.<br/>
       Method key: PDR = Paintless Dent Repair &nbsp;|&nbsp; R&amp;I = Remove &amp; Install &nbsp;|&nbsp; R&amp;R = Remove &amp; Replace
     </div>

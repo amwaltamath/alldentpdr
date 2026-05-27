@@ -740,7 +740,7 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Vehicle Release</h4>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             {v.releaseFormData && (
-              <span style={{ fontSize: 12, color: 'var(--sage,#4a7a5c)', fontWeight: 600 }}>✓ Signed {v.releaseFormData.signedAt || ''}</span>
+              <span style={{ fontSize: 12, color: 'var(--sage,#0a71d0)', fontWeight: 600 }}>✓ Signed {v.releaseFormData.signedAt || ''}</span>
             )}
             <button type="button" className="button primary sm" onClick={() => onRelease(v)}>
               {v.releaseFormData ? '📋 View / Re-sign Release' : '📋 Issue Vehicle Release'}
@@ -1523,7 +1523,7 @@ function ProjectsView({ projects, loading, onAdd, onUpdate, onDelete, onTogglePu
         <div>
           <h3 style={{ marginBottom: 4 }}>Our Work — Project Gallery</h3>
           <p className="meta" style={{ margin: 0 }}>
-            {projects.length} project{projects.length !== 1 ? 's' : ''} · Published ones appear on the public <a href="/our-work" target="_blank" rel="noopener" style={{ color: 'var(--rust,#b0522b)' }}>/our-work</a> page.
+            {projects.length} project{projects.length !== 1 ? 's' : ''} · Published ones appear on the public <a href="/our-work" target="_blank" rel="noopener" style={{ color: 'var(--rust,#fc1317)' }}>/our-work</a> page.
           </p>
         </div>
         <button type="button" className="button primary sm" onClick={openNew}>+ Add project</button>
@@ -1541,7 +1541,7 @@ function ProjectsView({ projects, loading, onAdd, onUpdate, onDelete, onTogglePu
               {/* Left: text fields */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div>
-                  <label>Title <span style={{ color: 'var(--rust,#b0522b)' }}>*</span></label>
+                  <label>Title <span style={{ color: 'var(--rust,#fc1317)' }}>*</span></label>
                   <input type="text" value={form.title} onChange={setField('title')} placeholder="e.g. 2022 Honda Accord Hail Repair" required />
                 </div>
                 <div>
@@ -1577,7 +1577,7 @@ function ProjectsView({ projects, loading, onAdd, onUpdate, onDelete, onTogglePu
               {/* Right: image uploads */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label>After / Main photo {!isEditing && <span style={{ color: 'var(--rust,#b0522b)' }}>*</span>}</label>
+                  <label>After / Main photo {!isEditing && <span style={{ color: 'var(--rust,#fc1317)' }}>*</span>}</label>
                   {imagePreview && (
                     <img src={imagePreview} alt="After preview" style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8, marginBottom: 8, border: '1px solid var(--line,#e8e2db)' }} />
                   )}
@@ -1788,7 +1788,7 @@ function VinScanner({ onScan, onClose }) {
           Point the camera at the VIN barcode on the door jamb sticker, windshield, or QR code.
         </p>
         {scanError ? (
-          <p style={{ color: 'var(--rust,#b0522b)', textAlign: 'center', padding: '24px 0', fontSize: 14 }}>
+          <p style={{ color: 'var(--rust,#fc1317)', textAlign: 'center', padding: '24px 0', fontSize: 14 }}>
             {scanError}
           </p>
         ) : (
@@ -2051,7 +2051,7 @@ function PricingView() {
             <button type="button" className="button primary sm" onClick={handleAddTier}>+ Add tier</button>
           </div>
 
-          {savedMsg && <p className="portal-note" style={{ color: 'var(--sage,#4a7a5c)', marginBottom: 12 }}>✓ {savedMsg}</p>}
+          {savedMsg && <p className="portal-note" style={{ color: 'var(--sage,#0a71d0)', marginBottom: 12 }}>✓ {savedMsg}</p>}
 
           {/* Pricing grid */}
           <div className="table-scroll">
@@ -2286,12 +2286,12 @@ function QuoteView({ vehicles }) {
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
     /* Header */
-    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #b0522b;margin-bottom:24px}
+    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #fc1317;margin-bottom:24px}
     .hd-brand{display:flex;flex-direction:column;gap:2px}
-    .hd-brand strong{font-size:22px;font-weight:800;color:#b0522b;letter-spacing:-.5px}
+    .hd-brand strong{font-size:22px;font-weight:800;color:#fc1317;letter-spacing:-.5px}
     .hd-brand span{font-size:12px;color:#888}
     .hd-meta{text-align:right;line-height:1.6}
-    .hd-meta .q-num{font-size:18px;font-weight:700;color:#b0522b}
+    .hd-meta .q-num{font-size:18px;font-weight:700;color:#fc1317}
     /* Info grid */
     .info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
     .info-box{background:#fffbf6;border:1px solid #e8e2db;border-radius:8px;padding:12px 14px}
@@ -2301,12 +2301,12 @@ function QuoteView({ vehicles }) {
     /* Table */
     h3.section{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9e8f84;padding-bottom:6px;border-bottom:1px solid #e8e2db;margin-bottom:0}
     table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:12.5px}
-    thead th{background:#b0522b;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.05em}
+    thead th{background:#fc1317;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.05em}
     thead th:last-child{text-align:right}
     tbody tr:nth-child(even) td{background:#fffbf6}
     tbody td{padding:7px 10px;border-bottom:1px solid #e8e2db;vertical-align:middle}
-    .total-row td{font-weight:700;font-size:14px;background:#fff3ee!important;border-top:2px solid #b0522b;padding:10px}
-    .total-row td:last-child{color:#b0522b;font-size:18px}
+    .total-row td{font-weight:700;font-size:14px;background:#fff3ee!important;border-top:2px solid #fc1317;padding:10px}
+    .total-row td:last-child{color:#fc1317;font-size:18px}
     /* Footer */
     .notes-box{background:#fffbf6;border:1px solid #e8e2db;border-radius:8px;padding:14px;margin-bottom:24px}
     .notes-box h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9e8f84;margin-bottom:6px}
@@ -2421,7 +2421,7 @@ function QuoteView({ vehicles }) {
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
             {sendMsg && (
-              <span style={{ fontSize: 13, color: sendMsg.type === 'ok' ? 'var(--sage,#4a7a5c)' : 'var(--rust,#b0522b)' }}>
+              <span style={{ fontSize: 13, color: sendMsg.type === 'ok' ? 'var(--sage,#0a71d0)' : 'var(--rust,#fc1317)' }}>
                 {sendMsg.text}
               </span>
             )}
@@ -2640,8 +2640,8 @@ function buildReleaseHtml(job, data) {
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
-    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:3px solid #b0522b;margin-bottom:24px}
-    .hd-brand strong{font-size:22px;font-weight:800;color:#b0522b}
+    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:3px solid #fc1317;margin-bottom:24px}
+    .hd-brand strong{font-size:22px;font-weight:800;color:#fc1317}
     .hd-brand span{display:block;font-size:12px;color:#888;margin-top:2px}
     .hd-meta{text-align:right;font-size:12px;color:#555;line-height:1.7}
     .hd-meta .title{font-size:18px;font-weight:800;color:#1a1410;display:block;margin-bottom:4px}
@@ -2650,7 +2650,7 @@ function buildReleaseHtml(job, data) {
     .info-cell:last-child{border-right:none}
     .info-cell .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;display:block;margin-bottom:3px}
     .info-cell .val{font-size:13px;color:#1a1410}
-    .agreement{background:#fffbf6;border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;line-height:1.7;margin-bottom:24px}
+    .agreement{background:#fffbf6;border:1px solid #e8e2db;border-left:3px solid #fc1317;border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;line-height:1.7;margin-bottom:24px}
     .notes-box{background:#fffbf6;border:1px solid #e8e2db;border-radius:8px;padding:12px 14px;margin-bottom:20px}
     .notes-box .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;margin-bottom:6px}
     .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px}
@@ -2827,7 +2827,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
             <p style={{ fontSize: 13, color: 'var(--muted,#9e8f84)', marginBottom: 4 }}>
               855-425-5336 &nbsp;·&nbsp; alldentpdr@gmail.com
             </p>
-            <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--rust,#b0522b)' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--rust,#fc1317)' }}>
               Vehicle Release Form
             </p>
           </div>
@@ -2919,7 +2919,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
 
           {sendMsg && (
             <p style={{ marginTop: 12, fontSize: 13, fontWeight: 600,
-              color: sendMsg.type === 'ok' ? 'var(--sage,#4a7a5c)' : 'var(--rust,#b0522b)' }}>
+              color: sendMsg.type === 'ok' ? 'var(--sage,#0a71d0)' : 'var(--rust,#fc1317)' }}>
               {sendMsg.text}
             </p>
           )}
