@@ -1598,8 +1598,59 @@ select {
 }
 
 @media (max-width: 480px) {
-  .chat-fab { bottom: 16px; right: 16px; }
-  .chat-panel { bottom: 16px; right: 16px; width: calc(100vw - 32px); }
+  .chat-fab { bottom: 80px; right: 16px; }
+  .chat-panel { bottom: 80px; right: 16px; width: calc(100vw - 32px); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Mobile sticky CTA bar (Call Now / Get Free Estimate)
+───────────────────────────────────────────────────────────── */
+.mobile-cta-bar {
+  display: none;
+}
+@media (max-width: 768px) {
+  .mobile-cta-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 900;
+    background: #fff;
+    border-top: 1px solid var(--line, #e8e0d8);
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.10);
+    height: 58px;
+  }
+  .mcta-call,
+  .mcta-quote {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .mcta-call {
+    background: var(--ink, #1a1410);
+    color: #fff;
+    border-right: 1px solid rgba(255,255,255,0.12);
+  }
+  .mcta-quote {
+    background: var(--rust, #b0522b);
+    color: #fff;
+  }
+  .mcta-call:hover,
+  .mcta-quote:hover { opacity: 0.88; }
+
+  /* Push page content up so it isn't hidden behind the bar */
+  body { padding-bottom: 58px; }
+
+  /* Push chat FAB above the sticky bar */
+  .chat-fab { bottom: 72px; right: 16px; }
+  .chat-panel { bottom: 72px; right: 16px; width: calc(100vw - 32px); }
 }
 
 /* Sparkline bar chart */
