@@ -43,13 +43,17 @@ const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))]
 ---
 
 <BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs}>
-  <section class="page-hero container">
-    <span class="section-label">Gallery — Bedford &amp; Northeast Ohio</span>
-    <h1>Our work — real results, real vehicles</h1>
-    <p>Every project in our gallery was completed by All Dent PDR technicians using paintless dent repair techniques that preserve your factory finish. Hail damage, door dings, creases — see the difference for yourself.</p>
-    <div class="button-row" style="justify-content:center;margin-top:16px;">
-      <a class="button primary" href="/contact">Get a Free Estimate</a>
-      <a class="button ghost" href="/services">Our Services</a>
+  <section class="hero-img" style="background-image:url('/images/topofcarbeforandafter.jpg')">
+    <div class="hero-img-overlay">
+      <div class="container">
+        <span class="section-label">Gallery — Bedford &amp; Northeast Ohio</span>
+        <h1>Our work — real results, real vehicles</h1>
+        <p>Every project in our gallery was completed by All Dent PDR technicians using paintless dent repair techniques that preserve your factory finish. Hail damage, door dings, creases — see the difference for yourself.</p>
+        <div class="button-row" style="justify-content:center;margin-top:16px;">
+          <a class="button primary" href="/contact">Get a Free Estimate</a>
+          <a class="button ghost" href="/services">Our Services</a>
+        </div>
+      </div>
     </div>
   </section>
 

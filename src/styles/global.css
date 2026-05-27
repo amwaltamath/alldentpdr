@@ -242,6 +242,38 @@ p { margin: 0 0 1rem; color: var(--muted); }
 .page-hero { padding: 80px 0 32px; text-align: center; }
 .page-hero p { max-width: 60ch; margin: 8px auto 0; font-size: 1.05rem; }
 
+/* Hero with background image ---------------------------------- */
+.hero-img {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  min-height: 340px;
+  display: flex;
+  align-items: center;
+}
+.hero-img-overlay {
+  width: 100%;
+  padding: 80px 0 52px;
+  background: linear-gradient(to bottom, rgba(16,10,4,0.65) 0%, rgba(16,10,4,0.50) 100%);
+  text-align: center;
+}
+.hero-img .section-label {
+  color: rgba(255,255,255,0.82);
+  border-color: rgba(255,255,255,0.30);
+}
+.hero-img h1 {
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.50);
+}
+.hero-img p {
+  color: rgba(255,255,255,0.88);
+  max-width: 60ch;
+  margin: 10px auto 0;
+  font-size: 1.05rem;
+}
+.hero-img strong { color: #fff; }
+.hero-img .button-row { justify-content: center; margin-top: 20px; }
+
 /* Cards ------------------------------------------------------- */
 .grid-3 { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 
