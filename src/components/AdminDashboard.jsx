@@ -712,6 +712,84 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
 
 const STATUS_COLUMNS = ['Registered', 'In Progress', 'Complete'];
 
+function buildRegistrationHtml(job) {
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const vehicle = [job.year, job.make, job.model].filter(Boolean).join(' ') || '—';
+  const dateStr = new Date(job.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>AllDent PDR — Registration — ${esc(job.id)}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
+    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:3px solid #fc1317;margin-bottom:24px}
+    .hd-brand strong{font-size:22px;font-weight:800;color:#fc1317}
+    .hd-brand span{display:block;font-size:12px;color:#888;margin-top:2px}
+    .hd-meta{text-align:right;font-size:12px;color:#555;line-height:1.7}
+    .hd-meta .title{font-size:18px;font-weight:800;color:#1a1410;display:block;margin-bottom:4px}
+    h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9e8f84;margin:20px 0 8px;border-bottom:1px solid #e8e2db;padding-bottom:4px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-bottom:4px}
+    .field{padding:6px 0;border-bottom:1px solid #f0ece7}
+    .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;display:block;margin-bottom:2px}
+    .val{font-size:13px;color:#1a1410}
+    .full{grid-column:1/-1}
+    .footer{font-size:11px;color:#9e8f84;text-align:center;padding-top:14px;border-top:1px solid #e8e2db;margin-top:28px;line-height:1.8}
+    @media print{body{padding:16px 20px}}
+  </style>
+</head>
+<body>
+  <div class="hd">
+    <div class="hd-brand">
+      <strong>AllDent PDR</strong>
+      <span>Paintless Dent Repair — Cleveland, OH</span>
+      <span style="margin-top:2px;color:#555">1-855-425-5336 &nbsp;·&nbsp; alldentpdr@gmail.com</span>
+    </div>
+    <div class="hd-meta">
+      <span class="title">VEHICLE REGISTRATION</span>
+      <span>Job #${esc(job.id)}</span><br/>
+      <span>Registered: ${esc(dateStr)}</span>
+    </div>
+  </div>
+
+  <h2>Customer Information</h2>
+  <div class="grid">
+    <div class="field"><span class="lbl">Customer Name</span><span class="val">${esc(job.customerName)}</span></div>
+    <div class="field"><span class="lbl">Cell Phone</span><span class="val">${esc(job.phone || '—')}</span></div>
+    <div class="field"><span class="lbl">Email</span><span class="val">${esc(job.email || '—')}</span></div>
+    <div class="field"><span class="lbl">Home Phone</span><span class="val">${esc(job.homePhone || '—')}</span></div>
+    <div class="field full"><span class="lbl">Address</span><span class="val">${esc([job.address, job.city, job.state, job.zip].filter(Boolean).join(', ') || '—')}</span></div>
+    <div class="field"><span class="lbl">How Heard About Us</span><span class="val">${esc(job.howHeardAboutUs || '—')}</span></div>
+  </div>
+
+  <h2>Vehicle Information</h2>
+  <div class="grid">
+    <div class="field"><span class="lbl">Year</span><span class="val">${esc(job.year || '—')}</span></div>
+    <div class="field"><span class="lbl">Make</span><span class="val">${esc(job.make || '—')}</span></div>
+    <div class="field"><span class="lbl">Model</span><span class="val">${esc(job.model || '—')}</span></div>
+    <div class="field"><span class="lbl">Color</span><span class="val">${esc(job.color || '—')}</span></div>
+    <div class="field"><span class="lbl">License Plate</span><span class="val">${esc(job.plate || '—')}</span></div>
+    <div class="field full"><span class="lbl">VIN</span><span class="val" style="font-family:monospace">${esc(job.vin || '—')}</span></div>
+  </div>
+
+  <h2>Insurance Information</h2>
+  <div class="grid">
+    <div class="field"><span class="lbl">Insurance Company</span><span class="val">${esc(job.insuranceCompany || '—')}</span></div>
+    <div class="field"><span class="lbl">Deductible</span><span class="val">${esc(job.deductible || '—')}</span></div>
+    <div class="field full"><span class="lbl">Claim Number</span><span class="val">${esc(job.claimNumber || '—')}</span></div>
+  </div>
+
+  ${job.notes ? `<h2>Notes</h2><div class="field full" style="margin-bottom:0"><span class="val" style="white-space:pre-wrap">${esc(job.notes)}</span></div>` : ''}
+
+  <div class="footer">
+    AllDent PDR &nbsp;·&nbsp; 7695 Granger Rd, Cleveland, OH 44125 &nbsp;·&nbsp; 1-855-425-5336 &nbsp;·&nbsp; alldentpdr.com
+  </div>
+  <script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
+}
+
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
   return (
     <div className="job-inline-detail">
@@ -735,6 +813,17 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
             <select value={v.status} onChange={(e) => onStatusChange(v.id, e.target.value)}>
               {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
+          </div>
+
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Form</h4>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="button ghost sm"
+              onClick={() => { const win = window.open('', '_blank', 'width=820,height=680'); if (win) { win.document.write(buildRegistrationHtml(v)); win.document.close(); } }}
+            >
+              📄 Print / Download
+            </button>
           </div>
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Vehicle Release</h4>
