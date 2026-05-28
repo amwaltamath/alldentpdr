@@ -782,6 +782,21 @@ function buildRegistrationHtml(job) {
 
   ${job.notes ? `<h2>Notes</h2><div class="field full" style="margin-bottom:0"><span class="val" style="white-space:pre-wrap">${esc(job.notes)}</span></div>` : ''}
 
+  <h2>Authorizations &amp; Signature</h2>
+  <div class="grid">
+    <div class="field"><span class="lbl">Direction to Pay (Ins.)</span><span class="val">${job.directionToPaySigned ? '✓ Agreed' : '✗ Not signed'}</span></div>
+    <div class="field"><span class="lbl">Repair Authorization</span><span class="val">${job.repairAuthSigned ? '✓ Agreed' : '✗ Not signed'}</span></div>
+    ${job.insuranceAuthName ? `<div class="field full"><span class="lbl">Insurance Auth. Name</span><span class="val">${esc(job.insuranceAuthName)}</span></div>` : ''}
+    <div class="field" style="margin-top:20px;border-top:1.5px solid #1a1410;padding-top:6px">
+      <span class="lbl">Customer Signature</span>
+      <span class="val" style="font-size:20px;font-style:italic">${esc(job.signatureName || '—')}</span>
+    </div>
+    <div class="field" style="margin-top:20px;border-top:1.5px solid #1a1410;padding-top:6px">
+      <span class="lbl">Date Signed</span>
+      <span class="val">${job.signedAt ? new Date(job.signedAt).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '—'}</span>
+    </div>
+  </div>
+
   <div class="footer">
     AllDent PDR &nbsp;·&nbsp; 7695 Granger Rd, Cleveland, OH 44125 &nbsp;·&nbsp; 1-855-425-5336 &nbsp;·&nbsp; alldentpdr.com
   </div>
