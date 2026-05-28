@@ -735,6 +735,9 @@ function buildRegistrationHtml(job) {
     .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;display:block;margin-bottom:2px}
     .val{font-size:13px;color:#1a1410}
     .full{grid-column:1/-1}
+    .legal-block{background:#fffbf6;border:1px solid #e8e2db;border-left:3px solid #fc1317;border-radius:0 8px 8px 0;padding:12px 14px;font-size:12px;line-height:1.7;color:#3a3028;margin-bottom:10px}
+    .agreed{display:inline-block;background:#e6f4ed;color:#1a6639;font-weight:700;font-size:11px;padding:2px 8px;border-radius:4px;margin-bottom:6px}
+    .not-signed{display:inline-block;background:#fdecea;color:#b91c1c;font-weight:700;font-size:11px;padding:2px 8px;border-radius:4px;margin-bottom:6px}
     .footer{font-size:11px;color:#9e8f84;text-align:center;padding-top:14px;border-top:1px solid #e8e2db;margin-top:28px;line-height:1.8}
     @media print{body{padding:16px 20px}}
   </style>
@@ -783,15 +786,27 @@ function buildRegistrationHtml(job) {
   ${job.notes ? `<h2>Notes</h2><div class="field full" style="margin-bottom:0"><span class="val" style="white-space:pre-wrap">${esc(job.notes)}</span></div>` : ''}
 
   <h2>Authorizations &amp; Signature</h2>
-  <div class="grid">
-    <div class="field"><span class="lbl">Direction to Pay (Ins.)</span><span class="val">${job.directionToPaySigned ? '✓ Agreed' : '✗ Not signed'}</span></div>
-    <div class="field"><span class="lbl">Repair Authorization</span><span class="val">${job.repairAuthSigned ? '✓ Agreed' : '✗ Not signed'}</span></div>
-    ${job.insuranceAuthName ? `<div class="field full"><span class="lbl">Insurance Auth. Name</span><span class="val">${esc(job.insuranceAuthName)}</span></div>` : ''}
-    <div class="field" style="margin-top:20px;border-top:1.5px solid #1a1410;padding-top:6px">
+
+  <h3 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#555;margin:14px 0 6px">Direction to Pay</h3>
+  <span class="${job.directionToPaySigned ? 'agreed' : 'not-signed'}">${job.directionToPaySigned ? '✓ Agreed' : '✗ Not signed'}</span>
+  <div class="legal-block">
+    <p style="margin-bottom:8px">I authorize <strong>${esc(job.insuranceAuthName || '[ Insurance Company ]')}</strong> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.</p>
+    <p>I do hereby appoint All Dent PDR to accept on my behalf, any and all checks/drafts and to endorse all such checks/drafts for deposit to All Dent PDR account for payment for repairs to said vehicle, which have been accepted and released. The total amount of repair charges must be paid in full before the vehicle can be released for delivery or picked up. If insurance coverage pays either a portion of or the total amount due, I acknowledge that the insurance check/draft must be obtained by me or sent in advance by the insurance company and received by All Dent PDR. I also acknowledge that I must make arrangements with any lien holder or other payees to endorse the insurance check/draft prior to the release of the above repaired vehicle. I authorize any and all supplements payable directly to All Dent PDR for the consideration of repairs made to the vehicle. If I remove my vehicle from the shop prior to the completion of repairs, I agree to pay for parts, labor, handling fees, service charges, and rental car fees associated with the repair. To secure payment in amount of repairs, an expressed mechanics lien on the vehicle is acknowledged and I further agree to pay reasonable attorney&#39;s fees and court costs in the event legal action becomes necessary to enforce this contract. All Dent PDR may repossess my vehicle if payment is not secured.</p>
+  </div>
+
+  <h3 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#555;margin:14px 0 6px">Repair Authorization</h3>
+  <span class="${job.repairAuthSigned ? 'agreed' : 'not-signed'}">${job.repairAuthSigned ? '✓ Agreed' : '✗ Not signed'}</span>
+  <div class="legal-block">
+    <p style="margin-bottom:8px">I hereby authorize All Dent PDR employees/contractors to operate my vehicle for the purpose of testing, inspection, delivery to and from for repairs. I acknowledge and agree that All Dent PDR will not be held responsible for loss or damage to the vehicle or articles left in the vehicle in case of fire, theft, vehicle accident, or any other cause beyond the control of All Dent PDR. Further, I acknowledge, that if closer analysis reveals additional repairs are necessary, either I or my insurance company will be contacted for authorization of any additional repair charges. If new parts listed in the insurance estimate are not available or replaceable by All Dent PDR, I authorize All Dent PDR to repair such parts when possible. Old parts will be disposed of unless otherwise instructed. I authorize All Dent PDR to manufacture access to dents that may not be accessible due to their location on the vehicle. And as such, All Dent PDR is not responsible for any unrelated prior damage (UPD) noted in the estimate or damage caused by prior work performed on the vehicle.</p>
+    <p><strong>I authorize All Dent PDR to perform repairs on my vehicle per All Dent PDR estimate.</strong></p>
+  </div>
+
+  <div class="grid" style="margin-top:20px">
+    <div class="field" style="border-top:1.5px solid #1a1410;padding-top:6px;margin-top:10px">
       <span class="lbl">Customer Signature</span>
       <span class="val" style="font-size:20px;font-style:italic">${esc(job.signatureName || '—')}</span>
     </div>
-    <div class="field" style="margin-top:20px;border-top:1.5px solid #1a1410;padding-top:6px">
+    <div class="field" style="border-top:1.5px solid #1a1410;padding-top:6px;margin-top:10px">
       <span class="lbl">Date Signed</span>
       <span class="val">${job.signedAt ? new Date(job.signedAt).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '—'}</span>
     </div>
