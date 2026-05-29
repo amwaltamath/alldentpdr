@@ -20,15 +20,29 @@
 **Hosting**: Vercel (auto-deploy from `main` branch)  
 **Domain**: alldentpdr.com
 
-## Recent Updates (March 2026)
+## Recent Updates (May 2026)
 
-### Design & UX Improvements
+### Admin Dashboard — Registration Form Print/Download
+- **New button**: "📄 Print / Download" in the job detail panel (expand any job row → left column → **Registration Form** section, above Vehicle Release)
+- **Prints full document** including: customer info, vehicle info, insurance info, notes
+- **Full legal text** included: complete Direction to Pay and Repair Authorization agreement text, with the customer's insurance company name substituted in
+- **Signature block**: typed digital signature (italic), date signed, ✓/✗ agreement badges for each authorization
+- Function: `buildRegistrationHtml(job)` in `src/components/AdminDashboard.jsx` — opens a new window and triggers `window.print()` automatically
+
+### Design & UX Improvements (March 2026)
 - **Visual Refresh**: Modern typography (system-ui font stack), fluid sizing with `clamp()`
 - **Interactive Elements**: Hover effects, shadows, card lift animations
 - **Trust Strip**: Stats showcase (vehicles repaired, cities served, etc.)
 - **Process Steps**: Numbered step cards with CSS counters
 - **CTA Banners**: High-contrast rust-gradient sections for conversions
 - **Testimonials**: Customer quotes with 5-star ratings
+- **Hero**: `hail.jpg` background with dark overlay, white text, white "Call Now" ghost button
+- **Mobile CTA bar**: Fixed bottom bar with Call Now / Get Free Estimate buttons
+- **Card shadows**: Increased depth, hover lift effect
+
+### Brand Colors (updated)
+- `--rust: #fc1317` (primary red — was `#b0522b`)
+- `--sage: #0a71d0` (blue — was `#4a7a5c`)
 
 ### SEO & Content
 - **Keyword Targeting**: Title/description rewrite for "Paintless Dent Repair"
@@ -78,8 +92,10 @@ git push                      # Auto-deploys to Vercel
 
 ### CSS Custom Properties
 ```css
---rust: #b0522b           /* Primary action color */
---sage: #4a7a5c           /* Button color */
+--rust: #fc1317           /* Primary red action color */
+--rust-600: #e0101a       /* Darker red hover */
+--sage: #0a71d0           /* Blue button color */
+--sage-600: #0860b5       /* Darker blue hover */
 --sky: #eef5fb            /* Alt section background */
 --card: #fffbf6           /* Card background */
 --ink: #1a1410            /* Text color */
@@ -132,5 +148,5 @@ Push to `main` → Auto-builds → Manually promote in Vercel if needed
 
 ---
 
-**Last Updated**: March 21, 2026  
+**Last Updated**: May 29, 2026  
 **Maintained by**: All Dent PDR Development Team
