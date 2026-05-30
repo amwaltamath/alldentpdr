@@ -46,8 +46,8 @@ const faqItems = [
     answer: `Light hail repairs on 1–3 panels are typically completed in one day. Moderate to severe hail covering multiple panels usually takes 1–3 days. We provide a written timeline at the time of your inspection.`,
   },
   {
-    question: `Do I have to drop my car off at the shop, or can you come to ${city.name}?`,
-    answer: `Both options are available. Our shop at ${shopAddress} is only ${city.driveMinutes} minutes from ${city.name} and accepts walk-ins. For large hail events, we also offer mobile service and can come directly to your location.`,
+    question: `How far is your shop from ${city.name}?`,
+    answer: `Drop your car off at our shop at ${shopAddress} — only ${city.driveMinutes} minutes from ${city.name}. Walk-ins welcome, or call ahead to schedule a free damage assessment.`,
   },
 ];
 
@@ -160,8 +160,7 @@ const localBusinessSchema = {
       <p>{city.uniqueNote}</p>
       <p>
         Drivers in {city.name} can reach our shop via a quick {city.driveMinutes}-minute drive to
-        <strong>{shopAddress}</strong>. We also offer mobile service for large-scale hail events — 
-        just tell us your location when you contact us.
+        <strong>{shopAddress}</strong>. Drop your vehicle off and we'll handle everything — free written estimate, insurance documentation, and certified PDR repair.
       </p>
       <div class="grid-3" style="margin-top:36px;">
         <article class="card">
