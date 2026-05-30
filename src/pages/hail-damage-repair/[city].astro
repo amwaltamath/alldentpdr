@@ -18,8 +18,8 @@ const shopAddress = '7695 Granger Rd, Cleveland, OH 44125';
 const shopPhone = '1-855-425-5336';
 const shopEmail = 'alldentpdr@gmail.com';
 
-const title = `Paintless Dent Repair in ${city.name}, OH | All Dent PDR`;
-const description = `Hail damage repair near ${city.name}, OH — All Dent PDR's shop is only ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent repair, insurance billing, free estimates. Call ${shopPhone}.`;
+const title = `Hail Damage Repair ${city.name}, OH | Free Estimate | All Dent PDR`;
+const description = `Hail damage repair near ${city.name}, OH at All Dent PDR (${city.driveMinutes} min from ${city.name}). Shop: 7695 Granger Rd, Cleveland, OH 44125. Insurance-friendly paintless dent repair with free estimates.`;
 const canonical = `https://alldentpdr.com/hail-damage-repair/${city.slug}`;
 
 const breadcrumbs = [
@@ -94,6 +94,20 @@ const localBusinessSchema = {
     worstRating: '1',
   },
 };
+
+const hailServiceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: `Hail Damage Repair in ${city.name}, OH`,
+  serviceType: 'Paintless Dent Repair',
+  areaServed: city.name,
+  provider: {
+    '@type': 'AutoRepair',
+    name: 'All Dent PDR',
+    url: 'https://alldentpdr.com',
+  },
+  url: canonical,
+};
 ---
 
 <BaseLayout
@@ -105,6 +119,7 @@ const localBusinessSchema = {
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(hailServiceSchema)} />
   </Fragment>
 
   <!-- Hero -->

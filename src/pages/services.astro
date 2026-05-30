@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
 
-const title = 'Paintless Dent Repair Services | Hail Damage Repair Shop Bedford &amp; Cleveland, OH | All Dent PDR';
-const description = 'Professional paintless dent repair and hail damage repair at All Dent PDR’s shop — 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, OH and 20+ Northeast Ohio communities. Call 1-855-425-5336.';
+const title = 'Paintless Dent Repair Services in Cleveland, OH | All Dent PDR';
+const description = 'Paintless dent repair services at All Dent PDR, 7695 Granger Rd, Cleveland, OH 44125. Hail damage repair, door ding removal, and collision dent repair for Bedford and Northeast Ohio.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Services', url: 'https://alldentpdr.com/services' }
@@ -16,9 +16,55 @@ const faqItems = [
   { question: 'What types of dents can be fixed with PDR?', answer: 'PDR works best on dents where the paint surface is intact — including door dings, hail dents, minor collision dents, and creases. Very sharp or stretched-metal dents may require conventional repair.' },
   { question: 'Do you work with insurance companies?', answer: 'Yes! All Dent PDR works directly with most major insurance carriers including State Farm, Allstate, Progressive, and GEICO. We handle documentation and billing — you typically only pay your deductible.' }
 ];
+
+const servicesSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      name: 'Hail Damage Repair',
+      serviceType: 'Paintless Dent Repair',
+      provider: {
+        '@type': 'AutoRepair',
+        name: 'All Dent PDR',
+        url: 'https://alldentpdr.com',
+      },
+      areaServed: 'Northeast Ohio',
+      url: 'https://alldentpdr.com/hail-damage-repair-bedford-ohio',
+    },
+    {
+      '@type': 'Service',
+      name: 'Door Ding Repair',
+      serviceType: 'Paintless Dent Repair',
+      provider: {
+        '@type': 'AutoRepair',
+        name: 'All Dent PDR',
+        url: 'https://alldentpdr.com',
+      },
+      areaServed: 'Northeast Ohio',
+      url: 'https://alldentpdr.com/bedford-door-ding-repair',
+    },
+    {
+      '@type': 'Service',
+      name: 'Paintless Dent Repair',
+      serviceType: 'Auto dent removal',
+      provider: {
+        '@type': 'AutoRepair',
+        name: 'All Dent PDR',
+        url: 'https://alldentpdr.com',
+      },
+      areaServed: 'Northeast Ohio',
+      url: 'https://alldentpdr.com/bedford-paintless-dent-repair',
+    },
+  ],
+};
 ---
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services" breadcrumbs={breadcrumbs} faqItems={faqItems}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(servicesSchema)} />
+  </Fragment>
+
   <section class="hero-img" style="background-image:url('/images/pdrhoodafter.png')">
     <div class="hero-img-overlay">
       <div class="container">
@@ -39,16 +85,19 @@ const faqItems = [
         <span class="tag">Door Dings</span>
         <h3>Paintless door ding repair</h3>
         <p>Professional PDR for parking lot dents and light creases that preserves your factory paint finish.</p>
+        <p><a href="/bedford-door-ding-repair">Door ding repair near Bedford, OH →</a></p>
       </article>
       <article class="card">
         <span class="tag">Hail Damage</span>
         <h3>Hail storm damage repair</h3>
         <p>Systematic panel-by-panel paintless dent repair for Northeast Ohio drivers, with insurance documentation and fast turnaround.</p>
+        <p><a href="/hail-damage-repair-bedford-ohio">Hail damage repair near Bedford, OH →</a></p>
       </article>
       <article class="card">
         <span class="tag">Minor Collision</span>
         <h3>Collision dent removal</h3>
         <p>Paintless repair for soft impact dents from low-speed bumps where paint remains undamaged.</p>
+        <p><a href="/bedford-paintless-dent-repair">Paintless dent repair options →</a></p>
       </article>
     </div>
   </section>

@@ -123,6 +123,20 @@ const localBusinessSchema = {
     }
   ]
 };
+
+const hailServiceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Hail Damage Repair in Bedford, OH",
+  "serviceType": "Paintless Dent Repair",
+  "areaServed": "Bedford, OH 44146",
+  "provider": {
+    "@type": "AutoRepair",
+    "name": "All Dent PDR",
+    "url": "https://alldentpdr.com"
+  },
+  "url": "https://alldentpdr.com/hail-damage-repair-bedford-ohio"
+};
 ---
 
 <BaseLayout
@@ -134,6 +148,7 @@ const localBusinessSchema = {
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(hailServiceSchema)} />
   </Fragment>
 
   <!-- Hero -->
@@ -232,6 +247,9 @@ const localBusinessSchema = {
             <a class="button primary" href="/contact">Get My Quick Quote</a>
             <a class="button ghost" href="tel:18554255336">Call Now</a>
           </div>
+          <p style="margin-top:16px;">
+            Related services: <a href="/bedford-door-ding-repair">door ding repair near Bedford</a> and <a href="/bedford-paintless-dent-repair">paintless dent repair near Bedford</a>.
+          </p>
         </div>
         <div class="card" style="padding:0;overflow:hidden;">
           <iframe
