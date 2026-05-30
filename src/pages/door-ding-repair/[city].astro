@@ -22,6 +22,11 @@ const title = `Door Ding Repair ${city.name}, OH | Free Estimate | All Dent PDR`
 const description = `Need door ding repair near ${city.name}, OH? All Dent PDR is ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent removal with fast turnaround and free estimates.`;
 const canonical = `https://alldentpdr.com/door-ding-repair/${city.slug}`;
 
+const relatedCities = city.nearbyShops
+  .map((name) => serviceAreas.find((c) => c.name.toLowerCase() === name.toLowerCase()))
+  .filter((c): c is CityData => Boolean(c))
+  .slice(0, 3);
+
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Service Area', url: 'https://alldentpdr.com/service-area' },
@@ -296,12 +301,12 @@ const localBusinessSchema = {
         In addition to {city.name}, we regularly serve:
       </p>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin:24px 0;">
-        {city.nearbyShops.map(n => (
+        {relatedCities.map((nearby) => (
           <a
-            href={`/door-ding-repair/${n.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}`}
+            href={`/door-ding-repair/${nearby.slug}`}
             style="padding:10px 18px;background:var(--card);border-radius:8px;border:1px solid #e8e0d8;font-weight:600;color:var(--rust);text-decoration:none;"
           >
-            {n}, OH →
+            {nearby.name}, OH →
           </a>
         ))}
         <a
@@ -311,6 +316,10 @@ const localBusinessSchema = {
           View all 20+ service areas →
         </a>
       </div>
+      <p>
+        Related services in {city.name}: <a href={`/paintless-dent-repair/${city.slug}`}>paintless dent repair</a>
+        {' '}and <a href={`/hail-damage-repair/${city.slug}`}>hail damage repair</a>.
+      </p>
     </div>
   </section>
 
