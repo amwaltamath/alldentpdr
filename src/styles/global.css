@@ -1218,6 +1218,121 @@ select {
 .kanban-card select { margin: 0; padding: 5px 24px 5px 8px; font-size: 12px; border-radius: 6px; }
 .kanban-empty { color: var(--muted); font-size: 13px; padding: 24px 8px; text-align: center; }
 
+@media (max-width: 920px) {
+  .kanban {
+    grid-auto-columns: minmax(280px, 86vw);
+    gap: 14px;
+  }
+
+  .pipeline-summary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .pipeline-summary-card {
+    padding: 14px 16px;
+  }
+
+  .pipeline-summary-card strong {
+    font-size: 24px;
+    margin-top: 6px;
+  }
+
+  .kanban-col {
+    min-height: 0;
+  }
+
+  .kanban-col-body {
+    max-height: 58vh;
+  }
+}
+
+@media (max-width: 560px) {
+  .panel-head {
+    padding: 12px 14px;
+    gap: 10px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .panel-head h3 { font-size: 14px; }
+  .panel-head .meta { font-size: 12px; }
+
+  .tabs {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .tabs button {
+    width: 100%;
+    padding: 10px 12px;
+  }
+
+  .dash-topbar {
+    padding: 12px 14px;
+    gap: 10px 12px;
+  }
+
+  .dash-topbar h1 { font-size: 1.05rem; }
+  .dash-topbar .crumb { font-size: 11px; }
+  .dash-user { gap: 8px; font-size: 12px; }
+  .dash-avatar { width: 30px; height: 30px; font-size: 12px; }
+
+  .kanban {
+    grid-auto-columns: minmax(86vw, 86vw);
+    gap: 12px;
+  }
+
+  .pipeline-summary-card {
+    border-radius: 18px;
+  }
+
+  .kanban-col {
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .kanban-col-head {
+    padding: 4px 2px 10px;
+  }
+
+  .kanban-col-subtitle {
+    max-width: none;
+    font-size: 10.5px;
+  }
+
+  .kanban-card {
+    padding: 12px;
+  }
+
+  .kanban-card .kc-title {
+    font-size: 13.5px;
+  }
+
+  .kanban-card .kc-meta {
+    font-size: 12px;
+  }
+
+  .kanban-card .kc-foot {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .kanban-card select {
+    width: 100%;
+  }
+
+  .kanban-empty {
+    padding: 18px 6px;
+  }
+}
+
+@media (max-width: 420px) {
+  .tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
 .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
 .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 14px; }
 .form-section-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
@@ -1524,6 +1639,12 @@ select {
   .dash-topbar { padding: 12px 16px; gap: 8px 12px; flex-wrap: wrap; }
   .dash-topbar .dash-search { max-width: none; order: 3; width: 100%; flex-basis: 100%; }
   .dash-topbar .dash-user { margin-left: auto; }
+
+  .panel-head {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 /* Utility */
