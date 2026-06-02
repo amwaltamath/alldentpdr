@@ -590,6 +590,9 @@ function OverviewView({ metrics, recent, loading, onJump, remoteMode }) {
 }
 
 function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
+  const totalJobs = STATUS_COLUMNS.reduce((sum, col) => sum + (grouped[col]?.length || 0), 0);
+  const activeJobs = totalJobs - (grouped.Complete?.length || 0);
+
   return (
     <>
       <div className="panel-head" style={{ marginBottom: 18, borderRadius: 12, background: 'transparent', borderBottom: 'none', padding: 0 }}>
@@ -603,32 +606,57 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
         </div>
       </div>
 
+      {mode === 'kanban' && (
+        <div className="pipeline-summary">
+          <div className="pipeline-summary-card">
+            <span className="pipeline-summary-label">Visible jobs</span>
+            <strong>{totalJobs}</strong>
+            <span>Across all stages</span>
+          </div>
+          <div className="pipeline-summary-card">
+            <span className="pipeline-summary-label">Active work</span>
+            <strong>{activeJobs}</strong>
+            <span>Not completed yet</span>
+          </div>
+          <div className="pipeline-summary-card is-complete">
+            <span className="pipeline-summary-label">Complete</span>
+            <strong>{grouped.Complete?.length || 0}</strong>
+            <span>Ready to archive</span>
+          </div>
+        </div>
+      )}
+
       {mode === 'kanban' ? (
         <div className="kanban">
           {STATUS_COLUMNS.map((col) => (
             <section key={col} className="kanban-col" data-col={col}>
               <div className="kanban-col-head">
-                <strong>{col}</strong>
+                <div>
+                  <strong>{col}</strong>
+                  <span className="kanban-col-subtitle">{PIPELINE_STAGE_META[col]?.subtitle || 'Stage in the workflow'}</span>
+                </div>
                 <span className="count">{(grouped[col] || []).length}</span>
               </div>
-              {(grouped[col] || []).length === 0 && <div className="kanban-empty">No jobs here.</div>}
-              {(grouped[col] || []).map((v) => (
-                <article key={v.id} className="kanban-card">
-                  <div className="kc-id">{v.id}</div>
-                  <div className="kc-title">{v.year} {v.make} {v.model}</div>
-                  <div className="kc-meta">{v.customerName} · {v.plate}</div>
-                  <div className="kc-foot">
-                    <span className={statusBadge(v.status)}>{v.status}</span>
-                    <select
-                      value={v.status}
-                      onChange={(e) => onStatusChange(v.id, e.target.value)}
-                      aria-label={`Change status for ${v.id}`}
-                    >
-                      {STATUS_COLUMNS.map((s) => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </div>
-                </article>
-              ))}
+              <div className="kanban-col-body">
+                {(grouped[col] || []).length === 0 && <div className="kanban-empty">No jobs here.</div>}
+                {(grouped[col] || []).map((v) => (
+                  <article key={v.id} className="kanban-card">
+                    <div className="kc-id">{v.id}</div>
+                    <div className="kc-title">{v.year} {v.make} {v.model}</div>
+                    <div className="kc-meta">{v.customerName} · {v.plate}</div>
+                    <div className="kc-foot">
+                      <span className={statusBadge(v.status)}>{v.status}</span>
+                      <select
+                        value={v.status}
+                        onChange={(e) => onStatusChange(v.id, e.target.value)}
+                        aria-label={`Change status for ${v.id}`}
+                      >
+                        {STATUS_COLUMNS.map((s) => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </section>
           ))}
         </div>
@@ -668,6 +696,16 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
 }
 
 const STATUS_COLUMNS = ['Registered', 'Estimate', 'Pending Insurance', 'In Progress', 'In Repair', 'On Hold', 'Complete'];
+
+const PIPELINE_STAGE_META = {
+  Registered: { subtitle: 'New registrations waiting to be reviewed' },
+  Estimate: { subtitle: 'Preparing pricing and scope' },
+  'Pending Insurance': { subtitle: 'Waiting on insurance approval' },
+  'In Progress': { subtitle: 'Work is actively underway' },
+  'In Repair': { subtitle: 'Vehicle is in the repair bay' },
+  'On Hold': { subtitle: 'Paused for parts, approvals, or scheduling' },
+  Complete: { subtitle: 'Finished and ready to close' }
+};
 
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
   return (
