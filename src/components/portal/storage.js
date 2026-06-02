@@ -12,6 +12,10 @@ function parseJson(value, fallback) {
   }
 }
 
+function normalizeLookupPlate(value) {
+  return (value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
 function mapRemoteVehicle(item) {
   return {
     id: item.id,
@@ -109,7 +113,7 @@ function mapRemotePayload(vehicle) {
     city: vehicle.city,
     state: vehicle.state,
     zip: vehicle.zip,
-    how_heard_about_us: vehicle.howHeardAboutUs,
+    how_heard: vehicle.howHeardAboutUs,
     insurance_company: vehicle.insuranceCompany,
     deductible: vehicle.deductible,
     claim_number: vehicle.claimNumber,
@@ -295,66 +299,6 @@ export async function updateLeadStatus(id, status) {
   if (error) throw error;
 }
 
-// ===== Chat (admin) =====
-
-export async function getChatConversations() {
-  if (!isSupabaseEnabled()) return [];
-  const { data, error } = await supabase
-    .from('chat_conversations')
-    .select('*')
-    .order('last_message_at', { ascending: false });
-  if (error) throw error;
-  return data || [];
-}
-
-export async function getChatMessages(conversationId) {
-  if (!isSupabaseEnabled() || !conversationId) return [];
-  const { data, error } = await supabase
-    .from('chat_messages')
-    .select('*')
-    .eq('conversation_id', conversationId)
-    .order('created_at', { ascending: true });
-  if (error) throw error;
-  return data || [];
-}
-
-export async function sendChatReply(conversationId, body, senderName) {
-  if (!isSupabaseEnabled() || !conversationId) return;
-  const { error } = await supabase.rpc('chat_admin_reply', {
-    p_conversation_id: conversationId,
-    p_body: body,
-    p_sender_name: senderName || null,
-  });
-  if (error) throw error;
-}
-
-export async function markChatRead(conversationId) {
-  if (!isSupabaseEnabled() || !conversationId) return;
-  const { error } = await supabase.rpc('chat_admin_mark_read', {
-    p_conversation_id: conversationId,
-  });
-  if (error) throw error;
-}
-
-export async function deleteChatConversation(conversationId) {
-  if (!isSupabaseEnabled() || !conversationId) return;
-  const { error } = await supabase
-    .from('chat_conversations')
-    .delete()
-    .eq('id', conversationId);
-  if (error) throw error;
-}
-
-export function subscribeChatChanges(onChange) {
-  if (!isSupabaseEnabled()) return () => {};
-  const channel = supabase
-    .channel('admin-chat')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_conversations' }, onChange)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, onChange)
-    .subscribe();
-  return () => { supabase.removeChannel(channel); };
-}
-
 export function setSession(session) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(SESSION_KEY, JSON.stringify(session));
@@ -372,7 +316,7 @@ export function clearSession() {
 
 export async function findCustomerVehicle(email, plate) {
   const cleanEmail = email.trim().toLowerCase();
-  const cleanPlate = plate.trim().toUpperCase();
+  const cleanPlate = normalizeLookupPlate(plate);
 
   if (isSupabaseEnabled()) {
     const { data, error } = await supabase.rpc('customer_lookup_vehicle', {
@@ -385,7 +329,11 @@ export async function findCustomerVehicle(email, plate) {
     return mapRemoteVehicle(data[0]);
   }
 
-  return getLocalVehicles().find((item) => item.email === cleanEmail && item.plate === cleanPlate) || null;
+  return getLocalVehicles().find((item) => {
+    const itemEmail = (item.email || '').trim().toLowerCase();
+    const itemPlate = normalizeLookupPlate(item.plate);
+    return itemEmail === cleanEmail && itemPlate === cleanPlate;
+  }) || null;
 }
 
 export async function getCustomerVehicleStatus(email, plate) {
@@ -484,203 +432,3 @@ export async function updateLead(id, updates) {
   }
 }
 
-
-
-
-
-/* -------------------------------------------------------------
-   Projects Gallery (admin-managed, public read)
-------------------------------------------------------------- */
-
-const PROJECT_BUCKET = 'project-photos';
-
-function mapRemoteProject(item) {
-  return {
-    id: item.id,
-    title: item.title,
-    description: item.description || '',
-    vehicle: item.vehicle || '',
-    category: item.category || '',
-    imageUrl: item.image_url,
-    beforeUrl: item.before_url || '',
-    displayOrder: item.display_order ?? 0,
-    isPublished: Boolean(item.is_published),
-    createdAt: item.created_at,
-    updatedAt: item.updated_at,
-  };
-}
-
-export async function getProjects({ publishedOnly = false } = {}) {
-  if (!isSupabaseEnabled()) return [];
-  let query = supabase
-    .from('projects')
-    .select('*')
-    .order('display_order', { ascending: false })
-    .order('created_at', { ascending: false });
-  if (publishedOnly) query = query.eq('is_published', true);
-  const { data, error } = await query;
-  if (error) throw error;
-  return (data || []).map(mapRemoteProject);
-}
-
-async function uploadProjectImage(file) {
-  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
-  if (!file) return '';
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-  const safe = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
-  const { error } = await supabase
-    .storage
-    .from(PROJECT_BUCKET)
-    .upload(safe, file, { cacheControl: '31536000', upsert: false, contentType: file.type || undefined });
-  if (error) throw error;
-  const { data } = supabase.storage.from(PROJECT_BUCKET).getPublicUrl(safe);
-  return data.publicUrl;
-}
-
-export async function addProject({
-  title,
-  description = '',
-  vehicle = '',
-  category = '',
-  imageFile,
-  beforeFile = null,
-  displayOrder = 0,
-  isPublished = true,
-}) {
-  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
-  if (!title || !imageFile) throw new Error('Title and main image are required');
-
-  const imageUrl  = await uploadProjectImage(imageFile);
-  const beforeUrl = beforeFile ? await uploadProjectImage(beforeFile) : null;
-
-  const { data, error } = await supabase
-    .from('projects')
-    .insert({
-      title: title.trim(),
-      description: description.trim() || null,
-      vehicle: vehicle.trim() || null,
-      category: category.trim() || null,
-      image_url: imageUrl,
-      before_url: beforeUrl,
-      display_order: Number(displayOrder) || 0,
-      is_published: Boolean(isPublished),
-    })
-    .select('*')
-    .single();
-  if (error) throw error;
-  return mapRemoteProject(data);
-}
-
-export async function updateProject(id, updates) {
-  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
-  const payload = {};
-  if (updates.title !== undefined)        payload.title         = updates.title.trim();
-  if (updates.description !== undefined)  payload.description   = updates.description.trim() || null;
-  if (updates.vehicle !== undefined)      payload.vehicle       = updates.vehicle.trim() || null;
-  if (updates.category !== undefined)     payload.category      = updates.category.trim() || null;
-  if (updates.displayOrder !== undefined) payload.display_order = Number(updates.displayOrder) || 0;
-  if (updates.isPublished !== undefined)  payload.is_published  = Boolean(updates.isPublished);
-  if (updates.imageFile)                  payload.image_url     = await uploadProjectImage(updates.imageFile);
-  if (updates.beforeFile)                 payload.before_url    = await uploadProjectImage(updates.beforeFile);
-
-  const { data, error } = await supabase
-    .from('projects')
-    .update(payload)
-    .eq('id', id)
-    .select('*')
-    .single();
-  if (error) throw error;
-  return mapRemoteProject(data);
-}
-
-export async function deleteProject(id) {
-  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
-  const { error } = await supabase.from('projects').delete().eq('id', id);
-  if (error) throw error;
-  return true;
-}
-
-/* ─────────────────────────────────────────────────────────────
-   Chat — admin inbox
-───────────────────────────────────────────────────────────── */
-
-function mapConversation(row) {
-  return {
-    id: row.id,
-    visitorName: row.visitor_name || '',
-    visitorEmail: row.visitor_email || '',
-    visitorPhone: row.visitor_phone || '',
-    pageUrl: row.page_url || '',
-    status: row.status,
-    unreadAdmin: row.unread_admin || 0,
-    unreadVisitor: row.unread_visitor || 0,
-    lastMessageAt: row.last_message_at,
-    lastMessagePreview: row.last_message_preview || '',
-    createdAt: row.created_at,
-  };
-}
-
-function mapMessage(row) {
-  return {
-    id: row.id,
-    sender: row.sender,
-    senderName: row.sender_name || '',
-    body: row.body,
-    createdAt: row.created_at,
-  };
-}
-
-export async function getConversations() {
-  if (!isSupabaseEnabled()) return [];
-  const { data, error } = await supabase
-    .from('chat_conversations')
-    .select('*')
-    .order('last_message_at', { ascending: false });
-  if (error) throw error;
-  return (data || []).map(mapConversation);
-}
-
-export async function getConversationMessages(conversationId) {
-  if (!isSupabaseEnabled()) return [];
-  const { data, error } = await supabase
-    .from('chat_messages')
-    .select('*')
-    .eq('conversation_id', conversationId)
-    .order('created_at', { ascending: true });
-  if (error) throw error;
-  // Mark admin unread as read
-  await supabase
-    .from('chat_conversations')
-    .update({ unread_admin: 0 })
-    .eq('id', conversationId);
-  return (data || []).map(mapMessage);
-}
-
-export async function adminReply(conversationId, body, senderName = 'All Dent PDR') {
-  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
-  const { data, error } = await supabase.rpc('chat_admin_reply', {
-    p_conversation_id: conversationId,
-    p_body: body,
-    p_sender_name: senderName,
-  });
-  if (error) throw error;
-  return data;
-}
-
-export async function closeConversation(conversationId) {
-  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
-  const { error } = await supabase
-    .from('chat_conversations')
-    .update({ status: 'closed' })
-    .eq('id', conversationId);
-  if (error) throw error;
-}
-
-export async function reopenConversation(conversationId) {
-  if (!isSupabaseEnabled()) throw new Error('Supabase not configured');
-  const { error } = await supabase
-    .from('chat_conversations')
-    .update({ status: 'open' })
-    .eq('id', conversationId);
-  if (error) throw error;
-}

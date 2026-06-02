@@ -83,7 +83,8 @@ as $$
   select *
   from public.vehicle_jobs
   where email = lower(trim(p_email))
-    and plate = upper(trim(p_plate))
+    and regexp_replace(upper(trim(plate)), '[^A-Z0-9]', '', 'g')
+      = regexp_replace(upper(trim(p_plate)), '[^A-Z0-9]', '', 'g')
   order by updated_at desc
   limit 1;
 $$;

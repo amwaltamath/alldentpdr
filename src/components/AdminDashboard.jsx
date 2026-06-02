@@ -17,16 +17,7 @@ import {
   signOutRemoteAdmin,
   updateLeadStatus,
   updateVehicle,
-  updateVehicleStatus,
-  getProjects,
-  addProject,
-  updateProject,
-  deleteProject,
-  getConversations,
-  getConversationMessages,
-  adminReply,
-  closeConversation,
-  reopenConversation,
+  updateVehicleStatus
 } from './portal/storage';
 
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
@@ -70,8 +61,6 @@ const NAV_ITEMS = [
   { id: 'quote',    label: 'New Quote',         icon: '$' },
   { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
   { id: 'register', label: 'Register Vehicle',  icon: '+' },
-  { id: 'projects', label: 'Our Work',          icon: '🖼' },
-  { id: 'messages', label: 'Messages',           icon: '💬' },
   { id: 'cards',    label: 'Business Cards',    icon: '▣' },
 ];
 
@@ -105,10 +94,6 @@ export default function AdminDashboard() {
   const [releaseJob, setReleaseJob] = useState(null);
   const [leads, setLeads] = useState([]);
   const [leadsLoading, setLeadsLoading] = useState(false);
-  const [projects, setProjects] = useState([]);
-  const [projectsLoading, setProjectsLoading] = useState(false);
-  const [conversations, setConversations] = useState([]);
-  const [convLoading, setConvLoading] = useState(false);
 
   const remoteMode = isRemotePortalEnabled();
 
@@ -152,33 +137,51 @@ export default function AdminDashboard() {
       }
       setLoading(true);
       setLeadsLoading(true);
+      if (active) setAuthError('');
       try {
+        if (remoteMode) {
+          const user = await getRemoteAuthUser();
+          if (!user) {
+            clearSession();
+            if (active) {
+              setLocalSession(null);
+              setVehicles([]);
+              setLeads([]);
+              setAuthError('Your admin session expired. Please sign in again.');
+            }
+            return;
+          }
+
+          const allowed = await isRemoteAdmin();
+          if (!allowed) {
+            await signOutRemoteAdmin();
+            clearSession();
+            if (active) {
+              setLocalSession(null);
+              setVehicles([]);
+              setLeads([]);
+              setAuthError('This account is not approved for admin access.');
+            }
+            return;
+          }
+
+          if (active && session?.email !== user.email) {
+            const next = { role: 'admin', email: user.email, loggedInAt: session?.loggedInAt || new Date().toISOString() };
+            setSession(next);
+            setLocalSession(next);
+          }
+        }
+
         const [next, leadsNext] = await Promise.all([getVehicles(), getLeads()]);
         if (active) { setVehicles(next); setLeads(leadsNext); }
-      } catch {
-        if (active) setAuthError('Unable to load vehicle data.');
+      } catch (error) {
+        if (active) {
+          setVehicles([]);
+          setLeads([]);
+          setAuthError(error?.message || 'Unable to load vehicle data.');
+        }
       } finally {
         if (active) { setLoading(false); setLeadsLoading(false); }
-      }
-      // Load projects separately (non-critical)
-      try {
-        if (active) setProjectsLoading(true);
-        const projectsNext = await getProjects();
-        if (active) setProjects(projectsNext);
-      } catch {
-        // non-fatal
-      } finally {
-        if (active) setProjectsLoading(false);
-      }
-      // Load conversations
-      try {
-        if (active) setConvLoading(true);
-        const convNext = await getConversations();
-        if (active) setConversations(convNext);
-      } catch {
-        // non-fatal
-      } finally {
-        if (active) setConvLoading(false);
       }
     }
 
@@ -464,6 +467,8 @@ export default function AdminDashboard() {
         </header>
 
         <main className="dash-content">
+          {authError && <p className="portal-error" style={{ marginBottom: 16 }}>{authError}</p>}
+
           {view === 'overview' && (
             <OverviewView
               metrics={metrics}
@@ -521,57 +526,6 @@ export default function AdminDashboard() {
           )}
 
           {view === 'analytics' && <AnalyticsView />}
-
-          {view === 'messages' && (
-            <MessagesView
-              conversations={conversations}
-              loading={convLoading}
-              adminEmail={session?.email || 'All Dent PDR'}
-              onRefresh={async () => {
-                setConvLoading(true);
-                try { setConversations(await getConversations()); } finally { setConvLoading(false); }
-              }}
-              onClose={async (id) => {
-                await closeConversation(id);
-                setConversations((prev) => prev.map((c) => c.id === id ? { ...c, status: 'closed' } : c));
-              }}
-              onReopen={async (id) => {
-                await reopenConversation(id);
-                setConversations((prev) => prev.map((c) => c.id === id ? { ...c, status: 'open' } : c));
-              }}
-              onReply={async (id, body, senderName) => {
-                await adminReply(id, body, senderName);
-                setConversations(await getConversations());
-              }}
-              onMessagesRead={(id) => {
-                setConversations((prev) => prev.map((c) => c.id === id ? { ...c, unreadAdmin: 0 } : c));
-              }}
-            />
-          )}
-
-          {view === 'projects' && (
-            <ProjectsView
-              projects={projects}
-              loading={projectsLoading}
-              onAdd={async (data) => {
-                const created = await addProject(data);
-                setProjects((prev) => [created, ...prev]);
-              }}
-              onUpdate={async (id, data) => {
-                const updated = await updateProject(id, data);
-                setProjects((prev) => prev.map((p) => p.id === id ? updated : p));
-              }}
-              onDelete={async (id) => {
-                if (!window.confirm('Delete this project? This cannot be undone.')) return;
-                await deleteProject(id);
-                setProjects((prev) => prev.filter((p) => p.id !== id));
-              }}
-              onTogglePublished={async (proj) => {
-                const updated = await updateProject(proj.id, { isPublished: !proj.isPublished });
-                setProjects((prev) => prev.map((p) => p.id === proj.id ? updated : p));
-              }}
-            />
-          )}
 
           {view === 'cards' && <CardsView />}
         </main>
@@ -712,114 +666,6 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
 
 const STATUS_COLUMNS = ['Registered', 'In Progress', 'Complete'];
 
-function buildRegistrationHtml(job) {
-  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const vehicle = [job.year, job.make, job.model].filter(Boolean).join(' ') || '—';
-  const dateStr = new Date(job.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>AllDent PDR — Registration — ${esc(job.id)}</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
-    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:3px solid #fc1317;margin-bottom:24px}
-    .hd-brand strong{font-size:22px;font-weight:800;color:#fc1317}
-    .hd-brand span{display:block;font-size:12px;color:#888;margin-top:2px}
-    .hd-meta{text-align:right;font-size:12px;color:#555;line-height:1.7}
-    .hd-meta .title{font-size:18px;font-weight:800;color:#1a1410;display:block;margin-bottom:4px}
-    h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9e8f84;margin:20px 0 8px;border-bottom:1px solid #e8e2db;padding-bottom:4px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-bottom:4px}
-    .field{padding:6px 0;border-bottom:1px solid #f0ece7}
-    .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;display:block;margin-bottom:2px}
-    .val{font-size:13px;color:#1a1410}
-    .full{grid-column:1/-1}
-    .legal-block{background:#fffbf6;border:1px solid #e8e2db;border-left:3px solid #fc1317;border-radius:0 8px 8px 0;padding:12px 14px;font-size:12px;line-height:1.7;color:#3a3028;margin-bottom:10px}
-    .agreed{display:inline-block;background:#e6f4ed;color:#1a6639;font-weight:700;font-size:11px;padding:2px 8px;border-radius:4px;margin-bottom:6px}
-    .not-signed{display:inline-block;background:#fdecea;color:#b91c1c;font-weight:700;font-size:11px;padding:2px 8px;border-radius:4px;margin-bottom:6px}
-    .footer{font-size:11px;color:#9e8f84;text-align:center;padding-top:14px;border-top:1px solid #e8e2db;margin-top:28px;line-height:1.8}
-    @media print{body{padding:16px 20px}}
-  </style>
-</head>
-<body>
-  <div class="hd">
-    <div class="hd-brand">
-      <strong>AllDent PDR</strong>
-      <span>Paintless Dent Repair — Cleveland, OH</span>
-      <span style="margin-top:2px;color:#555">1-855-425-5336 &nbsp;·&nbsp; alldentpdr@gmail.com</span>
-    </div>
-    <div class="hd-meta">
-      <span class="title">VEHICLE REGISTRATION</span>
-      <span>Job #${esc(job.id)}</span><br/>
-      <span>Registered: ${esc(dateStr)}</span>
-    </div>
-  </div>
-
-  <h2>Customer Information</h2>
-  <div class="grid">
-    <div class="field"><span class="lbl">Customer Name</span><span class="val">${esc(job.customerName)}</span></div>
-    <div class="field"><span class="lbl">Cell Phone</span><span class="val">${esc(job.phone || '—')}</span></div>
-    <div class="field"><span class="lbl">Email</span><span class="val">${esc(job.email || '—')}</span></div>
-    <div class="field"><span class="lbl">Home Phone</span><span class="val">${esc(job.homePhone || '—')}</span></div>
-    <div class="field full"><span class="lbl">Address</span><span class="val">${esc([job.address, job.city, job.state, job.zip].filter(Boolean).join(', ') || '—')}</span></div>
-    <div class="field"><span class="lbl">How Heard About Us</span><span class="val">${esc(job.howHeardAboutUs || '—')}</span></div>
-  </div>
-
-  <h2>Vehicle Information</h2>
-  <div class="grid">
-    <div class="field"><span class="lbl">Year</span><span class="val">${esc(job.year || '—')}</span></div>
-    <div class="field"><span class="lbl">Make</span><span class="val">${esc(job.make || '—')}</span></div>
-    <div class="field"><span class="lbl">Model</span><span class="val">${esc(job.model || '—')}</span></div>
-    <div class="field"><span class="lbl">Color</span><span class="val">${esc(job.color || '—')}</span></div>
-    <div class="field"><span class="lbl">License Plate</span><span class="val">${esc(job.plate || '—')}</span></div>
-    <div class="field full"><span class="lbl">VIN</span><span class="val" style="font-family:monospace">${esc(job.vin || '—')}</span></div>
-  </div>
-
-  <h2>Insurance Information</h2>
-  <div class="grid">
-    <div class="field"><span class="lbl">Insurance Company</span><span class="val">${esc(job.insuranceCompany || '—')}</span></div>
-    <div class="field"><span class="lbl">Deductible</span><span class="val">${esc(job.deductible || '—')}</span></div>
-    <div class="field full"><span class="lbl">Claim Number</span><span class="val">${esc(job.claimNumber || '—')}</span></div>
-  </div>
-
-  ${job.notes ? `<h2>Notes</h2><div class="field full" style="margin-bottom:0"><span class="val" style="white-space:pre-wrap">${esc(job.notes)}</span></div>` : ''}
-
-  <h2>Authorizations &amp; Signature</h2>
-
-  <h3 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#555;margin:14px 0 6px">Direction to Pay</h3>
-  <span class="${job.directionToPaySigned ? 'agreed' : 'not-signed'}">${job.directionToPaySigned ? '✓ Agreed' : '✗ Not signed'}</span>
-  <div class="legal-block">
-    <p style="margin-bottom:8px">I authorize <strong>${esc(job.insuranceAuthName || '[ Insurance Company ]')}</strong> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.</p>
-    <p>I do hereby appoint All Dent PDR to accept on my behalf, any and all checks/drafts and to endorse all such checks/drafts for deposit to All Dent PDR account for payment for repairs to said vehicle, which have been accepted and released. The total amount of repair charges must be paid in full before the vehicle can be released for delivery or picked up. If insurance coverage pays either a portion of or the total amount due, I acknowledge that the insurance check/draft must be obtained by me or sent in advance by the insurance company and received by All Dent PDR. I also acknowledge that I must make arrangements with any lien holder or other payees to endorse the insurance check/draft prior to the release of the above repaired vehicle. I authorize any and all supplements payable directly to All Dent PDR for the consideration of repairs made to the vehicle. If I remove my vehicle from the shop prior to the completion of repairs, I agree to pay for parts, labor, handling fees, service charges, and rental car fees associated with the repair. To secure payment in amount of repairs, an expressed mechanics lien on the vehicle is acknowledged and I further agree to pay reasonable attorney&#39;s fees and court costs in the event legal action becomes necessary to enforce this contract. All Dent PDR may repossess my vehicle if payment is not secured.</p>
-  </div>
-
-  <h3 style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#555;margin:14px 0 6px">Repair Authorization</h3>
-  <span class="${job.repairAuthSigned ? 'agreed' : 'not-signed'}">${job.repairAuthSigned ? '✓ Agreed' : '✗ Not signed'}</span>
-  <div class="legal-block">
-    <p style="margin-bottom:8px">I hereby authorize All Dent PDR employees/contractors to operate my vehicle for the purpose of testing, inspection, delivery to and from for repairs. I acknowledge and agree that All Dent PDR will not be held responsible for loss or damage to the vehicle or articles left in the vehicle in case of fire, theft, vehicle accident, or any other cause beyond the control of All Dent PDR. Further, I acknowledge, that if closer analysis reveals additional repairs are necessary, either I or my insurance company will be contacted for authorization of any additional repair charges. If new parts listed in the insurance estimate are not available or replaceable by All Dent PDR, I authorize All Dent PDR to repair such parts when possible. Old parts will be disposed of unless otherwise instructed. I authorize All Dent PDR to manufacture access to dents that may not be accessible due to their location on the vehicle. And as such, All Dent PDR is not responsible for any unrelated prior damage (UPD) noted in the estimate or damage caused by prior work performed on the vehicle.</p>
-    <p><strong>I authorize All Dent PDR to perform repairs on my vehicle per All Dent PDR estimate.</strong></p>
-  </div>
-
-  <div class="grid" style="margin-top:20px">
-    <div class="field" style="border-top:1.5px solid #1a1410;padding-top:6px;margin-top:10px">
-      <span class="lbl">Customer Signature</span>
-      <span class="val" style="font-size:20px;font-style:italic">${esc(job.signatureName || '—')}</span>
-    </div>
-    <div class="field" style="border-top:1.5px solid #1a1410;padding-top:6px;margin-top:10px">
-      <span class="lbl">Date Signed</span>
-      <span class="val">${job.signedAt ? new Date(job.signedAt).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '—'}</span>
-    </div>
-  </div>
-
-  <div class="footer">
-    AllDent PDR &nbsp;·&nbsp; 7695 Granger Rd, Cleveland, OH 44125 &nbsp;·&nbsp; 1-855-425-5336 &nbsp;·&nbsp; alldentpdr.com
-  </div>
-  <script>window.onload = function(){ window.print(); }<\/script>
-</body>
-</html>`;
-}
-
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
   return (
     <div className="job-inline-detail">
@@ -845,25 +691,26 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
             </select>
           </div>
 
-          <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Form</h4>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              className="button ghost sm"
-              onClick={() => { const win = window.open('', '_blank', 'width=820,height=680'); if (win) { win.document.write(buildRegistrationHtml(v)); win.document.close(); } }}
-            >
-              📄 Print / Download
-            </button>
-          </div>
-
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Vehicle Release</h4>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             {v.releaseFormData && (
-              <span style={{ fontSize: 12, color: 'var(--sage,#0a71d0)', fontWeight: 600 }}>✓ Signed {v.releaseFormData.signedAt || ''}</span>
+              <span style={{ fontSize: 12, color: 'var(--sage,#4a7a5c)', fontWeight: 600 }}>✓ Signed {v.releaseFormData.signedAt || ''}</span>
             )}
             <button type="button" className="button primary sm" onClick={() => onRelease(v)}>
               {v.releaseFormData ? '📋 View / Re-sign Release' : '📋 Issue Vehicle Release'}
             </button>
+            {v.releaseFormData && (
+              <button
+                type="button"
+                className="button ghost sm"
+                onClick={() => {
+                  const win = window.open('', '_blank', 'width=860,height=720');
+                  if (win) { win.document.write(buildReleaseHtml(v, v.releaseFormData)); win.document.close(); }
+                }}
+              >
+                📄 Print / Download
+              </button>
+            )}
           </div>
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Customer</h4>
@@ -1362,420 +1209,6 @@ function channelClass(ch) {
   return 'other';
 }
 
-/* ─────────────────────────────────────────────────────────────
-   Messages — admin chat inbox
-───────────────────────────────────────────────────────────── */
-function timeAgo(iso) {
-  if (!iso) return '';
-  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (diff < 60) return 'just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return new Date(iso).toLocaleDateString();
-}
-
-function MessagesView({ conversations, loading, adminEmail, onRefresh, onClose, onReopen, onReply, onMessagesRead }) {
-  const [activeId, setActiveId] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [msgsLoading, setMsgsLoading] = useState(false);
-  const [draft, setDraft] = useState('');
-  const [sending, setSending] = useState(false);
-  const [filter, setFilter] = useState('open');
-  const scrollRef = useRef(null);
-
-  const shown = conversations.filter((c) => filter === 'all' || c.status === filter);
-  const activeConv = conversations.find((c) => c.id === activeId) || null;
-
-  const openConv = async (id) => {
-    setActiveId(id);
-    setMessages([]);
-    setMsgsLoading(true);
-    try {
-      const msgs = await getConversationMessages(id);
-      setMessages(msgs);
-      onMessagesRead(id);
-    } catch {
-      // ignore
-    } finally {
-      setMsgsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!draft.trim() || !activeId) return;
-    setSending(true);
-    try {
-      const senderName = adminEmail?.split('@')[0] || 'All Dent PDR';
-      await onReply(activeId, draft.trim(), senderName);
-      setMessages(await getConversationMessages(activeId));
-      setDraft('');
-    } catch (err) {
-      alert('Send failed: ' + err.message);
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const totalUnread = conversations.reduce((n, c) => n + (c.unreadAdmin || 0), 0);
-
-  return (
-    <div className="msgs-shell">
-      {/* Sidebar */}
-      <aside className="msgs-sidebar">
-        <div className="msgs-sidebar-head">
-          <div>
-            <h3 style={{ margin: 0 }}>Messages {totalUnread > 0 && <span className="msgs-badge">{totalUnread}</span>}</h3>
-            <p className="meta" style={{ margin: '2px 0 0' }}>Visitor chat inbox</p>
-          </div>
-          <button type="button" className="button ghost sm" onClick={onRefresh} title="Refresh">↻</button>
-        </div>
-
-        <div className="msgs-filter-tabs">
-          {['open', 'closed', 'all'].map((f) => (
-            <button key={f} type="button" className={`queue-tab${filter === f ? ' active' : ''}`} onClick={() => setFilter(f)}>
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-              <span className="queue-count">{f === 'all' ? conversations.length : conversations.filter((c) => c.status === f).length}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="msgs-list">
-          {loading && <div className="kanban-empty" style={{ padding: 24 }}>Loading…</div>}
-          {!loading && shown.length === 0 && (
-            <div className="kanban-empty" style={{ padding: 24 }}>No {filter} conversations.</div>
-          )}
-          {shown.map((conv) => (
-            <button
-              key={conv.id}
-              type="button"
-              className={`msgs-conv-row${activeId === conv.id ? ' is-active' : ''}${conv.unreadAdmin > 0 ? ' has-unread' : ''}`}
-              onClick={() => openConv(conv.id)}
-            >
-              <div className="msgs-conv-avatar">
-                {(conv.visitorName || '?').charAt(0).toUpperCase()}
-              </div>
-              <div className="msgs-conv-info">
-                <div className="msgs-conv-name">
-                  {conv.visitorName || 'Anonymous'}
-                  {conv.unreadAdmin > 0 && <span className="msgs-badge">{conv.unreadAdmin}</span>}
-                </div>
-                <div className="msgs-conv-preview">{conv.lastMessagePreview || '—'}</div>
-              </div>
-              <div className="msgs-conv-meta">
-                <span className="msgs-conv-time">{timeAgo(conv.lastMessageAt)}</span>
-                {conv.status === 'closed' && <span className="badge registered" style={{ fontSize: 10, padding: '1px 6px' }}>Closed</span>}
-              </div>
-            </button>
-          ))}
-        </div>
-      </aside>
-
-      {/* Thread */}
-      <div className="msgs-thread">
-        {!activeConv && (
-          <div className="msgs-thread-empty">
-            <span style={{ fontSize: 40 }}>💬</span>
-            <p>Select a conversation to view messages</p>
-          </div>
-        )}
-
-        {activeConv && (
-          <>
-            <div className="msgs-thread-head">
-              <div>
-                <strong>{activeConv.visitorName || 'Anonymous'}</strong>
-                {activeConv.visitorEmail && <span className="cell-sub" style={{ display: 'block' }}>{activeConv.visitorEmail}</span>}
-                {activeConv.visitorPhone && <span className="cell-sub" style={{ display: 'block' }}>{activeConv.visitorPhone}</span>}
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {activeConv.status === 'open'
-                  ? <button type="button" className="button ghost sm" onClick={() => onClose(activeConv.id)}>Close chat</button>
-                  : <button type="button" className="button ghost sm" onClick={() => onReopen(activeConv.id)}>Reopen</button>
-                }
-              </div>
-            </div>
-
-            <div className="msgs-bubble-list" ref={scrollRef}>
-              {msgsLoading && <div className="kanban-empty">Loading messages…</div>}
-              {!msgsLoading && messages.length === 0 && <div className="kanban-empty">No messages yet.</div>}
-              {messages.map((msg) => (
-                <div key={msg.id} className={`msgs-bubble msgs-bubble-${msg.sender}`}>
-                  <div className="msgs-bubble-body">{msg.body}</div>
-                  <div className="msgs-bubble-meta">
-                    {msg.senderName || (msg.sender === 'admin' ? 'You' : 'Visitor')} · {timeAgo(msg.createdAt)}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {activeConv.status === 'open' ? (
-              <form className="msgs-reply-bar" onSubmit={handleSend}>
-                <textarea
-                  className="msgs-reply-input"
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  placeholder="Type a reply…"
-                  rows={2}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(e); } }}
-                />
-                <button type="submit" className="button primary" disabled={sending || !draft.trim()}>
-                  {sending ? '…' : 'Send'}
-                </button>
-              </form>
-            ) : (
-              <div className="msgs-reply-bar" style={{ justifyContent: 'center', color: 'var(--muted)' }}>
-                This conversation is closed. <button type="button" className="button ghost sm" style={{ marginLeft: 8 }} onClick={() => onReopen(activeConv.id)}>Reopen to reply</button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
-   Our Work / Projects Gallery — admin management
-───────────────────────────────────────────────────────────── */
-const PROJECT_CATEGORIES = ['Hail Damage', 'Door Ding', 'Crease', 'Bumper', 'Other'];
-
-const BLANK_PROJECT = {
-  title: '',
-  description: '',
-  vehicle: '',
-  category: '',
-  displayOrder: 0,
-  isPublished: true,
-  imageFile: null,
-  beforeFile: null,
-};
-
-function ProjectsView({ projects, loading, onAdd, onUpdate, onDelete, onTogglePublished }) {
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState(BLANK_PROJECT);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [imagePreview, setImagePreview] = useState('');
-  const [beforePreview, setBeforePreview] = useState('');
-
-  const isEditing = Boolean(editingId);
-
-  const openNew = () => {
-    setForm(BLANK_PROJECT);
-    setImagePreview('');
-    setBeforePreview('');
-    setEditingId(null);
-    setError('');
-    setShowForm(true);
-  };
-
-  const openEdit = (proj) => {
-    setForm({
-      title: proj.title,
-      description: proj.description,
-      vehicle: proj.vehicle,
-      category: proj.category,
-      displayOrder: proj.displayOrder,
-      isPublished: proj.isPublished,
-      imageFile: null,
-      beforeFile: null,
-    });
-    setImagePreview(proj.imageUrl);
-    setBeforePreview(proj.beforeUrl || '');
-    setEditingId(proj.id);
-    setError('');
-    setShowForm(true);
-  };
-
-  const closeForm = () => {
-    setShowForm(false);
-    setEditingId(null);
-    setForm(BLANK_PROJECT);
-    setImagePreview('');
-    setBeforePreview('');
-    setError('');
-  };
-
-  const setField = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
-
-  const handleImageChange = (e, key, setPreview) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setForm((f) => ({ ...f, [key]: file }));
-    const reader = new FileReader();
-    reader.onload = (ev) => setPreview(ev.target.result);
-    reader.readAsDataURL(file);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.title.trim()) { setError('Title is required.'); return; }
-    if (!isEditing && !form.imageFile) { setError('An after/main photo is required.'); return; }
-    setSaving(true);
-    setError('');
-    try {
-      if (isEditing) {
-        await onUpdate(editingId, form);
-      } else {
-        await onAdd(form);
-      }
-      closeForm();
-    } catch (err) {
-      setError(err.message || 'Save failed. Please try again.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  return (
-    <div>
-      {/* Header */}
-      <div className="panel-head" style={{ marginBottom: 18, background: 'transparent', border: 'none', padding: 0 }}>
-        <div>
-          <h3 style={{ marginBottom: 4 }}>Our Work — Project Gallery</h3>
-          <p className="meta" style={{ margin: 0 }}>
-            {projects.length} project{projects.length !== 1 ? 's' : ''} · Published ones appear on the public <a href="/our-work" target="_blank" rel="noopener" style={{ color: 'var(--rust,#fc1317)' }}>/our-work</a> page.
-          </p>
-        </div>
-        <button type="button" className="button primary sm" onClick={openNew}>+ Add project</button>
-      </div>
-
-      {/* Add / Edit form */}
-      {showForm && (
-        <div className="panel" style={{ marginBottom: 24 }}>
-          <div className="panel-head">
-            <h4 style={{ margin: 0 }}>{isEditing ? 'Edit project' : 'New project'}</h4>
-            <button type="button" className="button ghost sm" onClick={closeForm}>Cancel</button>
-          </div>
-          <form onSubmit={handleSubmit} style={{ padding: '16px 0 0' }}>
-            <div className="dash-grid-2" style={{ gap: 16 }}>
-              {/* Left: text fields */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <div>
-                  <label>Title <span style={{ color: 'var(--rust,#fc1317)' }}>*</span></label>
-                  <input type="text" value={form.title} onChange={setField('title')} placeholder="e.g. 2022 Honda Accord Hail Repair" required />
-                </div>
-                <div>
-                  <label>Vehicle</label>
-                  <input type="text" value={form.vehicle} onChange={setField('vehicle')} placeholder="e.g. 2022 Honda Accord" />
-                </div>
-                <div>
-                  <label>Category</label>
-                  <select value={form.category} onChange={setField('category')}>
-                    <option value="">— choose —</option>
-                    {PROJECT_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label>Description</label>
-                  <textarea value={form.description} onChange={setField('description')} rows={3} placeholder="Short description shown on the gallery card…" style={{ resize: 'vertical' }} />
-                </div>
-                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                  <div style={{ flex: 1, minWidth: 120 }}>
-                    <label>Display order</label>
-                    <input type="number" value={form.displayOrder} onChange={setField('displayOrder')} min={0} style={{ marginBottom: 0 }} />
-                    <p className="cell-sub" style={{ marginTop: 4 }}>Higher = shown first</p>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 28 }}>
-                    <label className="checkbox-row" style={{ margin: 0 }}>
-                      <input type="checkbox" checked={form.isPublished} onChange={setField('isPublished')} />
-                      <span>Published (visible to public)</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right: image uploads */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div>
-                  <label>After / Main photo {!isEditing && <span style={{ color: 'var(--rust,#fc1317)' }}>*</span>}</label>
-                  {imagePreview && (
-                    <img src={imagePreview} alt="After preview" style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8, marginBottom: 8, border: '1px solid var(--line,#e8e2db)' }} />
-                  )}
-                  <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'imageFile', setImagePreview)} />
-                  {isEditing && <p className="cell-sub" style={{ marginTop: 4 }}>Leave blank to keep existing photo</p>}
-                </div>
-                <div>
-                  <label>Before photo <span className="cell-sub">(optional)</span></label>
-                  {beforePreview && (
-                    <img src={beforePreview} alt="Before preview" style={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 8, marginBottom: 8, border: '1px solid var(--line,#e8e2db)' }} />
-                  )}
-                  <input type="file" accept="image/*" onChange={(e) => handleImageChange(e, 'beforeFile', setBeforePreview)} />
-                </div>
-              </div>
-            </div>
-
-            {error && <p className="portal-error" style={{ marginTop: 12 }}>{error}</p>}
-
-            <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-              <button type="submit" className="button primary" disabled={saving}>
-                {saving ? 'Saving…' : isEditing ? 'Save changes' : 'Add project'}
-              </button>
-              <button type="button" className="button ghost" onClick={closeForm}>Cancel</button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Projects grid */}
-      {loading && <div className="kanban-empty">Loading projects…</div>}
-
-      {!loading && projects.length === 0 && !showForm && (
-        <div className="panel" style={{ textAlign: 'center', padding: '48px 24px' }}>
-          <p style={{ fontSize: 15, marginBottom: 12, color: 'var(--muted,#9e8f84)' }}>No projects yet.</p>
-          <button type="button" className="button primary sm" onClick={openNew}>+ Add your first project</button>
-        </div>
-      )}
-
-      {!loading && projects.length > 0 && (
-        <div className="projects-admin-grid">
-          {projects.map((proj) => (
-            <div key={proj.id} className={`proj-admin-card${proj.isPublished ? '' : ' is-draft'}`}>
-              <div className="proj-admin-img">
-                {proj.imageUrl
-                  ? <img src={proj.imageUrl} alt={proj.title} loading="lazy" />
-                  : <div className="proj-admin-img-placeholder">No image</div>
-                }
-                {proj.beforeUrl && (
-                  <span className="proj-before-badge">Before+After</span>
-                )}
-              </div>
-              <div className="proj-admin-body">
-                <div className="proj-admin-top">
-                  <div>
-                    <strong className="proj-admin-title">{proj.title}</strong>
-                    {proj.vehicle && <span className="cell-sub" style={{ display: 'block' }}>{proj.vehicle}</span>}
-                  </div>
-                  <span className={`badge ${proj.isPublished ? 'complete' : 'registered'}`}>
-                    {proj.isPublished ? 'Live' : 'Draft'}
-                  </span>
-                </div>
-                {proj.category && <span className="source-badge other" style={{ marginTop: 4 }}>{proj.category}</span>}
-                {proj.description && <p className="cell-sub" style={{ marginTop: 6, WebkitLineClamp: 2, display: '-webkit-box', WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{proj.description}</p>}
-              </div>
-              <div className="proj-admin-foot">
-                <button type="button" className="button ghost sm" onClick={() => onTogglePublished(proj)}>
-                  {proj.isPublished ? 'Unpublish' : 'Publish'}
-                </button>
-                <button type="button" className="button ghost sm" onClick={() => openEdit(proj)}>Edit</button>
-                <button type="button" className="btn-delete-job" onClick={() => onDelete(proj.id)} title="Delete project" aria-label="Delete project">🗑</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 const TEAM_CARDS = [
   { slug: 'zachary', name: 'Zachary', title: 'PDR Specialist', email: 'zachary@alldentpdr.com' },
   { slug: 'kevin',   name: 'Kevin',   title: 'PDR Specialist', email: 'kevin@alldentpdr.com' },
@@ -1907,7 +1340,7 @@ function VinScanner({ onScan, onClose }) {
           Point the camera at the VIN barcode on the door jamb sticker, windshield, or QR code.
         </p>
         {scanError ? (
-          <p style={{ color: 'var(--rust,#fc1317)', textAlign: 'center', padding: '24px 0', fontSize: 14 }}>
+          <p style={{ color: 'var(--rust,#b0522b)', textAlign: 'center', padding: '24px 0', fontSize: 14 }}>
             {scanError}
           </p>
         ) : (
@@ -2170,7 +1603,7 @@ function PricingView() {
             <button type="button" className="button primary sm" onClick={handleAddTier}>+ Add tier</button>
           </div>
 
-          {savedMsg && <p className="portal-note" style={{ color: 'var(--sage,#0a71d0)', marginBottom: 12 }}>✓ {savedMsg}</p>}
+          {savedMsg && <p className="portal-note" style={{ color: 'var(--sage,#4a7a5c)', marginBottom: 12 }}>✓ {savedMsg}</p>}
 
           {/* Pricing grid */}
           <div className="table-scroll">
@@ -2405,12 +1838,12 @@ function QuoteView({ vehicles }) {
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
     /* Header */
-    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #fc1317;margin-bottom:24px}
+    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #b0522b;margin-bottom:24px}
     .hd-brand{display:flex;flex-direction:column;gap:2px}
-    .hd-brand strong{font-size:22px;font-weight:800;color:#fc1317;letter-spacing:-.5px}
+    .hd-brand strong{font-size:22px;font-weight:800;color:#b0522b;letter-spacing:-.5px}
     .hd-brand span{font-size:12px;color:#888}
     .hd-meta{text-align:right;line-height:1.6}
-    .hd-meta .q-num{font-size:18px;font-weight:700;color:#fc1317}
+    .hd-meta .q-num{font-size:18px;font-weight:700;color:#b0522b}
     /* Info grid */
     .info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
     .info-box{background:#fffbf6;border:1px solid #e8e2db;border-radius:8px;padding:12px 14px}
@@ -2420,12 +1853,12 @@ function QuoteView({ vehicles }) {
     /* Table */
     h3.section{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9e8f84;padding-bottom:6px;border-bottom:1px solid #e8e2db;margin-bottom:0}
     table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:12.5px}
-    thead th{background:#fc1317;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.05em}
+    thead th{background:#b0522b;color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.05em}
     thead th:last-child{text-align:right}
     tbody tr:nth-child(even) td{background:#fffbf6}
     tbody td{padding:7px 10px;border-bottom:1px solid #e8e2db;vertical-align:middle}
-    .total-row td{font-weight:700;font-size:14px;background:#fff3ee!important;border-top:2px solid #fc1317;padding:10px}
-    .total-row td:last-child{color:#fc1317;font-size:18px}
+    .total-row td{font-weight:700;font-size:14px;background:#fff3ee!important;border-top:2px solid #b0522b;padding:10px}
+    .total-row td:last-child{color:#b0522b;font-size:18px}
     /* Footer */
     .notes-box{background:#fffbf6;border:1px solid #e8e2db;border-radius:8px;padding:14px;margin-bottom:24px}
     .notes-box h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9e8f84;margin-bottom:6px}
@@ -2540,7 +1973,7 @@ function QuoteView({ vehicles }) {
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
             {sendMsg && (
-              <span style={{ fontSize: 13, color: sendMsg.type === 'ok' ? 'var(--sage,#0a71d0)' : 'var(--rust,#fc1317)' }}>
+              <span style={{ fontSize: 13, color: sendMsg.type === 'ok' ? 'var(--sage,#4a7a5c)' : 'var(--rust,#b0522b)' }}>
                 {sendMsg.text}
               </span>
             )}
@@ -2759,8 +2192,8 @@ function buildReleaseHtml(job, data) {
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:32px 40px}
-    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:3px solid #fc1317;margin-bottom:24px}
-    .hd-brand strong{font-size:22px;font-weight:800;color:#fc1317}
+    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:18px;border-bottom:3px solid #b0522b;margin-bottom:24px}
+    .hd-brand strong{font-size:22px;font-weight:800;color:#b0522b}
     .hd-brand span{display:block;font-size:12px;color:#888;margin-top:2px}
     .hd-meta{text-align:right;font-size:12px;color:#555;line-height:1.7}
     .hd-meta .title{font-size:18px;font-weight:800;color:#1a1410;display:block;margin-bottom:4px}
@@ -2769,7 +2202,7 @@ function buildReleaseHtml(job, data) {
     .info-cell:last-child{border-right:none}
     .info-cell .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;display:block;margin-bottom:3px}
     .info-cell .val{font-size:13px;color:#1a1410}
-    .agreement{background:#fffbf6;border:1px solid #e8e2db;border-left:3px solid #fc1317;border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;line-height:1.7;margin-bottom:24px}
+    .agreement{background:#fffbf6;border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;padding:14px 16px;font-size:13px;line-height:1.7;margin-bottom:24px}
     .notes-box{background:#fffbf6;border:1px solid #e8e2db;border-radius:8px;padding:12px 14px;margin-bottom:20px}
     .notes-box .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;margin-bottom:6px}
     .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:28px}
@@ -2946,7 +2379,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
             <p style={{ fontSize: 13, color: 'var(--muted,#9e8f84)', marginBottom: 4 }}>
               855-425-5336 &nbsp;·&nbsp; alldentpdr@gmail.com
             </p>
-            <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--rust,#fc1317)' }}>
+            <p style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--rust,#b0522b)' }}>
               Vehicle Release Form
             </p>
           </div>
@@ -3038,7 +2471,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
 
           {sendMsg && (
             <p style={{ marginTop: 12, fontSize: 13, fontWeight: 600,
-              color: sendMsg.type === 'ok' ? 'var(--sage,#0a71d0)' : 'var(--rust,#fc1317)' }}>
+              color: sendMsg.type === 'ok' ? 'var(--sage,#4a7a5c)' : 'var(--rust,#b0522b)' }}>
               {sendMsg.text}
             </p>
           )}
