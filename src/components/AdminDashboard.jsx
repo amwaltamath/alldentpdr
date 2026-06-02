@@ -212,12 +212,14 @@ export default function AdminDashboard() {
   }, [vehicles]);
 
   const grouped = useMemo(() => {
-    const list = filteredVehicles;
-    return {
-      Registered: list.filter((v) => v.status === 'Registered'),
-      'In Progress': list.filter((v) => v.status === 'In Progress'),
-      Complete: list.filter((v) => v.status === 'Complete')
-    };
+    const buckets = Object.fromEntries(STATUS_COLUMNS.map((status) => [status, []]));
+
+    for (const vehicle of filteredVehicles) {
+      const bucket = STATUS_COLUMNS.includes(vehicle.status) ? vehicle.status : 'Registered';
+      buckets[bucket].push(vehicle);
+    }
+
+    return buckets;
   }, [filteredVehicles]);
 
   const recent = useMemo(() => filteredVehicles.slice(0, 5), [filteredVehicles]);
@@ -607,10 +609,10 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
             <section key={col} className="kanban-col" data-col={col}>
               <div className="kanban-col-head">
                 <strong>{col}</strong>
-                <span className="count">{grouped[col].length}</span>
+                <span className="count">{(grouped[col] || []).length}</span>
               </div>
-              {grouped[col].length === 0 && <div className="kanban-empty">No jobs here.</div>}
-              {grouped[col].map((v) => (
+              {(grouped[col] || []).length === 0 && <div className="kanban-empty">No jobs here.</div>}
+              {(grouped[col] || []).map((v) => (
                 <article key={v.id} className="kanban-card">
                   <div className="kc-id">{v.id}</div>
                   <div className="kc-title">{v.year} {v.make} {v.model}</div>
@@ -643,7 +645,7 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
                 </tr>
               </thead>
               <tbody>
-                {STATUS_COLUMNS.flatMap((col) => grouped[col]).map((v) => (
+                {STATUS_COLUMNS.flatMap((col) => grouped[col] || []).map((v) => (
                   <tr key={v.id}>
                     <td><div className="cell-strong">{v.id}</div><div className="cell-sub">{v.plate}</div></td>
                     <td>{v.year} {v.make} {v.model}</td>
