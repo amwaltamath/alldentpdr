@@ -16,7 +16,6 @@ const staticPages = [
   `${BASE}/contact`,
   `${BASE}/service-area`,
   `${BASE}/bedford-paintless-dent-repair`,
-  `${BASE}/bedford-hail-damage-repair`,
   `${BASE}/bedford-door-ding-repair`,
   `${BASE}/hail-damage-repair-bedford-ohio`,
   `${BASE}/hail-damage-repair-cleveland`,
@@ -30,6 +29,7 @@ const staticPages = [
   // Hail damage city pages (prerendered via [city].astro)
   `${BASE}/hail-damage-repair/garfield-heights`,
   `${BASE}/hail-damage-repair/maple-heights`,
+  `${BASE}/hail-damage-repair/bedford`,
   `${BASE}/hail-damage-repair/bedford-heights`,
   `${BASE}/hail-damage-repair/solon`,
   `${BASE}/hail-damage-repair/warrensville-heights`,
@@ -51,6 +51,7 @@ const staticPages = [
   // Door ding repair city pages
   `${BASE}/door-ding-repair/garfield-heights`,
   `${BASE}/door-ding-repair/maple-heights`,
+  `${BASE}/door-ding-repair/bedford`,
   `${BASE}/door-ding-repair/bedford-heights`,
   `${BASE}/door-ding-repair/solon`,
   `${BASE}/door-ding-repair/warrensville-heights`,
@@ -72,6 +73,7 @@ const staticPages = [
   // Paintless dent repair city pages
   `${BASE}/paintless-dent-repair/garfield-heights`,
   `${BASE}/paintless-dent-repair/maple-heights`,
+  `${BASE}/paintless-dent-repair/bedford`,
   `${BASE}/paintless-dent-repair/bedford-heights`,
   `${BASE}/paintless-dent-repair/solon`,
   `${BASE}/paintless-dent-repair/warrensville-heights`,

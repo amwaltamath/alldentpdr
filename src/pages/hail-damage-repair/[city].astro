@@ -18,14 +18,10 @@ const shopAddress = '7695 Granger Rd, Cleveland, OH 44125';
 const shopPhone = '1-855-425-5336';
 const shopEmail = 'alldentpdr@gmail.com';
 
-const title = `Hail Damage Repair ${city.name}, OH | Free Estimate | All Dent PDR`;
-const description = `Hail damage repair near ${city.name}, OH at All Dent PDR (${city.driveMinutes} min from ${city.name}). Shop: 7695 Granger Rd, Cleveland, OH 44125. Insurance-friendly paintless dent repair with free estimates.`;
+const title = `Hail Damage Repair in ${city.name}, OH | Paintless Dent Repair | All Dent PDR`;
+const description = `Hail damage repair near ${city.name}, OH — All Dent PDR's shop is only ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent repair, insurance billing, free estimates. Call ${shopPhone}.`;
+const keywords = `hail damage repair ${city.name} OH, ${city.name} hail damage repair, paintless dent repair ${city.name} OH, auto hail repair ${city.name}, car hail damage ${city.name}, ${city.zipCodes.join(', ')}, All Dent PDR`;
 const canonical = `https://alldentpdr.com/hail-damage-repair/${city.slug}`;
-
-const relatedCities = city.nearbyShops
-  .map((name) => serviceAreas.find((c) => c.name.toLowerCase() === name.toLowerCase()))
-  .filter((c): c is CityData => Boolean(c))
-  .slice(0, 3);
 
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
@@ -51,8 +47,8 @@ const faqItems = [
     answer: `Light hail repairs on 1–3 panels are typically completed in one day. Moderate to severe hail covering multiple panels usually takes 1–3 days. We provide a written timeline at the time of your inspection.`,
   },
   {
-    question: `How far is your shop from ${city.name}?`,
-    answer: `Drop your car off at our shop at ${shopAddress} — only ${city.driveMinutes} minutes from ${city.name}. Walk-ins welcome, or call ahead to schedule a free damage assessment.`,
+    question: `Do I have to drop my car off at the shop, or can you come to ${city.name}?`,
+    answer: `Both options are available. Our shop at ${shopAddress} is only ${city.driveMinutes} minutes from ${city.name} and accepts walk-ins. For large hail events, we also offer mobile service and can come directly to your location.`,
   },
 ];
 
@@ -99,44 +95,30 @@ const localBusinessSchema = {
     worstRating: '1',
   },
 };
-
-const hailServiceSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Service',
-  name: `Hail Damage Repair in ${city.name}, OH`,
-  serviceType: 'Paintless Dent Repair',
-  areaServed: city.name,
-  provider: {
-    '@type': 'AutoRepair',
-    name: 'All Dent PDR',
-    url: 'https://alldentpdr.com',
-  },
-  url: canonical,
-};
 ---
 
 <BaseLayout
   title={title}
   description={description}
+  keywords={keywords}
   canonical={canonical}
   breadcrumbs={breadcrumbs}
   faqItems={faqItems}
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
-    <script type="application/ld+json" set:html={JSON.stringify(hailServiceSchema)} />
   </Fragment>
 
   <!-- Hero -->
-  <section class="hero">
+  <section class="hero hero-hail">
     <div class="container hero-inner">
       <div>
         <span class="hero-pill">
           Serving {city.name}, OH · {city.distanceMiles} mi from shop · {city.driveMinutes} min drive
         </span>
-        <h1>Hail damage repair in {city.name}, OH</h1>
+        <h1>Hail damage repair near {city.name}, Ohio</h1>
         <p>
-          Need hail damage repair in {city.name}? {city.tagline} All Dent PDR at <strong>{shopAddress}</strong> restores
+          {city.tagline} All Dent PDR at <strong>{shopAddress}</strong> restores
           hail-damaged vehicles with certified paintless dent repair — no repainting,
           insurance approved, free written estimates before any work begins.
         </p>
@@ -176,11 +158,12 @@ const hailServiceSchema = {
   <section class="section">
     <div class="container">
       <span class="section-label">Serving {city.name}</span>
-      <h2>Local hail damage repair trusted by {city.name} drivers</h2>
+      <h2>Your local hail damage repair shop near {city.name}, OH</h2>
       <p>{city.uniqueNote}</p>
       <p>
         Drivers in {city.name} can reach our shop via a quick {city.driveMinutes}-minute drive to
-        <strong>{shopAddress}</strong>. Drop your vehicle off and we'll handle everything — free written estimate, insurance documentation, and certified PDR repair.
+        <strong>{shopAddress}</strong>. We also offer mobile service for large-scale hail events — 
+        just tell us your location when you contact us.
       </p>
       <div class="grid-3" style="margin-top:36px;">
         <article class="card">
@@ -284,12 +267,12 @@ const hailServiceSchema = {
         In addition to {city.name}, we regularly serve:
       </p>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin:24px 0;">
-        {relatedCities.map((nearby) => (
+        {city.nearbyShops.map(n => (
           <a
-            href={`/hail-damage-repair/${nearby.slug}`}
+            href={`/hail-damage-repair/${n.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}`}
             style="padding:10px 18px;background:var(--card);border-radius:8px;border:1px solid #e8e0d8;font-weight:600;color:var(--rust);text-decoration:none;"
           >
-            {nearby.name}, OH →
+            {n}, OH →
           </a>
         ))}
         <a
@@ -299,10 +282,6 @@ const hailServiceSchema = {
           View all 20+ service areas →
         </a>
       </div>
-      <p>
-        Related services in {city.name}: <a href={`/paintless-dent-repair/${city.slug}`}>paintless dent repair</a>
-        {' '}and <a href={`/door-ding-repair/${city.slug}`}>door ding repair</a>.
-      </p>
     </div>
   </section>
 

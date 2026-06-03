@@ -1,11 +1,11 @@
 ﻿---
 import '../styles/global.css';
 import MobileMenu from '../components/MobileMenu.jsx';
-import ChatWidget from '../components/ChatWidget.jsx';
 
 const {
-  title = 'All Dent PDR | Paintless Dent Repair Cleveland OH',
-  description = 'Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, Garfield Heights, Parma, Solon, and all of Northeast Ohio. Hail damage repair, door ding removal, insurance billing. Call 1-855-425-5336.',
+  title = 'All Dent PDR | Hail Damage & Paintless Dent Repair Cleveland OH',
+  description = 'All Dent PDR provides hail damage repair and paintless dent repair from 7695 Granger Rd, Cleveland, OH 44125, serving Bedford and Northeast Ohio.',
+  keywords = '',
   canonical = 'https://alldentpdr.com',
   ogImage = '/images/logo-branded.svg',
   noindex = false,
@@ -17,88 +17,6 @@ const {
 } = Astro.props;
 
 const gaId: string = 'G-T7RLXD05RW';
-
-const metaPixelScript = `
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window,document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init','1284377713827510');
-  fbq('track','PageView');
-`;
-
-const localBusinessSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'AutoRepair',
-  name: 'All Dent PDR',
-  description: 'Expert paintless dent repair and hail damage repair shop at 7695 Granger Rd, Cleveland, OH 44125, serving Bedford and Northeast Ohio.',
-  url: 'https://alldentpdr.com',
-  telephone: '1-855-425-5336',
-  email: 'alldentpdr@gmail.com',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: '7695 Granger Rd',
-    addressLocality: 'Cleveland',
-    addressRegion: 'OH',
-    postalCode: '44125',
-    addressCountry: 'US',
-  },
-  areaServed: [
-    { '@type': 'City', name: 'Bedford' },
-    { '@type': 'City', name: 'Cleveland' },
-    { '@type': 'City', name: 'Bedford Heights' },
-    { '@type': 'City', name: 'Maple Heights' },
-    { '@type': 'City', name: 'Garfield Heights' },
-    { '@type': 'City', name: 'Solon' },
-    { '@type': 'City', name: 'Warrensville Heights' },
-  ],
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: 41.3960,
-    longitude: -81.6100,
-  },
-  hasOfferCatalog: {
-    '@type': 'OfferCatalog',
-    name: 'Paintless Dent Repair Services',
-    itemListElement: [
-      {
-        '@type': 'Offer',
-        name: 'Door Ding Repair',
-        description: 'Quick PDR fixes for small dents and creases without fillers or repaint',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Hail Damage Repair',
-        description: 'Panel-by-panel hail dent restoration that preserves your OEM finish',
-      },
-      {
-        '@type': 'Offer',
-        name: 'Minor Collision Dent Repair',
-        description: 'Correct dents from low-speed impacts when paint is undamaged',
-      },
-    ],
-  },
-  paymentAccepted: 'Cash, Credit Card, Debit Card',
-  priceRange: '$$',
-  openingHours: 'Mo-Fr 08:00-18:00, Sa 09:00-14:00',
-  openingHoursSpecification: [
-    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '18:00' },
-    { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Saturday', opens: '09:00', closes: '14:00' },
-  ],
-  image: 'https://alldentpdr.com/images/logo-branded.svg',
-  sameAs: ['https://www.facebook.com/alldentpdr/', 'https://share.google/7cCa7EhinPDCM8Owu'],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '5',
-    reviewCount: '47',
-    bestRating: '5',
-    worstRating: '1',
-  },
-};
 ---
 
 <!DOCTYPE html>
@@ -109,6 +27,7 @@ const localBusinessSchema = {
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -121,7 +40,7 @@ const localBusinessSchema = {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={`https://alldentpdr.com${ogImage}`} />
-    <meta name="twitter:image:alt" content="All Dent PDR - Paintless Dent Repair" />
+    <meta name="twitter:image:alt" content="AllDent PDR - Paintless Dent Repair" />
     <meta name="google-site-verification" content="UdUBGJ6CT7WTj7DlCdAeVQ0JqiMupWXbQ9hrj3ZiUwY" />
     {noindex && <meta name="robots" content="noindex,nofollow" />}
     <meta name="geo.region" content="US-OH" />
@@ -135,7 +54,7 @@ const localBusinessSchema = {
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/images/logo.jpg" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#fc1317" />
+    <meta name="theme-color" content="#b0522b" />
     
     <!-- Google Analytics -->
     {gaId && (
@@ -145,13 +64,76 @@ const localBusinessSchema = {
       </>
     )}
 
-    <!-- Meta Pixel -->
-    <script is:inline set:html={metaPixelScript}></script>
-    <noscript><img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=1284377713827510&ev=PageView&noscript=1" /></noscript>
-
     <!-- Structured Data for Local SEO -->
-    <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
+    <script type="application/ld+json">
+      {`
+        {
+          "@context": "https://schema.org",
+          "@type": "AutoRepair",
+          "name": "AllDent PDR",
+          "description": "Expert paintless dent repair and hail damage repair shop serving Bedford, OH, Cleveland, and all of Northeast Ohio. Mobile service also available nationwide.",
+          "url": "https://alldentpdr.com",
+          "telephone": "1-855-425-5336",
+          "email": "alldentpdr@gmail.com",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "7695 Granger Rd",
+            "addressLocality": "Cleveland",
+            "addressRegion": "OH",
+            "postalCode": "44125",
+            "addressCountry": "US"
+          },
+          "areaServed": [
+            { "@type": "City", "name": "Bedford" },
+            { "@type": "City", "name": "Cleveland" },
+            { "@type": "City", "name": "Bedford Heights" },
+            { "@type": "City", "name": "Maple Heights" },
+            { "@type": "City", "name": "Garfield Heights" },
+            { "@type": "City", "name": "Solon" },
+            { "@type": "City", "name": "Warrensville Heights" },
+            { "@type": "Country", "name": "United States" }
+          ],
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 41.3960,
+            "longitude": -81.6100
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Paintless Dent Repair Services",
+            "itemListElement": [
+              {
+                "@type": "OfferCatalog",
+                "name": "Door Ding Repair",
+                "description": "Quick PDR fixes for small dents and creases without fillers or repaint"
+              },
+              {
+                "@type": "OfferCatalog",
+                "name": "Hail Damage Repair",
+                "description": "Panel-by-panel hail dent restoration that preserves your OEM finish"
+              },
+              {
+                "@type": "OfferCatalog",
+                "name": "Minor Collision Dent Repair",
+                "description": "Correct dents from low-speed impacts when paint is undamaged"
+              }
+            ]
+          },
+          "paymentAccepted": "Cash, Credit Card, Debit Card",
+          "priceRange": "$$",
+          "openingHours": "Mo-Fr 08:00-18:00, Sa 09:00-14:00",
+          "image": "https://alldentpdr.com/images/logo-branded.svg",
+          "sameAs": ["https://www.facebook.com/alldentpdr/"],
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "5",
+            "reviewCount": "47",
+            "bestRating": "5",
+            "worstRating": "1"
+          }
+        }
+      `}
+    </script>
 
     {/* Breadcrumb Schema */}
     {breadcrumbs.length > 0 && (
@@ -198,22 +180,21 @@ const localBusinessSchema = {
       <header class="site-header">
         <div class="container header-inner">
           <a class="logo" href="/">
-            <img src="/images/logo.jpg" alt="All Dent PDR - Paintless Dent Repair Cleveland OH" class="logo-img" />
+            <img src="/images/logo.jpg" alt="AllDent PDR - Hail Damage and Paintless Dent Repair Cleveland Ohio" class="logo-img" />
             <div class="logo-text">
-              <span class="logo-mark">All Dent PDR</span>
-              <span class="logo-sub">Cleveland, OH</span>
+              <span class="logo-mark">AllDent PDR</span>
+              <span class="logo-sub">Bedford, OH Shop &amp; Mobile</span>
             </div>
           </a>
           <nav class="nav">
             <a href="/services">Services</a>
-            <a href="/our-work">Our Work</a>
+            <a href="/hail-damage-repair/bedford">Bedford Hail</a>
             <a href="/service-area">Service Area</a>
             <a href="/about">About</a>
             <a href="/blog">Blog</a>
-            <a href="/register">Register</a>
-            <a href="/portal/customer-login">Login</a>
-
-            <a class="nav-cta" href="/contact">Get Free Estimate</a>
+            <a href="/register">Vehicle Registration</a>
+            <a href="/portal/customer-login">Customer Login</a>
+            <a class="nav-cta" href="/contact">Request Inspection</a>
           </nav>
           <MobileMenu client:load />
         </div>
@@ -229,13 +210,13 @@ const localBusinessSchema = {
         <div class="container footer-inner">
           <div>
             <div class="logo" style="margin-bottom: 14px;">
-              <img src="/images/logo.jpg" alt="All Dent PDR" class="logo-img" />
+              <img src="/images/logo.jpg" alt="AllDent PDR" class="logo-img" />
               <div class="logo-text">
-                <span class="logo-mark" style="color:#fff;">All Dent PDR</span>
-                <span class="logo-sub">Bedford &amp; Northeast Ohio</span>
+                <span class="logo-mark" style="color:#fff;">AllDent PDR</span>
+                <span class="logo-sub">Bedford, OH Shop &amp; Mobile</span>
               </div>
             </div>
-            <p>Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, OH and all of Northeast Ohio with hail damage repair, door ding removal, and minor dent repair.</p>
+            <p>Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, OH and all of Northeast Ohio. Mobile service also available nationwide for hail damage, door dings, and minor collision dents.</p>
           </div>
           <div>
             <h5>Services</h5>
@@ -245,6 +226,13 @@ const localBusinessSchema = {
             <p><a href="/hail-damage-repair-bedford-ohio">Bedford OH Hail Repair Shop</a></p>
             <p><a href="/service-area">All Service Areas</a></p>
             <p><a href="/blog">PDR Blog</a></p>
+          </div>
+          <div>
+            <h5>Bedford Pages</h5>
+            <p><a href="/hail-damage-repair/bedford">Hail Damage Repair Bedford</a></p>
+            <p><a href="/paintless-dent-repair/bedford">Paintless Dent Repair Bedford</a></p>
+            <p><a href="/door-ding-repair/bedford">Door Ding Repair Bedford</a></p>
+            <p><a href="/hail-damage-repair-bedford-ohio">Bedford Shop Landing Page</a></p>
           </div>
           <div>
             <h5>Nearby Cities</h5>
@@ -260,9 +248,7 @@ const localBusinessSchema = {
             <p><a href="tel:18554255336">1-855-425-5336</a></p>
             <p><a href="mailto:admin@alldentpdr.com">admin@alldentpdr.com</a></p>
             <p><a href="https://www.facebook.com/alldentpdr/" target="_blank" rel="noopener noreferrer">Facebook</a></p>
-            <p><a href="https://share.google/7cCa7EhinPDCM8Owu" target="_blank" rel="noopener noreferrer">Google Business</a></p>
-            <p><a href="https://share.google/7cCa7EhinPDCM8Owu" target="_blank" rel="noopener noreferrer">⭐ Leave a Google Review</a></p>
-            <p><a href="/contact">Contact Us</a></p>
+            <p><a href="/contact">Request Inspection</a></p>
             <p><a href="/portal/customer-login">Customer Login</a></p>
             <p><a href="/portal/admin-dashboard">Admin</a></p>
           </div>
@@ -276,26 +262,14 @@ const localBusinessSchema = {
             <h5>Hours</h5>
             <p>Mon – Fri · 8am – 6pm</p>
             <p>Sat · 9am – 2pm</p>
-            <p>Bedford &amp; Northeast Ohio</p>
+            <p>Shop &amp; Mobile Nationwide</p>
           </div>
         </div>
         <div class="container footer-bottom">
-          <span>© 2026 All Dent PDR · Hail Damage Repair Shop — Bedford &amp; Cleveland, OH</span>
-          <span><a href="/about">About</a> · <a href="/our-work">Our Work</a> · <a href="/service-area">Service Area</a> · <a href="/blog">Blog</a> · <a href="/contact">Contact</a></span>
-        </div>
-        <div class="container" style="text-align:center;padding-top:12px;padding-bottom:20px;border-top:1px solid rgba(255,255,255,0.08);margin-top:8px;">
-          <span style="font-size:0.82rem;color:rgba(255,255,255,0.45);">Interested in a site like this? <a href="https://www.premierdigitalsolution.com/" target="_blank" rel="noopener noreferrer" style="color:rgba(255,255,255,0.65);text-decoration:underline;text-underline-offset:3px;">Visit Premier Digital Solution LLC</a></span>
+          <span>© 2026 AllDent PDR · Hail Damage Repair Shop — Bedford &amp; Cleveland, OH</span>
+          <span><a href="/about">About</a> · <a href="/service-area">Service Area</a> · <a href="/blog">Blog</a> · <a href="/contact">Contact</a></span>
         </div>
       </footer>
     )}
-    {!bare && (
-      <div class="mobile-cta-bar" aria-label="Quick contact">
-        <a class="mcta-call" href="tel:18554255336">📞 Call Now</a>
-        <a class="mcta-quote" href="/contact">Get Free Estimate</a>
-      </div>
-    )}
-    {!bare && <ChatWidget client:idle />}
-
-
   </body>
 </html>

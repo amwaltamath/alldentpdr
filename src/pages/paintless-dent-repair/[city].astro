@@ -18,14 +18,10 @@ const shopAddress = '7695 Granger Rd, Cleveland, OH 44125';
 const shopPhone = '1-855-425-5336';
 const shopEmail = 'alldentpdr@gmail.com';
 
-const title = `Paintless Dent Repair ${city.name}, OH | All Dent PDR`;
-const description = `Paintless dent repair near ${city.name}, OH from All Dent PDR at 7695 Granger Rd, Cleveland, OH 44125 (${city.driveMinutes} min away). We fix hail dents, door dings, and minor collision dents without repainting.`;
+const title = `Paintless Dent Repair in ${city.name}, OH | Hail Damage Repair | All Dent PDR`;
+const description = `Paintless dent repair near ${city.name}, OH — All Dent PDR's shop is only ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Hail damage, door dings, and minor collision dents. No repaint, factory finish preserved. Call ${shopPhone}.`;
+const keywords = `paintless dent repair ${city.name} OH, PDR ${city.name}, dent repair ${city.name} OH, hail damage repair ${city.name}, door ding repair ${city.name}, ${city.zipCodes.join(', ')}, All Dent PDR`;
 const canonical = `https://alldentpdr.com/paintless-dent-repair/${city.slug}`;
-
-const relatedCities = city.nearbyShops
-  .map((name) => serviceAreas.find((c) => c.name.toLowerCase() === name.toLowerCase()))
-  .filter((c): c is CityData => Boolean(c))
-  .slice(0, 3);
 
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
@@ -103,6 +99,7 @@ const localBusinessSchema = {
 <BaseLayout
   title={title}
   description={description}
+  keywords={keywords}
   canonical={canonical}
   breadcrumbs={breadcrumbs}
   faqItems={faqItems}
@@ -118,9 +115,9 @@ const localBusinessSchema = {
         <span class="hero-pill">
           Serving {city.name}, OH · {city.distanceMiles} mi from shop · {city.driveMinutes} min drive
         </span>
-        <h1>Paintless dent repair in {city.name}, OH</h1>
+        <h1>Paintless dent repair near {city.name}, Ohio</h1>
         <p>
-          Looking for paintless dent repair in {city.name}? {city.tagline} All Dent PDR at <strong>{shopAddress}</strong> handles hail damage, door dings,
+          {city.tagline} All Dent PDR at <strong>{shopAddress}</strong> handles hail damage, door dings,
           and minor collision dents with certified paintless dent repair — no repainting, factory finish
           preserved, free written estimates before any work begins.
         </p>
@@ -160,7 +157,7 @@ const localBusinessSchema = {
   <section class="section">
     <div class="container">
       <span class="section-label">Services Covered</span>
-      <h2>Complete paintless dent repair services for {city.name} vehicles</h2>
+      <h2>One provider for your full dent repair needs in {city.name}</h2>
       <p>{city.uniqueNote}</p>
       <div class="grid-3" style="margin-top:36px;">
         <article class="card">
@@ -291,12 +288,12 @@ const localBusinessSchema = {
         In addition to {city.name}, we regularly serve:
       </p>
       <div style="display:flex;flex-wrap:wrap;gap:12px;margin:24px 0;">
-        {relatedCities.map((nearby) => (
+        {city.nearbyShops.map(n => (
           <a
-            href={`/paintless-dent-repair/${nearby.slug}`}
+            href={`/paintless-dent-repair/${n.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')}`}
             style="padding:10px 18px;background:var(--card);border-radius:8px;border:1px solid #e8e0d8;font-weight:600;color:var(--rust);text-decoration:none;"
           >
-            {nearby.name}, OH →
+            {n}, OH →
           </a>
         ))}
         <a
@@ -306,10 +303,6 @@ const localBusinessSchema = {
           View all 20+ service areas →
         </a>
       </div>
-      <p>
-        Related services in {city.name}: <a href={`/door-ding-repair/${city.slug}`}>door ding repair</a>
-        {' '}and <a href={`/hail-damage-repair/${city.slug}`}>hail damage repair</a>.
-      </p>
     </div>
   </section>
 

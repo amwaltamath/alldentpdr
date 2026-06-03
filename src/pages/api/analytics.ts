@@ -2,10 +2,32 @@ import type { APIRoute } from 'astro';
 import { GoogleAuth } from 'google-auth-library';
 
 export const GET: APIRoute = async () => {
-  const keyJson    = import.meta.env.GA4_SERVICE_ACCOUNT_KEY;
+  const keyJson = import.meta.env.GA4_SERVICE_ACCOUNT_KEY;
+  const clientEmail = import.meta.env.GA_CLIENT_EMAIL;
+  const privateKeyRaw = import.meta.env.GA_PRIVATE_KEY;
   const propertyId = import.meta.env.GA4_PROPERTY_ID;
 
-  if (!keyJson || !propertyId) {
+  let credentials: Record<string, string> | null = null;
+
+  if (keyJson) {
+    try {
+      credentials = JSON.parse(keyJson);
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'invalid_service_account_json' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
+  } else if (clientEmail && privateKeyRaw) {
+    credentials = {
+      type: 'service_account',
+      client_email: clientEmail,
+      // Vercel env vars usually store line breaks as escaped \n.
+      private_key: privateKeyRaw.replace(/\\n/g, '\n'),
+    };
+  }
+
+  if (!credentials || !propertyId) {
     return new Response(
       JSON.stringify({ error: 'not_configured' }),
       { status: 503, headers: { 'Content-Type': 'application/json' } },
@@ -13,7 +35,6 @@ export const GET: APIRoute = async () => {
   }
 
   try {
-    const credentials = JSON.parse(keyJson);
     const auth = new GoogleAuth({
       credentials,
       scopes: ['https://www.googleapis.com/auth/analytics.readonly'],

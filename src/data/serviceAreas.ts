@@ -13,6 +13,18 @@ export interface CityData {
 
 export const serviceAreas: CityData[] = [
   {
+    slug: 'bedford',
+    name: 'Bedford',
+    county: 'Cuyahoga',
+    zipCodes: ['44146'],
+    distanceMiles: 5,
+    driveMinutes: 10,
+    population: 12200,
+    tagline: 'Bedford hail damage repair with fast access to our Cleveland shop and certified PDR technicians.',
+    uniqueNote: 'Bedford is one of our core local service communities and sits only minutes from our Granger Rd shop. We regularly help Bedford drivers with hail claims, direct insurance billing, and factory-finish paintless dent repair.',
+    nearbyShops: ['Bedford Heights', 'Maple Heights', 'Oakwood Village'],
+  },
+  {
     slug: 'garfield-heights',
     name: 'Garfield Heights',
     county: 'Cuyahoga',

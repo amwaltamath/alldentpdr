@@ -3365,6 +3365,26 @@ label {
   background-position: center;
 }
 
+.hero-hail {
+  background-image: linear-gradient(160deg, rgba(28, 22, 18, 0.84), rgba(28, 22, 18, 0.66)), url('/images/hail.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-hail h1,
+.hero-hail p {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-hail .hero-card h3,
+.hero-hail .hero-card p,
+.hero-hail .hero-card li,
+.hero-hail .hero-card .tag {
+  color: #1a1410;
+  text-shadow: none;
+}
+
 .hero-home h1,
 .hero-home p {
   color: #ffffff;
