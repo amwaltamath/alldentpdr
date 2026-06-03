@@ -707,7 +707,23 @@ const PIPELINE_STAGE_META = {
   Complete: { subtitle: 'Finished and ready to close' }
 };
 
+function hasLoanerAgreementData(loanerAgreement) {
+  if (!loanerAgreement) return false;
+
+  return Boolean(
+    loanerAgreement.loanerProvided ||
+    loanerAgreement.vehicle ||
+    loanerAgreement.outDate ||
+    loanerAgreement.returnDate ||
+    loanerAgreement.termsAccepted ||
+    (loanerAgreement.signatureName && String(loanerAgreement.signatureName).trim()) ||
+    (loanerAgreement.signedAt && String(loanerAgreement.signedAt).trim())
+  );
+}
+
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
+  const hasLoanerData = hasLoanerAgreementData(v.releaseFormData?.loanerAgreement);
+
   return (
     <div className="job-inline-detail">
       <div className="jid-header">
@@ -752,7 +768,7 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
                 📄 Print / Download
               </button>
             )}
-            {v.releaseFormData?.loanerAgreement?.loanerProvided && (
+            {hasLoanerData && (
               <button
                 type="button"
                 className="button ghost sm"
@@ -781,8 +797,8 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
             <button
               type="button"
               className="button primary sm"
-              disabled={!v.releaseFormData?.loanerAgreement?.loanerProvided}
-              title={v.releaseFormData?.loanerAgreement?.loanerProvided ? 'Open vehicle loaner data' : 'No vehicle loaner data available'}
+              disabled={!hasLoanerData}
+              title={hasLoanerData ? 'Open vehicle loaner data' : 'No vehicle loaner data available'}
               onClick={() => {
                 const win = window.open('', '_blank', 'width=860,height=720');
                 if (win) { win.document.write(buildLoanerHtml(v, v.releaseFormData)); win.document.close(); }
@@ -2550,6 +2566,7 @@ function buildReleaseHtml(job, data) {
 function VehicleReleaseModal({ job, onClose, onSaved }) {
   const existing = job.releaseFormData || {};
   const existingLoaner = existing.loanerAgreement || {};
+  const existingLoanerData = hasLoanerAgreementData(existingLoaner);
   const today = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
 
   const [paid, setPaid]             = useState(existing.paid    || job.deductible || '');
@@ -2557,7 +2574,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
   const [signedAt, setSignedAt]     = useState(existing.signedAt || '');
   const [witnessedBy, setWitnessBy] = useState(existing.witnessedBy || '');
   const [witnessedAt, setWitnessAt] = useState(existing.witnessedAt || '');
-  const [loanerProvided, setLoanerProvided] = useState(Boolean(existingLoaner.loanerProvided));
+  const [loanerProvided, setLoanerProvided] = useState(Boolean(existingLoaner.loanerProvided || existingLoanerData));
   const [loanerVehicle, setLoanerVehicle] = useState(existingLoaner.vehicle || '');
   const [loanerOutDate, setLoanerOutDate] = useState(existingLoaner.outDate || '');
   const [loanerReturnDate, setLoanerReturnDate] = useState(existingLoaner.returnDate || '');
