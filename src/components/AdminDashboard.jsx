@@ -711,11 +711,15 @@ function hasLoanerAgreementData(loanerAgreement) {
   if (!loanerAgreement) return false;
 
   return Boolean(
+    loanerAgreement.requestedAtRegistration ||
     loanerAgreement.loanerProvided ||
     loanerAgreement.vehicle ||
     loanerAgreement.outDate ||
     loanerAgreement.returnDate ||
     loanerAgreement.termsAccepted ||
+    (loanerAgreement.dlNumber && String(loanerAgreement.dlNumber).trim()) ||
+    (loanerAgreement.dlState && String(loanerAgreement.dlState).trim()) ||
+    (loanerAgreement.dlExpiration && String(loanerAgreement.dlExpiration).trim()) ||
     (loanerAgreement.signatureName && String(loanerAgreement.signatureName).trim()) ||
     (loanerAgreement.signedAt && String(loanerAgreement.signedAt).trim())
   );
@@ -2453,6 +2457,13 @@ function buildLoanerHtml(job, releaseData) {
     <div class="cell"><span class="lbl">Loaner Out / Return</span>${esc(loaner.outDate || '—')} / ${esc(loaner.returnDate || '—')}</div>
   </div>
 
+  ${(loaner.dlNumber || loaner.dlState || loaner.dlExpiration) ? `
+  <div class="row">
+    <div class="cell"><span class="lbl">Driver's License</span>${esc(loaner.dlNumber || '—')}</div>
+    <div class="cell"><span class="lbl">DL State / Expiration</span>${esc(loaner.dlState || '—')} / ${esc(loaner.dlExpiration || '—')}</div>
+  </div>
+  ` : ''}
+
   <div class="legal">
     I accept responsibility for the loaner vehicle while it is in my possession, including safe operation,
     proper care, and reporting any incident or damage immediately to AllDent PDR.<br/>
@@ -2616,6 +2627,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
     witnessedBy,
     witnessedAt: witnessedAt || today,
     loanerAgreement: {
+      ...existingLoaner,
       loanerProvided,
       vehicle: loanerVehicle,
       outDate: loanerOutDate,

@@ -341,6 +341,17 @@ export async function getCustomerVehicleStatus(email, plate) {
 }
 
 export async function registerVehiclePublic(data) {
+  const loanerAgreement = data.requiresLoaner ? {
+    loanerProvided: true,
+    requestedAtRegistration: true,
+    termsAccepted: Boolean(data.loanerAgreementSigned),
+    signatureName: data.signatureName || '',
+    signedAt: data.signedAt || new Date().toISOString(),
+    dlNumber: data.dlNumber || '',
+    dlState: data.dlState || '',
+    dlExpiration: data.dlExpiration || ''
+  } : null;
+
   if (isSupabaseEnabled()) {
     const { data: result, error } = await supabase.rpc('register_vehicle_public', {
       p_customer_name:           data.customerName,
@@ -362,6 +373,11 @@ export async function registerVehiclePublic(data) {
       p_deductible:              data.deductible       || '',
       p_claim_number:            data.claimNumber      || '',
       p_notes:                   data.notes            || '',
+      p_requires_loaner:         Boolean(data.requiresLoaner),
+      p_dl_number:               data.dlNumber         || '',
+      p_dl_state:                data.dlState          || '',
+      p_dl_expiration:           data.dlExpiration     || '',
+      p_loaner_agreement_signed: Boolean(data.loanerAgreementSigned),
       p_direction_to_pay_signed: Boolean(data.directionToPaySigned),
       p_repair_auth_signed:      Boolean(data.repairAuthSigned),
       p_insurance_auth_name:     data.insuranceAuthName || '',
@@ -378,7 +394,14 @@ export async function registerVehiclePublic(data) {
   const list = typeof window !== 'undefined'
     ? JSON.parse(localStorage.getItem('alldentpdr_vehicles') || '[]')
     : [];
-  list.unshift({ id, ...data, status: 'Registered', createdAt: now, updatedAt: now });
+  list.unshift({
+    id,
+    ...data,
+    releaseFormData: loanerAgreement ? { loanerAgreement } : null,
+    status: 'Registered',
+    createdAt: now,
+    updatedAt: now
+  });
   if (typeof window !== 'undefined') {
     localStorage.setItem('alldentpdr_vehicles', JSON.stringify(list));
   }
