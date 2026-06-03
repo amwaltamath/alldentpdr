@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
 const title = 'Bedford Ohio Hail Damage Repair Shop | All Dent PDR | 7695 Granger Rd Cleveland OH';
 const description = 'All Dent PDR’s hail damage repair shop near Bedford, OH. Located at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent repair with insurance billing. Call 1-855-425-5336.';
-const canonical = 'https://alldentpdr.com/bedford-hail-damage-repair';
+const canonical = 'https://alldentpdr.com/hail-damage-repair-bedford-ohio';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Bedford Hail Damage Repair', url: canonical }
@@ -24,7 +24,7 @@ const faqItems = [
 ];
 ---
 
-<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems}>
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems} noindex={true}>
   <section class="hero-img" style="background-image:url('/images/hail.jpg')">
     <div class="hero-img-overlay">
       <div class="container">

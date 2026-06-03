@@ -3371,6 +3371,14 @@ label {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.hero-home .hero-card h3,
+.hero-home .hero-card p,
+.hero-home .hero-card li,
+.hero-home .hero-card .tag {
+  color: #1a1410;
+  text-shadow: none;
+}
+
 .hero-pill {
   display: inline-flex;
   align-items: center;
