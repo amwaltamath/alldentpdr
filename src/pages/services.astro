@@ -2,80 +2,30 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
 
-const title = 'Paintless Dent Repair Services in Cleveland, OH | All Dent PDR';
-const description = 'Paintless dent repair services at All Dent PDR, 7695 Granger Rd, Cleveland, OH 44125. Hail damage repair, door ding removal, and collision dent repair for Bedford and Northeast Ohio.';
+const title = 'Vehicle Hail Damage Repair Services | Bedford &amp; Cleveland, OH | All Dent PDR';
+const description = 'Professional vehicle hail damage repair and paintless dent repair at All Dent PDR’s shop — 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, OH and 20+ Northeast Ohio communities. Cars, trucks, and SUVs welcome. Call 1-855-425-5336.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Services', url: 'https://alldentpdr.com/services' }
 ];
 const faqItems = [
-  { question: 'Where is All Dent PDR’s shop located?', answer: 'Our shop is at 7695 Granger Rd, Cleveland, OH 44125 — just minutes from Bedford, OH. We serve 20+ communities across Northeast Ohio including Bedford, Garfield Heights, Maple Heights, Solon, Parma, and Independence.' },
-  { question: 'How much does paintless dent repair cost near Bedford, Ohio?', answer: 'PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75-$150, while hail damage is quoted per panel after an in-person inspection at our shop.' },
+  { question: 'Where is All Dent PDR’s shop located?', answer: 'Our shop is at 7695 Granger Rd, Cleveland, OH 44125 — just minutes from Bedford, OH. We serve 20+ communities across Northeast Ohio and also offer mobile service nationwide for large hail events.' },
+  { question: 'How much does paintless dent repair cost near Bedford, Ohio?', answer: 'PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75-$150, while vehicle hail damage is quoted per panel after an in-person inspection at our shop.' },
   { question: 'How long does paintless dent repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Hail damage with multiple panels may take 1-3 days. We provide realistic timelines upfront so you can plan.' },
   { question: 'Will PDR damage my factory paint?', answer: 'No. Paintless dent repair preserves your original factory finish. We reshape the metal from behind the panel without using fillers, sanding, or repainting.' },
   { question: 'What types of dents can be fixed with PDR?', answer: 'PDR works best on dents where the paint surface is intact — including door dings, hail dents, minor collision dents, and creases. Very sharp or stretched-metal dents may require conventional repair.' },
   { question: 'Do you work with insurance companies?', answer: 'Yes! All Dent PDR works directly with most major insurance carriers including State Farm, Allstate, Progressive, and GEICO. We handle documentation and billing — you typically only pay your deductible.' }
 ];
-
-const servicesSchema = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'Service',
-      name: 'Hail Damage Repair',
-      serviceType: 'Paintless Dent Repair',
-      provider: {
-        '@type': 'AutoRepair',
-        name: 'All Dent PDR',
-        url: 'https://alldentpdr.com',
-      },
-      areaServed: 'Northeast Ohio',
-      url: 'https://alldentpdr.com/hail-damage-repair-bedford-ohio',
-    },
-    {
-      '@type': 'Service',
-      name: 'Door Ding Repair',
-      serviceType: 'Paintless Dent Repair',
-      provider: {
-        '@type': 'AutoRepair',
-        name: 'All Dent PDR',
-        url: 'https://alldentpdr.com',
-      },
-      areaServed: 'Northeast Ohio',
-      url: 'https://alldentpdr.com/bedford-door-ding-repair',
-    },
-    {
-      '@type': 'Service',
-      name: 'Paintless Dent Repair',
-      serviceType: 'Auto dent removal',
-      provider: {
-        '@type': 'AutoRepair',
-        name: 'All Dent PDR',
-        url: 'https://alldentpdr.com',
-      },
-      areaServed: 'Northeast Ohio',
-      url: 'https://alldentpdr.com/bedford-paintless-dent-repair',
-    },
-  ],
-};
 ---
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services" breadcrumbs={breadcrumbs} faqItems={faqItems}>
-  <Fragment slot="head">
-    <script type="application/ld+json" set:html={JSON.stringify(servicesSchema)} />
-  </Fragment>
-
-  <section class="hero-img" style="background-image:url('/images/pdrhoodafter.png')">
-    <div class="hero-img-overlay">
-      <div class="container">
-        <span class="section-label">Our Services — Bedford &amp; Northeast Ohio</span>
-        <h1>Paintless dent repair &amp; hail damage repair in Northeast Ohio</h1>
-        <p>All Dent PDR's shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> serves Bedford, OH and 20+ surrounding communities. From single door dings to full hail storm recovery — expert PDR with insurance direct billing and free written estimates.</p>
-        <div class="button-row" style="justify-content:center;margin-top:16px;">
-          <a class="button primary" href="/service-area">View All Service Areas</a>
-          <a class="button ghost" href="/contact">Schedule a Visit</a>
-        </div>
-      </div>
+  <section class="page-hero container">
+    <span class="section-label">Our Services — Bedford &amp; Northeast Ohio</span>
+    <h1>Vehicle hail damage repair &amp; paintless dent repair in Northeast Ohio</h1>
+    <p>All Dent PDR's shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> serves Bedford, OH and 20+ surrounding communities. From single door dings to full vehicle hail storm recovery for cars, trucks, and SUVs — expert PDR with insurance direct billing and free written estimates.</p>
+    <div class="button-row" style="justify-content:center;margin-top:16px;">
+      <a class="button primary" href="/hail-damage-repair-bedford-ohio">Bedford Hail Repair Page</a>
+      <a class="button ghost" href="/contact">Schedule a Visit</a>
     </div>
   </section>
 
@@ -85,19 +35,16 @@ const servicesSchema = {
         <span class="tag">Door Dings</span>
         <h3>Paintless door ding repair</h3>
         <p>Professional PDR for parking lot dents and light creases that preserves your factory paint finish.</p>
-        <p><a href="/bedford-door-ding-repair">Door ding repair near Bedford, OH →</a></p>
       </article>
       <article class="card">
         <span class="tag">Hail Damage</span>
-        <h3>Hail storm damage repair</h3>
-        <p>Systematic panel-by-panel paintless dent repair for Northeast Ohio drivers, with insurance documentation and fast turnaround.</p>
-        <p><a href="/hail-damage-repair-bedford-ohio">Hail damage repair near Bedford, OH →</a></p>
+        <h3>Vehicle hail storm damage repair</h3>
+        <p>We repair hail-damaged cars, trucks, and SUVs with systematic panel-by-panel paintless dent repair and fast turnaround from our Cleveland shop.</p>
       </article>
       <article class="card">
         <span class="tag">Minor Collision</span>
         <h3>Collision dent removal</h3>
         <p>Paintless repair for soft impact dents from low-speed bumps where paint remains undamaged.</p>
-        <p><a href="/bedford-paintless-dent-repair">Paintless dent repair options →</a></p>
       </article>
     </div>
   </section>
@@ -106,19 +53,19 @@ const servicesSchema = {
     <div class="container">
       <span class="section-label">How It Works</span>
       <h2>The paintless dent repair process</h2>
-      <p>Simple, transparent, and efficient — start to finish.</p>
+      <p>Simple, transparent, and efficient vehicle hail repair from start to finish.</p>
       <div class="process-grid">
         <div class="process-step card">
-          <h3>Get a Free Estimate</h3>
-          <p>Tell us about the damage, vehicle, and location so we can set up the right evaluation.</p>
+          <h3>Request an Inspection</h3>
+          <p>Tell us about the damage, vehicle, and location so we can set up the right hail or dent evaluation.</p>
         </div>
         <div class="process-step card">
           <h3>Get Your Quote</h3>
           <p>Receive upfront pricing — no hidden fees, no upsells.</p>
         </div>
         <div class="process-step card">
-          <h3>Drop Off at Our Shop</h3>
-          <p>Bring your vehicle to our shop at 7695 Granger Rd, Cleveland, OH 44125 — convenient drop-off and pick-up available.</p>
+          <h3>We Come to You</h3>
+          <p>Our mobile PDR technicians arrive at your location anywhere in the U.S.</p>
         </div>
         <div class="process-step card">
           <h3>Flawless Finish</h3>
@@ -190,6 +137,9 @@ const servicesSchema = {
         Warrensville Heights, Oakwood Village, Northfield, and 15+ additional Northeast Ohio communities.
         <a href="/service-area" style="color:var(--rust);font-weight:600;">See the full service area list.</a>
       </p>
+      <p>
+        If your vehicle was hit in Bedford, start with our <a href="/hail-damage-repair-bedford-ohio" style="color:var(--rust);font-weight:600;">Bedford vehicle hail damage repair page</a> for local directions, FAQs, and storm-specific details.
+      </p>
       <div class="grid-3">
         <article class="card">
           <h3>Detail-first repairs</h3>
@@ -233,8 +183,8 @@ const servicesSchema = {
         </details>
       </div>
       <div class="button-row" style="justify-content: center;">
-        <a class="button primary" href="/contact">Get a Free Estimate</a>
-        <a class="button ghost" href="mailto:alldentpdr@gmail.com?subject=Dent Photo Quote Request">Upload Dent Photos</a>
+        <a class="button primary" href="/contact">Request an Inspection</a>
+        <a class="button ghost" href="/blog">Read the Blog</a>
       </div>
     </div>
   </section>
@@ -244,7 +194,7 @@ const servicesSchema = {
       <h2>Visit our shop or call for a same-day response</h2>
       <p>All Dent PDR · 7695 Granger Rd, Cleveland, OH 44125 · Serving Bedford, OH and 20+ Northeast Ohio communities</p>
       <div class="button-row" style="justify-content: center;">
-        <a class="button primary" href="/contact">Get My Quick Quote</a>
+        <a class="button primary" href="/contact">Schedule at Our Shop</a>
         <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
       </div>
     </div>
