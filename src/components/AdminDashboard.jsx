@@ -797,8 +797,7 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
             <button
               type="button"
               className="button primary sm"
-              disabled={!hasLoanerData}
-              title={hasLoanerData ? 'Open vehicle loaner data' : 'No vehicle loaner data available'}
+              title={hasLoanerData ? 'Open vehicle loaner data' : 'Open loaner document'}
               onClick={() => {
                 const win = window.open('', '_blank', 'width=860,height=720');
                 if (win) { win.document.write(buildLoanerHtml(v, v.releaseFormData)); win.document.close(); }
@@ -2421,6 +2420,7 @@ function buildRegistrationHtml(job) {
 function buildLoanerHtml(job, releaseData) {
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const loaner = releaseData?.loanerAgreement || {};
+  const hasLoanerData = hasLoanerAgreementData(loaner);
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2458,6 +2458,13 @@ function buildLoanerHtml(job, releaseData) {
     proper care, and reporting any incident or damage immediately to AllDent PDR.<br/>
     Terms accepted: ${loaner.termsAccepted ? 'YES' : 'NO'}
   </div>
+
+  ${hasLoanerData ? '' : `
+  <div class="legal">
+    No detailed loaner agreement fields were saved on this job record. If this customer signed the loaner agreement during registration,
+    that older registration data may not have been persisted to the admin job record.
+  </div>
+  `}
 
   <div class="sig">
     ${loaner.signatureName ? `<span class="sig-name">${esc(loaner.signatureName)}</span>` : ''}
