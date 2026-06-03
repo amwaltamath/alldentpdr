@@ -2250,52 +2250,139 @@ function QuoteView({ vehicles }) {
 function buildRegistrationHtml(job) {
   const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const signedAt = job.signedAt ? new Date(job.signedAt).toLocaleString() : '—';
-  const authSigned = Boolean(job.directionToPaySigned) && Boolean(job.repairAuthSigned);
+  const printedAt = new Date().toLocaleString();
+  const loaner = job.releaseFormData?.loanerAgreement || null;
+  const insuranceName = job.insuranceAuthName || job.insuranceCompany || '[ Insurance Company ]';
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <title>AllDent PDR — Registration Form — ${esc(job.id)}</title>
   <style>
-    *{box-sizing:border-box} body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;padding:28px}
-    .hd{display:flex;justify-content:space-between;border-bottom:3px solid #b0522b;padding-bottom:10px;margin-bottom:16px}
-    .title{font-size:20px;font-weight:800;color:#b0522b}.sub{font-size:12px;color:#666}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;padding:28px}
+    .hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #b0522b;padding-bottom:10px;margin-bottom:16px}
+    .title{font-size:20px;font-weight:800;color:#b0522b}
+    .sub{font-size:12px;color:#666}
+    .section{margin-top:16px}
+    .section h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9e8f84;margin:0 0 8px}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+    .row-3{grid-template-columns:1fr 1fr 1fr}
     .cell{border:1px solid #e8e2db;border-radius:8px;padding:10px}
     .lbl{display:block;font-size:10px;font-weight:700;color:#9e8f84;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-    .legal{border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;background:#fffbf6;padding:12px;line-height:1.6;margin:12px 0}
-    .sig{border-top:1.5px solid #1a1410;margin-top:36px;padding-top:6px;font-size:11px;color:#666}
-    .sig-name{font-style:italic;font-size:16px;color:#1a1410;display:block;margin-top:-30px;margin-bottom:8px}
+    .legal{border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;background:#fffbf6;padding:12px;line-height:1.6;margin:10px 0}
+    .check{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:8px}
+    .check.ok{background:#edf8f0;color:#2b6f45;border:1px solid #b7dfc4}
+    .check.no{background:#fff3ef;color:#a14622;border:1px solid #efc7b5}
+    .sig{border-top:1.5px solid #1a1410;margin-top:30px;padding-top:6px;font-size:11px;color:#666}
+    .sig-name{font-style:italic;font-size:16px;color:#1a1410;display:block;margin-top:-28px;margin-bottom:8px}
+    .tiny{font-size:11px;color:#666}
     @media print{body{padding:14px}}
   </style>
 </head>
 <body>
   <div class="hd">
-    <div><div class="title">AllDent PDR</div><div class="sub">Customer Registration Form</div></div>
-    <div class="sub">Job #${esc(job.id)}</div>
-  </div>
-  <div class="row">
-    <div class="cell"><span class="lbl">Customer</span>${esc(job.customerName)}</div>
-    <div class="cell"><span class="lbl">Email</span>${esc(job.email)}</div>
-  </div>
-  <div class="row">
-    <div class="cell"><span class="lbl">Vehicle</span>${esc([job.year, job.make, job.model].filter(Boolean).join(' '))}</div>
-    <div class="cell"><span class="lbl">Plate / VIN</span>${esc(job.plate || '—')} / ${esc(job.vin || '—')}</div>
-  </div>
-  <div class="row">
-    <div class="cell"><span class="lbl">Insurance Company</span>${esc(job.insuranceCompany || '—')}</div>
-    <div class="cell"><span class="lbl">Claim #</span>${esc(job.claimNumber || '—')}</div>
+    <div>
+      <div class="title">AllDent PDR</div>
+      <div class="sub">Customer Registration Form</div>
+      <div class="sub">1-855-425-5336 · alldentpdr@gmail.com</div>
+    </div>
+    <div class="sub">Job #${esc(job.id)}<br/>Printed: ${esc(printedAt)}</div>
   </div>
 
+  <div class="section">
+    <h3>Customer Information</h3>
+    <div class="row">
+      <div class="cell"><span class="lbl">Customer Name</span>${esc(job.customerName)}</div>
+      <div class="cell"><span class="lbl">Email</span>${esc(job.email)}</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">Cell Phone</span>${esc(job.phone || '—')}</div>
+      <div class="cell"><span class="lbl">Home Phone</span>${esc(job.homePhone || '—')}</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">Address</span>${esc(job.address || '—')}</div>
+      <div class="cell"><span class="lbl">City / State / Zip</span>${esc([job.city, job.state, job.zip].filter(Boolean).join(', ') || '—')}</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">How Customer Heard About Us</span>${esc(job.howHeardAboutUs || '—')}</div>
+      <div class="cell"><span class="lbl">Date Signed</span>${esc(signedAt)}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Insurance Information</h3>
+    <div class="row row-3">
+      <div class="cell"><span class="lbl">Insurance Company</span>${esc(job.insuranceCompany || '—')}</div>
+      <div class="cell"><span class="lbl">Deductible</span>${esc(job.deductible || '—')}</div>
+      <div class="cell"><span class="lbl">Claim Number</span>${esc(job.claimNumber || '—')}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Vehicle Information</h3>
+    <div class="row row-3">
+      <div class="cell"><span class="lbl">Year</span>${esc(job.year || '—')}</div>
+      <div class="cell"><span class="lbl">Make</span>${esc(job.make || '—')}</div>
+      <div class="cell"><span class="lbl">Model</span>${esc(job.model || '—')}</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">License Plate</span>${esc(job.plate || '—')}</div>
+      <div class="cell"><span class="lbl">Color</span>${esc(job.color || '—')}</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">VIN</span>${esc(job.vin || '—')}</div>
+      <div class="cell"><span class="lbl">Additional Notes</span>${esc(job.notes || '—')}</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Direction To Pay</h3>
+    <div>
+      <span class="check ${job.directionToPaySigned ? 'ok' : 'no'}">${job.directionToPaySigned ? 'Accepted' : 'Not Accepted'}</span>
+      <span class="tiny">Insurance Authorization Name: ${esc(job.insuranceAuthName || '—')}</span>
+    </div>
+    <p class="legal">
+      I authorize <strong>${esc(insuranceName)}</strong> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.
+    </p>
+    <p class="legal">
+      I do hereby appoint All Dent PDR to accept on my behalf, any and all checks/drafts and to endorse all such checks/drafts for deposit to All Dent PDR account for payment for repairs to said vehicle, which have been accepted and released. The total amount of repair charges must be paid in full before the vehicle can be released for delivery or picked up. If insurance coverage pays either a portion of or the total amount due, I acknowledge that the insurance check/draft must be obtained by me or sent in advance by the insurance company and received by All Dent PDR. I also acknowledge that I must make arrangements with any lien holder or other payees to endorse the insurance check/draft prior to the release of the above repaired vehicle. I authorize any and all supplements payable directly to All Dent PDR for the consideration of repairs made to the vehicle. If I remove my vehicle from the shop prior to the completion of repairs, I agree to pay for parts, labor, handling fees, service charges, and rental car fees associated with the repair. To secure payment in amount of repairs, an expressed mechanics lien on the vehicle is acknowledged and I further agree to pay reasonable attorney's fees and court costs in the event legal action becomes necessary to enforce this contract. All Dent PDR may repossess my vehicle if payment is not secured.
+    </p>
+  </div>
+
+  <div class="section">
+    <h3>Repair Authorization</h3>
+    <div>
+      <span class="check ${job.repairAuthSigned ? 'ok' : 'no'}">${job.repairAuthSigned ? 'Accepted' : 'Not Accepted'}</span>
+    </div>
+    <p class="legal">
+      I hereby authorize All Dent PDR employees/contractors to operate my vehicle for the purpose of testing, inspection, delivery to and from for repairs. I acknowledge and agree that All Dent PDR will not be held responsible for loss or damage to the vehicle or articles left in the vehicle in case of fire, theft, vehicle accident, or any other cause beyond the control of All Dent PDR. Further, I acknowledge, that if closer analysis reveals additional repairs are necessary, either I or my insurance company will be contacted for authorization of any additional repair charges. If new parts listed in the insurance estimate are not available or replaceable by All Dent PDR, I authorize All Dent PDR to repair such parts when possible. Old parts will be disposed of unless otherwise instructed. I authorize All Dent PDR to manufacture access to dents that may not be accessible due to their location on the vehicle. And as such, All Dent PDR is not responsible for any unrelated prior damage (UPD) noted in the estimate or damage caused by prior work performed on the vehicle.
+    </p>
+    <p class="legal"><strong>I authorize All Dent PDR to perform repairs on my vehicle per All Dent PDR estimate.</strong></p>
+  </div>
+
+  ${loaner ? `
+  <div class="section">
+    <h3>Loaner Agreement Data (If Provided)</h3>
+    <div class="row row-3">
+      <div class="cell"><span class="lbl">Loaner Provided</span>${loaner.loanerProvided ? 'Yes' : 'No'}</div>
+      <div class="cell"><span class="lbl">Loaner Vehicle</span>${esc(loaner.vehicle || '—')}</div>
+      <div class="cell"><span class="lbl">Terms Accepted</span>${loaner.termsAccepted ? 'Yes' : 'No'}</div>
+    </div>
+    <div class="row">
+      <div class="cell"><span class="lbl">Loaner Out / Return</span>${esc(loaner.outDate || '—')} / ${esc(loaner.returnDate || '—')}</div>
+      <div class="cell"><span class="lbl">Loaner Signature</span>${esc(loaner.signatureName || '—')} · ${esc(loaner.signedAt || '—')}</div>
+    </div>
+  </div>
+  ` : ''}
+
   <div class="legal">
-    Direction to Pay: ${job.directionToPaySigned ? 'Accepted' : 'Not accepted'}<br/>
-    Repair Authorization: ${job.repairAuthSigned ? 'Accepted' : 'Not accepted'}<br/>
-    Insurance authorization name: ${esc(job.insuranceAuthName || '—')}
+    By typing your name and checking both authorization boxes, the customer agrees this constitutes a legal electronic signature on both the Direction to Pay and Repair Authorization agreements.
   </div>
 
   <div class="sig">
     ${job.signatureName ? `<span class="sig-name">${esc(job.signatureName)}</span>` : ''}
-    Signature: ${authSigned ? 'Complete' : 'Incomplete'} &nbsp;&nbsp; Date Signed: ${esc(signedAt)}
+    Customer Signature Name: ${esc(job.signatureName || '—')} &nbsp;&nbsp; Date Signed: ${esc(signedAt)}
   </div>
 
   <script>window.onload = function(){ window.print(); }<\/script>
