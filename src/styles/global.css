@@ -4,12 +4,12 @@
 
 :root {
   /* Brand */
-  --rust: #c95a2b;
-  --rust-600: #b04a20;
-  --rust-700: #8f3a17;
-  --rust-50: #fbeee6;
-  --sage: #2f7a5c;
-  --sage-600: #266148;
+  --rust: #fc1317;
+  --rust-600: #e01014;
+  --rust-700: #b60c0f;
+  --rust-50: #ffeaeb;
+  --sage: #0a72d1;
+  --sage-600: #085fb0;
 
   /* Neutrals (cool, modern) */
   --ink: #0b1220;
@@ -1655,10 +1655,10 @@ select {
   --ink-soft: #4a3f36;
   --sand: #f6efe7;
   --clay: #d19c63;
-  --rust: #b0522b;
-  --rust-dark: #8c3e1e;
-  --sage: #4a7a5c;
-  --sage-dark: #3a6148;
+  --rust: #fc1317;
+  --rust-dark: #d90f13;
+  --sage: #0a72d1;
+  --sage-dark: #085fb0;
   --sky: #eef5fb;
   --card: #fffbf6;
   --white: #ffffff;
@@ -3357,6 +3357,18 @@ label {
   font-size: clamp(1rem, 1.3vw, 1.12rem);
   line-height: 1.66;
   max-width: 64ch;
+}
+
+.hero-home {
+  background-image: linear-gradient(160deg, rgba(28, 22, 18, 0.82), rgba(28, 22, 18, 0.65)), url('/images/hail.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-home h1,
+.hero-home p {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .hero-pill {

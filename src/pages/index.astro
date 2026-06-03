@@ -5,7 +5,7 @@ import BeforeAfter from '../components/BeforeAfter.jsx';
 const title = 'Paintless Dent Repair Cleveland OH | Hail Damage Repair Northeast Ohio | All Dent PDR';
 const description = 'All Dent PDR operates a paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125, serving the Greater Cleveland area and all of Northeast Ohio. Hail damage repair, door ding removal, and more. Call 1-855-425-5336.';
 const faqItems = [
-	{ question: 'Where is the All Dent PDR shop located?', answer: 'Our repair shop is at 7695 Granger Rd, Cleveland, OH 44125, in the south Cleveland area near Garfield Heights and Cuyahoga Heights. We serve all of Greater Cleveland, Bedford, Parma, Solon, and Northeast Ohio.' },
+  { question: 'Where is the All Dent PDR shop located?', answer: 'Our repair shop is at 7695 Granger Rd, Cleveland, OH 44125, in the south Cleveland area near Garfield Heights and Cuyahoga Heights. We serve all of Greater Cleveland, Bedford, Parma, Solon, and Northeast Ohio. Mobile service is also available nationwide.' },
   { question: 'What is paintless dent repair?', answer: 'Paintless dent repair (PDR) is a technique that removes dents from vehicle panels without sanding, filling, or repainting. A technician uses specialized tools to reshape the metal from behind the panel, preserving your factory paint finish.' },
   { question: 'How much does paintless dent repair cost near Cleveland, Ohio?', answer: 'PDR cost depends on dent size, location, and accessibility. Small door dings typically range from $75-$150. Hail damage is quoted per panel after an in-person inspection so we can price the repair accurately.' },
   { question: 'How long does a typical PDR repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Multi-panel hail damage may take a full day. We provide a timeline upfront so you can plan accordingly.' }
@@ -13,32 +13,33 @@ const faqItems = [
 ---
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com" faqItems={faqItems}>
-	<section class="hero">
+	<section class="hero hero-home">
 		<div class="container hero-inner">
 			<div>
-				<h1>Cleveland's most trusted paintless dent repair &amp; hail damage shop</h1>
+			<span class="hero-pill">Paintless Dent Repair Shop — Cleveland &amp; Northeast Ohio | 7695 Granger Rd, Cleveland OH 44125</span>
+				<h1>Cleveland's trusted paintless dent repair &amp; hail damage shop</h1>
 				<p>
 					All Dent PDR's repair shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> serves the Greater
 					Cleveland area and all of Northeast Ohio. We restore hail-damaged vehicles with factory-quality paintless
 					dent repair — no repainting, no guesswork, just results your insurance company will approve.
 				</p>
 				<div class="button-row">
-					<a class="button primary" href="/contact">Get a Free Estimate</a>
-					<a class="button ghost" href="tel:18554255336">Call Now</a>
+					<a class="button primary" href="/contact">Request an Inspection</a>
+					<a class="button ghost" href="/services">Our Services</a>
 				</div>
 			</div>
 			<div class="hero-card">
-				<h3>We don't just remove dents — we restore your vehicle to factory perfection</h3>
+				<h3>Why Cleveland-area drivers choose All Dent PDR</h3>
 				<ul>
-					<li>Local Cleveland shop — established, accountable, and here to stay</li>
-					<li>Every panel inspected under LED lighting before we call you</li>
-					<li>We won't hand back a car we wouldn't be proud of</li>
-					<li>No free gimmicks — honest pricing, real results</li>
-					<li>Factory OEM paint preserved on every single repair</li>
-					<li>Insurance-approved repairs, handled start to finish</li>
+					<li>Certified paintless dent repair technicians</li>
+					<li>Premium, detail-first workmanship on every panel</li>
+					<li>Nationwide storm response — we come to you</li>
+					<li>Preserve your factory paint &amp; vehicle value</li>
+					<li>Insurance-approved repairs with direct billing</li>
+					<li>Inspection-based pricing for accurate repair planning</li>
 				</ul>
 				<p class="tag">Shop: 7695 Granger Rd, Cleveland, OH 44125</p>
-				<p>Trusted by Northeast Ohio drivers, dealerships, and insurance partners.</p>
+				<p>Trusted by drivers, dealerships, and insurance partners nationwide.</p>
 			</div>
 		</div>
 	</section>
@@ -56,7 +57,8 @@ const faqItems = [
 			<h2>Serving Greater Cleveland and all of Northeast Ohio from our south Cleveland shop</h2>
 			<p>
 				Our shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> is conveniently located in south
-				Cleveland near Garfield Heights, Cuyahoga Heights, and Newburgh Heights.
+				Cleveland near Garfield Heights, Cuyahoga Heights, and Newburgh Heights. Drop your vehicle off or
+				take advantage of our mobile service for insurance-approved hail damage repair anywhere in Northeast Ohio.
 			</p>
 			<p>
 				We serve Bedford, Parma, Maple Heights, Solon, Warrensville Heights, Twinsburg, Beachwood,
@@ -64,7 +66,7 @@ const faqItems = [
 				<a href="/service-area">See our full service area →</a>
 			</p>
 			<div class="button-row" style="justify-content: center;">
-				<a class="button primary" href="/contact">Get a Free Estimate</a>
+				<a class="button primary" href="/contact">Request an Inspection</a>
 				<a class="button ghost" href="/service-area">View Service Area</a>
 			</div>
 		</div>
@@ -116,14 +118,6 @@ const faqItems = [
 				<div class="process-step card">
 					<h3>Flawless Finish</h3>
 					<p>Drive away with factory-quality results. Your paint stays original, your value stays intact.</p>
-				</div>
-			</div>
-			<div class="inline-cta-strip">
-				<h3>Ready to get started? It only takes 30 seconds.</h3>
-				<p>Tell us about the damage or snap a few photos — we'll get back to you with a quote same day.</p>
-				<div class="button-row" style="justify-content:center;">
-					<a class="button primary" href="/contact">Get My Free Estimate</a>
-					<a class="button ghost" href="tel:18554255336">📞 Call 1-855-425-5336</a>
 				</div>
 			</div>
 		</div>
@@ -189,13 +183,14 @@ const faqItems = [
 						alt="Trunk lid dent repair Cleveland OH - Paintless dent repair before after comparison"
 					/>
 				</div>
-			</div>
-			<div class="inline-cta-strip">
-				<h3>Like what you see? Get your vehicle restored too.</h3>
-				<p>Results like these are what we deliver for every customer — hail damage, door dings, and more.</p>
-				<div class="button-row" style="justify-content:center;">
-					<a class="button primary" href="/contact">Get a Free Estimate</a>
-					<a class="button ghost" href="tel:18554255336">Call Now</a>
+				<div class="card">
+					<span class="tag">Side Panel</span>
+					<BeforeAfter 
+						client:load 
+						before="/images/sidepaneldentbefore.png" 
+						after="/images/sidepaneldentafter.png" 
+						alt="Car side panel dent repair Cleveland OH - Professional PDR results preserve original paint"
+					/>
 				</div>
 			</div>
 		</div>
@@ -203,21 +198,21 @@ const faqItems = [
 
 	<section class="section">
 		<div class="container">
-			<span class="section-label">Why All Dent PDR</span>
-			<h2>We're local. We're accountable. We restore — not just repair.</h2>
-			<p>Every summer, storm chasers roll into Northeast Ohio making big promises and bigger free offers. Then they're gone. All Dent PDR is different — we live here, we work here, and our reputation is built on the quality of every car that leaves our shop.</p>
-			<div class="grid-3" style="margin-top:36px;">
+			<span class="section-label">Why AllDent</span>
+			<h2>Why choose AllDent for paintless dent repair?</h2>
+			<p>Mobile, trusted, and quality-driven — here's what sets us apart from high-volume hail shops and traditional body repair.</p>
+			<div class="grid-3">
 				<article class="card">
-					<h3>Not a storm chaser — a local shop</h3>
-					<p>We're rooted in Northeast Ohio. Our shop at 7695 Granger Rd has served this community for years and we'll still be here long after any storm has passed. When you have a question six months from now, you can call us.</p>
+					<h3>Premium craftsmanship</h3>
+					<p>We focus on clean metal finishing, precise tool work, and panel-by-panel quality control so the final result looks right under real light.</p>
 				</article>
 				<article class="card">
-					<h3>Perfection, not just completion</h3>
-					<p>We don't just pull dents and move on. Every repair goes through a final inspection under LED lighting before we call you. If it's not factory-perfect, it doesn't leave our shop. Period.</p>
+					<h3>No gimmick-first sales</h3>
+					<p>Some companies lead with promotions. We lead with repair quality, honest assessments, and workmanship that protects your vehicle's finish and value.</p>
 				</article>
 				<article class="card">
-					<h3>Honest work over free gimmicks</h3>
-					<p>Storm chasers lead with free lunches, free rentals, and inflated claims to win your business. We lead with craftsmanship. Our reputation is the only thing we're selling — and it speaks for itself.</p>
+					<h3>Factory finish preserved</h3>
+					<p>Our PDR techniques keep your original paint intact, protecting your vehicle's resale value and avoiding unnecessary refinishing.</p>
 				</article>
 			</div>
 		</div>
@@ -231,7 +226,7 @@ const faqItems = [
 			<div class="testimonial-grid">
 				<blockquote class="testimonial-card">
 					<div class="testimonial-stars">★★★★★</div>
-					<p class="testimonial-text">"I brought my truck in after a massive hail storm and they fixed every dent. You can't even tell it was damaged. They saved me thousands compared to a body shop."</p>
+					<p class="testimonial-text">"AllDent came out after a massive hail storm and fixed every dent on my truck. You can't even tell it was damaged. They saved me thousands compared to a body shop."</p>
 					<footer class="testimonial-author">
 						<strong>Mike R.</strong>
 						<span>Dallas, TX — Hail Damage Repair</span>
@@ -239,7 +234,7 @@ const faqItems = [
 				</blockquote>
 				<blockquote class="testimonial-card">
 					<div class="testimonial-stars">★★★★★</div>
-					<p class="testimonial-text">"Super professional and fast. I dropped off my vehicle at the shop, they fixed a door ding quickly, and it looks perfect. Highly recommend All Dent PDR."</p>
+					<p class="testimonial-text">"Super professional and fast. They came to my office parking lot, fixed a door ding in under an hour, and it looks perfect. Highly recommend All Dent PDR."</p>
 					<footer class="testimonial-author">
 						<strong>Sarah T.</strong>
 						<span>Cleveland, OH — Door Ding Removal</span>
@@ -259,10 +254,10 @@ const faqItems = [
 
 	<section class="cta-banner">
 		<div class="container">
-			<h2>Hail damage anywhere in Northeast Ohio? Start with a free assessment.</h2>
-			<p>Tell us where the storm hit and what vehicle was affected. We serve the entire Greater Cleveland area from our shop at 7695 Granger Rd, Cleveland, OH 44125.</p>
+			<h2>Hail damage anywhere in Northeast Ohio? We'll come to you.</h2>
+			<p>Tell us where the storm hit and what vehicle was affected. We serve the entire Greater Cleveland area and deploy nationwide for major hail events.</p>
 			<div class="button-row" style="justify-content: center;">
-				<a class="button primary" href="/contact">Get a Free Estimate</a>
+				<a class="button primary" href="/contact">Request an Inspection</a>
 				<a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
 			</div>
 		</div>
@@ -282,7 +277,7 @@ const faqItems = [
 				</details>
 				<details class="faq-item">
 					<summary>Where does All Dent PDR provide service?</summary>
-					<p>All Dent PDR operates a shop at 7695 Granger Rd, Cleveland, OH 44125, serving Greater Cleveland and all of Northeast Ohio with paintless dent repair, hail damage repair, and door ding removal.</p>
+					<p>All Dent PDR operates a shop at 7695 Granger Rd, Cleveland, OH 44125, serving Greater Cleveland and all of Northeast Ohio. We also deploy nationwide to areas affected by major hail storms, providing on-site paintless dent repair wherever storm damage occurs.</p>
 				</details>
 				<details class="faq-item">
 					<summary>How long does a typical PDR repair take?</summary>

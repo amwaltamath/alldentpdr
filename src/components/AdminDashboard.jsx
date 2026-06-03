@@ -770,13 +770,25 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               type="button"
-              className="button ghost sm"
+              className="button primary sm"
               onClick={() => {
                 const win = window.open('', '_blank', 'width=860,height=720');
                 if (win) { win.document.write(buildRegistrationHtml(v)); win.document.close(); }
               }}
             >
-              📄 Print / Download
+              📄 Registration Report
+            </button>
+            <button
+              type="button"
+              className="button primary sm"
+              disabled={!v.releaseFormData?.loanerAgreement?.loanerProvided}
+              title={v.releaseFormData?.loanerAgreement?.loanerProvided ? 'Open vehicle loaner data' : 'No vehicle loaner data available'}
+              onClick={() => {
+                const win = window.open('', '_blank', 'width=860,height=720');
+                if (win) { win.document.write(buildLoanerHtml(v, v.releaseFormData)); win.document.close(); }
+              }}
+            >
+              Vehicle Loaner Data
             </button>
           </div>
 
