@@ -1173,7 +1173,7 @@ function AnalyticsView() {
         <ol>
           <li>In <a href="https://console.cloud.google.com" target="_blank" rel="noopener">Google Cloud Console</a> — enable the <strong>Google Analytics Data API</strong> and create a <strong>Service Account</strong>. Download its JSON key.</li>
           <li>In <a href="https://analytics.google.com" target="_blank" rel="noopener">GA4 Admin</a> → Property Access Management — add the service account email as <strong>Viewer</strong>.</li>
-          <li>In <a href="https://vercel.com" target="_blank" rel="noopener">Vercel</a> → Project Settings → Environment Variables — add either:<br /><code>GA4_SERVICE_ACCOUNT_KEY</code> = (entire JSON key as one line)<br />or<br /><code>GA_CLIENT_EMAIL</code> + <code>GA_PRIVATE_KEY</code> (from that same JSON key). Also add <code>GA4_PROPERTY_ID</code> = (your numeric GA4 property ID, e.g. <code>123456789</code>).</li>
+          <li>In <a href="https://vercel.com" target="_blank" rel="noopener">Vercel</a> → Project Settings → Environment Variables — add either:<br /><code>GA4_SERVICE_ACCOUNT_KEY</code> or <code>GOOGLE_APPLICATION_CREDENTIALS_JSON</code> = (entire JSON key as one line)<br />or<br /><code>GA_CLIENT_EMAIL</code> / <code>GOOGLE_CLIENT_EMAIL</code> + <code>GA_PRIVATE_KEY</code> / <code>GOOGLE_PRIVATE_KEY</code> (from that same JSON key). Also add <code>GA4_PROPERTY_ID</code> = (your numeric GA4 property ID, e.g. <code>123456789</code>).</li>
           <li>Redeploy — analytics will appear here automatically.</li>
         </ol>
       </div>

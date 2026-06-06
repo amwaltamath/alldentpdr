@@ -2,9 +2,9 @@ import type { APIRoute } from 'astro';
 import { GoogleAuth } from 'google-auth-library';
 
 export const GET: APIRoute = async () => {
-  const keyJson = import.meta.env.GA4_SERVICE_ACCOUNT_KEY;
-  const clientEmail = import.meta.env.GA_CLIENT_EMAIL;
-  const privateKeyRaw = import.meta.env.GA_PRIVATE_KEY;
+  const keyJson = import.meta.env.GA4_SERVICE_ACCOUNT_KEY || import.meta.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+  const clientEmail = import.meta.env.GA_CLIENT_EMAIL || import.meta.env.GOOGLE_CLIENT_EMAIL;
+  const privateKeyRaw = import.meta.env.GA_PRIVATE_KEY || import.meta.env.GOOGLE_PRIVATE_KEY;
   const propertyId = import.meta.env.GA4_PROPERTY_ID;
 
   let credentials: Record<string, string> | null = null;
@@ -29,7 +29,13 @@ export const GET: APIRoute = async () => {
 
   if (!credentials || !propertyId) {
     return new Response(
-      JSON.stringify({ error: 'not_configured' }),
+      JSON.stringify({
+        error: 'not_configured',
+        missing: {
+          propertyId: !propertyId,
+          credentials: !credentials,
+        },
+      }),
       { status: 503, headers: { 'Content-Type': 'application/json' } },
     );
   }
