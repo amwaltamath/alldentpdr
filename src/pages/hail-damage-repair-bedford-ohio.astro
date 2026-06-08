@@ -1,8 +1,8 @@
 ﻿---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = 'Vehicle Hail Damage Repair Bedford Ohio 44146 | All Dent PDR';
-const description = 'Vehicle hail damage repair near Bedford, Ohio 44146. All Dent PDR at 7695 Granger Rd, Cleveland OH 44125 restores cars, trucks, and SUVs with paintless dent repair: no repainting, insurance approved, 1-3 day turnaround. Call 1-855-425-5336.';
+const title = 'Hail Damage Repair Bedford Ohio 44146 | All Dent PDR | Cleveland, OH';
+const description = 'Hail damage repair near Bedford, Ohio 44146. All Dent PDR — 7695 Granger Rd, Cleveland OH 44125 — restores vehicles with paintless dent repair: no repainting, insurance approved, 1–3 day turnaround. Call 1-855-425-5336.';
 const canonical = 'https://alldentpdr.com/hail-damage-repair-bedford-ohio';
 
 const breadcrumbs = [
@@ -40,8 +40,8 @@ const faqItems = [
     answer: 'We serve Bedford, OH 44146 and all surrounding zip codes including 44125 (Garfield Heights / our shop), 44137 (Maple Heights), 44128 (Warrensville Heights), and 44131 (Independence). If you are in Cuyahoga County, we almost certainly serve your area.'
   },
   {
-    question: 'Where is your shop relative to Bedford, Ohio?',
-    answer: 'Our shop at 7695 Granger Rd in Cleveland is only about 10 minutes from Bedford, OH 44146. We offer free walk-in damage assessments with no appointment needed.'
+    question: 'Can you come to Bedford for a mobile hail inspection?',
+    answer: 'Yes — during active hail storm events we can dispatch a mobile technician to Bedford, OH 44146. For everyday repairs, our shop at 7695 Granger Rd in Cleveland is only about 10 minutes from Bedford and offers free walk-in damage assessments with no appointment needed.'
   },
   {
     question: 'How soon after a hail storm should I get my car repaired in Bedford, OH?',
@@ -123,20 +123,6 @@ const localBusinessSchema = {
     }
   ]
 };
-
-const hailServiceSchema = {
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "name": "Hail Damage Repair in Bedford, OH",
-  "serviceType": "Paintless Dent Repair",
-  "areaServed": "Bedford, OH 44146",
-  "provider": {
-    "@type": "AutoRepair",
-    "name": "All Dent PDR",
-    "url": "https://alldentpdr.com"
-  },
-  "url": "https://alldentpdr.com/hail-damage-repair-bedford-ohio"
-};
 ---
 
 <BaseLayout
@@ -148,20 +134,18 @@ const hailServiceSchema = {
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
-    <script type="application/ld+json" set:html={JSON.stringify(hailServiceSchema)} />
   </Fragment>
 
   <!-- Hero -->
-  <section class="hero" style="background: linear-gradient(135deg,#1a1410 0%,#3a1f0a 60%,#fc1317 100%);">
+  <section class="hero hero--bedford-hail">
     <div class="container hero-inner">
       <div>
-        <span class="hero-pill">Vehicle Hail Damage Repair Shop Near Bedford, OH 44146</span>
-        <h1>Vehicle hail damage repair near Bedford, Ohio (44146)</h1>
+        <span class="hero-pill">Shop Located in Cleveland, OH — Serving Bedford, OH 44146 &amp; Northeast Ohio</span>
+        <h1>Hail damage repair near Bedford, Ohio (44146)</h1>
         <p>
           All Dent PDR's repair shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> is the area's
-          premier paintless dent repair destination for storm-damaged vehicles. We fix hail damage on cars,
-          trucks, and SUVs on-site using proven PDR techniques — no repainting, no filler, just factory-quality
-          results your insurance company approves.
+          premier paintless dent repair destination. We fix hail damage on-site using proven PDR techniques —
+          no repainting, no filler, just factory-quality results your insurance company approves.
         </p>
         <div class="button-row">
           <a class="button primary" href="/contact">Get a Free Estimate</a>
@@ -172,10 +156,9 @@ const hailServiceSchema = {
         </p>
       </div>
       <div class="hero-card">
-        <h3>Why Bedford vehicle owners choose us</h3>
+        <h3>Why Bedford drivers choose us</h3>
         <ul>
           <li>Physical shop 5 minutes from Bedford, OH</li>
-          <li>Vehicle hail repair for cars, trucks, and SUVs</li>
           <li>Certified paintless dent repair technicians</li>
           <li>Factory OEM finish preserved — no repaint</li>
           <li>Insurance-approved repairs with direct billing</li>
@@ -183,7 +166,7 @@ const hailServiceSchema = {
           <li>Walk-ins welcome · Same-day assessments available</li>
         </ul>
         <p class="tag">7695 Granger Rd · Cleveland, OH 44125</p>
-        <p>Trusted for vehicle hail damage repair by Bedford-area drivers, dealerships, and insurance partners.</p>
+        <p>Trusted by Bedford-area drivers, dealerships, and insurance partners.</p>
       </div>
     </div>
   </section>
@@ -191,7 +174,7 @@ const hailServiceSchema = {
   <!-- Trust Strip -->
   <div class="trust-strip">
     <div class="trust-item"><strong>1,000+</strong><span>Vehicles Repaired</span></div>
-    <div class="trust-item"><strong>#1</strong><span>Bedford Vehicle Hail Repair</span></div>
+    <div class="trust-item"><strong>#1</strong><span>Bedford OH Shop</span></div>
     <div class="trust-item"><strong>5★</strong><span>Customer Rating</span></div>
     <div class="trust-item"><strong>Insurance</strong><span>Approved Repairs</span></div>
   </div>
@@ -199,8 +182,8 @@ const hailServiceSchema = {
   <!-- What is Hail Damage PDR -->
   <section class="section">
     <div class="container">
-      <span class="section-label">Vehicle Hail Repair</span>
-      <h2>What is paintless vehicle hail damage repair?</h2>
+      <span class="section-label">Paintless Dent Repair</span>
+      <h2>What is paintless hail damage repair?</h2>
       <p>
         Paintless dent repair (PDR) is the industry-preferred method for fixing hail damage. Our technicians use
         specialized tools to massage each dent out from behind the panel — restoring the original metal shape without
@@ -238,8 +221,8 @@ const hailServiceSchema = {
         <div>
           <p>
             Our full-service repair shop is conveniently located just minutes from Bedford, Ohio. Drop your vehicle
-            off or schedule a same-day assessment for car, truck, or SUV hail damage — no pressure, just an honest
-            evaluation of what your storm-damaged vehicle needs.
+            off or schedule a same-day assessment — no pressure, just an honest evaluation of what your hail
+            damage needs.
           </p>
           <p><strong>Address:</strong><br />7695 Granger Rd<br />Cleveland, OH 44125</p>
           <p><strong>Hours:</strong><br />Mon–Fri: 8:00am – 6:00pm<br />Saturday: 9:00am – 2:00pm<br />Sunday: Closed</p>
@@ -249,9 +232,6 @@ const hailServiceSchema = {
             <a class="button primary" href="/contact">Get My Quick Quote</a>
             <a class="button ghost" href="tel:18554255336">Call Now</a>
           </div>
-          <p style="margin-top:16px;">
-            Related services: <a href="/bedford-door-ding-repair">door ding repair near Bedford</a>, <a href="/bedford-paintless-dent-repair">paintless dent repair near Bedford</a>, and our <a href="/service-area">full Northeast Ohio hail repair service area</a>.
-          </p>
         </div>
         <div class="card" style="padding:0;overflow:hidden;">
           <iframe
@@ -272,15 +252,15 @@ const hailServiceSchema = {
   <section class="section">
     <div class="container">
       <span class="section-label">The Process</span>
-      <h2>How vehicle hail damage repair works at our Bedford-area shop</h2>
+      <h2>How hail damage repair works at our Bedford-area shop</h2>
       <div class="grid-3" style="counter-reset:steps;">
         <article class="card process-step">
           <h3>1. Bring in your vehicle</h3>
-          <p>Visit our shop at 7695 Granger Rd, Cleveland, OH 44125. Walk-ins are welcome — no appointment needed for a free damage assessment.</p>
+          <p>Visit our shop at 7695 Granger Rd, Cleveland, OH 44125. Walk-ins are welcome. We can also come to you with our mobile service for large hail events.</p>
         </article>
         <article class="card process-step">
           <h3>2. Free damage assessment</h3>
-          <p>Our technician inspects every vehicle panel under specialized lighting to identify all hail dents and document the damage — at no charge to you.</p>
+          <p>Our technician inspects every panel under specialized lighting to identify all hail dents and document the damage — at no charge to you.</p>
         </article>
         <article class="card process-step">
           <h3>3. Written estimate provided</h3>
@@ -306,8 +286,8 @@ const hailServiceSchema = {
   <section class="section">
     <div class="container">
       <span class="section-label">Why PDR?</span>
-      <h2>PDR vs. traditional body shop — which is right for your vehicle hail damage?</h2>
-      <p>Not all hail repair is the same. Here's how paintless dent repair at All Dent PDR compares to a traditional body shop for the typical Bedford-area vehicle hail claim:</p>
+      <h2>PDR vs. traditional body shop — which is right for your hail damage?</h2>
+      <p>Not all hail repair is the same. Here's how paintless dent repair at All Dent PDR compares to a traditional body shop for the typical Bedford-area hail claim:</p>
       <div style="overflow-x:auto;margin-top:32px;">
         <table style="width:100%;border-collapse:collapse;font-size:0.97rem;">
           <thead>
@@ -370,9 +350,9 @@ const hailServiceSchema = {
   <section class="section">
     <div class="container">
       <span class="section-label">Insurance Claims</span>
-      <h2>We work directly with your vehicle insurance company</h2>
+      <h2>We work directly with your insurance company</h2>
       <p>
-        Vehicle hail damage is covered under the <strong>comprehensive portion</strong> of most auto insurance policies.
+        Hail damage is covered under the <strong>comprehensive portion</strong> of most auto insurance policies.
         All Dent PDR makes the claims process easy:
       </p>
       <div class="grid-3" style="margin-top:32px;">
@@ -425,7 +405,7 @@ const hailServiceSchema = {
   <!-- CTA Banner -->
   <section class="cta-banner">
     <div class="container">
-      <h2>Vehicle hail damage? Visit our Bedford-area shop today.</h2>
+      <h2>Hail damage? Visit our Bedford-area shop today.</h2>
       <p>
         All Dent PDR · 7695 Granger Rd, Cleveland, OH 44125 · Mon–Fri 8am–6pm · Sat 9am–2pm<br />
         Walk-ins welcome · Insurance claims handled · Free damage assessments
@@ -484,7 +464,7 @@ const hailServiceSchema = {
   <section class="section">
     <div class="container">
       <span class="section-label">Learn More</span>
-      <h2>Bedford vehicle hail damage repair guides</h2>
+      <h2>Bedford hail damage repair guides</h2>
       <div class="grid-3" style="margin-top:24px;">
         <article class="card">
           <h3><a href="/blog/bedford-ohio-hail-damage-repair" style="color:var(--ink);text-decoration:none;">What to do after a hail storm in Bedford, Ohio</a></h3>
@@ -509,7 +489,7 @@ const hailServiceSchema = {
   <section class="section">
     <div class="container">
       <span class="section-label">FAQ</span>
-      <h2>Frequently asked questions about vehicle hail damage repair near Bedford, OH</h2>
+      <h2>Frequently asked questions about hail damage repair near Bedford, OH</h2>
       <div style="display:flex;flex-direction:column;gap:20px;max-width:780px;margin:0 auto;">
         {faqItems.map(item => (
           <details style="background:var(--card);border-radius:12px;padding:20px 24px;border:1px solid #e8e0d8;">
@@ -523,6 +503,29 @@ const hailServiceSchema = {
 </BaseLayout>
 
 <style>
+  .hero--bedford-hail {
+    background-image: linear-gradient(155deg, rgba(14, 10, 7, 0.86), rgba(14, 10, 7, 0.66)), url('/images/hail.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+
+  .hero--bedford-hail h1,
+  .hero--bedford-hail p {
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  }
+
+  .hero--bedford-hail .hero-pill {
+    background: rgba(255, 244, 230, 0.94);
+    color: #1a1410;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+  }
+
+  .hero--bedford-hail .hero-card {
+    background: rgba(255, 251, 246, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
   .responsive-grid {
     grid-template-columns: 1fr 1fr;
   }

@@ -1,8 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = 'Contact All Dent PDR | Hail Damage Repair Shop — Bedford &amp; Cleveland, OH';
-const description = 'Contact All Dent PDR at our shop — 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, OH and all of Northeast Ohio with expert paintless dent and hail damage repair. Call 1-855-425-5336.';
+const title = 'Contact AllDent PDR | Hail Damage Repair Shop — Bedford &amp; Cleveland, OH';
+const description = 'Contact AllDent PDR at our shop — 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, OH and all of Northeast Ohio with expert paintless dent and hail damage repair. Call 1-855-425-5336.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Contact', url: 'https://alldentpdr.com/contact' }
@@ -10,20 +10,18 @@ const breadcrumbs = [
 ---
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/contact" breadcrumbs={breadcrumbs}>
-  <section class="hero-img" style="background-image:url('/images/hail.jpg')">
-    <div class="hero-img-overlay">
-      <div class="container">
-        <span class="section-label">Contact Us</span>
-        <h1>Get a free estimate — we'll reply same day</h1>
-        <p>Our repair shop is located at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> — serving Bedford, OH and all of Northeast Ohio. Fill out the form, upload dent photos, or call us and we'll reply the same day.</p>
-      </div>
+  <section class="page-hero page-hero--contact">
+    <div class="container">
+      <span class="section-label">Contact Us</span>
+      <h1>Visit our shop or request an inspection</h1>
+      <p>Our repair shop is located at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> — serving Bedford, OH and all of Northeast Ohio. Fill out the form or call us and we'll reply the same day.</p>
     </div>
   </section>
 
   <section class="section alt">
     <div class="container contact-panel">
       <div class="form-card">
-        <h3>Get your free estimate</h3>
+        <h3>Inspection request</h3>
         <p>Fill out the form and we'll contact you within 24 hours.</p>
         <form id="contact-form">
           <label>
@@ -58,7 +56,7 @@ const breadcrumbs = [
             Describe the damage
             <textarea name="message" rows="4" placeholder="Location, size, and any details" required></textarea>
           </label>
-          <button class="button primary" type="submit" id="contact-submit">Get My Free Estimate</button>
+          <button class="button primary" type="submit" id="contact-submit">Send request</button>
           <p id="contact-status" style="margin-top:12px;display:none"></p>
         </form>
 
@@ -78,6 +76,10 @@ const breadcrumbs = [
           const btn = document.getElementById('contact-submit');
           const status = document.getElementById('contact-status');
 
+          if (!(form instanceof HTMLFormElement) || !(btn instanceof HTMLButtonElement) || !(status instanceof HTMLElement)) {
+            return;
+          }
+
           form.addEventListener('submit', async (e) => {
             e.preventDefault();
             btn.disabled = true;
@@ -85,15 +87,6 @@ const breadcrumbs = [
             status.style.display = 'none';
 
             const data = Object.fromEntries(new FormData(form));
-
-            // Shared event ID for Meta pixel ↔ CAPI deduplication
-            const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-            data.event_id = eventId;
-
-            // Attach _fbc / _fbp cookies for better CAPI matching
-            const getCookie = (n) => (document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)') || [])[2] || '';
-            data.fbc = getCookie('_fbc');
-            data.fbp = getCookie('_fbp');
 
             // Attach UTM attribution stored from any page visit in this session
             const utm = JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
@@ -109,14 +102,11 @@ const breadcrumbs = [
               if (res.ok) {
                 form.reset();
                 status.textContent = '✓ Request sent! We\'ll reply within 24 hours.';
-                status.style.color = '#0a71d0';
-                // Meta Pixel — Lead (eventID matches CAPI for deduplication)
-                if (typeof fbq === 'function') {
-                  fbq('track', 'Lead', {}, { eventID: eventId });
-                }
+                status.style.color = '#4a7a5c';
                 // Google Ads conversion — contact form submitted
-                if (typeof gtag === 'function') {
-                  gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
+                const gtagFn = (globalThis as { gtag?: (...args: unknown[]) => void }).gtag;
+                if (typeof gtagFn === 'function') {
+                  gtagFn('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
                 }
               } else {
                 status.textContent = 'Something went wrong. Please call 1-855-425-5336.';
@@ -145,7 +135,7 @@ const breadcrumbs = [
         <p>Serving Bedford, Bedford Heights, Maple Heights, Garfield Heights, Solon, Warrensville Heights, Oakwood Village, Northfield, Twinsburg, and all of Northeast Ohio.</p>
         <hr style="margin:16px 0;border:none;border-top:1px solid #e8e0d8;" />
         <p><strong>Hours:</strong> Mon–Fri 8am–6pm · Sat 9am–2pm</p>
-        <p>Serving Bedford, Cleveland, and Northeast Ohio from our Granger Rd shop.</p>
+        <p>Mobile service also available nationwide for storm-affected areas.</p>
         <p>What sets us apart: premium-quality dent removal, careful finishing, and honest recommendations instead of gimmick-first sales tactics.</p>
         <div class="button-row">
           <a class="button ghost" href="/services">Review services</a>
@@ -153,25 +143,4 @@ const breadcrumbs = [
       </div>
     </div>
   </section>
-
-  <section class="section alt">
-    <div class="container">
-      <h2>Find our shop</h2>
-      <p>7695 Granger Rd, Cleveland, OH 44125 — near Garfield Heights and Cuyahoga Heights, convenient to I-77 and I-480.</p>
-      <div style="margin-top:24px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
-        <iframe
-          title="All Dent PDR shop location map"
-          src="https://maps.google.com/maps?q=7695+Granger+Rd,+Cleveland,+OH+44125&output=embed"
-          width="100%"
-          height="400"
-          style="border:0;display:block;"
-          allowfullscreen
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-        ></iframe>
-      </div>
-    </div>
-  </section>
 </BaseLayout>
-
-
