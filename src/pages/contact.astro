@@ -76,11 +76,8 @@ const breadcrumbs = [
           const btn = document.getElementById('contact-submit');
           const status = document.getElementById('contact-status');
 
-          if (!(form instanceof HTMLFormElement) || !(btn instanceof HTMLButtonElement) || !(status instanceof HTMLElement)) {
-            return;
-          }
-
-          form.addEventListener('submit', async (e) => {
+          if ((form instanceof HTMLFormElement) && (btn instanceof HTMLButtonElement) && (status instanceof HTMLElement)) {
+            form.addEventListener('submit', async (e) => {
             e.preventDefault();
             btn.disabled = true;
             btn.textContent = 'Sending…';
@@ -121,8 +118,9 @@ const breadcrumbs = [
               btn.textContent = 'Send request';
             }
 
-            status.style.display = 'block';
-          });
+              status.style.display = 'block';
+            });
+          }
         </script>
       </div>
       <div class="card">
