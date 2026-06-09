@@ -22,7 +22,7 @@ import {
 
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
 const ADMIN_PASS = import.meta.env.PUBLIC_PORTAL_ADMIN_PASS || 'allDent2026';
-const STATUS_OPTIONS = ['Registered', 'In Progress', 'Complete'];
+const STATUS_OPTIONS = ['Registered', 'Estimate', 'Pending Insurance', 'In Progress', 'In Repair', 'On Hold', 'Complete'];
 
 const initialForm = {
   // Customer Information
@@ -66,7 +66,7 @@ const NAV_ITEMS = [
 
 function statusBadge(status) {
   if (status === 'Complete') return 'badge complete';
-  if (status === 'In Progress') return 'badge progress';
+  if (status === 'In Progress' || status === 'In Repair') return 'badge progress';
   return 'badge registered';
 }
 
@@ -180,12 +180,14 @@ export default function AdminDashboard() {
   }, [vehicles]);
 
   const grouped = useMemo(() => {
-    const list = filteredVehicles;
-    return {
-      Registered: list.filter((v) => v.status === 'Registered'),
-      'In Progress': list.filter((v) => v.status === 'In Progress'),
-      Complete: list.filter((v) => v.status === 'Complete')
-    };
+    const buckets = Object.fromEntries(STATUS_COLUMNS.map((status) => [status, []]));
+
+    for (const vehicle of filteredVehicles) {
+      const bucket = STATUS_COLUMNS.includes(vehicle.status) ? vehicle.status : 'Registered';
+      buckets[bucket].push(vehicle);
+    }
+
+    return buckets;
   }, [filteredVehicles]);
 
   const recent = useMemo(() => filteredVehicles.slice(0, 5), [filteredVehicles]);
@@ -563,7 +565,7 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
       <div className="panel-head" style={{ marginBottom: 18, borderRadius: 12, background: 'transparent', borderBottom: 'none', padding: 0 }}>
         <div>
           <h3 style={{ marginBottom: 4 }}>Repair pipeline</h3>
-          <p className="meta" style={{ margin: 0 }}>Move jobs through Registered → In Progress → Complete</p>
+          <p className="meta" style={{ margin: 0 }}>Move jobs through registration, estimate, insurance, repair, and completion.</p>
         </div>
         <div className="tabs">
           <button type="button" className={mode === 'kanban' ? 'is-active' : ''} onClick={() => setMode('kanban')}>Kanban</button>
@@ -635,7 +637,7 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
   );
 }
 
-const STATUS_COLUMNS = ['Registered', 'In Progress', 'Complete'];
+const STATUS_COLUMNS = ['Registered', 'Estimate', 'Pending Insurance', 'In Progress', 'In Repair', 'On Hold', 'Complete'];
 
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
   return (
