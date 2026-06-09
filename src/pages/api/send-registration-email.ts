@@ -55,7 +55,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   <!-- Header -->
   <div style="background:#fc1317;padding:24px 32px">
     <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700">All Dent PDR</h1>
-    <p style="margin:4px 0 0;color:#f5c9b3;font-size:13px">Mobile Paintless Dent Repair</p>
+    <p style="margin:4px 0 0;color:#f5c9b3;font-size:13px">Paintless Dent Repair Shop</p>
   </div>
 
   <div style="padding:32px">
@@ -129,7 +129,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     <p style="color:#555">Questions? Call us at <strong>1-855-425-5336</strong> or reply to this email.</p>
 
     <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e8e0d5;color:#aaa;font-size:12px">
-      <p style="margin:0">All Dent PDR · Mobile Paintless Dent Repair · alldentpdr.com</p>
+      <p style="margin:0">All Dent PDR · Paintless Dent Repair Shop · alldentpdr.com</p>
     </div>
   </div>
 </div>`,

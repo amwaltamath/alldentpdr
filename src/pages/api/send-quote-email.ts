@@ -96,7 +96,7 @@ export const POST: APIRoute = async ({ request }) => {
     <div style="background:#fc1317;padding:28px 32px;display:flex;justify-content:space-between;align-items:flex-start">
       <div>
         <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">AllDent PDR</div>
-        <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:2px">Mobile Paintless Dent Repair</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:2px">Paintless Dent Repair Shop</div>
       </div>
       <div style="text-align:right">
         <div style="font-size:18px;font-weight:700;color:#fff">${escHtml(quoteNum)}</div>
@@ -174,7 +174,7 @@ export const POST: APIRoute = async ({ request }) => {
 
       <p style="line-height:1.6;color:#4a3f36;margin-bottom:24px">
         Questions about your estimate? Call us at <strong>1-855-425-5336</strong> or reply to this email.
-        We're happy to schedule an appointment at a time and location that works for you.
+        We're happy to schedule an appointment time that works for you.
       </p>
 
       <div style="text-align:center;margin-bottom:8px">
@@ -186,7 +186,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     <!-- Footer -->
     <div style="background:#f6efe7;border-top:1px solid #e8e2db;padding:20px 32px;text-align:center;font-size:11px;color:#9e8f84;line-height:1.8">
-      <strong style="color:#4a3f36">AllDent PDR &middot; Mobile Paintless Dent Repair</strong><br/>
+      <strong style="color:#4a3f36">AllDent PDR &middot; Paintless Dent Repair Shop</strong><br/>
       1-855-425-5336 &middot; <a href="https://alldentpdr.com" style="color:#fc1317">alldentpdr.com</a> &middot; alldentpdr@gmail.com<br/>
       This estimate is valid for 30 days. Prices subject to change upon physical inspection.<br/>
       Method key: PDR = Paintless Dent Repair &nbsp;|&nbsp; R&amp;I = Remove &amp; Install &nbsp;|&nbsp; R&amp;R = Remove &amp; Replace

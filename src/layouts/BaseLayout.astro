@@ -3,9 +3,8 @@ import '../styles/global.css';
 import MobileMenu from '../components/MobileMenu.jsx';
 
 const {
-  title = 'All Dent PDR | Hail Damage & Paintless Dent Repair Cleveland OH',
-  description = 'All Dent PDR provides hail damage repair and paintless dent repair from 7695 Granger Rd, Cleveland, OH 44125, serving Bedford and Northeast Ohio.',
-  keywords = '',
+  title = 'AllDent PDR | Paintless Dent Repair Cleveland OH',
+  description = 'Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125. Fast, high-quality PDR for hail damage, door dings, and minor collision dents across Northeast Ohio.',
   canonical = 'https://alldentpdr.com',
   ogImage = '/images/logo-branded.svg',
   noindex = false,
@@ -27,7 +26,6 @@ const gaId: string = 'G-T7RLXD05RW';
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    {keywords && <meta name="keywords" content={keywords} />}
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -54,7 +52,7 @@ const gaId: string = 'G-T7RLXD05RW';
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/images/logo.jpg" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#b0522b" />
+    <meta name="theme-color" content="#fc1317" />
     
     <!-- Google Analytics -->
     {gaId && (
@@ -71,7 +69,7 @@ const gaId: string = 'G-T7RLXD05RW';
           "@context": "https://schema.org",
           "@type": "AutoRepair",
           "name": "AllDent PDR",
-          "description": "Expert paintless dent repair and hail damage repair shop serving Bedford, OH, Cleveland, and all of Northeast Ohio. Mobile service also available nationwide.",
+          "description": "Expert paintless dent repair and hail damage repair shop serving Bedford, OH, Cleveland, and all of Northeast Ohio.",
           "url": "https://alldentpdr.com",
           "telephone": "1-855-425-5336",
           "email": "alldentpdr@gmail.com",
@@ -180,15 +178,14 @@ const gaId: string = 'G-T7RLXD05RW';
       <header class="site-header">
         <div class="container header-inner">
           <a class="logo" href="/">
-            <img src="/images/logo.jpg" alt="AllDent PDR - Hail Damage and Paintless Dent Repair Cleveland Ohio" class="logo-img" />
+            <img src="/images/logo.jpg" alt="AllDent PDR - Paintless Dent Repair Cleveland" class="logo-img" />
             <div class="logo-text">
               <span class="logo-mark">AllDent PDR</span>
-              <span class="logo-sub">Bedford, OH Shop &amp; Mobile</span>
+              <span class="logo-sub">Bedford, OH Shop</span>
             </div>
           </a>
           <nav class="nav">
             <a href="/services">Services</a>
-            <a href="/hail-damage-repair/bedford">Bedford Hail</a>
             <a href="/service-area">Service Area</a>
             <a href="/about">About</a>
             <a href="/blog">Blog</a>
@@ -213,10 +210,10 @@ const gaId: string = 'G-T7RLXD05RW';
               <img src="/images/logo.jpg" alt="AllDent PDR" class="logo-img" />
               <div class="logo-text">
                 <span class="logo-mark" style="color:#fff;">AllDent PDR</span>
-                <span class="logo-sub">Bedford, OH Shop &amp; Mobile</span>
+                <span class="logo-sub">Bedford, OH Shop</span>
               </div>
             </div>
-            <p>Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, OH and all of Northeast Ohio. Mobile service also available nationwide for hail damage, door dings, and minor collision dents.</p>
+            <p>Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, OH and all of Northeast Ohio for hail damage, door dings, and minor collision dents.</p>
           </div>
           <div>
             <h5>Services</h5>
@@ -226,13 +223,6 @@ const gaId: string = 'G-T7RLXD05RW';
             <p><a href="/hail-damage-repair-bedford-ohio">Bedford OH Hail Repair Shop</a></p>
             <p><a href="/service-area">All Service Areas</a></p>
             <p><a href="/blog">PDR Blog</a></p>
-          </div>
-          <div>
-            <h5>Bedford Pages</h5>
-            <p><a href="/hail-damage-repair/bedford">Hail Damage Repair Bedford</a></p>
-            <p><a href="/paintless-dent-repair/bedford">Paintless Dent Repair Bedford</a></p>
-            <p><a href="/door-ding-repair/bedford">Door Ding Repair Bedford</a></p>
-            <p><a href="/hail-damage-repair-bedford-ohio">Bedford Shop Landing Page</a></p>
           </div>
           <div>
             <h5>Nearby Cities</h5>
@@ -262,7 +252,7 @@ const gaId: string = 'G-T7RLXD05RW';
             <h5>Hours</h5>
             <p>Mon – Fri · 8am – 6pm</p>
             <p>Sat · 9am – 2pm</p>
-            <p>Shop &amp; Mobile Nationwide</p>
+            <p>Shop-Based Service</p>
           </div>
         </div>
         <div class="container footer-bottom">

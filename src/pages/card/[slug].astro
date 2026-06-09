@@ -27,7 +27,7 @@ const website = 'https://alldentpdr.com';
 const displayName = lastName ? `${name} ${lastName}` : name;
 
 const qrData = encodeURIComponent(website);
-const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${qrData}&color=b0522b&bgcolor=ffffff&margin=10`;
+const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${qrData}&color=fc1317&bgcolor=ffffff&margin=10`;
 
 const vcardLines = [
   'BEGIN:VCARD',
@@ -54,7 +54,7 @@ const canonical = `${website}/card/${slug}`;
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{pageTitle}</title>
-  <meta name="description" content={`Digital business card for ${displayName}, ${title} at All Dent PDR. Paintless dent repair shop in Cleveland, OH.`} />
+  <meta name="description" content={`Digital business card for ${displayName}, ${title} at All Dent PDR.`} />
   <meta name="robots" content="noindex,nofollow" />
   <link rel="canonical" href={canonical} />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -92,7 +92,7 @@ const canonical = `${website}/card/${slug}`;
 
     /* Header gradient */
     .biz-header {
-      background: linear-gradient(145deg, #fc1317 0%, #8c3e1e 60%, #6d2f14 100%);
+      background: linear-gradient(145deg, #fc1317 0%, #e0101a 60%, #c50d15 100%);
       padding: 32px 28px 28px;
       position: relative;
       overflow: hidden;
@@ -248,7 +248,7 @@ const canonical = `${website}/card/${slug}`;
       gap: 8px;
       width: 100%;
       padding: 15px;
-      background: linear-gradient(135deg, #fc1317, #8c3e1e);
+      background: linear-gradient(135deg, #fc1317, #e0101a);
       color: #fff;
       font-size: 15px;
       font-weight: 700;
@@ -256,7 +256,7 @@ const canonical = `${website}/card/${slug}`;
       text-decoration: none;
       letter-spacing: .02em;
       transition: opacity .2s, transform .15s;
-      box-shadow: 0 4px 14px rgba(176,82,43,.35);
+      box-shadow: 0 4px 14px rgba(252,19,23,.35);
     }
     .biz-save-btn:hover { opacity: .92; transform: translateY(-1px); }
 

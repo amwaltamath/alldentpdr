@@ -29,11 +29,11 @@ Traditional body shops often require sanding, filler, primer, paint, and curing 
 
 ### 2. Faster turnaround
 
-Body shops juggle dozens of vehicles at once, which means **your car could sit for days before work even starts**. Mobile PDR technicians focus on your vehicle from arrival to completion. Most repairs are finished in hours, not days.
+Body shops juggle dozens of vehicles at once, which means **your car could sit for days before work even starts**. A dedicated PDR-focused shop can move from assessment to repair quickly, and many repairs are finished in hours, not days.
 
-### 3. No rental car needed
+### 3. Less downtime
 
-Since repairs happen at your location and take hours rather than days, you typically don't need a rental car — saving you money and hassle.
+Because PDR avoids sanding and repainting steps, many repairs are completed faster than conventional body work, which often reduces total downtime.
 
 ### 4. Ideal for hail storm response
 
@@ -41,26 +41,25 @@ After a major hail storm, local body shops get overwhelmed with long backlogs. A
 
 This is exactly what All Dent PDR does from our Cleveland-area shop, serving Bedford, Bedford Heights, Garfield Heights, Maple Heights, Solon, and nearby Northeast Ohio communities.
 
-### 5. Perfect for dealerships and fleets
+### 5. Strong fit for dealerships and fleets
 
-Car dealerships, rental car companies, and fleet operators love mobile PDR because:
-- Vehicles stay on the lot — no transport logistics
-- Repairs happen on the dealer's schedule
-- Multiple vehicles can be serviced in a single visit
-- Inventory gets back to sale-ready condition faster
+Car dealerships, rental car companies, and fleet operators benefit from a PDR-focused repair partner because:
+- Repairs follow a consistent quality process
+- Multiple vehicles can be scheduled efficiently
+- Inventory returns to sale-ready condition faster
+- Insurance documentation is handled accurately
 
-### 6. Same quality as shop-based PDR
+### 6. Factory-quality finish remains the goal
 
-Mobile doesn't mean compromised quality. The tools, techniques, and results are identical. A skilled mobile PDR technician delivers the same factory-quality finish as any shop — because the method itself doesn't require shop infrastructure like paint booths or mixing stations.
+Whether the damage is minor or storm-related, the best outcome comes from precise panel reading, controlled tool work, and final inspection under proper lighting.
 
-## When mobile PDR makes the most sense
+## When PDR makes the most sense
 
-Mobile PDR is the best option when:
+PDR is the best option when:
 
 - **You have one or a few dents** from parking lot dings or minor impacts
-- **Your vehicle has hail damage** and local shops are booked out for weeks
-- **You're a dealership** wanting to keep inventory on the lot during repairs
-- **You can't easily get to a shop** — whether due to distance, schedule, or logistics
+- **Your vehicle has hail damage** and needs a fast, insurance-friendly repair path
+- **You're a dealership** trying to restore inventory quickly
 - **Your paint is intact** — PDR works when the finish hasn't cracked or chipped
 
 ## How All Dent PDR's service works
@@ -73,9 +72,9 @@ Mobile PDR is the best option when:
 
 No middlemen, no vague estimates, no surprises.
 
-## The rise of storm-chasing PDR
+## Storm-response PDR demand
 
-One of the fastest-growing segments of mobile PDR is **storm-chasing** — technicians who follow severe weather patterns across the country to help communities recover from hail damage quickly.
+One of the fastest-growing segments in PDR is **storm-response scheduling** — teams scaling up after severe weather to help communities recover from hail damage quickly.
 
 All Dent PDR applies that storm-response mindset locally. When a major hail event hits Northeast Ohio, we help affected vehicle owners quickly understand the damage, claim process, and realistic repair timeline.
 
@@ -86,6 +85,6 @@ This model benefits everyone:
 
 ## The bottom line
 
-Mobile PDR eliminates the friction of traditional shop-based repair. It's faster, more convenient, and delivers the same factory-quality results — wherever you are.
+PDR eliminates much of the friction of traditional body repair. It is fast, efficient, and designed to preserve factory paint when conditions are right.
 
-If your vehicle has dents or hail damage, [contact All Dent PDR](/contact) to request a mobile inspection. We come to you.
+If your vehicle has dents or hail damage, [contact All Dent PDR](/contact) to schedule an in-shop inspection at our Cleveland location.

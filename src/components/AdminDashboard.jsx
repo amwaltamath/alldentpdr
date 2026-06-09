@@ -22,7 +22,7 @@ import {
 
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
 const ADMIN_PASS = import.meta.env.PUBLIC_PORTAL_ADMIN_PASS || 'allDent2026';
-const STATUS_OPTIONS = ['Registered', 'Estimate', 'Pending Insurance', 'In Progress', 'In Repair', 'On Hold', 'Complete'];
+const STATUS_OPTIONS = ['Registered', 'In Progress', 'Complete'];
 
 const initialForm = {
   // Customer Information
@@ -66,8 +66,7 @@ const NAV_ITEMS = [
 
 function statusBadge(status) {
   if (status === 'Complete') return 'badge complete';
-  if (status === 'In Progress' || status === 'In Repair') return 'badge progress';
-  if (status === 'Pending Insurance' || status === 'On Hold') return 'badge registered';
+  if (status === 'In Progress') return 'badge progress';
   return 'badge registered';
 }
 
@@ -78,7 +77,8 @@ function initials(email = '') {
 }
 
 export default function AdminDashboard() {
-  const [session, setLocalSession] = useState(() => getSession());
+  const [session, setLocalSession] = useState(null);
+  const [sessionReady, setSessionReady] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
@@ -97,6 +97,12 @@ export default function AdminDashboard() {
   const [leadsLoading, setLeadsLoading] = useState(false);
 
   const remoteMode = isRemotePortalEnabled();
+
+  // Hydration guard: read persisted session only on the client.
+  useEffect(() => {
+    setLocalSession(getSession());
+    setSessionReady(true);
+  }, []);
 
   // Bootstrap remote session
   useEffect(() => {
@@ -138,49 +144,11 @@ export default function AdminDashboard() {
       }
       setLoading(true);
       setLeadsLoading(true);
-      if (active) setAuthError('');
       try {
-        if (remoteMode) {
-          const user = await getRemoteAuthUser();
-          if (!user) {
-            clearSession();
-            if (active) {
-              setLocalSession(null);
-              setVehicles([]);
-              setLeads([]);
-              setAuthError('Your admin session expired. Please sign in again.');
-            }
-            return;
-          }
-
-          const allowed = await isRemoteAdmin();
-          if (!allowed) {
-            await signOutRemoteAdmin();
-            clearSession();
-            if (active) {
-              setLocalSession(null);
-              setVehicles([]);
-              setLeads([]);
-              setAuthError('This account is not approved for admin access.');
-            }
-            return;
-          }
-
-          if (active && session?.email !== user.email) {
-            const next = { role: 'admin', email: user.email, loggedInAt: session?.loggedInAt || new Date().toISOString() };
-            setSession(next);
-            setLocalSession(next);
-          }
-        }
-
         const [next, leadsNext] = await Promise.all([getVehicles(), getLeads()]);
         if (active) { setVehicles(next); setLeads(leadsNext); }
-      } catch (error) {
-        if (active) {
-          setVehicles([]);
-          setLeads([]);
-          setAuthError(error?.message || 'Unable to load vehicle data.');
-        }
+      } catch {
+        if (active) setAuthError('Unable to load vehicle data.');
       } finally {
         if (active) { setLoading(false); setLeadsLoading(false); }
       }
@@ -212,14 +180,12 @@ export default function AdminDashboard() {
   }, [vehicles]);
 
   const grouped = useMemo(() => {
-    const buckets = Object.fromEntries(STATUS_COLUMNS.map((status) => [status, []]));
-
-    for (const vehicle of filteredVehicles) {
-      const bucket = STATUS_COLUMNS.includes(vehicle.status) ? vehicle.status : 'Registered';
-      buckets[bucket].push(vehicle);
-    }
-
-    return buckets;
+    const list = filteredVehicles;
+    return {
+      Registered: list.filter((v) => v.status === 'Registered'),
+      'In Progress': list.filter((v) => v.status === 'In Progress'),
+      Complete: list.filter((v) => v.status === 'Complete')
+    };
   }, [filteredVehicles]);
 
   const recent = useMemo(() => filteredVehicles.slice(0, 5), [filteredVehicles]);
@@ -338,6 +304,10 @@ export default function AdminDashboard() {
     clearSession();
     setLocalSession(null);
   };
+
+  if (!sessionReady) {
+    return <section className="panel"><div className="kanban-empty">Loading dashboard…</div></section>;
+  }
 
   // ---- LOGIN screen
   if (!session || session.role !== 'admin') {
@@ -470,8 +440,6 @@ export default function AdminDashboard() {
         </header>
 
         <main className="dash-content">
-          {authError && <p className="portal-error" style={{ marginBottom: 16 }}>{authError}</p>}
-
           {view === 'overview' && (
             <OverviewView
               metrics={metrics}
@@ -590,15 +558,12 @@ function OverviewView({ metrics, recent, loading, onJump, remoteMode }) {
 }
 
 function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
-  const totalJobs = STATUS_COLUMNS.reduce((sum, col) => sum + (grouped[col]?.length || 0), 0);
-  const activeJobs = totalJobs - (grouped.Complete?.length || 0);
-
   return (
     <>
       <div className="panel-head" style={{ marginBottom: 18, borderRadius: 12, background: 'transparent', borderBottom: 'none', padding: 0 }}>
         <div>
           <h3 style={{ marginBottom: 4 }}>Repair pipeline</h3>
-          <p className="meta" style={{ margin: 0 }}>Move jobs through the repair stages your jobs already use</p>
+          <p className="meta" style={{ margin: 0 }}>Move jobs through Registered → In Progress → Complete</p>
         </div>
         <div className="tabs">
           <button type="button" className={mode === 'kanban' ? 'is-active' : ''} onClick={() => setMode('kanban')}>Kanban</button>
@@ -606,57 +571,32 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
         </div>
       </div>
 
-      {mode === 'kanban' && (
-        <div className="pipeline-summary">
-          <div className="pipeline-summary-card">
-            <span className="pipeline-summary-label">Visible jobs</span>
-            <strong>{totalJobs}</strong>
-            <span>Across all stages</span>
-          </div>
-          <div className="pipeline-summary-card">
-            <span className="pipeline-summary-label">Active work</span>
-            <strong>{activeJobs}</strong>
-            <span>Not completed yet</span>
-          </div>
-          <div className="pipeline-summary-card is-complete">
-            <span className="pipeline-summary-label">Complete</span>
-            <strong>{grouped.Complete?.length || 0}</strong>
-            <span>Ready to archive</span>
-          </div>
-        </div>
-      )}
-
       {mode === 'kanban' ? (
         <div className="kanban">
           {STATUS_COLUMNS.map((col) => (
             <section key={col} className="kanban-col" data-col={col}>
               <div className="kanban-col-head">
-                <div>
-                  <strong>{col}</strong>
-                  <span className="kanban-col-subtitle">{PIPELINE_STAGE_META[col]?.subtitle || 'Stage in the workflow'}</span>
-                </div>
-                <span className="count">{(grouped[col] || []).length}</span>
+                <strong>{col}</strong>
+                <span className="count">{grouped[col].length}</span>
               </div>
-              <div className="kanban-col-body">
-                {(grouped[col] || []).length === 0 && <div className="kanban-empty">No jobs here.</div>}
-                {(grouped[col] || []).map((v) => (
-                  <article key={v.id} className="kanban-card">
-                    <div className="kc-id">{v.id}</div>
-                    <div className="kc-title">{v.year} {v.make} {v.model}</div>
-                    <div className="kc-meta">{v.customerName} · {v.plate}</div>
-                    <div className="kc-foot">
-                      <span className={statusBadge(v.status)}>{v.status}</span>
-                      <select
-                        value={v.status}
-                        onChange={(e) => onStatusChange(v.id, e.target.value)}
-                        aria-label={`Change status for ${v.id}`}
-                      >
-                        {STATUS_COLUMNS.map((s) => <option key={s} value={s}>{s}</option>)}
-                      </select>
-                    </div>
-                  </article>
-                ))}
-              </div>
+              {grouped[col].length === 0 && <div className="kanban-empty">No jobs here.</div>}
+              {grouped[col].map((v) => (
+                <article key={v.id} className="kanban-card">
+                  <div className="kc-id">{v.id}</div>
+                  <div className="kc-title">{v.year} {v.make} {v.model}</div>
+                  <div className="kc-meta">{v.customerName} · {v.plate}</div>
+                  <div className="kc-foot">
+                    <span className={statusBadge(v.status)}>{v.status}</span>
+                    <select
+                      value={v.status}
+                      onChange={(e) => onStatusChange(v.id, e.target.value)}
+                      aria-label={`Change status for ${v.id}`}
+                    >
+                      {STATUS_COLUMNS.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                </article>
+              ))}
             </section>
           ))}
         </div>
@@ -673,7 +613,7 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
                 </tr>
               </thead>
               <tbody>
-                {STATUS_COLUMNS.flatMap((col) => grouped[col] || []).map((v) => (
+                {STATUS_COLUMNS.flatMap((col) => grouped[col]).map((v) => (
                   <tr key={v.id}>
                     <td><div className="cell-strong">{v.id}</div><div className="cell-sub">{v.plate}</div></td>
                     <td>{v.year} {v.make} {v.model}</td>
@@ -695,39 +635,9 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
   );
 }
 
-const STATUS_COLUMNS = ['Registered', 'Estimate', 'Pending Insurance', 'In Progress', 'In Repair', 'On Hold', 'Complete'];
-
-const PIPELINE_STAGE_META = {
-  Registered: { subtitle: 'New registrations waiting to be reviewed' },
-  Estimate: { subtitle: 'Preparing pricing and scope' },
-  'Pending Insurance': { subtitle: 'Waiting on insurance approval' },
-  'In Progress': { subtitle: 'Work is actively underway' },
-  'In Repair': { subtitle: 'Vehicle is in the repair bay' },
-  'On Hold': { subtitle: 'Paused for parts, approvals, or scheduling' },
-  Complete: { subtitle: 'Finished and ready to close' }
-};
-
-function hasLoanerAgreementData(loanerAgreement) {
-  if (!loanerAgreement) return false;
-
-  return Boolean(
-    loanerAgreement.requestedAtRegistration ||
-    loanerAgreement.loanerProvided ||
-    loanerAgreement.vehicle ||
-    loanerAgreement.outDate ||
-    loanerAgreement.returnDate ||
-    loanerAgreement.termsAccepted ||
-    (loanerAgreement.dlNumber && String(loanerAgreement.dlNumber).trim()) ||
-    (loanerAgreement.dlState && String(loanerAgreement.dlState).trim()) ||
-    (loanerAgreement.dlExpiration && String(loanerAgreement.dlExpiration).trim()) ||
-    (loanerAgreement.signatureName && String(loanerAgreement.signatureName).trim()) ||
-    (loanerAgreement.signedAt && String(loanerAgreement.signedAt).trim())
-  );
-}
+const STATUS_COLUMNS = ['Registered', 'In Progress', 'Complete'];
 
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
-  const hasLoanerData = hasLoanerAgreementData(v.releaseFormData?.loanerAgreement);
-
   return (
     <div className="job-inline-detail">
       <div className="jid-header">
@@ -759,55 +669,6 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
             )}
             <button type="button" className="button primary sm" onClick={() => onRelease(v)}>
               {v.releaseFormData ? '📋 View / Re-sign Release' : '📋 Issue Vehicle Release'}
-            </button>
-            {v.releaseFormData && (
-              <button
-                type="button"
-                className="button ghost sm"
-                onClick={() => {
-                  const win = window.open('', '_blank', 'width=860,height=720');
-                  if (win) { win.document.write(buildReleaseHtml(v, v.releaseFormData)); win.document.close(); }
-                }}
-              >
-                📄 Print / Download
-              </button>
-            )}
-            {hasLoanerData && (
-              <button
-                type="button"
-                className="button ghost sm"
-                onClick={() => {
-                  const win = window.open('', '_blank', 'width=860,height=720');
-                  if (win) { win.document.write(buildLoanerHtml(v, v.releaseFormData)); win.document.close(); }
-                }}
-              >
-                🚗 Loaner Agreement
-              </button>
-            )}
-          </div>
-
-          <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Form</h4>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              className="button primary sm"
-              onClick={() => {
-                const win = window.open('', '_blank', 'width=860,height=720');
-                if (win) { win.document.write(buildRegistrationHtml(v)); win.document.close(); }
-              }}
-            >
-              📄 Registration Report
-            </button>
-            <button
-              type="button"
-              className="button primary sm"
-              title={hasLoanerData ? 'Open vehicle loaner data' : 'Open loaner document'}
-              onClick={() => {
-                const win = window.open('', '_blank', 'width=860,height=720');
-                if (win) { win.document.write(buildLoanerHtml(v, v.releaseFormData)); win.document.close(); }
-              }}
-            >
-              Vehicle Loaner Data
             </button>
           </div>
 
@@ -1173,7 +1034,7 @@ function AnalyticsView() {
         <ol>
           <li>In <a href="https://console.cloud.google.com" target="_blank" rel="noopener">Google Cloud Console</a> — enable the <strong>Google Analytics Data API</strong> and create a <strong>Service Account</strong>. Download its JSON key.</li>
           <li>In <a href="https://analytics.google.com" target="_blank" rel="noopener">GA4 Admin</a> → Property Access Management — add the service account email as <strong>Viewer</strong>.</li>
-          <li>In <a href="https://vercel.com" target="_blank" rel="noopener">Vercel</a> → Project Settings → Environment Variables — add either:<br /><code>GA4_SERVICE_ACCOUNT_KEY</code> or <code>GOOGLE_APPLICATION_CREDENTIALS_JSON</code> = (entire JSON key as one line)<br />or<br /><code>GA_CLIENT_EMAIL</code> / <code>GOOGLE_CLIENT_EMAIL</code> + <code>GA_PRIVATE_KEY</code> / <code>GOOGLE_PRIVATE_KEY</code> (from that same JSON key). Also add <code>GA4_PROPERTY_ID</code> = (your numeric GA4 property ID, e.g. <code>123456789</code>).</li>
+          <li>In <a href="https://vercel.com" target="_blank" rel="noopener">Vercel</a> → Project Settings → Environment Variables — add either:<br /><code>GA4_SERVICE_ACCOUNT_KEY</code> = full service account JSON (one line)<br />or<br /><code>GA_CLIENT_EMAIL</code> + <code>GA_PRIVATE_KEY</code> (with escaped \n newlines), plus <code>GA4_PROPERTY_ID</code> = your numeric GA4 property ID (e.g. <code>123456789</code>)</li>
           <li>Redeploy — analytics will appear here automatically.</li>
         </ol>
       </div>
@@ -1970,7 +1831,7 @@ function QuoteView({ vehicles }) {
   <div class="hd">
     <div class="hd-brand">
       <strong>AllDent PDR</strong>
-      <span>Mobile Paintless Dent Repair</span>
+      <span>Paintless Dent Repair Shop</span>
       <span style="margin-top:4px;color:#555">1-855-425-5336 · alldentpdr.com</span>
     </div>
     <div class="hd-meta">
@@ -2041,7 +1902,7 @@ function QuoteView({ vehicles }) {
   </div>
 
   <div class="footer">
-    <strong>AllDent PDR · Mobile Paintless Dent Repair</strong><br/>
+    <strong>AllDent PDR · Paintless Dent Repair Shop</strong><br/>
     1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com<br/>
     This estimate is valid for 30 days from the date above. Prices subject to change upon physical inspection.<br/>
     Method key: PDR = Paintless Dent Repair &nbsp;|&nbsp; R&amp;I = Remove &amp; Install &nbsp;|&nbsp; R&amp;R = Remove &amp; Replace
@@ -2276,218 +2137,6 @@ function QuoteView({ vehicles }) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Registration + Loaner printable documents
-───────────────────────────────────────────────────────────── */
-function buildRegistrationHtml(job) {
-  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const signedAt = job.signedAt ? new Date(job.signedAt).toLocaleString() : '—';
-  const printedAt = new Date().toLocaleString();
-  const loaner = job.releaseFormData?.loanerAgreement || null;
-  const insuranceName = job.insuranceAuthName || job.insuranceCompany || '[ Insurance Company ]';
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>AllDent PDR — Registration Form — ${esc(job.id)}</title>
-  <style>
-    *{box-sizing:border-box}
-    body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;padding:28px}
-    .hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #b0522b;padding-bottom:10px;margin-bottom:16px}
-    .title{font-size:20px;font-weight:800;color:#b0522b}
-    .sub{font-size:12px;color:#666}
-    .section{margin-top:16px}
-    .section h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9e8f84;margin:0 0 8px}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-    .row-3{grid-template-columns:1fr 1fr 1fr}
-    .cell{border:1px solid #e8e2db;border-radius:8px;padding:10px}
-    .lbl{display:block;font-size:10px;font-weight:700;color:#9e8f84;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-    .legal{border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;background:#fffbf6;padding:12px;line-height:1.6;margin:10px 0}
-    .check{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:8px}
-    .check.ok{background:#edf8f0;color:#2b6f45;border:1px solid #b7dfc4}
-    .check.no{background:#fff3ef;color:#a14622;border:1px solid #efc7b5}
-    .sig{border-top:1.5px solid #1a1410;margin-top:30px;padding-top:6px;font-size:11px;color:#666}
-    .sig-name{font-style:italic;font-size:16px;color:#1a1410;display:block;margin-top:-28px;margin-bottom:8px}
-    .tiny{font-size:11px;color:#666}
-    @media print{body{padding:14px}}
-  </style>
-</head>
-<body>
-  <div class="hd">
-    <div>
-      <div class="title">AllDent PDR</div>
-      <div class="sub">Customer Registration Form</div>
-      <div class="sub">1-855-425-5336 · alldentpdr@gmail.com</div>
-    </div>
-    <div class="sub">Job #${esc(job.id)}<br/>Printed: ${esc(printedAt)}</div>
-  </div>
-
-  <div class="section">
-    <h3>Customer Information</h3>
-    <div class="row">
-      <div class="cell"><span class="lbl">Customer Name</span>${esc(job.customerName)}</div>
-      <div class="cell"><span class="lbl">Email</span>${esc(job.email)}</div>
-    </div>
-    <div class="row">
-      <div class="cell"><span class="lbl">Cell Phone</span>${esc(job.phone || '—')}</div>
-      <div class="cell"><span class="lbl">Home Phone</span>${esc(job.homePhone || '—')}</div>
-    </div>
-    <div class="row">
-      <div class="cell"><span class="lbl">Address</span>${esc(job.address || '—')}</div>
-      <div class="cell"><span class="lbl">City / State / Zip</span>${esc([job.city, job.state, job.zip].filter(Boolean).join(', ') || '—')}</div>
-    </div>
-    <div class="row">
-      <div class="cell"><span class="lbl">How Customer Heard About Us</span>${esc(job.howHeardAboutUs || '—')}</div>
-      <div class="cell"><span class="lbl">Date Signed</span>${esc(signedAt)}</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <h3>Insurance Information</h3>
-    <div class="row row-3">
-      <div class="cell"><span class="lbl">Insurance Company</span>${esc(job.insuranceCompany || '—')}</div>
-      <div class="cell"><span class="lbl">Deductible</span>${esc(job.deductible || '—')}</div>
-      <div class="cell"><span class="lbl">Claim Number</span>${esc(job.claimNumber || '—')}</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <h3>Vehicle Information</h3>
-    <div class="row row-3">
-      <div class="cell"><span class="lbl">Year</span>${esc(job.year || '—')}</div>
-      <div class="cell"><span class="lbl">Make</span>${esc(job.make || '—')}</div>
-      <div class="cell"><span class="lbl">Model</span>${esc(job.model || '—')}</div>
-    </div>
-    <div class="row">
-      <div class="cell"><span class="lbl">License Plate</span>${esc(job.plate || '—')}</div>
-      <div class="cell"><span class="lbl">Color</span>${esc(job.color || '—')}</div>
-    </div>
-    <div class="row">
-      <div class="cell"><span class="lbl">VIN</span>${esc(job.vin || '—')}</div>
-      <div class="cell"><span class="lbl">Additional Notes</span>${esc(job.notes || '—')}</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <h3>Direction To Pay</h3>
-    <div>
-      <span class="check ${job.directionToPaySigned ? 'ok' : 'no'}">${job.directionToPaySigned ? 'Accepted' : 'Not Accepted'}</span>
-      <span class="tiny">Insurance Authorization Name: ${esc(job.insuranceAuthName || '—')}</span>
-    </div>
-    <p class="legal">
-      I authorize <strong>${esc(insuranceName)}</strong> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.
-    </p>
-    <p class="legal">
-      I do hereby appoint All Dent PDR to accept on my behalf, any and all checks/drafts and to endorse all such checks/drafts for deposit to All Dent PDR account for payment for repairs to said vehicle, which have been accepted and released. The total amount of repair charges must be paid in full before the vehicle can be released for delivery or picked up. If insurance coverage pays either a portion of or the total amount due, I acknowledge that the insurance check/draft must be obtained by me or sent in advance by the insurance company and received by All Dent PDR. I also acknowledge that I must make arrangements with any lien holder or other payees to endorse the insurance check/draft prior to the release of the above repaired vehicle. I authorize any and all supplements payable directly to All Dent PDR for the consideration of repairs made to the vehicle. If I remove my vehicle from the shop prior to the completion of repairs, I agree to pay for parts, labor, handling fees, service charges, and rental car fees associated with the repair. To secure payment in amount of repairs, an expressed mechanics lien on the vehicle is acknowledged and I further agree to pay reasonable attorney's fees and court costs in the event legal action becomes necessary to enforce this contract. All Dent PDR may repossess my vehicle if payment is not secured.
-    </p>
-  </div>
-
-  <div class="section">
-    <h3>Repair Authorization</h3>
-    <div>
-      <span class="check ${job.repairAuthSigned ? 'ok' : 'no'}">${job.repairAuthSigned ? 'Accepted' : 'Not Accepted'}</span>
-    </div>
-    <p class="legal">
-      I hereby authorize All Dent PDR employees/contractors to operate my vehicle for the purpose of testing, inspection, delivery to and from for repairs. I acknowledge and agree that All Dent PDR will not be held responsible for loss or damage to the vehicle or articles left in the vehicle in case of fire, theft, vehicle accident, or any other cause beyond the control of All Dent PDR. Further, I acknowledge, that if closer analysis reveals additional repairs are necessary, either I or my insurance company will be contacted for authorization of any additional repair charges. If new parts listed in the insurance estimate are not available or replaceable by All Dent PDR, I authorize All Dent PDR to repair such parts when possible. Old parts will be disposed of unless otherwise instructed. I authorize All Dent PDR to manufacture access to dents that may not be accessible due to their location on the vehicle. And as such, All Dent PDR is not responsible for any unrelated prior damage (UPD) noted in the estimate or damage caused by prior work performed on the vehicle.
-    </p>
-    <p class="legal"><strong>I authorize All Dent PDR to perform repairs on my vehicle per All Dent PDR estimate.</strong></p>
-  </div>
-
-  ${loaner ? `
-  <div class="section">
-    <h3>Loaner Agreement Data (If Provided)</h3>
-    <div class="row row-3">
-      <div class="cell"><span class="lbl">Loaner Provided</span>${loaner.loanerProvided ? 'Yes' : 'No'}</div>
-      <div class="cell"><span class="lbl">Loaner Vehicle</span>${esc(loaner.vehicle || '—')}</div>
-      <div class="cell"><span class="lbl">Terms Accepted</span>${loaner.termsAccepted ? 'Yes' : 'No'}</div>
-    </div>
-    <div class="row">
-      <div class="cell"><span class="lbl">Loaner Out / Return</span>${esc(loaner.outDate || '—')} / ${esc(loaner.returnDate || '—')}</div>
-      <div class="cell"><span class="lbl">Loaner Signature</span>${esc(loaner.signatureName || '—')} · ${esc(loaner.signedAt || '—')}</div>
-    </div>
-  </div>
-  ` : ''}
-
-  <div class="legal">
-    By typing your name and checking both authorization boxes, the customer agrees this constitutes a legal electronic signature on both the Direction to Pay and Repair Authorization agreements.
-  </div>
-
-  <div class="sig">
-    ${job.signatureName ? `<span class="sig-name">${esc(job.signatureName)}</span>` : ''}
-    Customer Signature Name: ${esc(job.signatureName || '—')} &nbsp;&nbsp; Date Signed: ${esc(signedAt)}
-  </div>
-
-  <script>window.onload = function(){ window.print(); }<\/script>
-</body>
-</html>`;
-}
-
-function buildLoanerHtml(job, releaseData) {
-  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const loaner = releaseData?.loanerAgreement || {};
-  const hasLoanerData = hasLoanerAgreementData(loaner);
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>AllDent PDR — Vehicle Loaner Agreement — ${esc(job.id)}</title>
-  <style>
-    *{box-sizing:border-box} body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;padding:28px}
-    .hd{display:flex;justify-content:space-between;border-bottom:3px solid #b0522b;padding-bottom:10px;margin-bottom:16px}
-    .title{font-size:20px;font-weight:800;color:#b0522b}.sub{font-size:12px;color:#666}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-    .cell{border:1px solid #e8e2db;border-radius:8px;padding:10px}
-    .lbl{display:block;font-size:10px;font-weight:700;color:#9e8f84;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-    .legal{border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;background:#fffbf6;padding:12px;line-height:1.6;margin:12px 0}
-    .sig{border-top:1.5px solid #1a1410;margin-top:36px;padding-top:6px;font-size:11px;color:#666}
-    .sig-name{font-style:italic;font-size:16px;color:#1a1410;display:block;margin-top:-30px;margin-bottom:8px}
-    @media print{body{padding:14px}}
-  </style>
-</head>
-<body>
-  <div class="hd">
-    <div><div class="title">AllDent PDR</div><div class="sub">Vehicle Loaner Agreement</div></div>
-    <div class="sub">Job #${esc(job.id)}</div>
-  </div>
-  <div class="row">
-    <div class="cell"><span class="lbl">Customer</span>${esc(job.customerName)}</div>
-    <div class="cell"><span class="lbl">Repair Vehicle</span>${esc([job.year, job.make, job.model].filter(Boolean).join(' '))}</div>
-  </div>
-  <div class="row">
-    <div class="cell"><span class="lbl">Loaner Vehicle</span>${esc(loaner.vehicle || '—')}</div>
-    <div class="cell"><span class="lbl">Loaner Out / Return</span>${esc(loaner.outDate || '—')} / ${esc(loaner.returnDate || '—')}</div>
-  </div>
-
-  ${(loaner.dlNumber || loaner.dlState || loaner.dlExpiration) ? `
-  <div class="row">
-    <div class="cell"><span class="lbl">Driver's License</span>${esc(loaner.dlNumber || '—')}</div>
-    <div class="cell"><span class="lbl">DL State / Expiration</span>${esc(loaner.dlState || '—')} / ${esc(loaner.dlExpiration || '—')}</div>
-  </div>
-  ` : ''}
-
-  <div class="legal">
-    I accept responsibility for the loaner vehicle while it is in my possession, including safe operation,
-    proper care, and reporting any incident or damage immediately to AllDent PDR.<br/>
-    Terms accepted: ${loaner.termsAccepted ? 'YES' : 'NO'}
-  </div>
-
-  ${hasLoanerData ? '' : `
-  <div class="legal">
-    No detailed loaner agreement fields were saved on this job record. If this customer signed the loaner agreement during registration,
-    that older registration data may not have been persisted to the admin job record.
-  </div>
-  `}
-
-  <div class="sig">
-    ${loaner.signatureName ? `<span class="sig-name">${esc(loaner.signatureName)}</span>` : ''}
-    Customer Signature &nbsp;&nbsp; Date Signed: ${esc(loaner.signedAt || '—')}
-  </div>
-
-  <script>window.onload = function(){ window.print(); }<\/script>
-</body>
-</html>`;
-}
-
-/* ─────────────────────────────────────────────────────────────
    Vehicle Release Form Modal
 ───────────────────────────────────────────────────────────── */
 function buildReleaseHtml(job, data) {
@@ -2526,7 +2175,7 @@ function buildReleaseHtml(job, data) {
   <div class="hd">
     <div class="hd-brand">
       <strong>AllDent PDR</strong>
-      <span>Mobile Paintless Dent Repair</span>
+      <span>Paintless Dent Repair Shop</span>
       <span style="margin-top:2px;color:#555">1-855-425-5336 &nbsp;·&nbsp; alldentpdr@gmail.com</span>
     </div>
     <div class="hd-meta">
@@ -2572,7 +2221,7 @@ function buildReleaseHtml(job, data) {
   </div>
 
   <div class="footer">
-    <strong>AllDent PDR · Mobile Paintless Dent Repair</strong><br/>
+    <strong>AllDent PDR · Paintless Dent Repair Shop</strong><br/>
     1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com
   </div>
 
@@ -2583,8 +2232,6 @@ function buildReleaseHtml(job, data) {
 
 function VehicleReleaseModal({ job, onClose, onSaved }) {
   const existing = job.releaseFormData || {};
-  const existingLoaner = existing.loanerAgreement || {};
-  const existingLoanerData = hasLoanerAgreementData(existingLoaner);
   const today = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
 
   const [paid, setPaid]             = useState(existing.paid    || job.deductible || '');
@@ -2592,13 +2239,6 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
   const [signedAt, setSignedAt]     = useState(existing.signedAt || '');
   const [witnessedBy, setWitnessBy] = useState(existing.witnessedBy || '');
   const [witnessedAt, setWitnessAt] = useState(existing.witnessedAt || '');
-  const [loanerProvided, setLoanerProvided] = useState(Boolean(existingLoaner.loanerProvided || existingLoanerData));
-  const [loanerVehicle, setLoanerVehicle] = useState(existingLoaner.vehicle || '');
-  const [loanerOutDate, setLoanerOutDate] = useState(existingLoaner.outDate || '');
-  const [loanerReturnDate, setLoanerReturnDate] = useState(existingLoaner.returnDate || '');
-  const [loanerTermsAccepted, setLoanerTermsAccepted] = useState(Boolean(existingLoaner.termsAccepted));
-  const [loanerSig, setLoanerSig] = useState(existingLoaner.signatureName || '');
-  const [loanerSignedAt, setLoanerSignedAt] = useState(existingLoaner.signedAt || '');
   const [saving, setSaving]         = useState(false);
   const [sending, setSending]       = useState(false);
   const [sendMsg, setSendMsg]       = useState(null);
@@ -2613,30 +2253,12 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
     if (e.target.value && !witnessedAt) setWitnessAt(today);
   };
 
-  const handleLoanerSig = (e) => {
-    setLoanerSig(e.target.value);
-    if (e.target.value && !loanerSignedAt) setLoanerSignedAt(today);
-  };
-
-  const loanerValid = !loanerProvided || (loanerTermsAccepted && loanerSig.trim());
-
   const releaseData = {
     paid,
     custSig,
     signedAt:    signedAt    || today,
     witnessedBy,
     witnessedAt: witnessedAt || today,
-    loanerAgreement: {
-      ...existingLoaner,
-      loanerProvided,
-      vehicle: loanerVehicle,
-      outDate: loanerOutDate,
-      returnDate: loanerReturnDate,
-      termsAccepted: loanerTermsAccepted,
-      signatureName: loanerSig,
-      signedAt: loanerSignedAt || (loanerProvided && loanerTermsAccepted && loanerSig ? today : ''),
-      savedAt: new Date().toISOString(),
-    },
     savedAt:     new Date().toISOString(),
   };
 
@@ -2672,7 +2294,6 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
           signedAt:     releaseData.signedAt,
           witnessedBy,
           witnessedAt:  releaseData.witnessedAt,
-          loanerAgreement: releaseData.loanerAgreement,
         }),
       });
       const data = await res.json();
@@ -2770,84 +2391,6 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
             </p>
           </div>
 
-          <h4 className="form-section-label" style={{ marginTop: 16 }}>Vehicle Loaner Agreement</h4>
-          <label className="checkbox-row" style={{ marginTop: 6 }}>
-            <input
-              type="checkbox"
-              checked={loanerProvided}
-              onChange={(e) => setLoanerProvided(e.target.checked)}
-            />
-            <span style={{ fontSize: 13 }}>Customer is receiving a loaner vehicle</span>
-          </label>
-
-          {loanerProvided && (
-            <>
-              <div className="form-grid-2" style={{ marginTop: 10 }}>
-                <div>
-                  <label>Loaner Vehicle</label>
-                  <input
-                    type="text"
-                    value={loanerVehicle}
-                    onChange={(e) => setLoanerVehicle(e.target.value)}
-                    placeholder="Year Make Model / Plate"
-                  />
-                </div>
-                <div>
-                  <label>Loaner Out Date</label>
-                  <input
-                    type="text"
-                    value={loanerOutDate}
-                    onChange={(e) => setLoanerOutDate(e.target.value)}
-                    placeholder="MM/DD/YYYY"
-                  />
-                </div>
-              </div>
-
-              <div style={{ marginTop: 10 }}>
-                <label>Expected Return Date</label>
-                <input
-                  type="text"
-                  value={loanerReturnDate}
-                  onChange={(e) => setLoanerReturnDate(e.target.value)}
-                  placeholder="MM/DD/YYYY"
-                />
-              </div>
-
-              <div className="reg-legal-box" style={{ marginTop: 12 }}>
-                <p className="reg-legal" style={{ marginBottom: 8 }}>
-                  I accept responsibility for the loaner vehicle while it is in my possession, including safe operation,
-                  proper care, and reporting any incident or damage immediately to AllDent PDR.
-                </p>
-                <label className="checkbox-row" style={{ margin: 0 }}>
-                  <input
-                    type="checkbox"
-                    checked={loanerTermsAccepted}
-                    onChange={(e) => setLoanerTermsAccepted(e.target.checked)}
-                  />
-                  <span style={{ fontSize: 13 }}>Customer accepts loaner agreement terms</span>
-                </label>
-              </div>
-
-              <div className="form-grid-2" style={{ marginTop: 10 }}>
-                <div>
-                  <label>Loaner Agreement Signature <span aria-hidden>*</span></label>
-                  <input
-                    type="text"
-                    value={loanerSig}
-                    onChange={handleLoanerSig}
-                    placeholder="Customer full name"
-                    className="reg-sig-input"
-                  />
-                </div>
-                <div>
-                  <label>Date Signed</label>
-                  <input type="text" value={loanerSignedAt || (loanerSig ? today : '')} readOnly
-                    style={{ fontFamily: 'monospace', fontSize: 13, background: 'var(--sky,#eef5fb)' }} />
-                </div>
-              </div>
-            </>
-          )}
-
           {/* Signature row */}
           <div className="form-grid-2" style={{ marginTop: 16 }}>
             <div>
@@ -2907,7 +2450,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
               type="button"
               className="button primary sm"
               onClick={handleSave}
-              disabled={saving || !custSig.trim() || !witnessedBy.trim() || !loanerValid}
+              disabled={saving || !custSig.trim() || !witnessedBy.trim()}
             >
               {saving ? 'Saving…' : '✓ Save & Sign'}
             </button>

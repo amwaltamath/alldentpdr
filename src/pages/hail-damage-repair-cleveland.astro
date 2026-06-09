@@ -27,13 +27,13 @@ const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
 
   <!-- Hero + Form -->
   <section style="position:relative;color:#fff;padding:60px 24px;background:url('/images/hail.jpg') center/cover no-repeat;">
-    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(20,12,8,0.62) 0%,rgba(40,20,10,0.52) 100%);"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(20,12,8,0.88) 0%,rgba(40,20,10,0.82) 100%);"></div>
     <div style="position:relative;z-index:1;">
-    <div class="lp-hero-grid">
+    <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
 
       <div>
         <span style="background:#fc1317;color:#fff;font-size:0.78rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;border-radius:999px;">Hail Damage Specialists — Cleveland, OH</span>
-        <h1 style="font-size:clamp(1.9rem,4vw,2.8rem);margin:16px 0 12px;line-height:1.15;font-family:Georgia,serif;color:#fff;">
+        <h1 style="font-size:clamp(1.9rem,4vw,2.8rem);margin:16px 0 12px;line-height:1.15;font-family:Georgia,serif;">
           Your car took a hail hit.<br />We'll make it look factory-new.
         </h1>
         <p style="font-size:1.1rem;color:rgba(255,255,255,0.8);margin-bottom:24px;line-height:1.6;">
@@ -43,28 +43,24 @@ const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
         <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:32px;">
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="color:#fc1317;font-size:1.2rem;font-weight:700;">✓</span>
-            <span>Local Cleveland shop — not a traveling storm crew</span>
+            <span>Free in-person inspection &amp; itemized quote</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="color:#fc1317;font-size:1.2rem;font-weight:700;">✓</span>
-            <span>We restore vehicles to factory perfection — not just "good enough"</span>
+            <span>Direct billing with State Farm, Progressive, Allstate &amp; more</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="color:#fc1317;font-size:1.2rem;font-weight:700;">✓</span>
-            <span>LED light final inspection on every panel before pickup</span>
+            <span>OEM factory paint preserved — no sanding, no repainting</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="color:#fc1317;font-size:1.2rem;font-weight:700;">✓</span>
-            <span>Honest pricing — no free gimmicks hiding inflated costs</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="color:#fc1317;font-size:1.2rem;font-weight:700;">✓</span>
-            <span>Direct insurance billing — State Farm, Progressive, Allstate &amp; more</span>
+            <span>Serving Bedford, Parma, Solon, Garfield Heights &amp; all of NE Ohio</span>
           </div>
         </div>
 
         <a href="tel:18554255336" style="display:inline-block;background:#fc1317;color:#fff;padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.1rem;text-decoration:none;box-shadow:0 4px 16px rgba(252,19,23,0.4);">
-          Call Now for a Free Quote
+          Call Now for a Free Inspection
         </a>
 
         <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.12);padding-top:20px;">
@@ -79,8 +75,8 @@ const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
       </div>
 
       <!-- Form card -->
-      <div class="lp-hero-form" style="background:#fff;border-radius:16px;padding:32px;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
-        <h2 style="color:#1a1410;font-size:1.35rem;margin:0 0 6px;font-family:Georgia,serif;">Get your free quote</h2>
+      <div style="background:#fff;border-radius:16px;padding:32px;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <h2 style="color:#1a1410;font-size:1.35rem;margin:0 0 6px;font-family:Georgia,serif;">Request your free inspection</h2>
         <p style="color:#6b5c52;font-size:0.9rem;margin:0 0 20px;">We'll reply within 2 hours during business hours.</p>
 
         <form id="lp-form" style="display:flex;flex-direction:column;gap:14px;">
@@ -109,7 +105,7 @@ const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
             <textarea name="message" rows="3" placeholder="Which panels were hit? Any other details?" required style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;resize:vertical;"></textarea>
           </label>
           <button id="lp-submit" type="submit" style="background:#fc1317;color:#fff;border:none;padding:14px;border-radius:999px;font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 4px 12px rgba(252,19,23,0.3);">
-            Get Free Quote
+            Request Free Inspection
           </button>
           <p id="lp-status" style="display:none;text-align:center;font-size:0.9rem;margin:0;"></p>
         </form>
@@ -156,20 +152,20 @@ const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
                 if (res.ok) {
                   form.reset();
                   stat.textContent = '✓ Request sent! We\'ll be in touch within 2 hours.';
-                  stat.style.color = '#0a71d0';
+                  stat.style.color = '#4a7a5c';
                   if (typeof fbq === 'function') fbq('track', 'Lead', {}, { eventID: eventId });
                   if (typeof gtag === 'function') gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
                 } else {
                   stat.textContent = 'Something went wrong — please call 1-855-425-5336.';
                   stat.style.color = '#c0392b';
                   btn.disabled = false;
-                  btn.textContent = 'Get Free Quote';
+                  btn.textContent = 'Request Free Inspection';
                 }
               } catch {
                 stat.textContent = 'Something went wrong — please call 1-855-425-5336.';
                 stat.style.color = '#c0392b';
                 btn.disabled = false;
-                btn.textContent = 'Get Free Quote';
+                btn.textContent = 'Request Free Inspection';
               }
               stat.style.display = 'block';
             });
@@ -222,10 +218,10 @@ const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
   </section>
 
   <!-- Bottom CTA -->
-  <section style="background:linear-gradient(135deg,#fc1317,#8a3e20);color:#fff;padding:60px 24px;text-align:center;">
+  <section style="background:linear-gradient(135deg,#fc1317,#e0101a);color:#fff;padding:60px 24px;text-align:center;">
     <div style="max-width:700px;margin:0 auto;">
-      <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);margin:0 0 12px;font-family:Georgia,serif;">Don't trust your vehicle to a storm chaser</h2>
-      <p style="font-size:1rem;color:rgba(255,255,255,0.85);margin-bottom:28px;">All Dent PDR is a local Cleveland shop that restores vehicles to factory perfection — not just "repaired." Get your free quote today and see the difference quality makes.</p>
+      <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);margin:0 0 12px;font-family:Georgia,serif;">Don't wait — hail damage gets worse over time</h2>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.85);margin-bottom:28px;">Schedule your free inspection at our Cleveland shop today. We'll assess every panel and give you a clear repair plan the same day.</p>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
         <a href="tel:18554255336" style="background:#fff;color:#fc1317;padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;">
           &#128222; Call 1-855-425-5336
@@ -243,21 +239,9 @@ const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
   </footer>
 
   <style>
-    .lp-hero-grid {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 48px;
-      align-items: start;
-    }
-    @media (max-width: 767px) {
-      .lp-hero-grid {
-        grid-template-columns: 1fr;
-        gap: 28px;
-      }
-      .lp-hero-form {
-        order: -1;
+    @media (max-width: 768px) {
+      section > div[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
       }
     }
   </style>

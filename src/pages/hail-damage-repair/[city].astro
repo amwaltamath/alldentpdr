@@ -18,9 +18,8 @@ const shopAddress = '7695 Granger Rd, Cleveland, OH 44125';
 const shopPhone = '1-855-425-5336';
 const shopEmail = 'alldentpdr@gmail.com';
 
-const title = `Hail Damage Repair in ${city.name}, OH | Paintless Dent Repair | All Dent PDR`;
+const title = `Paintless Dent Repair in ${city.name}, OH | All Dent PDR`;
 const description = `Hail damage repair near ${city.name}, OH — All Dent PDR's shop is only ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent repair, insurance billing, free estimates. Call ${shopPhone}.`;
-const keywords = `hail damage repair ${city.name} OH, ${city.name} hail damage repair, paintless dent repair ${city.name} OH, auto hail repair ${city.name}, car hail damage ${city.name}, ${city.zipCodes.join(', ')}, All Dent PDR`;
 const canonical = `https://alldentpdr.com/hail-damage-repair/${city.slug}`;
 
 const breadcrumbs = [
@@ -48,7 +47,7 @@ const faqItems = [
   },
   {
     question: `Do I have to drop my car off at the shop, or can you come to ${city.name}?`,
-    answer: `Both options are available. Our shop at ${shopAddress} is only ${city.driveMinutes} minutes from ${city.name} and accepts walk-ins. For large hail events, we also offer mobile service and can come directly to your location.`,
+    answer: `Our shop at ${shopAddress} is only ${city.driveMinutes} minutes from ${city.name} and accepts walk-ins for free hail assessments and repairs.`,
   },
 ];
 
@@ -100,7 +99,6 @@ const localBusinessSchema = {
 <BaseLayout
   title={title}
   description={description}
-  keywords={keywords}
   canonical={canonical}
   breadcrumbs={breadcrumbs}
   faqItems={faqItems}
@@ -110,7 +108,7 @@ const localBusinessSchema = {
   </Fragment>
 
   <!-- Hero -->
-  <section class="hero hero-hail">
+  <section class="hero">
     <div class="container hero-inner">
       <div>
         <span class="hero-pill">
@@ -162,8 +160,7 @@ const localBusinessSchema = {
       <p>{city.uniqueNote}</p>
       <p>
         Drivers in {city.name} can reach our shop via a quick {city.driveMinutes}-minute drive to
-        <strong>{shopAddress}</strong>. We also offer mobile service for large-scale hail events — 
-        just tell us your location when you contact us.
+        <strong>{shopAddress}</strong> for inspection, estimating, and full repair service.
       </p>
       <div class="grid-3" style="margin-top:36px;">
         <article class="card">

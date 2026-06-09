@@ -1,41 +1,88 @@
 import type { APIRoute } from 'astro';
 import { GoogleAuth } from 'google-auth-library';
 
-export const GET: APIRoute = async () => {
-  const keyJson = import.meta.env.GA4_SERVICE_ACCOUNT_KEY || import.meta.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
-  const clientEmail = import.meta.env.GA_CLIENT_EMAIL || import.meta.env.GOOGLE_CLIENT_EMAIL;
-  const privateKeyRaw = import.meta.env.GA_PRIVATE_KEY || import.meta.env.GOOGLE_PRIVATE_KEY;
-  const propertyId = import.meta.env.GA4_PROPERTY_ID;
+function normalizePrivateKey(privateKey: string) {
+  let key = privateKey.trim();
 
-  let credentials: Record<string, string> | null = null;
-
-  if (keyJson) {
-    try {
-      credentials = JSON.parse(keyJson);
-    } catch {
-      return new Response(
-        JSON.stringify({ error: 'invalid_service_account_json' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } },
-      );
-    }
-  } else if (clientEmail && privateKeyRaw) {
-    credentials = {
-      type: 'service_account',
-      client_email: clientEmail,
-      // Vercel env vars usually store line breaks as escaped \n.
-      private_key: privateKeyRaw.replace(/\\n/g, '\n'),
-    };
+  // Common Vercel copy/paste issue: quoted whole value.
+  if (
+    (key.startsWith('"') && key.endsWith('"')) ||
+    (key.startsWith("'") && key.endsWith("'"))
+  ) {
+    key = key.slice(1, -1);
   }
+
+  return key.replace(/\\n/g, '\n');
+}
+
+function shapeServiceAccountCredentials(input: any) {
+  if (!input || typeof input !== 'object') return null;
+
+  const clientEmail = input.client_email || import.meta.env.GA_CLIENT_EMAIL;
+  const privateKeyRaw = input.private_key || import.meta.env.GA_PRIVATE_KEY;
+  const projectId = input.project_id || import.meta.env.GA_PROJECT_ID;
+
+  if (!clientEmail || !privateKeyRaw) return null;
+
+  const privateKey = normalizePrivateKey(privateKeyRaw);
+
+  return {
+    type: 'service_account',
+    project_id: projectId,
+    private_key_id: input.private_key_id || import.meta.env.GA_PRIVATE_KEY_ID,
+    private_key: privateKey,
+    client_email: clientEmail,
+    client_id: input.client_id || import.meta.env.GA_CLIENT_ID,
+    auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+    token_uri: 'https://oauth2.googleapis.com/token',
+    auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+    client_x509_cert_url:
+      input.client_x509_cert_url ||
+      `https://www.googleapis.com/robot/v1/metadata/x509/${encodeURIComponent(clientEmail)}`,
+  };
+}
+
+function parseServiceAccountCredentials() {
+  const rawKeyJson = import.meta.env.GA4_SERVICE_ACCOUNT_KEY;
+  const clientEmail = import.meta.env.GA_CLIENT_EMAIL;
+  const privateKey = import.meta.env.GA_PRIVATE_KEY;
+
+  if (rawKeyJson) {
+    try {
+      // Support plain JSON and base64-encoded JSON.
+      if (rawKeyJson.trim().startsWith('{')) {
+        return shapeServiceAccountCredentials(JSON.parse(rawKeyJson));
+      }
+      if (rawKeyJson.includes('BEGIN PRIVATE KEY')) {
+        return shapeServiceAccountCredentials({
+          client_email: clientEmail,
+          private_key: rawKeyJson,
+        });
+      }
+      const decoded = Buffer.from(rawKeyJson, 'base64').toString('utf8');
+      return shapeServiceAccountCredentials(JSON.parse(decoded));
+    } catch {
+      // Continue below and try split vars fallback.
+    }
+  }
+
+  if (clientEmail && privateKey) {
+    return shapeServiceAccountCredentials({
+      client_email: clientEmail,
+      private_key: privateKey,
+    });
+  }
+
+  return null;
+}
+
+export const GET: APIRoute = async () => {
+  const propertyId = import.meta.env.GA4_PROPERTY_ID?.trim();
+  const credentials = parseServiceAccountCredentials();
 
   if (!credentials || !propertyId) {
     return new Response(
-      JSON.stringify({
-        error: 'not_configured',
-        missing: {
-          propertyId: !propertyId,
-          credentials: !credentials,
-        },
-      }),
+      JSON.stringify({ error: 'not_configured' }),
       { status: 503, headers: { 'Content-Type': 'application/json' } },
     );
   }
@@ -118,6 +165,16 @@ export const GET: APIRoute = async () => {
       pagesRes.json(),
       dailyRes.json(),
     ]);
+
+    const failed = [summaryRes, sourcesRes, pagesRes, dailyRes].find((r) => !r.ok);
+    if (failed) {
+      const candidate = [summary, sources, pages, daily].find((x: any) => x?.error);
+      const details = candidate?.error?.message || `GA4 API error (${failed.status})`;
+      return new Response(
+        JSON.stringify({ error: details }),
+        { status: 502, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
 
     return new Response(JSON.stringify({ summary, sources, pages, daily }), {
       headers: { 'Content-Type': 'application/json' },
