@@ -53,21 +53,13 @@ const gaId: string = 'G-T7RLXD05RW';
     <link rel="apple-touch-icon" href="/images/logo.jpg" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#fc1317" />
-    
-    <!-- Google Analytics -->
-    {gaId && (
-      <>
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
-        <script is:inline set:html={`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`}></script>
-      </>
-    )}
 
     <!-- Structured Data for Local SEO -->
     <script type="application/ld+json">
       {`
         {
           "@context": "https://schema.org",
-          "@type": "AutoRepair",
+          "@type": ["AutoRepair", "LocalBusiness"],
           "name": "AllDent PDR",
           "description": "Expert paintless dent repair and hail damage repair shop serving Bedford, OH, Cleveland, and all of Northeast Ohio.",
           "url": "https://alldentpdr.com",
@@ -163,15 +155,6 @@ const gaId: string = 'G-T7RLXD05RW';
       })} />
     )}
     <slot name="head" />
-    <!-- Google Analytics 4 + Google Ads -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T7RLXD05RW"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-T7RLXD05RW');
-      gtag('config', 'AW-18153754648');
-    </script>
   </head>
   <body>
     {!bare && (
@@ -244,9 +227,9 @@ const gaId: string = 'G-T7RLXD05RW';
           </div>
           <div>
             <h5>Shop Location</h5>
-            <p>7695 Granger Rd</p>
-            <p>Cleveland, OH 44125</p>
-            <p>(Serving Bedford &amp; NE Ohio)</p>
+            <p>7695 Granger Rd, Cleveland, OH 44125</p>
+            <p><a href="tel:18554255336">1-855-425-5336</a></p>
+            <p>(Serving Bedford &amp; Northeast Ohio)</p>
           </div>
           <div>
             <h5>Hours</h5>

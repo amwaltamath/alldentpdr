@@ -1,0 +1,162 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'Hail Damage Repair Cleveland & Bedford OH | All Dent PDR';
+const description = 'Expert hail damage repair in Cleveland and Bedford with paintless dent repair, insurance claim help, and free estimates at 7695 Granger Rd. Schedule a Free Hail Estimate today.';
+const canonical = 'https://alldentpdr.com/hail-damage-repair';
+
+const breadcrumbs = [
+	{ name: 'Home', url: 'https://alldentpdr.com' },
+	{ name: 'Hail Damage Repair', url: canonical }
+];
+
+const faqItems = [
+	{ question: 'Can hail damage be fixed with PDR?', answer: 'Yes, in many cases hail damage can be repaired with paintless dent repair as long as the paint is intact. We inspect the panels and confirm whether PDR is the best option before any work begins.' },
+	{ question: 'Does insurance cover hail damage repair?', answer: 'In most comprehensive claims, yes. Hail damage is commonly covered by auto insurance after your deductible. We help document the damage and work with your carrier during the claim process.' },
+	{ question: 'How much does hail damage repair cost in Cleveland?', answer: 'Pricing depends on the number of dents, affected panels, and vehicle type. We provide a free estimate so you know the scope before the repair begins.' },
+	{ question: 'How long does hail damage repair take?', answer: 'Light hail repairs can be completed quickly, while larger storm claims may take 1 to 3 days depending on the amount of damage and insurance approval.' },
+	{ question: 'Where is All Dent PDR located?', answer: 'Our shop is at 7695 Granger Rd, Cleveland, OH 44125. We serve Bedford, Cleveland, and surrounding Northeast Ohio suburbs from that physical location.' }
+];
+
+const localBusinessSchema = {
+	'@context': 'https://schema.org',
+	'@type': ['AutoRepair', 'LocalBusiness'],
+	name: 'All Dent PDR — Hail Damage Repair',
+	description: 'Hail damage repair and paintless dent repair shop serving Cleveland, Bedford, and Northeast Ohio from 7695 Granger Rd, Cleveland, OH 44125.',
+	url: canonical,
+	telephone: '1-855-425-5336',
+	email: 'admin@alldentpdr.com',
+	image: 'https://alldentpdr.com/images/logo-branded.svg',
+	address: {
+		'@type': 'PostalAddress',
+		streetAddress: '7695 Granger Rd',
+		addressLocality: 'Cleveland',
+		addressRegion: 'OH',
+		postalCode: '44125',
+		addressCountry: 'US'
+	},
+	geo: {
+		'@type': 'GeoCoordinates',
+		latitude: 41.3960,
+		longitude: -81.6100
+	},
+	areaServed: ['Cleveland, OH', 'Bedford, OH', 'Bedford Heights, OH', 'Parma, OH', 'Maple Heights, OH', 'Garfield Heights, OH', 'Solon, OH', 'Warrensville Heights, OH'],
+	priceRange: '$$',
+	paymentAccepted: 'Cash, Credit Card, Insurance',
+	openingHoursSpecification: [
+		{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '18:00' },
+		{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday'], opens: '09:00', closes: '14:00' }
+	],
+	aggregateRating: {
+		'@type': 'AggregateRating',
+		ratingValue: '5',
+		reviewCount: '47',
+		bestRating: '5',
+		worstRating: '1'
+	}
+};
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems}>
+	<Fragment slot="head">
+		<script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
+	</Fragment>
+
+	<section class="hero">
+		<div class="container hero-inner">
+			<div>
+				<span class="hero-pill">Hail Damage Repair • Cleveland &amp; Bedford OH</span>
+				<h1>Hail Damage Repair in Cleveland &amp; Bedford, OH</h1>
+				<p>
+					All Dent PDR restores storm-damaged vehicles with paintless dent repair at our shop on <strong>7695 Granger Rd, Cleveland, OH 44125</strong>.
+					We help you through the insurance claim process, document the damage, and get your vehicle back to factory condition without repainting.
+				</p>
+				<div class="button-row">
+					<a class="button primary" href="/contact">Schedule a Free Hail Estimate</a>
+					<a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
+				</div>
+			</div>
+			<div class="hero-card">
+				<h3>Why hail customers choose All Dent PDR</h3>
+				<ul>
+					<li>Free hail estimate and panel-by-panel inspection</li>
+					<li>Insurance claim support from start to finish</li>
+					<li>Paintless dent repair that preserves your factory paint</li>
+					<li>Physical shop serving Cleveland, Bedford, and nearby suburbs</li>
+					<li>Fast turnaround on light to moderate hail damage</li>
+				</ul>
+				<p class="tag">7695 Granger Rd, Cleveland, OH 44125</p>
+				<p>Bring in your car or call to start the claim process today.</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<span class="section-label">Insurance Claims</span>
+			<h2>We handle the hail insurance claim process</h2>
+			<p>
+				After a hail storm, the first question is usually whether insurance will cover the repair. We help you document the damage,
+				work with your adjuster, and confirm the repair scope so the claim moves quickly.
+			</p>
+			<div class="grid-3">
+				<article class="card">
+					<h3>Damage inspection</h3>
+					<p>We assess every affected panel and document the dents before repair begins.</p>
+				</article>
+				<article class="card">
+					<h3>Claim support</h3>
+					<p>We help you navigate the insurance process and communicate the repair needs clearly.</p>
+				</article>
+				<article class="card">
+					<h3>Factory-finish repair</h3>
+					<p>Our PDR process restores the vehicle without filler, sanding, or repainting.</p>
+				</article>
+			</div>
+		</div>
+	</section>
+
+	<section class="section alt">
+		<div class="container">
+			<span class="section-label">Local Coverage</span>
+			<h2>Serving Cleveland, Bedford, and Northeast Ohio</h2>
+			<p>
+				If you are searching for hail damage repair near me after a storm, our Cleveland shop is positioned to help drivers from Bedford,
+				Bedford Heights, Parma, Maple Heights, Garfield Heights, Solon, Warrensville Heights, and the surrounding suburbs.
+			</p>
+			<p>
+				We also answer common questions like how much hail repair costs, whether PDR works on hail dents, and how long insurance-approved
+				repairs take from start to finish.
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<span class="section-label">FAQ</span>
+			<h2>Hail damage repair questions answered</h2>
+			<div class="faq-list">
+				<details class="faq-item">
+					<summary>Can hail damage be fixed with PDR?</summary>
+					<p>Yes, in many cases hail damage can be repaired with paintless dent repair as long as the paint is intact. We inspect the panels and confirm whether PDR is the best option before any work begins.</p>
+				</details>
+				<details class="faq-item">
+					<summary>Does insurance cover hail damage repair?</summary>
+					<p>In most comprehensive claims, yes. Hail damage is commonly covered by auto insurance after your deductible. We help document the damage and work with your carrier during the claim process.</p>
+				</details>
+				<details class="faq-item">
+					<summary>How much does hail damage repair cost in Cleveland?</summary>
+					<p>Pricing depends on the number of dents, affected panels, and vehicle type. We provide a free estimate so you know the scope before the repair begins.</p>
+				</details>
+				<details class="faq-item">
+					<summary>How long does hail damage repair take?</summary>
+					<p>Light hail repairs can be completed quickly, while larger storm claims may take 1 to 3 days depending on the amount of damage and insurance approval.</p>
+				</details>
+			</div>
+			<div class="button-row" style="justify-content:center;">
+				<a class="button primary" href="/contact">Schedule a Free Hail Estimate</a>
+				<a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
+			</div>
+		</div>
+	</section>
+</BaseLayout>
