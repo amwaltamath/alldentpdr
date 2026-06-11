@@ -12,10 +12,6 @@ function parseJson(value, fallback) {
   }
 }
 
-function normalizeLookupPlate(value) {
-  return (value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-}
-
 function mapRemoteVehicle(item) {
   return {
     id: item.id,
@@ -113,7 +109,7 @@ function mapRemotePayload(vehicle) {
     city: vehicle.city,
     state: vehicle.state,
     zip: vehicle.zip,
-    how_heard: vehicle.howHeardAboutUs,
+    how_heard_about_us: vehicle.howHeardAboutUs,
     insurance_company: vehicle.insuranceCompany,
     deductible: vehicle.deductible,
     claim_number: vehicle.claimNumber,
@@ -316,7 +312,7 @@ export function clearSession() {
 
 export async function findCustomerVehicle(email, plate) {
   const cleanEmail = email.trim().toLowerCase();
-  const cleanPlate = normalizeLookupPlate(plate);
+  const cleanPlate = plate.trim().toUpperCase();
 
   if (isSupabaseEnabled()) {
     const { data, error } = await supabase.rpc('customer_lookup_vehicle', {
@@ -329,11 +325,7 @@ export async function findCustomerVehicle(email, plate) {
     return mapRemoteVehicle(data[0]);
   }
 
-  return getLocalVehicles().find((item) => {
-    const itemEmail = (item.email || '').trim().toLowerCase();
-    const itemPlate = normalizeLookupPlate(item.plate);
-    return itemEmail === cleanEmail && itemPlate === cleanPlate;
-  }) || null;
+  return getLocalVehicles().find((item) => item.email === cleanEmail && item.plate === cleanPlate) || null;
 }
 
 export async function getCustomerVehicleStatus(email, plate) {
@@ -341,17 +333,6 @@ export async function getCustomerVehicleStatus(email, plate) {
 }
 
 export async function registerVehiclePublic(data) {
-  const loanerAgreement = data.requiresLoaner ? {
-    loanerProvided: true,
-    requestedAtRegistration: true,
-    termsAccepted: Boolean(data.loanerAgreementSigned),
-    signatureName: data.signatureName || '',
-    signedAt: data.signedAt || new Date().toISOString(),
-    dlNumber: data.dlNumber || '',
-    dlState: data.dlState || '',
-    dlExpiration: data.dlExpiration || ''
-  } : null;
-
   if (isSupabaseEnabled()) {
     const { data: result, error } = await supabase.rpc('register_vehicle_public', {
       p_customer_name:           data.customerName,
@@ -373,11 +354,6 @@ export async function registerVehiclePublic(data) {
       p_deductible:              data.deductible       || '',
       p_claim_number:            data.claimNumber      || '',
       p_notes:                   data.notes            || '',
-      p_requires_loaner:         Boolean(data.requiresLoaner),
-      p_dl_number:               data.dlNumber         || '',
-      p_dl_state:                data.dlState          || '',
-      p_dl_expiration:           data.dlExpiration     || '',
-      p_loaner_agreement_signed: Boolean(data.loanerAgreementSigned),
       p_direction_to_pay_signed: Boolean(data.directionToPaySigned),
       p_repair_auth_signed:      Boolean(data.repairAuthSigned),
       p_insurance_auth_name:     data.insuranceAuthName || '',
@@ -394,14 +370,7 @@ export async function registerVehiclePublic(data) {
   const list = typeof window !== 'undefined'
     ? JSON.parse(localStorage.getItem('alldentpdr_vehicles') || '[]')
     : [];
-  list.unshift({
-    id,
-    ...data,
-    releaseFormData: loanerAgreement ? { loanerAgreement } : null,
-    status: 'Registered',
-    createdAt: now,
-    updatedAt: now
-  });
+  list.unshift({ id, ...data, status: 'Registered', createdAt: now, updatedAt: now });
   if (typeof window !== 'undefined') {
     localStorage.setItem('alldentpdr_vehicles', JSON.stringify(list));
   }

@@ -1,0 +1,46 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "commit-seo-indexing-fixes",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"add",
+				"astro.config.mjs",
+				"src/data/serviceAreas.ts",
+				"src/layouts/BaseLayout.astro",
+				"src/pages/api/analytics.ts",
+				"src/components/AdminDashboard.jsx",
+				"src/pages/blog/index.astro",
+				"src/pages/door-ding-repair/[city].astro",
+				"src/pages/hail-damage-repair/[city].astro",
+				"src/pages/index.astro",
+				"src/pages/paintless-dent-repair/[city].astro",
+				"src/pages/services.astro",
+				"src/styles/global.css"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "commit-seo-indexing-fixes-msg",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"commit",
+				"-m",
+				"Improve indexing signals and Bedford local SEO coverage"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "push-seo-indexing-fixes",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"push"
+			],
+			"problemMatcher": []
+		}
+	]
+}

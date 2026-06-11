@@ -26,6 +26,7 @@ const staticPages = [
   `${BASE}/blog/hail-damage-insurance-claim-guide`,
   `${BASE}/blog/pdr-vs-body-shop`,
   `${BASE}/blog/mobile-pdr-future-of-dent-repair`,
+  `${BASE}/blog/paintless-dent-repair-cincinnati`,
   // Hail damage city pages (prerendered via [city].astro)
   `${BASE}/hail-damage-repair/garfield-heights`,
   `${BASE}/hail-damage-repair/maple-heights`,

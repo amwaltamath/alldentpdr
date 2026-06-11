@@ -59,15 +59,6 @@ export default function RegistrationForm() {
       setJobId(id);
       setStatus('success');
 
-      // Shared event ID for Meta pixel ↔ CAPI deduplication
-      const eventId = `reg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-      const getCookie = (n) => (document.cookie.match('(^|;)\s*' + n + '\s*=\s*([^;]+)') || [])[2] || '';
-
-      // Meta Pixel — CompleteRegistration
-      if (typeof fbq === 'function') {
-        fbq('track', 'CompleteRegistration', {}, { eventID: eventId });
-      }
-
       // Fire-and-forget registration emails
       fetch('/api/send-registration-email', {
         method: 'POST',
@@ -103,9 +94,6 @@ export default function RegistrationForm() {
           dlState: form.dlState,
           dlExpiration: form.dlExpiration,
           loanerAgreementSigned: form.loanerAgreementSigned,
-          event_id: eventId,
-          fbc: getCookie('_fbc'),
-          fbp: getCookie('_fbp'),
         }),
       }).catch((err) => console.warn('[registration email]', err));
     } catch (err) {

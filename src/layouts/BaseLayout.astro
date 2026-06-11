@@ -3,8 +3,8 @@ import '../styles/global.css';
 import MobileMenu from '../components/MobileMenu.jsx';
 
 const {
-  title = 'AllDent PDR | Paintless Dent Repair Cleveland OH',
-  description = 'Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125. Fast, high-quality PDR for hail damage, door dings, and minor collision dents across Northeast Ohio.',
+  title = 'AllDent PDR | Paintless Dent Repair Cincinnati',
+  description = 'Mobile paintless dent repair based in Cincinnati. We travel nationwide to repair hail storm damage on-site. Fast, affordable PDR for door dings, hail damage, and minor collision dents.',
   canonical = 'https://alldentpdr.com',
   ogImage = '/images/logo-branded.svg',
   noindex = false,
@@ -52,19 +52,27 @@ const gaId: string = 'G-T7RLXD05RW';
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/images/logo.jpg" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#fc1317" />
+    <meta name="theme-color" content="#b0522b" />
+    
+    <!-- Google Analytics -->
+    {gaId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+        <script is:inline set:html={`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`}></script>
+      </>
+    )}
 
     <!-- Structured Data for Local SEO -->
     <script type="application/ld+json">
       {`
         {
           "@context": "https://schema.org",
-          "@type": ["AutoRepair", "LocalBusiness"],
+          "@type": "AutoRepair",
           "name": "AllDent PDR",
-          "description": "Expert paintless dent repair and hail damage repair shop serving Bedford, OH, Cleveland, and all of Northeast Ohio.",
+          "description": "Expert paintless dent repair and hail damage repair shop serving Bedford, OH, Cleveland, and all of Northeast Ohio. Mobile service also available nationwide.",
           "url": "https://alldentpdr.com",
           "telephone": "1-855-425-5336",
-          "email": "admin@alldentpdr.com",
+          "email": "alldentpdr@gmail.com",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "7695 Granger Rd",
@@ -155,16 +163,25 @@ const gaId: string = 'G-T7RLXD05RW';
       })} />
     )}
     <slot name="head" />
+    <!-- Google Analytics 4 + Google Ads -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T7RLXD05RW"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-T7RLXD05RW');
+      gtag('config', 'AW-18153754648');
+    </script>
   </head>
   <body>
     {!bare && (
       <header class="site-header">
         <div class="container header-inner">
           <a class="logo" href="/">
-            <img src="/images/logo.jpg" alt="AllDent PDR - Paintless Dent Repair Cleveland" class="logo-img" />
+            <img src="/images/logo.jpg" alt="AllDent PDR - Paintless Dent Repair Cincinnati" class="logo-img" />
             <div class="logo-text">
               <span class="logo-mark">AllDent PDR</span>
-              <span class="logo-sub">Bedford, OH Shop</span>
+              <span class="logo-sub">Bedford, OH Shop &amp; Mobile</span>
             </div>
           </a>
           <nav class="nav">
@@ -193,10 +210,10 @@ const gaId: string = 'G-T7RLXD05RW';
               <img src="/images/logo.jpg" alt="AllDent PDR" class="logo-img" />
               <div class="logo-text">
                 <span class="logo-mark" style="color:#fff;">AllDent PDR</span>
-                <span class="logo-sub">Bedford, OH Shop</span>
+                <span class="logo-sub">Bedford, OH Shop &amp; Mobile</span>
               </div>
             </div>
-            <p>Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, OH and all of Northeast Ohio for hail damage, door dings, and minor collision dents.</p>
+            <p>Paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, OH and all of Northeast Ohio. Mobile service also available nationwide for hail damage, door dings, and minor collision dents.</p>
           </div>
           <div>
             <h5>Services</h5>
@@ -227,15 +244,15 @@ const gaId: string = 'G-T7RLXD05RW';
           </div>
           <div>
             <h5>Shop Location</h5>
-            <p>7695 Granger Rd, Cleveland, OH 44125</p>
-            <p><a href="tel:18554255336">1-855-425-5336</a></p>
-            <p>(Serving Bedford &amp; Northeast Ohio)</p>
+            <p>7695 Granger Rd</p>
+            <p>Cleveland, OH 44125</p>
+            <p>(Serving Bedford &amp; NE Ohio)</p>
           </div>
           <div>
             <h5>Hours</h5>
             <p>Mon – Fri · 8am – 6pm</p>
             <p>Sat · 9am – 2pm</p>
-            <p>Shop-Based Service</p>
+            <p>Shop &amp; Mobile Nationwide</p>
           </div>
         </div>
         <div class="container footer-bottom">
