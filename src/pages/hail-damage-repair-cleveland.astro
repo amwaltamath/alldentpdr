@@ -2,6 +2,13 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 const title = 'Hail Damage Repair Cleveland OH | Free Inspection | All Dent PDR';
 const description = 'Hail hit your car in Cleveland? All Dent PDR at 7695 Granger Rd, Cleveland, OH 44125 restores hail-damaged vehicles with paintless dent repair. Free inspection, direct insurance billing, factory finish preserved. Call 1-855-425-5336.';
 const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
@@ -9,7 +16,7 @@ const canonical = 'https://alldentpdr.com/hail-damage-repair-cleveland';
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': ['AutoRepair', 'LocalBusiness'],
-  name: 'All Dent PDR â€” Hail Damage Repair Cleveland',
+  name: 'All Dent PDR - Hail Damage Repair Cleveland',
   description: 'Paintless hail damage repair shop in Cleveland, OH serving Parma, Garfield Heights, Maple Heights, Solon, Bedford, and Northeast Ohio.',
   url: canonical,
   telephone: '1-855-425-5336',
@@ -38,10 +45,10 @@ const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   mainEntity: [
-    { '@type': 'Question', name: 'Can hail damage be fixed without repainting?', acceptedAnswer: { '@type': 'Answer', text: 'Yes â€” if the paint is intact, paintless dent repair (PDR) reshapes the metal from behind, preserving your factory finish with no sanding or repainting.' } },
+    { '@type': 'Question', name: 'Can hail damage be fixed without repainting?', acceptedAnswer: { '@type': 'Answer', text: 'Yes - if the paint is intact, paintless dent repair (PDR) reshapes the metal from behind, preserving your factory finish with no sanding or repainting.' } },
     { '@type': 'Question', name: 'Does insurance cover hail damage in Cleveland?', acceptedAnswer: { '@type': 'Answer', text: 'Most comprehensive auto policies cover hail damage after your deductible. We work directly with State Farm, Progressive, Allstate, and most major carriers to handle the paperwork for you.' } },
-    { '@type': 'Question', name: 'How long does hail damage repair take?', acceptedAnswer: { '@type': 'Answer', text: 'Light hail repairs are often completed same-day or next day. Heavy storm damage with multiple panels typically takes 1â€“3 days, depending on dent count and insurance approval.' } },
-    { '@type': 'Question', name: 'Where is All Dent PDR located?', acceptedAnswer: { '@type': 'Answer', text: 'We are at 7695 Granger Rd, Cleveland, OH 44125 â€” easily accessible from Parma, Garfield Heights, Bedford, Maple Heights, Solon, and all of Northeast Ohio.' } }
+    { '@type': 'Question', name: 'How long does hail damage repair take?', acceptedAnswer: { '@type': 'Answer', text: 'Light hail repairs are often completed same-day or next day. Heavy storm damage with multiple panels typically takes 1-3 days, depending on dent count and insurance approval.' } },
+    { '@type': 'Question', name: 'Where is All Dent PDR located?', acceptedAnswer: { '@type': 'Answer', text: 'We are at 7695 Granger Rd, Cleveland, OH 44125 - easily accessible from Parma, Garfield Heights, Bedford, Maple Heights, Solon, and all of Northeast Ohio.' } }
   ]
 };
 ---
@@ -63,7 +70,7 @@ const faqSchema = {
         </div>
       </a>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-        <span style="font-size:0.82rem;color:#6b5c52;">Monâ€“Fri 8amâ€“6pm Â· Sat 9amâ€“2pm</span>
+        <span style="font-size:0.82rem;color:#6b5c52;">Mon-Fri 8am-6pm &middot; Sat 9am-2pm</span>
         <a href="tel:18554255336" style="background:#fc1317;color:#fff;padding:11px 22px;border-radius:999px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 2px 10px rgba(252,19,23,0.35);">
           &#128222; 1-855-425-5336
         </a>
@@ -73,29 +80,29 @@ const faqSchema = {
 
   <!-- Hero + Form -->
   <section style="position:relative;color:#fff;padding:70px 24px 60px;background:url('/images/hail.jpg') center/cover no-repeat;">
-    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(15,10,5,0.90) 0%,rgba(30,15,5,0.84) 100%);"></div>
-    <div style="position:relative;z-index:1;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,8,6,0.78) 0%,rgba(20,12,8,0.70) 100%);"></div>
+    <div class="hero-grid" style="position:relative;z-index:1;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;">
 
       <!-- Left: headline + trust points -->
       <div>
-        <span style="background:#fc1317;color:#fff;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Hail Damage Specialists â€” Cleveland, OH</span>
-        <h1 style="font-size:clamp(1.9rem,4vw,2.85rem);margin:18px 0 14px;line-height:1.15;font-family:Georgia,serif;">
+        <span style="background:#fc1317;color:#fff;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Hail Damage Specialists &mdash; Cleveland, OH</span>
+        <h1 style="font-size:clamp(2rem,4.2vw,3rem);margin:18px 0 14px;line-height:1.12;letter-spacing:0.01em;font-family:Georgia,serif;color:#ffffff;">
           Your car took a hail hit.<br />We'll make it look factory-new.
         </h1>
-        <p style="font-size:1.08rem;color:rgba(255,255,255,0.82);margin-bottom:28px;line-height:1.65;">
-          All Dent PDR at <strong style="color:#fff;">7695 Granger Rd, Cleveland, OH 44125</strong> specializes in paintless hail damage restoration â€” no repainting, factory finish preserved, full insurance billing handled for you.
+        <p style="font-size:1.08rem;color:rgba(255,255,255,0.93);margin-bottom:28px;line-height:1.65;">
+          All Dent PDR at <strong style="color:#fff;">7695 Granger Rd, Cleveland, OH 44125</strong> specializes in paintless hail damage restoration &mdash; no repainting, factory finish preserved, full insurance billing handled for you.
         </p>
 
         <div style="display:flex;flex-direction:column;gap:13px;margin-bottom:32px;">
           {[
-            'Free in-person inspection &amp; itemized estimate â€” same day',
+            'Free in-person inspection &amp; itemized estimate &mdash; same day',
             'Direct billing with State Farm, Progressive, Allstate &amp; more',
-            'OEM factory paint preserved â€” no sanding, no repainting',
+            'OEM factory paint preserved &mdash; no sanding, no repainting',
             'Serving Parma, Garfield Heights, Bedford, Solon &amp; all of NE Ohio',
           ].map((item) => (
             <div style="display:flex;align-items:flex-start;gap:10px;">
-              <span style="color:#fc1317;font-size:1.1rem;font-weight:700;margin-top:1px;">âœ“</span>
-              <span set:html={item} />
+              <span style="color:#fc1317;font-size:1.1rem;font-weight:700;margin-top:1px;">&#10003;</span>
+              <span style="color:rgba(255,255,255,0.95);" set:html={item} />
             </div>
           ))}
         </div>
@@ -106,9 +113,9 @@ const faqSchema = {
 
         <!-- Ratings badge -->
         <div style="margin-top:24px;display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:12px 16px;">
-          <div style="color:#f59e0b;font-size:1.1rem;">â˜…â˜…â˜…â˜…â˜…</div>
+          <div style="color:#f59e0b;font-size:1.1rem;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
           <div>
-            <div style="font-weight:700;font-size:0.9rem;">5.0 Â· 47 reviews</div>
+            <div style="font-weight:700;font-size:0.9rem;">5.0 &middot; 47 reviews</div>
             <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Google Reviews</div>
           </div>
         </div>
@@ -118,9 +125,9 @@ const faqSchema = {
             client:load
             before="/images/alldentbefore.jpg"
             after="/images/alldentafter.jpg"
-            alt="Hail damage repair Cleveland OH â€” All Dent PDR before and after"
+            alt="Hail damage repair Cleveland OH &mdash; All Dent PDR before and after"
           />
-          <p style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-top:8px;text-align:center;">Actual repair by All Dent PDR â€” drag to compare</p>
+          <p style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-top:8px;text-align:center;">Actual repair by All Dent PDR &mdash; drag to compare</p>
         </div>
       </div>
 
@@ -178,17 +185,21 @@ const faqSchema = {
             const btn  = document.getElementById('lp-submit');
             const stat = document.getElementById('lp-status');
 
+            if (!(form instanceof HTMLFormElement) || !(btn instanceof HTMLButtonElement) || !(stat instanceof HTMLElement)) {
+              return;
+            }
+
             form.addEventListener('submit', async (e) => {
               e.preventDefault();
               btn.disabled = true;
-              btn.textContent = 'Sendingâ€¦';
+              btn.textContent = 'Sending...';
 
               const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
               const data = Object.fromEntries(new FormData(form));
               data.event_id = eventId;
               data.location  = data.location || 'Cleveland, OH';
 
-              const getCookie = (n) => (document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)') || [])[2] || '';
+              const getCookie = (n: string) => (document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)') || [])[2] || '';
               data.fbc = getCookie('_fbc');
               data.fbp = getCookie('_fbp');
               Object.assign(data, JSON.parse(sessionStorage.getItem('alldent_utm') || '{}'));
@@ -201,18 +212,18 @@ const faqSchema = {
                 });
                 if (res.ok) {
                   form.reset();
-                  stat.textContent = 'âœ“ Request sent! We\'ll be in touch within 2 hours.';
+                  stat.textContent = 'Request sent! We\'ll be in touch within 2 hours.';
                   stat.style.color = '#16a34a';
-                  if (typeof fbq === 'function') fbq('track', 'Lead', {}, { eventID: eventId });
-                  if (typeof gtag === 'function') gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
+                  if (typeof window !== 'undefined' && typeof window.fbq === 'function') window.fbq('track', 'Lead', {}, { eventID: eventId });
+                  if (typeof window !== 'undefined' && typeof window.gtag === 'function') window.gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
                 } else {
-                  stat.textContent = 'Something went wrong â€” please call 1-855-425-5336.';
+                  stat.textContent = 'Something went wrong - please call 1-855-425-5336.';
                   stat.style.color = '#dc2626';
                   btn.disabled = false;
                   btn.textContent = 'Request Free Inspection';
                 }
               } catch {
-                stat.textContent = 'Something went wrong â€” please call 1-855-425-5336.';
+                stat.textContent = 'Something went wrong - please call 1-855-425-5336.';
                 stat.style.color = '#dc2626';
                 btn.disabled = false;
                 btn.textContent = 'Request Free Inspection';
@@ -240,12 +251,12 @@ const faqSchema = {
   <section style="padding:70px 24px;background:#f9f7f5;">
     <div style="max-width:960px;margin:0 auto;text-align:center;">
       <span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Simple Process</span>
-      <h2 style="font-size:clamp(1.5rem,3vw,2.1rem);margin:16px 0 44px;font-family:Georgia,serif;color:#1a1410;">From inspection to flawless finish â€” 4 steps</h2>
+      <h2 style="font-size:clamp(1.5rem,3vw,2.1rem);margin:16px 0 44px;font-family:Georgia,serif;color:#1a1410;">From inspection to flawless finish &mdash; 4 steps</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;text-align:left;">
         {[
-          { n: '1', h: 'Stop in or call', p: '7695 Granger Rd, Cleveland â€” no appointment needed for an initial assessment.' },
+          { n: '1', h: 'Stop in or call', p: '7695 Granger Rd, Cleveland &mdash; no appointment needed for an initial assessment.' },
           { n: '2', h: 'Get your estimate', p: 'Transparent, panel-by-panel pricing. No hidden fees, no pressure.' },
-          { n: '3', h: 'We handle insurance', p: 'Direct billing with most major carriers â€” we manage all the paperwork.' },
+          { n: '3', h: 'We handle insurance', p: 'Direct billing with most major carriers &mdash; we manage all the paperwork.' },
           { n: '4', h: 'Drive away perfect', p: 'Factory-quality results with your original paint completely intact.' },
         ].map(({ n, h, p }) => (
           <div style="background:#fff;border:1px solid #e8e0d8;border-radius:14px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.06);transition:box-shadow 0.2s;">
@@ -265,14 +276,14 @@ const faqSchema = {
       <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 40px;font-family:Georgia,serif;color:#1a1410;">Real results, real customers</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;text-align:left;">
         {[
-          { q: 'My 2021 RAV4 had dents all over the hood and roof after a hailstorm. All Dent PDR had it looking brand new in two days. They handled everything with my insurance â€” I didn\'t have to do a thing.', a: 'Sarah M.', loc: 'Parma, OH' },
+          { q: 'My 2021 RAV4 had dents all over the hood and roof after a hailstorm. All Dent PDR had it looking brand new in two days. They handled everything with my insurance &mdash; I didn\'t have to do a thing.', a: 'Sarah M.', loc: 'Parma, OH' },
           { q: 'Best PDR shop in Cleveland. They found damage my insurance adjuster missed, documented it, and billed directly. The whole process was painless. Highly recommend.', a: 'James K.', loc: 'Garfield Heights, OH' },
-          { q: 'Called on a Tuesday, car was done by Thursday. Factory paint is perfect â€” you can\'t tell anything happened. Great communication throughout.', a: 'Linda R.', loc: 'Solon, OH' },
+          { q: 'Called on a Tuesday, car was done by Thursday. Factory paint is perfect &mdash; you can\'t tell anything happened. Great communication throughout.', a: 'Linda R.', loc: 'Solon, OH' },
         ].map(({ q, a, loc }) => (
           <blockquote style="background:#fffbf6;border:1px solid #e8e0d8;border-radius:14px;padding:28px;margin:0;box-shadow:0 2px 10px rgba(0,0,0,0.05);">
-            <div style="color:#f59e0b;font-size:1.1rem;margin-bottom:12px;">â˜…â˜…â˜…â˜…â˜…</div>
+            <div style="color:#f59e0b;font-size:1.1rem;margin-bottom:12px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
             <p style="color:#3a2e28;font-size:0.93rem;line-height:1.65;margin:0 0 16px;">&ldquo;{q}&rdquo;</p>
-            <footer style="font-size:0.83rem;font-weight:700;color:#1a1410;">{a} <span style="font-weight:400;color:#a0907e;">Â· {loc}</span></footer>
+            <footer style="font-size:0.83rem;font-weight:700;color:#1a1410;">{a} <span style="font-weight:400;color:#a0907e;">&middot; {loc}</span></footer>
           </blockquote>
         ))}
       </div>
@@ -283,13 +294,13 @@ const faqSchema = {
   <section style="padding:70px 24px;background:#f9f7f5;">
     <div style="max-width:760px;margin:0 auto;">
       <span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">FAQ</span>
-      <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 36px;font-family:Georgia,serif;color:#1a1410;">Hail damage repair â€” common questions</h2>
+      <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 36px;font-family:Georgia,serif;color:#1a1410;">Hail damage repair &mdash; common questions</h2>
       <div style="display:flex;flex-direction:column;gap:16px;">
         {[
-          { q: 'Can hail damage be fixed without repainting?', a: 'Yes â€” if your paint is intact, paintless dent repair reshapes the metal from behind, preserving your factory finish completely. No sanding, no filler, no repainting.' },
+          { q: 'Can hail damage be fixed without repainting?', a: 'Yes &mdash; if your paint is intact, paintless dent repair reshapes the metal from behind, preserving your factory finish completely. No sanding, no filler, no repainting.' },
           { q: 'Does my insurance cover hail damage in Cleveland?', a: 'Most comprehensive auto policies cover hail damage after your deductible. We work directly with State Farm, Progressive, Allstate, and most major carriers to handle the paperwork for you.' },
-          { q: 'How long does hail damage repair take?', a: 'Light hail repairs are often completed same-day or next day. Heavy storm damage with multiple panels typically takes 1â€“3 days, depending on dent count and insurance approval.' },
-          { q: 'Where is All Dent PDR located?', a: '7695 Granger Rd, Cleveland, OH 44125 â€” easily accessible from Parma, Garfield Heights, Bedford, Maple Heights, Solon, and all of Northeast Ohio.' },
+          { q: 'How long does hail damage repair take?', a: 'Light hail repairs are often completed same-day or next day. Heavy storm damage with multiple panels typically takes 1-3 days, depending on dent count and insurance approval.' },
+          { q: 'Where is All Dent PDR located?', a: '7695 Granger Rd, Cleveland, OH 44125 &mdash; easily accessible from Parma, Garfield Heights, Bedford, Maple Heights, Solon, and all of Northeast Ohio.' },
         ].map(({ q, a }) => (
           <details style="background:#fff;border:1px solid #e8e0d8;border-radius:12px;padding:0;overflow:hidden;">
             <summary style="padding:18px 24px;font-weight:700;font-size:0.97rem;color:#1a1410;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
@@ -306,7 +317,7 @@ const faqSchema = {
   <!-- Bottom CTA -->
   <section style="background:linear-gradient(135deg,#fc1317 0%,#c8000a 100%);color:#fff;padding:70px 24px;text-align:center;">
     <div style="max-width:700px;margin:0 auto;">
-      <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 14px;font-family:Georgia,serif;">Don't wait â€” hail damage gets worse over time</h2>
+      <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 14px;font-family:Georgia,serif;">Don't wait &mdash; hail damage gets worse over time</h2>
       <p style="font-size:1.02rem;color:rgba(255,255,255,0.88);margin-bottom:32px;line-height:1.6;">Schedule your free inspection at our Cleveland shop today. We'll assess every panel and give you a clear repair plan the same day.</p>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
         <a href="tel:18554255336" style="background:#fff;color:#fc1317;padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);">
@@ -316,24 +327,27 @@ const faqSchema = {
           Fill Out the Form
         </a>
       </div>
-      <p style="margin-top:20px;font-size:0.85rem;color:rgba(255,255,255,0.65);">7695 Granger Rd Â· Cleveland, OH 44125 Â· Monâ€“Fri 8amâ€“6pm Â· Sat 9amâ€“2pm</p>
+      <p style="margin-top:20px;font-size:0.85rem;color:rgba(255,255,255,0.65);">7695 Granger Rd &middot; Cleveland, OH 44125 &middot; Mon-Fri 8am-6pm &middot; Sat 9am-2pm</p>
     </div>
   </section>
 
   <!-- Footer -->
   <footer style="background:#1a1410;color:rgba(255,255,255,0.5);text-align:center;padding:22px 24px;font-size:0.82rem;">
     <p style="margin:0;">
-      Â© 2026 All Dent PDR Â· 7695 Granger Rd, Cleveland, OH 44125 Â·
-      <a href="tel:18554255336" style="color:rgba(255,255,255,0.7);">1-855-425-5336</a> Â·
-      <a href="/" style="color:rgba(255,255,255,0.5);margin-left:8px;">Home</a> Â·
-      <a href="/services" style="color:rgba(255,255,255,0.5);margin-left:8px;">Services</a> Â·
+      &copy; 2026 All Dent PDR &middot; 7695 Granger Rd, Cleveland, OH 44125 &middot;
+      <a href="tel:18554255336" style="color:rgba(255,255,255,0.7);">1-855-425-5336</a> &middot;
+      <a href="/" style="color:rgba(255,255,255,0.5);margin-left:8px;">Home</a> &middot;
+      <a href="/services" style="color:rgba(255,255,255,0.5);margin-left:8px;">Services</a> &middot;
       <a href="/contact" style="color:rgba(255,255,255,0.5);margin-left:8px;">Contact</a>
     </p>
   </footer>
 
   <style>
+    .hero-grid {
+      grid-template-columns: 1fr 1fr;
+    }
     @media (max-width: 768px) {
-      section > div[style*="grid-template-columns:1fr 1fr"] {
+      .hero-grid {
         grid-template-columns: 1fr !important;
       }
       details summary span { display: none; }
