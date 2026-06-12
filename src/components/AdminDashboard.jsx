@@ -111,7 +111,14 @@ export default function AdminDashboard() {
     async function bootstrap() {
       if (!remoteMode) return;
       const user = await getRemoteAuthUser();
-      if (!active || !user) return;
+      if (!active) return;
+      // Supabase session expired or not found — clear stale local session so
+      // the user is prompted to log in again (prevents seeing dashboard with no data).
+      if (!user) {
+        clearSession();
+        setLocalSession(null);
+        return;
+      }
 
       const allowed = await isRemoteAdmin();
       if (!allowed) {
