@@ -712,7 +712,7 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
               <button
                 type="button"
-                className={`button sm ${hasRegistrationData ? 'ghost' : 'primary'}`}
+                className="button primary sm"
                 onClick={handlePrintRegistration}
                 disabled={!hasRegistrationData}
                 title={hasRegistrationData ? 'Print or download signed registration form' : 'No signed registration form data on this job'}
