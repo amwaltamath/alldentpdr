@@ -647,6 +647,23 @@ function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
 const STATUS_COLUMNS = ['Registered', 'Estimate', 'Pending Insurance', 'In Progress', 'In Repair', 'On Hold', 'Complete'];
 
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
+  const hasRegistrationData = Boolean(
+    v.directionToPaySigned ||
+    v.repairAuthSigned ||
+    v.signatureName ||
+    v.signedAt ||
+    v.insuranceAuthName
+  );
+
+  const handlePrintRegistration = () => {
+    const html = buildRegistrationHtml(v);
+    const win = window.open('', '_blank', 'width=900,height=760');
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+    }
+  };
+
   return (
     <div className="job-inline-detail">
       <div className="jid-header">
@@ -669,6 +686,43 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
             <select value={v.status} onChange={(e) => onStatusChange(v.id, e.target.value)}>
               {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
+          </div>
+
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Form</h4>
+          <div style={{ display: 'grid', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: v.directionToPaySigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
+                {v.directionToPaySigned ? '✓' : '✗'} Direction to Pay
+              </span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: v.repairAuthSigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
+                {v.repairAuthSigned ? '✓' : '✗'} Repair Authorization
+              </span>
+            </div>
+            <div style={{ display: 'grid', gap: 2 }}>
+              <span className="cell-sub" style={{ margin: 0 }}>
+                Signature: {v.signatureName || '—'}
+              </span>
+              <span className="cell-sub" style={{ margin: 0 }}>
+                Insurance Company: {v.insuranceAuthName || v.insuranceCompany || '—'}
+              </span>
+              <span className="cell-sub" style={{ margin: 0 }}>
+                Signed: {v.signedAt ? new Date(v.signedAt).toLocaleString() : '—'}
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="button ghost sm"
+                onClick={handlePrintRegistration}
+                disabled={!hasRegistrationData}
+                title={hasRegistrationData ? 'Print or download signed registration form' : 'No signed registration form data on this job'}
+              >
+                📄 Print / Download
+              </button>
+              {!hasRegistrationData && (
+                <span className="cell-sub" style={{ margin: 0 }}>No signed registration data on this job yet.</span>
+              )}
+            </div>
           </div>
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Vehicle Release</h4>
@@ -2143,6 +2197,113 @@ function QuoteView({ vehicles }) {
       </div>
     </div>
   );
+}
+
+function buildRegistrationHtml(job) {
+  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const insuranceName = job.insuranceAuthName || job.insuranceCompany || '[ Insurance Company ]';
+  const signedDisplay = job.signedAt ? new Date(job.signedAt).toLocaleString() : '—';
+  const directionMark = job.directionToPaySigned ? '✓ Agreed' : '✗ Not signed';
+  const repairMark = job.repairAuthSigned ? '✓ Agreed' : '✗ Not signed';
+  const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>AllDent PDR - Registration Form - ${esc(job.id)}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:28px 34px}
+    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:3px solid #b0522b;margin-bottom:20px}
+    .hd-brand strong{font-size:22px;font-weight:800;color:#b0522b}
+    .hd-brand span{display:block;font-size:12px;color:#666;margin-top:2px}
+    .hd-meta{text-align:right;font-size:12px;color:#555;line-height:1.7}
+    .hd-meta .title{font-size:18px;font-weight:800;color:#1a1410;display:block;margin-bottom:4px}
+    .info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}
+    .cell{border:1px solid #e8e2db;border-radius:8px;padding:8px 10px}
+    .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;display:block;margin-bottom:3px}
+    .val{font-size:13px;color:#1a1410}
+    .section{border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;padding:12px 14px;background:#fffbf6;margin-bottom:14px}
+    .section h3{font-size:14px;font-weight:800;margin-bottom:8px;color:#1a1410}
+    .section p{font-size:13px;line-height:1.65;color:#1a1410;margin-bottom:10px}
+    .section p:last-child{margin-bottom:0}
+    .status{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 16px}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #e8e2db;background:#fff;font-weight:700;font-size:12px}
+    .ok{color:#2f7a4a;border-color:#c9e6d5;background:#eefaf3}
+    .no{color:#8f2d2d;border-color:#efc8c8;background:#fff3f3}
+    .sig{margin-top:10px;border-top:1px solid #d9d2ca;padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .sig-line{border-top:1.5px solid #1a1410;padding-top:6px;margin-top:34px;font-size:11px;color:#666}
+    .sig-val{display:block;font-size:16px;font-style:italic;color:#1a1410;margin-top:-26px;margin-bottom:6px}
+    .footer{font-size:11px;color:#9e8f84;text-align:center;padding-top:14px;border-top:1px solid #e8e2db;line-height:1.8;margin-top:10px}
+    @media print { body{padding:14px 18px} }
+  </style>
+</head>
+<body>
+  <div class="hd">
+    <div class="hd-brand">
+      <strong>AllDent PDR</strong>
+      <span>Vehicle Registration Agreement</span>
+      <span>1-855-425-5336 · alldentpdr@gmail.com</span>
+    </div>
+    <div class="hd-meta">
+      <span class="title">REGISTRATION FORM</span>
+      <span>Job #${esc(job.id)}</span><br/>
+      <span>Date: ${esc(dateStr)}</span>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="cell"><span class="lbl">Customer</span><span class="val">${esc(job.customerName || '—')}</span></div>
+    <div class="cell"><span class="lbl">Vehicle</span><span class="val">${esc([job.year, job.make, job.model].filter(Boolean).join(' ') || '—')}</span></div>
+    <div class="cell"><span class="lbl">Plate</span><span class="val">${esc(job.plate || '—')}</span></div>
+    <div class="cell"><span class="lbl">VIN</span><span class="val" style="font-family:monospace">${esc(job.vin || '—')}</span></div>
+    <div class="cell"><span class="lbl">Insurance Company</span><span class="val">${esc(insuranceName)}</span></div>
+    <div class="cell"><span class="lbl">Signed At</span><span class="val">${esc(signedDisplay)}</span></div>
+  </div>
+
+  <div class="status">
+    <span class="badge ${job.directionToPaySigned ? 'ok' : 'no'}">${esc(directionMark)} · Direction to Pay</span>
+    <span class="badge ${job.repairAuthSigned ? 'ok' : 'no'}">${esc(repairMark)} · Repair Authorization</span>
+  </div>
+
+  <section class="section">
+    <h3>Direction to Pay</h3>
+    <p>
+      I authorize <strong>${esc(insuranceName)}</strong> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.
+    </p>
+    <p>
+      I do hereby appoint All Dent PDR to accept on my behalf, any and all checks/drafts and to endorse all such checks/drafts for deposit to All Dent PDR account for payment for repairs to said vehicle, which have been accepted and released. The total amount of repair charges must be paid in full before the vehicle can be released for delivery or picked up. If insurance coverage pays either a portion of or the total amount due, I acknowledge that the insurance check/draft must be obtained by me or sent in advance by the insurance company and received by All Dent PDR. I also acknowledge that I must make arrangements with any lien holder or other payees to endorse the insurance check/draft prior to the release of the above repaired vehicle. I authorize any and all supplements payable directly to All Dent PDR for the consideration of repairs made to the vehicle. If I remove my vehicle from the shop prior to the completion of repairs, I agree to pay for parts, labor, handling fees, service charges, and rental car fees associated with the repair. To secure payment in amount of repairs, an expressed mechanics lien on the vehicle is acknowledged and I further agree to pay reasonable attorney's fees and court costs in the event legal action becomes necessary to enforce this contract. All Dent PDR may repossess my vehicle if payment is not secured.
+    </p>
+  </section>
+
+  <section class="section">
+    <h3>Repair Authorization</h3>
+    <p>
+      I hereby authorize All Dent PDR employees/contractors to operate my vehicle for the purpose of testing, inspection, delivery to and from for repairs. I acknowledge and agree that All Dent PDR will not be held responsible for loss or damage to the vehicle or articles left in the vehicle in case of fire, theft, vehicle accident, or any other cause beyond the control of All Dent PDR. Further, I acknowledge, that if closer analysis reveals additional repairs are necessary, either I or my insurance company will be contacted for authorization of any additional repair charges. If new parts listed in the insurance estimate are not available or replaceable by All Dent PDR, I authorize All Dent PDR to repair such parts when possible. Old parts will be disposed of unless otherwise instructed. I authorize All Dent PDR to manufacture access to dents that may not be accessible due to their location on the vehicle. And as such, All Dent PDR is not responsible for any unrelated prior damage (UPD) noted in the estimate or damage caused by prior work performed on the vehicle.
+    </p>
+    <p><strong>I authorize All Dent PDR to perform repairs on my vehicle per All Dent PDR estimate.</strong></p>
+  </section>
+
+  <div class="sig">
+    <div class="sig-line">
+      ${job.signatureName ? `<span class="sig-val">${esc(job.signatureName)}</span>` : ''}
+      Customer Signature
+    </div>
+    <div class="sig-line">
+      ${job.signedAt ? `<span class="sig-val">${esc(signedDisplay)}</span>` : ''}
+      Date Signed
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>AllDent PDR · Paintless Dent Repair Shop</strong><br/>
+    1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com
+  </div>
+
+  <script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
 }
 
 /* ─────────────────────────────────────────────────────────────
