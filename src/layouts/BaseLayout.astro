@@ -16,6 +16,20 @@ const {
 } = Astro.props;
 
 const gaId: string = 'G-T7RLXD05RW';
+const pathname = Astro.url?.pathname || '/';
+const landingPrefixes = ['/hail-damage-repair/', '/paintless-dent-repair/', '/door-ding-repair/'];
+const landingExact = new Set([
+  '/hail-damage-repair',
+  '/paintless-dent-repair',
+  '/door-ding-repair',
+  '/hail-damage-repair-cleveland',
+  '/hail-damage-repair-bedford-ohio',
+  '/bedford-hail-damage-repair',
+  '/bedford-paintless-dent-repair',
+  '/bedford-door-ding-repair'
+]);
+const isLandingPage = landingExact.has(pathname) || landingPrefixes.some((prefix) => pathname.startsWith(prefix));
+const shouldShowLeadPopup = pathname === '/' || isLandingPage;
 ---
 
 <!DOCTYPE html>
@@ -260,6 +274,124 @@ const gaId: string = 'G-T7RLXD05RW';
           <span><a href="/about">About</a> · <a href="/service-area">Service Area</a> · <a href="/blog">Blog</a> · <a href="/contact">Contact</a></span>
         </div>
       </footer>
+    )}
+
+    {shouldShowLeadPopup && (
+      <div id="lead-popup-backdrop" class="lead-popup-backdrop" hidden>
+        <section class="lead-popup" role="dialog" aria-modal="true" aria-labelledby="lead-popup-title">
+          <button id="lead-popup-close" class="lead-popup-close" type="button" aria-label="Close popup">&times;</button>
+          <img class="lead-popup-logo" src="/images/logo.jpg" alt="All Dent PDR" loading="lazy" decoding="async" />
+          <p class="lead-popup-kicker">Free Estimate</p>
+          <h3 id="lead-popup-title">Get your quick estimate</h3>
+          <p class="lead-popup-copy">Tell us about your vehicle and damage. We will contact you shortly.</p>
+
+          <form id="lead-popup-form" class="lead-popup-form">
+            <label for="lead-popup-name">Full name</label>
+            <input id="lead-popup-name" name="name" type="text" required placeholder="Jane Smith" />
+
+            <label for="lead-popup-email">Email</label>
+            <input id="lead-popup-email" name="email" type="email" required placeholder="you@email.com" />
+
+            <label for="lead-popup-phone">Phone</label>
+            <input id="lead-popup-phone" name="phone" type="tel" placeholder="(555) 555-5555" />
+
+            <label for="lead-popup-details">Vehicle and damage details</label>
+            <input id="lead-popup-details" name="message" type="text" required placeholder="2019 Toyota Camry, hail dents on hood and roof" />
+
+            <button class="button primary" type="submit">Get Free Estimate</button>
+            <button id="lead-popup-later" class="lead-popup-link" type="button">Maybe later</button>
+            <p id="lead-popup-status" class="lead-popup-status" aria-live="polite"></p>
+          </form>
+        </section>
+      </div>
+    )}
+
+    {shouldShowLeadPopup && (
+      <script is:inline define:vars={{ pageTitle: title, pagePath: pathname }}>
+        (() => {
+          const KEY = 'alldent_lead_popup_last_closed_at';
+          const COOLDOWN_MS = 1000 * 60 * 60 * 24;
+          const backdrop = document.getElementById('lead-popup-backdrop');
+          const closeBtn = document.getElementById('lead-popup-close');
+          const laterBtn = document.getElementById('lead-popup-later');
+          const form = document.getElementById('lead-popup-form');
+          const status = document.getElementById('lead-popup-status');
+          if (!(backdrop instanceof HTMLElement) || !(form instanceof HTMLFormElement)) return;
+
+          const wasRecentlyClosed = () => {
+            const raw = localStorage.getItem(KEY);
+            if (!raw) return false;
+            const ts = Number(raw);
+            return Number.isFinite(ts) && (Date.now() - ts) < COOLDOWN_MS;
+          };
+
+          const openPopup = () => {
+            backdrop.hidden = false;
+            document.body.classList.add('popup-open');
+          };
+
+          const closePopup = () => {
+            backdrop.hidden = true;
+            document.body.classList.remove('popup-open');
+            localStorage.setItem(KEY, String(Date.now()));
+          };
+
+          if (!wasRecentlyClosed()) {
+            window.setTimeout(openPopup, 5000);
+          }
+
+          closeBtn?.addEventListener('click', closePopup);
+          laterBtn?.addEventListener('click', closePopup);
+
+          form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const data = new FormData(form);
+            const message = String(data.get('message') || '').trim();
+            const payload = {
+              name: String(data.get('name') || '').trim(),
+              email: String(data.get('email') || '').trim(),
+              phone: String(data.get('phone') || '').trim(),
+              location: 'Website popup lead',
+              vehicle: pageTitle,
+              message,
+              utm_source: sessionStorage.getItem('utm_source') || '',
+              utm_medium: sessionStorage.getItem('utm_medium') || '',
+              utm_campaign: sessionStorage.getItem('utm_campaign') || '',
+              utm_content: sessionStorage.getItem('utm_content') || '',
+              utm_term: sessionStorage.getItem('utm_term') || '',
+              referrer: document.referrer || ''
+            };
+
+            status.textContent = 'Sending...';
+            status.className = 'lead-popup-status';
+
+            try {
+              const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!res.ok) throw new Error('Failed to submit');
+
+              status.textContent = 'Thanks. Your free estimate request was sent.';
+              status.className = 'lead-popup-status is-success';
+              form.reset();
+              localStorage.setItem(KEY, String(Date.now()));
+
+              if (typeof window.gtag === 'function') {
+                window.gtag('event', 'conversion', {
+                  send_to: 'AW-18153754648',
+                  event_callback: () => {}
+                });
+              }
+
+            } catch {
+              status.textContent = 'Could not send right now. Please try again.';
+              status.className = 'lead-popup-status is-error';
+            }
+          });
+        })();
+      </script>
     )}
   </body>
 </html>

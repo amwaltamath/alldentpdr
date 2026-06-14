@@ -439,6 +439,10 @@ body.popup-open { overflow: hidden; }
   padding: 16px;
 }
 
+.lead-popup-backdrop[hidden] {
+  display: none !important;
+}
+
 .lead-popup {
   position: relative;
   width: min(460px, 100%);
@@ -468,17 +472,29 @@ body.popup-open { overflow: hidden; }
   text-transform: uppercase;
   color: var(--rust);
   font-weight: 700;
+  text-align: center;
 }
 
 .lead-popup h3 {
   margin: 0 0 8px;
   font-size: clamp(1.25rem, 2.3vw, 1.5rem);
+  text-align: center;
 }
 
 .lead-popup-copy {
   margin: 0 0 14px;
   color: var(--muted);
   font-size: 14px;
+  text-align: center;
+}
+
+.lead-popup-logo {
+  width: 140px;
+  height: auto;
+  display: block;
+  margin: 0 auto 10px;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
 }
 
 .lead-popup-form label {

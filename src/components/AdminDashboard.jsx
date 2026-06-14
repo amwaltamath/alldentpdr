@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
+  deleteLead,
   deleteVehicle,
   getLeads,
   getPricing,
@@ -298,6 +299,16 @@ export default function AdminDashboard() {
     setLeads((prev) => prev.map((l) => l.id === id ? { ...l, status } : l));
   };
 
+  const handleLeadDelete = async (id) => {
+    if (!window.confirm('Delete this lead as spam? This cannot be undone.')) return;
+    try {
+      await deleteLead(id);
+      setLeads((prev) => prev.filter((l) => l.id !== id));
+    } catch (err) {
+      alert('Delete lead failed: ' + err.message);
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm('Permanently delete this job? This cannot be undone.')) return;
     try {
@@ -502,6 +513,7 @@ export default function AdminDashboard() {
               leads={leads}
               loading={leadsLoading}
               onStatusChange={handleLeadStatusChange}
+              onDelete={handleLeadDelete}
             />
           )}
 
@@ -958,8 +970,11 @@ function sourceBadgeClass(src) {
   return 'source-badge other';
 }
 
-function LeadsView({ leads, loading, onStatusChange }) {
+function LeadsView({ leads, loading, onStatusChange, onDelete }) {
   const [filter, setFilter] = useState('all');
+  const [selectedId, setSelectedId] = useState(null);
+
+  const toggle = (id) => setSelectedId((cur) => cur === id ? null : id);
 
   const total = leads.length;
   const byStatus = Object.fromEntries(LEAD_STATUSES.map((s) => [s, 0]));
@@ -1008,6 +1023,7 @@ function LeadsView({ leads, loading, onStatusChange }) {
         <table className="data-table">
           <thead>
             <tr>
+              <th style={{ width: 28 }}></th>
               <th>Date</th>
               <th>Name</th>
               <th>Contact</th>
@@ -1015,49 +1031,82 @@ function LeadsView({ leads, loading, onStatusChange }) {
               <th>Source</th>
               <th>Campaign / Keyword</th>
               <th>Status</th>
+              <th style={{ width: 48 }}></th>
             </tr>
           </thead>
           <tbody>
-            {shown.map((l) => (
-              <tr key={l.id}>
-                <td>
-                  <div className="cell-strong">{new Date(l.created_at).toLocaleDateString()}</div>
-                  <div className="cell-sub">{l.id}</div>
-                </td>
-                <td>
-                  <div className="cell-strong">{l.name}</div>
-                  <div className="cell-sub">{l.location || '—'}</div>
-                </td>
-                <td>
-                  <div className="cell-strong">{l.email}</div>
-                  <div className="cell-sub">{l.phone || '—'}</div>
-                </td>
-                <td>
-                  <div className="cell-strong">{l.vehicle || '—'}</div>
-                  <div className="cell-sub" title={l.message}>{l.message?.slice(0, 55)}{l.message?.length > 55 ? '…' : ''}</div>
-                </td>
-                <td>
-                  <span className={sourceBadgeClass(l.utm_source)}>{sourceLabel(l.utm_source)}</span>
-                  {l.utm_medium && <div className="cell-sub">{l.utm_medium}</div>}
-                  {l.referrer && !l.utm_source && <div className="cell-sub" title={l.referrer} style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.referrer.replace(/^https?:\/\//, '')}</div>}
-                </td>
-                <td>
-                  <div className="cell-strong">{l.utm_campaign || '—'}</div>
-                  {l.utm_term && <div className="cell-sub">🔑 {l.utm_term}</div>}
-                  {l.utm_content && <div className="cell-sub">{l.utm_content}</div>}
-                </td>
-                <td>
-                  <select value={l.status} onChange={(e) => onStatusChange(l.id, e.target.value)}>
-                    {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </td>
-              </tr>
-            ))}
+            {shown.map((l) => {
+              const isOpen = selectedId === l.id;
+              return (
+                <Fragment key={l.id}>
+                  <tr
+                    className={`job-row-clickable${isOpen ? ' is-expanded' : ''}`}
+                    onClick={() => toggle(l.id)}
+                    title="Click to view full vehicle and note"
+                  >
+                    <td style={{ textAlign: 'center', color: 'var(--muted)', fontSize: 10, paddingRight: 0 }}>
+                      {isOpen ? '▼' : '▶'}
+                    </td>
+                    <td>
+                      <div className="cell-strong">{new Date(l.created_at).toLocaleDateString()}</div>
+                      <div className="cell-sub">{l.id}</div>
+                    </td>
+                    <td>
+                      <div className="cell-strong">{l.name}</div>
+                      <div className="cell-sub">{l.location || '—'}</div>
+                    </td>
+                    <td>
+                      <div className="cell-strong">{l.email}</div>
+                      <div className="cell-sub">{l.phone || '—'}</div>
+                    </td>
+                    <td>
+                      <div className="cell-strong">{l.vehicle || '—'}</div>
+                      <div className="cell-sub" title={l.message}>{l.message?.slice(0, 55)}{l.message?.length > 55 ? '…' : ''}</div>
+                    </td>
+                    <td>
+                      <span className={sourceBadgeClass(l.utm_source)}>{sourceLabel(l.utm_source)}</span>
+                      {l.utm_medium && <div className="cell-sub">{l.utm_medium}</div>}
+                      {l.referrer && !l.utm_source && <div className="cell-sub" title={l.referrer} style={{ maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis' }}>{l.referrer.replace(/^https?:\/\//, '')}</div>}
+                    </td>
+                    <td>
+                      <div className="cell-strong">{l.utm_campaign || '—'}</div>
+                      {l.utm_term && <div className="cell-sub">🔑 {l.utm_term}</div>}
+                      {l.utm_content && <div className="cell-sub">{l.utm_content}</div>}
+                    </td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <select value={l.status} onChange={(e) => onStatusChange(l.id, e.target.value)}>
+                        {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </td>
+                    <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
+                      <button
+                        type="button"
+                        className="btn-delete-job"
+                        onClick={() => onDelete(l.id)}
+                        title="Delete spam lead"
+                        aria-label="Delete lead"
+                      >🗑</button>
+                    </td>
+                  </tr>
+                  {isOpen && (
+                    <tr className="job-detail-tr">
+                      <td colSpan={9} className="job-detail-td" style={{ padding: '12px 20px' }}>
+                        <div style={{ display: 'grid', gap: 8 }}>
+                          <div><span className="jd-label">Vehicle</span> <span className="jd-val">{l.vehicle || '—'}</span></div>
+                          <div><span className="jd-label">Full Note</span></div>
+                          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{l.message || '—'}</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
             {!loading && !shown.length && (
-              <tr><td colSpan={7} className="kanban-empty">{filter === 'all' ? 'No leads yet — contact form submissions will appear here.' : `No leads with status "${filter}".`}</td></tr>
+              <tr><td colSpan={9} className="kanban-empty">{filter === 'all' ? 'No leads yet — contact form submissions will appear here.' : `No leads with status "${filter}".`}</td></tr>
             )}
             {loading && (
-              <tr><td colSpan={7} className="kanban-empty">Loading…</td></tr>
+              <tr><td colSpan={9} className="kanban-empty">Loading…</td></tr>
             )}
           </tbody>
         </table>

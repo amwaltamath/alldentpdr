@@ -295,6 +295,15 @@ export async function updateLeadStatus(id, status) {
   if (error) throw error;
 }
 
+export async function deleteLead(id) {
+  if (!isSupabaseEnabled()) return;
+  const { error } = await supabase
+    .from('leads')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+}
+
 export function setSession(session) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(SESSION_KEY, JSON.stringify(session));
