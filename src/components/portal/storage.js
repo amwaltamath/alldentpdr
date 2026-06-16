@@ -304,6 +304,57 @@ export async function deleteLead(id) {
   if (error) throw error;
 }
 
+// ===== Chat (admin) =====
+
+export async function getChatConversations() {
+  if (!isSupabaseEnabled()) return [];
+  const { data, error } = await supabase
+    .from('chat_conversations')
+    .select('*')
+    .order('last_message_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getChatMessages(conversationId) {
+  if (!isSupabaseEnabled() || !conversationId) return [];
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .select('*')
+    .eq('conversation_id', conversationId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function sendChatReply(conversationId, body, senderName) {
+  if (!isSupabaseEnabled() || !conversationId) return;
+  const { error } = await supabase.rpc('chat_admin_reply', {
+    p_conversation_id: conversationId,
+    p_body: body,
+    p_sender_name: senderName || null
+  });
+  if (error) throw error;
+}
+
+export async function markChatRead(conversationId) {
+  if (!isSupabaseEnabled() || !conversationId) return;
+  const { error } = await supabase.rpc('chat_admin_mark_read', {
+    p_conversation_id: conversationId
+  });
+  if (error) throw error;
+}
+
+export function subscribeChatChanges(onChange) {
+  if (!isSupabaseEnabled()) return () => {};
+  const channel = supabase
+    .channel('admin-chat')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_conversations' }, onChange)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, onChange)
+    .subscribe();
+  return () => { supabase.removeChannel(channel); };
+}
+
 export function setSession(session) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(SESSION_KEY, JSON.stringify(session));

@@ -3,6 +3,8 @@ import {
   clearSession,
   deleteLead,
   deleteVehicle,
+  getChatConversations,
+  getChatMessages,
   getLeads,
   getPricing,
   getRemoteAuthUser,
@@ -10,12 +12,15 @@ import {
   getVehicles,
   isRemoteAdmin,
   isRemotePortalEnabled,
+  markChatRead,
   registerVehicle,
   saveReleaseForm,
   savePricing,
+  sendChatReply,
   setSession,
   signInRemoteAdmin,
   signOutRemoteAdmin,
+  subscribeChatChanges,
   updateLeadStatus,
   updateVehicle,
   updateVehicleStatus
@@ -58,6 +63,7 @@ const NAV_ITEMS = [
   { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
   { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
   { id: 'leads',    label: 'Leads',             icon: '◎' },
+  { id: 'messages', label: 'Messages',          icon: '✉' },
   { id: 'analytics',label: 'Analytics',          icon: '📈' },
   { id: 'quote',    label: 'New Quote',         icon: '$' },
   { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
@@ -96,6 +102,10 @@ export default function AdminDashboard() {
   const [releaseJob, setReleaseJob] = useState(null);
   const [leads, setLeads] = useState([]);
   const [leadsLoading, setLeadsLoading] = useState(false);
+  const [conversations, setConversations] = useState([]);
+  const [activeConvId, setActiveConvId] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatLoading, setChatLoading] = useState(false);
 
   const remoteMode = isRemotePortalEnabled();
 
@@ -153,8 +163,12 @@ export default function AdminDashboard() {
       setLoading(true);
       setLeadsLoading(true);
       try {
-        const [next, leadsNext] = await Promise.all([getVehicles(), getLeads()]);
-        if (active) { setVehicles(next); setLeads(leadsNext); }
+        const [next, leadsNext, convNext] = await Promise.all([
+          getVehicles(),
+          getLeads(),
+          getChatConversations().catch(() => [])
+        ]);
+        if (active) { setVehicles(next); setLeads(leadsNext); setConversations(convNext); }
       } catch {
         if (active) setAuthError('Unable to load vehicle data.');
       } finally {
@@ -165,6 +179,61 @@ export default function AdminDashboard() {
     load();
     return () => { active = false; };
   }, [remoteMode, session]);
+
+  // Realtime chat updates for admin
+  useEffect(() => {
+    if (remoteMode && (!session || session.role !== 'admin')) return;
+    const unsub = subscribeChatChanges(async () => {
+      try {
+        const list = await getChatConversations();
+        setConversations(list);
+        if (activeConvId) {
+          const msgs = await getChatMessages(activeConvId);
+          setChatMessages(msgs);
+        }
+      } catch {
+        // Ignore transient realtime refresh errors.
+      }
+    });
+    return unsub;
+  }, [remoteMode, session, activeConvId]);
+
+  // Load messages when opening a conversation
+  useEffect(() => {
+    if (!activeConvId) { setChatMessages([]); return; }
+    let active = true;
+    (async () => {
+      setChatLoading(true);
+      try {
+        const msgs = await getChatMessages(activeConvId);
+        if (active) setChatMessages(msgs);
+        await markChatRead(activeConvId);
+        if (active) {
+          setConversations((prev) => prev.map((c) =>
+            c.id === activeConvId ? { ...c, unread_admin: 0 } : c
+          ));
+        }
+      } finally {
+        if (active) setChatLoading(false);
+      }
+    })();
+    return () => { active = false; };
+  }, [activeConvId]);
+
+  const handleChatReply = async (body) => {
+    if (!activeConvId || !body.trim()) return;
+    const senderName = session?.email?.split('@')[0] || 'All Dent PDR';
+    await sendChatReply(activeConvId, body.trim(), senderName);
+    const msgs = await getChatMessages(activeConvId);
+    setChatMessages(msgs);
+    const list = await getChatConversations();
+    setConversations(list);
+  };
+
+  const totalUnreadChat = useMemo(
+    () => conversations.reduce((sum, c) => sum + (c.unread_admin || 0), 0),
+    [conversations]
+  );
 
   const filteredVehicles = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -410,6 +479,9 @@ export default function AdminDashboard() {
             >
               <span aria-hidden="true" style={{ width: 16, opacity: .7 }}>{item.icon}</span>
               {item.label}
+              {item.id === 'messages' && totalUnreadChat > 0 && (
+                <span className="nav-badge">{totalUnreadChat}</span>
+              )}
             </button>
           ))}
         </nav>
@@ -514,6 +586,17 @@ export default function AdminDashboard() {
               loading={leadsLoading}
               onStatusChange={handleLeadStatusChange}
               onDelete={handleLeadDelete}
+            />
+          )}
+
+          {view === 'messages' && (
+            <MessagesView
+              conversations={conversations}
+              activeId={activeConvId}
+              onSelect={setActiveConvId}
+              messages={chatMessages}
+              loading={chatLoading}
+              onReply={handleChatReply}
             />
           )}
 
@@ -2825,6 +2908,144 @@ function RegisterView({ form, setForm, onSubmit, saveMessage }) {
 
           <button className="button primary" type="submit">Create job</button>
         </form>
+      </div>
+    </section>
+  );
+}
+
+/* ----------------- MessagesView ----------------- */
+
+function formatChatTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) +
+    ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function MessagesView({ conversations, activeId, onSelect, messages, loading, onReply }) {
+  const [draft, setDraft] = useState('');
+  const [sending, setSending] = useState(false);
+  const [err, setErr] = useState('');
+  const scrollerRef = useRef(null);
+  const active = conversations.find((c) => c.id === activeId) || null;
+
+  useEffect(() => { setDraft(''); setErr(''); }, [activeId]);
+
+  useEffect(() => {
+    if (scrollerRef.current) {
+      scrollerRef.current.scrollTop = scrollerRef.current.scrollHeight;
+    }
+  }, [messages.length, activeId]);
+
+  async function submitReply(e) {
+    e.preventDefault();
+    if (!draft.trim() || sending) return;
+    setSending(true);
+    setErr('');
+    try {
+      await onReply(draft);
+      setDraft('');
+    } catch (e2) {
+      setErr(e2.message || 'Could not send');
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <section className="panel chat-admin">
+      <div className="chat-admin-grid">
+        <aside className="chat-admin-list">
+          <div className="chat-admin-list-head">
+            <strong>Conversations</strong>
+            <span className="meta">{conversations.length}</span>
+          </div>
+          {!conversations.length && (
+            <div className="kanban-empty" style={{ padding: 24 }}>
+              No messages yet. When a visitor opens the website chat box, their conversation appears here.
+            </div>
+          )}
+          {conversations.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              className={`chat-admin-row${activeId === c.id ? ' is-active' : ''}`}
+              onClick={() => onSelect(c.id)}
+            >
+              <div className="chat-admin-row-top">
+                <span className="cell-strong">{c.visitor_name || c.visitor_email || 'Anonymous visitor'}</span>
+                <span className="cell-sub">{formatChatTime(c.last_message_at)}</span>
+              </div>
+              <div className="chat-admin-row-preview">
+                {c.last_message_preview || '--'}
+              </div>
+              <div className="chat-admin-row-foot">
+                {c.visitor_email && <span className="cell-sub">{c.visitor_email}</span>}
+                {c.unread_admin > 0 && <span className="chat-admin-unread">{c.unread_admin}</span>}
+              </div>
+            </button>
+          ))}
+        </aside>
+
+        <div className="chat-admin-thread">
+          {!active && (
+            <div className="kanban-empty" style={{ padding: 32 }}>
+              {conversations.length ? 'Select a conversation to start replying.' : 'Waiting for the first visitor message...'}
+            </div>
+          )}
+          {active && (
+            <>
+              <header className="chat-admin-thread-head">
+                <div>
+                  <strong>{active.visitor_name || 'Anonymous visitor'}</strong>
+                  <div className="cell-sub">
+                    {[active.visitor_email, active.visitor_phone].filter(Boolean).join(' | ') || '--'}
+                  </div>
+                  {active.page_url && (
+                    <div className="cell-sub" title={active.page_url}>
+                      From: {active.page_url.length > 60 ? active.page_url.slice(0, 60) + '...' : active.page_url}
+                    </div>
+                  )}
+                </div>
+              </header>
+              <div className="chat-admin-log" ref={scrollerRef}>
+                {loading && <div className="kanban-empty">Loading...</div>}
+                {!loading && messages.map((m) => (
+                  <div key={m.id} className={`chat-msg chat-msg-${m.sender === 'admin' ? 'admin-out' : 'visitor-in'}`}>
+                    <div className="chat-bubble">{m.body}</div>
+                    <div className="chat-meta">
+                      {m.sender === 'admin' ? (m.sender_name || 'You') : (m.sender_name || 'Visitor')} | {formatChatTime(m.created_at)}
+                    </div>
+                  </div>
+                ))}
+                {!loading && !messages.length && (
+                  <div className="kanban-empty">No messages in this conversation.</div>
+                )}
+              </div>
+              <form className="chat-composer" onSubmit={submitReply}>
+                {err && <div className="chat-error">{err}</div>}
+                <textarea
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder="Type your reply..."
+                  rows={2}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      submitReply(e);
+                    }
+                  }}
+                />
+                <button type="submit" className="button primary" disabled={sending || !draft.trim()}>
+                  {sending ? 'Sending...' : 'Send reply'}
+                </button>
+              </form>
+            </>
+          )}
+        </div>
       </div>
     </section>
   );

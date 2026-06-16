@@ -1,6 +1,7 @@
 ﻿---
 import '../styles/global.css';
 import MobileMenu from '../components/MobileMenu.jsx';
+import ChatWidget from '../components/ChatWidget.jsx';
 
 const {
   title = 'AllDent PDR | Paintless Dent Repair Cincinnati',
@@ -393,5 +394,7 @@ const shouldShowLeadPopup = pathname === '/' || isLandingPage;
         })();
       </script>
     )}
+
+    {!bare && <ChatWidget client:idle />}
   </body>
 </html>
