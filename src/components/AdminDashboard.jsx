@@ -1427,13 +1427,43 @@ function VinScanner({ onScan, onClose }) {
     if (typeof window === 'undefined') return;
     let active = true;
 
-    import('@zxing/browser').then(({ BrowserMultiFormatReader }) => {
+    import('@zxing/browser').then(async ({ BrowserMultiFormatReader }) => {
       if (!active) return;
 
       const reader = new BrowserMultiFormatReader();
       readerRef.current = reader;
 
-      // Get the back/environment camera
+      const decodeHandler = (result, err) => {
+        if (!active) return;
+        if (result) {
+          setReady(true);
+          const vin = normalizeVin(result.getText().replace(/\*/g, ''));
+          if (vin.length >= 5) {
+            active = false;
+            onScan(vin);
+          }
+        }
+        if (err && !(err?.name === 'NotFoundException')) {
+          console.warn('[VinScanner]', err);
+        }
+        if (!ready) setReady(true);
+      };
+
+      try {
+        await reader.decodeFromConstraints(
+          {
+            video: {
+              facingMode: { ideal: 'environment' },
+            },
+          },
+          videoRef.current,
+          decodeHandler
+        );
+        return;
+      } catch (constraintErr) {
+        console.warn('[VinScanner constraints fallback]', constraintErr);
+      }
+
       BrowserMultiFormatReader.listVideoInputDevices()
         .then((devices) => {
           if (!active) return;
@@ -1441,32 +1471,9 @@ function VinScanner({ onScan, onClose }) {
             setScanError('No camera found. Please enter the VIN manually.');
             return;
           }
-          // Prefer rear camera on mobile; fallback to first available
-          const preferred = devices.find((d) =>
-            /back|rear|environment/i.test(d.label)
-          ) || devices[devices.length - 1];
+          const preferred = devices.find((d) => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
 
-          return reader.decodeFromVideoDevice(
-            preferred.deviceId,
-            videoRef.current,
-            (result, err) => {
-              if (!active) return;
-              if (result) {
-                setReady(true);
-                // Strip Code-39 asterisk delimiters, uppercase, trim
-                const vin = result.getText().replace(/\*/g, '').trim().toUpperCase();
-                if (vin.length >= 5) {
-                  active = false;
-                  onScan(vin);
-                }
-              }
-              if (err && !(err?.name === 'NotFoundException')) {
-                // Only log non-expected decode errors
-                console.warn('[VinScanner]', err);
-              }
-              if (!ready) setReady(true);
-            }
-          );
+          return reader.decodeFromVideoDevice(preferred.deviceId, videoRef.current, decodeHandler);
         })
         .catch((err) => {
           console.error('[VinScanner camera]', err);
@@ -1568,6 +1575,12 @@ const BLANK_QUOTE = {
   panels: buildBlankPanels(),
   notes: '',
 };
+
+function normalizeVin(value) {
+  return String(value || '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+}
 
 /* ─────────────────────────────────────────────────────────────
    Pricing Matrix shared helpers
@@ -1834,6 +1847,8 @@ function QuoteView({ vehicles }) {
   const [activeTier, setActiveTier] = useState(() => loadPricing().activeTier || 'Cash');
   const [sending, setSending]   = useState(false);
   const [sendMsg, setSendMsg]   = useState(null); // { type: 'ok'|'err', text }
+  const [vinLookupStatus, setVinLookupStatus] = useState('idle');
+  const [vinLookupMessage, setVinLookupMessage] = useState('');
 
   // Refresh pricing whenever this view mounts (in case admin updated it)
   useEffect(() => {
@@ -1842,7 +1857,60 @@ function QuoteView({ vehicles }) {
     if (!fresh.tiers[activeTier]) setActiveTier(Object.keys(fresh.tiers)[0]);
   }, []);
 
-  const setField = (key) => (e) => setQuote((q) => ({ ...q, [key]: e.target.value }));
+  const setField = (key) => (e) => {
+    const value = key === 'vin' ? String(e.target.value || '').toUpperCase() : e.target.value;
+    setQuote((q) => ({ ...q, [key]: value }));
+  };
+
+  const applyVinData = (vehicleData) => {
+    setQuote((prev) => ({
+      ...prev,
+      vin: vehicleData.vin || prev.vin,
+      year: vehicleData.year || prev.year,
+      make: vehicleData.make || prev.make,
+      model: vehicleData.model || prev.model,
+    }));
+  };
+
+  const lookupVin = async (rawVin) => {
+    const vin = normalizeVin(rawVin);
+    if (!vin) {
+      setVinLookupStatus('idle');
+      setVinLookupMessage('');
+      return;
+    }
+
+    setQuote((prev) => ({ ...prev, vin }));
+
+    if (vin.length !== 17) {
+      return;
+    }
+
+    setVinLookupStatus('loading');
+    setVinLookupMessage('Looking up vehicle details...');
+
+    try {
+      const response = await fetch('/api/vin-decode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vin }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data?.ok) {
+        throw new Error(data?.error || 'Unable to decode that VIN right now.');
+      }
+
+      applyVinData(data.vehicle || {});
+      setVinLookupStatus('success');
+      setVinLookupMessage(data.message || 'Vehicle details loaded from VIN.');
+    } catch (err) {
+      console.error('[VIN decode]', err);
+      setVinLookupStatus('error');
+      setVinLookupMessage(err instanceof Error ? err.message : 'Unable to decode that VIN right now.');
+    }
+  };
 
   const setPanel = (id, field, value) =>
     setQuote((q) => {
@@ -1889,9 +1957,9 @@ function QuoteView({ vehicles }) {
 
   const affectedCount = Object.values(quote.panels).filter((p) => p.checked).length;
 
-  const handleVinScan = (vin) => {
-    setQuote((q) => ({ ...q, vin }));
+  const handleVinScan = async (vin) => {
     setScanning(false);
+    await lookupVin(vin);
   };
 
   const handleLinkJob = (e) => {
@@ -2175,13 +2243,33 @@ function QuoteView({ vehicles }) {
                 type="text"
                 value={quote.vin}
                 onChange={setField('vin')}
+                onBlur={() => lookupVin(quote.vin)}
                 maxLength={17}
                 placeholder="17-character VIN"
                 className="quote-vin-input"
               />
+              {vinLookupMessage && (
+                <p
+                  aria-live="polite"
+                  style={{
+                    margin: '8px 0 0',
+                    fontSize: 13,
+                    lineHeight: 1.4,
+                    color: vinLookupStatus === 'error' ? 'var(--rust, #b0522b)' : 'var(--muted)',
+                  }}
+                >
+                  {vinLookupMessage}
+                </p>
+              )}
             </div>
-            <button type="button" className="button primary btn-scan-vin" onClick={() => setScanning(true)}>
-              📷 Scan VIN
+            <button
+              type="button"
+              className="button primary btn-scan-vin"
+              onClick={() => setScanning(true)}
+              aria-label="Use phone camera to scan VIN"
+              title="Use phone camera"
+            >
+              📷 Use Camera
             </button>
           </div>
 

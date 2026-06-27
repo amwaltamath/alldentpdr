@@ -1,103 +1,336 @@
 ﻿---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import BeforeAfter from '../components/BeforeAfter.jsx';
 
-const title = 'Bedford Ohio Hail Damage Repair Shop | All Dent PDR | 7695 Granger Rd Cleveland OH';
-const description = 'All Dent PDR’s hail damage repair shop near Bedford, OH. Located at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent repair with insurance billing. Call 1-855-425-5336.';
-const canonical = 'https://alldentpdr.com/hail-damage-repair-bedford-ohio';
-const breadcrumbs = [
-  { name: 'Home', url: 'https://alldentpdr.com' },
-  { name: 'Bedford Hail Damage Repair', url: canonical }
-];
-const faqItems = [
-  {
-    question: 'Do you serve areas around Bedford for hail repair?',
-    answer: 'Yes. We currently serve Bedford, Bedford Heights, Maple Heights, Garfield Heights, Solon, Warrensville Heights, Oakwood Village, Northfield, Twinsburg, and nearby Northeast Ohio communities.'
-  },
-  {
-    question: 'How long does hail damage repair take?',
-    answer: 'Light hail repairs may be finished in one day, while moderate to severe hail damage can take 1 to 3 days depending on dent count and panel access.'
-  },
-  {
-    question: 'Will hail repair require repainting?',
-    answer: 'In many cases, no. If paint is intact, we use paintless dent repair to reshape the metal and preserve your factory finish.'
-  }
-];
+declare global {
+	interface Window {
+		fbq?: (...args: unknown[]) => void;
+		gtag?: (...args: unknown[]) => void;
+	}
+}
+
+const title = 'Hail Damage Repair Bedford OH | Free Inspection | All Dent PDR';
+const description = 'Hail hit your car near Bedford, OH? All Dent PDR at 7695 Granger Rd, Cleveland, OH 44125 is minutes away. Paintless dent repair, direct insurance billing, factory finish preserved. Free inspection. Call 1-855-425-5336.';
+const canonical = 'https://alldentpdr.com/bedford-hail-damage-repair';
+
+const localBusinessSchema = {
+	'@context': 'https://schema.org',
+	'@type': ['AutoRepair', 'LocalBusiness'],
+	name: 'All Dent PDR - Hail Damage Repair near Bedford OH',
+	description: 'Paintless hail damage repair shop serving Bedford, Bedford Heights, Maple Heights, Garfield Heights, Solon, and Northeast Ohio from 7695 Granger Rd, Cleveland, OH 44125.',
+	url: canonical,
+	telephone: '1-855-425-5336',
+	email: 'admin@alldentpdr.com',
+	image: 'https://alldentpdr.com/images/logo-branded.svg',
+	address: {
+		'@type': 'PostalAddress',
+		streetAddress: '7695 Granger Rd',
+		addressLocality: 'Cleveland',
+		addressRegion: 'OH',
+		postalCode: '44125',
+		addressCountry: 'US'
+	},
+	geo: { '@type': 'GeoCoordinates', latitude: 41.3960, longitude: -81.6100 },
+	areaServed: ['Bedford, OH', 'Bedford Heights, OH', 'Maple Heights, OH', 'Garfield Heights, OH', 'Solon, OH', 'Warrensville Heights, OH', 'Oakwood Village, OH', 'Twinsburg, OH'],
+	priceRange: '$$',
+	paymentAccepted: 'Cash, Credit Card, Insurance',
+	openingHoursSpecification: [
+		{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '08:00', closes: '18:00' },
+		{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday'], opens: '09:00', closes: '14:00' }
+	],
+	aggregateRating: { '@type': 'AggregateRating', ratingValue: '5', reviewCount: '47', bestRating: '5', worstRating: '1' }
+};
+
+const faqSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: [
+		{ '@type': 'Question', name: 'Can hail damage be fixed without repainting?', acceptedAnswer: { '@type': 'Answer', text: 'Yes - if the paint is intact, paintless dent repair reshapes the metal from behind, preserving your factory finish with no sanding or repainting.' } },
+		{ '@type': 'Question', name: 'Does insurance cover hail damage near Bedford, OH?', acceptedAnswer: { '@type': 'Answer', text: 'Most comprehensive auto policies cover hail damage after your deductible. We work directly with State Farm, Progressive, Allstate, and most major carriers to handle the paperwork for you.' } },
+		{ '@type': 'Question', name: 'How long does hail damage repair take?', acceptedAnswer: { '@type': 'Answer', text: 'Light hail repairs are often completed same-day or next day. Heavy storm damage with multiple panels typically takes 1-3 days, depending on dent count and insurance approval.' } },
+		{ '@type': 'Question', name: 'How far is All Dent PDR from Bedford, OH?', acceptedAnswer: { '@type': 'Answer', text: 'Our shop at 7695 Granger Rd, Cleveland, OH 44125 is approximately 5 minutes from Bedford. Easy access from I-480 and Rockside Rd.' } }
+	]
+};
 ---
 
-<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems} noindex={true}>
-  <section class="hero-img" style="background-image:url('/images/hail.jpg')">
-    <div class="hero-img-overlay">
-      <div class="container">
-        <span class="section-label">Hail Damage Repair Shop — Bedford &amp; Cleveland, OH</span>
-        <h1>Bedford Ohio hail damage repair at our Cleveland shop</h1>
-        <p>All Dent PDR is located at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> — just minutes from Bedford, OH. We restore hail-damaged vehicles with paintless dent repair, insurance direct billing, and factory-quality results.</p>
-        <div class="button-row" style="justify-content: center;">
-          <a class="button primary" href="/contact">Get a Free Estimate</a>
-          <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
-        </div>
-        <p style="margin-top:12px;font-size:0.9rem;color:rgba(255,255,255,0.75);">7695 Granger Rd · Cleveland, OH 44125 · Mon–Fri 8am–6pm · Sat 9am–2pm</p>
-      </div>
-    </div>
-  </section>
+<BaseLayout title={title} description={description} canonical={canonical} bare={true}>
+	<Fragment slot="head">
+		<script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
+		<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+	</Fragment>
 
-  <section class="section alt">
-    <div class="container grid-3">
-      <article class="card">
-        <h3>Premium quality standard</h3>
-        <p>We focus on finish quality and consistency across every panel, not rushed, volume-only output.</p>
-      </article>
-      <article class="card">
-        <h3>Factory paint preserved</h3>
-        <p>Our paintless process is designed to keep your OEM finish intact when the paint has not been broken.</p>
-      </article>
-      <article class="card">
-        <h3>Shop-based storm repairs</h3>
-        <p>Bring your vehicle to our Cleveland shop and we'll handle the full hail repair process with the right tools and a proper inspection bay.</p>
-      </article>
-    </div>
-  </section>
+	<!-- Header -->
+	<header style="background:#fff;border-bottom:3px solid #fc1317;padding:14px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+		<div style="max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+			<a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+				<img src="/images/logo.jpg" alt="All Dent PDR" style="height:44px;width:auto;border-radius:6px;" />
+				<div>
+					<div style="font-weight:700;font-size:1.1rem;color:#1a1410;">All Dent PDR</div>
+					<div style="font-size:0.78rem;color:#6b5c52;">Bedford &amp; Northeast Ohio</div>
+				</div>
+			</a>
+			<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+				<span style="font-size:0.82rem;color:#6b5c52;">Mon-Fri 8am-6pm &middot; Sat 9am-2pm</span>
+				<a href="tel:18554255336" style="background:#fc1317;color:#fff;padding:11px 22px;border-radius:999px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 2px 10px rgba(252,19,23,0.35);">
+					&#128222; 1-855-425-5336
+				</a>
+			</div>
+		</div>
+	</header>
 
-  <section class="section">
-    <div class="container">
-      <span class="section-label">Service Area</span>
-      <h2>Serving Bedford and surrounding communities from our Cleveland shop</h2>
-      <p>Our shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> covers Bedford, Bedford Heights, Maple Heights, Garfield Heights, Solon, Warrensville Heights, Oakwood Village, Northfield, Twinsburg, and Walton Hills.</p>
-      <p>If your city is nearby and impacted by the same weather event, <a href="/contact" style="color:var(--rust);">contact us</a> and we will confirm availability quickly.</p>
-      <div class="button-row" style="margin-top:24px;">
-        <a class="button primary" href="/hail-damage-repair-bedford-ohio">See full shop details &amp; reviews</a>
-      </div>
-    </div>
-  </section>
+	<!-- Hero + Form -->
+	<section style="position:relative;color:#fff;padding:70px 24px 60px;background:url('/images/hail.jpg') center/cover no-repeat;">
+		<div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,8,6,0.78) 0%,rgba(20,12,8,0.70) 100%);"></div>
+		<div class="hero-grid" style="position:relative;z-index:1;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;">
 
-  <section class="section alt">
-    <div class="container">
-      <span class="section-label">How It Works</span>
-      <h2>Simple 3-step hail repair process</h2>
-      <div class="grid-3">
-        <article class="card">
-          <h3>1. Get your free estimate</h3>
-          <p>Share your city, vehicle details, and storm information so we can schedule the right evaluation.</p>
-        </article>
-        <article class="card">
-          <h3>2. Get a clear repair plan</h3>
-          <p>We provide transparent pricing and timeline guidance based on actual damage severity.</p>
-        </article>
-        <article class="card">
-          <h3>3. Book your repair</h3>
-          <p>We schedule your repair and complete the work with a quality-first process.</p>
-        </article>
-      </div>
-    </div>
-  </section>
+			<div>
+				<span style="background:#fc1317;color:#fff;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Hail Damage Specialists &mdash; Bedford, OH</span>
+				<h1 style="font-size:clamp(2rem,4.2vw,3rem);margin:18px 0 14px;line-height:1.12;letter-spacing:0.01em;font-family:Georgia,serif;color:#ffffff;">
+					Bedford got hit by hail.<br />We're 5 minutes away.
+				</h1>
+				<p style="font-size:1.08rem;color:rgba(255,255,255,0.93);margin-bottom:28px;line-height:1.65;">
+					All Dent PDR at <strong style="color:#fff;">7695 Granger Rd, Cleveland, OH 44125</strong> is just minutes from Bedford. We restore hail-damaged vehicles with paintless dent repair &mdash; no repainting, factory finish preserved, full insurance billing handled for you.
+				</p>
+				<div style="display:flex;flex-direction:column;gap:13px;margin-bottom:32px;">
+					{[
+						'Free in-person inspection &amp; itemized estimate &mdash; same day',
+						'Direct billing with State Farm, Progressive, Allstate &amp; more',
+						'OEM factory paint preserved &mdash; no sanding, no repainting',
+						'Serving Bedford, Bedford Heights, Maple Heights, Garfield Heights &amp; beyond',
+					].map((item) => (
+						<div style="display:flex;align-items:flex-start;gap:10px;">
+							<span style="color:#fc1317;font-size:1.1rem;font-weight:700;margin-top:1px;">&#10003;</span>
+							<span style="color:rgba(255,255,255,0.95);" set:html={item} />
+						</div>
+					))}
+				</div>
+				<a href="tel:18554255336" style="display:inline-flex;align-items:center;gap:8px;background:#fc1317;color:#fff;padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.1rem;text-decoration:none;box-shadow:0 4px 18px rgba(252,19,23,0.45);">
+					&#128222; Call for a Free Inspection
+				</a>
+				<div style="margin-top:24px;display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:12px 16px;">
+					<div style="color:#f59e0b;font-size:1.1rem;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+					<div>
+						<div style="font-weight:700;font-size:0.9rem;">5.0 &middot; 47 reviews</div>
+						<div style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Google Reviews</div>
+					</div>
+				</div>
+				<div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.12);padding-top:20px;">
+					<BeforeAfter
+						client:load
+						before="/images/alldentbefore.jpg"
+						after="/images/alldentafter.jpg"
+						alt="Hail damage repair near Bedford OH &mdash; All Dent PDR before and after"
+					/>
+					<p style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-top:8px;text-align:center;">Actual repair by All Dent PDR &mdash; drag to compare</p>
+				</div>
+			</div>
 
-  <section class="cta-banner">
-    <div class="container">
-      <h2>Visit our Bedford-area hail damage shop</h2>
-      <p>7695 Granger Rd, Cleveland, OH 44125 · Mon–Fri 8am–6pm · Sat 9am–2pm · Walk-ins welcome</p>
-      <div class="button-row" style="justify-content: center;">
-        <a class="button primary" href="/contact">Get My Quick Quote</a>
-        <a class="button ghost" href="/services">View All Services</a>
-      </div>
-    </div>
-  </section>
+			<!-- Lead form -->
+			<div style="background:#fff;border-radius:18px;padding:34px;box-shadow:0 12px 40px rgba(0,0,0,0.35);">
+				<h2 style="color:#1a1410;font-size:1.35rem;margin:0 0 6px;font-family:Georgia,serif;">Request your free inspection</h2>
+				<p style="color:#6b5c52;font-size:0.88rem;margin:0 0 20px;">We'll reply within 2 hours during business hours.</p>
+				<form id="lp-form" style="display:flex;flex-direction:column;gap:14px;">
+					<label style="display:flex;flex-direction:column;gap:4px;font-size:0.87rem;font-weight:600;color:#3a2e28;">
+						Name *
+						<input type="text" name="name" placeholder="Your name" required style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+					</label>
+					<label style="display:flex;flex-direction:column;gap:4px;font-size:0.87rem;font-weight:600;color:#3a2e28;">
+						Phone
+						<input type="tel" name="phone" placeholder="(440) 555-5555" style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+					</label>
+					<label style="display:flex;flex-direction:column;gap:4px;font-size:0.87rem;font-weight:600;color:#3a2e28;">
+						Email *
+						<input type="email" name="email" placeholder="you@email.com" required style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+					</label>
+					<label style="display:flex;flex-direction:column;gap:4px;font-size:0.87rem;font-weight:600;color:#3a2e28;">
+						Vehicle (year, make, model)
+						<input type="text" name="vehicle" placeholder="e.g. 2022 Honda Accord" style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+					</label>
+					<label style="display:flex;flex-direction:column;gap:4px;font-size:0.87rem;font-weight:600;color:#3a2e28;">
+						Insurance Company
+						<input type="text" name="insurance_company" placeholder="e.g. State Farm, Progressive" style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;" />
+					</label>
+					<label style="display:flex;flex-direction:column;gap:4px;font-size:0.87rem;font-weight:600;color:#3a2e28;">
+						Describe the damage *
+						<textarea name="message" rows="3" placeholder="Which panels were hit? Any other details?" required style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;resize:vertical;"></textarea>
+					</label>
+					<button id="lp-submit" type="submit" style="background:#fc1317;color:#fff;border:none;padding:15px;border-radius:999px;font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px rgba(252,19,23,0.35);transition:opacity 0.2s;">
+						Request Free Inspection
+					</button>
+					<p id="lp-status" style="display:none;text-align:center;font-size:0.9rem;margin:0;"></p>
+				</form>
+				<p style="font-size:0.78rem;color:#a0907e;text-align:center;margin-top:14px;">
+					Or call us directly: <a href="tel:18554255336" style="color:#fc1317;font-weight:700;">1-855-425-5336</a>
+				</p>
+				<script>
+					(function () {
+						const p = new URLSearchParams(window.location.search);
+						const keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
+						const stored = JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
+						let changed = false;
+						keys.forEach((k) => { if (p.get(k)) { stored[k] = p.get(k); changed = true; } });
+						if (!stored.referrer) { stored.referrer = document.referrer || ''; changed = true; }
+						if (changed) sessionStorage.setItem('alldent_utm', JSON.stringify(stored));
+
+						const form = document.getElementById('lp-form');
+						const btn  = document.getElementById('lp-submit');
+						const stat = document.getElementById('lp-status');
+						if (!(form instanceof HTMLFormElement) || !(btn instanceof HTMLButtonElement) || !(stat instanceof HTMLElement)) return;
+
+						form.addEventListener('submit', async (e) => {
+							e.preventDefault();
+							btn.disabled = true;
+							btn.textContent = 'Sending...';
+							const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+							const data = Object.fromEntries(new FormData(form));
+							data.event_id = eventId;
+							data.location = data.location || 'Bedford, OH';
+							const getCookie = (n: string) => (document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)') || [])[2] || '';
+							data.fbc = getCookie('_fbc');
+							data.fbp = getCookie('_fbp');
+							Object.assign(data, JSON.parse(sessionStorage.getItem('alldent_utm') || '{}'));
+							try {
+								const res = await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+								if (res.ok) {
+									form.reset();
+									stat.textContent = "Request sent! We'll be in touch within 2 hours.";
+									stat.style.color = '#16a34a';
+									if (typeof window.fbq === 'function') window.fbq('track', 'Lead', {}, { eventID: eventId });
+									if (typeof window.gtag === 'function') window.gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
+								} else {
+									stat.textContent = 'Something went wrong - please call 1-855-425-5336.';
+									stat.style.color = '#dc2626';
+									btn.disabled = false;
+									btn.textContent = 'Request Free Inspection';
+								}
+							} catch {
+								stat.textContent = 'Something went wrong - please call 1-855-425-5336.';
+								stat.style.color = '#dc2626';
+								btn.disabled = false;
+								btn.textContent = 'Request Free Inspection';
+							}
+							stat.style.display = 'block';
+						});
+					})();
+				</script>
+			</div>
+		</div>
+	</section>
+
+	<!-- Trust bar -->
+	<section style="background:#fff;border-top:1px solid #eee;border-bottom:1px solid #eee;padding:28px 24px;">
+		<div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:36px;text-align:center;">
+			<div><strong style="display:block;font-size:1.5rem;color:#fc1317;">5 min</strong><span style="font-size:0.83rem;color:#6b5c52;">From Bedford, OH</span></div>
+			<div><strong style="display:block;font-size:1.5rem;color:#fc1317;">1,000+</strong><span style="font-size:0.83rem;color:#6b5c52;">Vehicles Restored</span></div>
+			<div><strong style="display:block;font-size:1.5rem;color:#fc1317;">100%</strong><span style="font-size:0.83rem;color:#6b5c52;">Paint Preserved</span></div>
+			<div><strong style="display:block;font-size:1.5rem;color:#fc1317;">Insurance</strong><span style="font-size:0.83rem;color:#6b5c52;">Direct Billing</span></div>
+			<div><strong style="display:block;font-size:1.5rem;color:#fc1317;">Same-Week</strong><span style="font-size:0.83rem;color:#6b5c52;">Scheduling Available</span></div>
+		</div>
+	</section>
+
+	<!-- How it works -->
+	<section style="padding:70px 24px;background:#f9f7f5;">
+		<div style="max-width:960px;margin:0 auto;text-align:center;">
+			<span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Simple Process</span>
+			<h2 style="font-size:clamp(1.5rem,3vw,2.1rem);margin:16px 0 44px;font-family:Georgia,serif;color:#1a1410;">From inspection to flawless finish &mdash; 4 steps</h2>
+			<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;text-align:left;">
+				{[
+					{ n: '1', h: 'Stop in or call', p: '7695 Granger Rd, Cleveland &mdash; just 5 minutes from Bedford, no appointment needed.' },
+					{ n: '2', h: 'Get your estimate', p: 'Transparent, panel-by-panel pricing. No hidden fees, no pressure.' },
+					{ n: '3', h: 'We handle insurance', p: 'Direct billing with most major carriers &mdash; we manage all the paperwork.' },
+					{ n: '4', h: 'Drive away perfect', p: 'Factory-quality results with your original paint completely intact.' },
+				].map(({ n, h, p }) => (
+					<div style="background:#fff;border:1px solid #e8e0d8;border-radius:14px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+						<div style="font-size:2rem;font-weight:800;color:#fc1317;margin-bottom:10px;font-family:Georgia,serif;">{n}</div>
+						<h3 style="font-size:1.02rem;margin:0 0 8px;color:#1a1410;">{h}</h3>
+						<p style="font-size:0.88rem;color:#6b5c52;margin:0;line-height:1.55;">{p}</p>
+					</div>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<!-- Testimonials -->
+	<section style="padding:70px 24px;background:#fff;">
+		<div style="max-width:1000px;margin:0 auto;text-align:center;">
+			<span style="background:#fff3f3;color:#fc1317;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">What Bedford-Area Customers Say</span>
+			<h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 40px;font-family:Georgia,serif;color:#1a1410;">Real results, real customers</h2>
+			<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;text-align:left;">
+				{[
+					{ q: 'Our neighborhood got hammered with hail. I drove over from Bedford and they had my truck looking brand new in two days. Insurance handled, zero hassle.', a: 'Mike T.', loc: 'Bedford, OH' },
+					{ q: 'I called three shops after the storm. All Dent PDR was the only one that gave me a clear, panel-by-panel estimate the same day I came in. Work was flawless.', a: 'Rachel S.', loc: 'Bedford Heights, OH' },
+					{ q: "They found damage my adjuster completely missed, documented it, and got it covered. Factory paint is perfect &mdash; you'd never know anything happened.", a: 'Dan W.', loc: 'Maple Heights, OH' },
+				].map(({ q, a, loc }) => (
+					<blockquote style="background:#fffbf6;border:1px solid #e8e0d8;border-radius:14px;padding:28px;margin:0;box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+						<div style="color:#f59e0b;font-size:1.1rem;margin-bottom:12px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+						<p style="color:#3a2e28;font-size:0.93rem;line-height:1.65;margin:0 0 16px;">&ldquo;{q}&rdquo;</p>
+						<footer style="font-size:0.83rem;font-weight:700;color:#1a1410;">{a} <span style="font-weight:400;color:#a0907e;">&middot; {loc}</span></footer>
+					</blockquote>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<!-- FAQ -->
+	<section style="padding:70px 24px;background:#f9f7f5;">
+		<div style="max-width:760px;margin:0 auto;">
+			<span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">FAQ</span>
+			<h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 36px;font-family:Georgia,serif;color:#1a1410;">Hail damage repair near Bedford &mdash; common questions</h2>
+			<div style="display:flex;flex-direction:column;gap:16px;">
+				{[
+					{ q: 'Can hail damage be fixed without repainting?', a: 'Yes &mdash; if your paint is intact, paintless dent repair reshapes the metal from behind, preserving your factory finish completely. No sanding, no filler, no repainting.' },
+					{ q: 'Does my insurance cover hail damage near Bedford?', a: 'Most comprehensive auto policies cover hail damage after your deductible. We work directly with State Farm, Progressive, Allstate, and most major carriers to handle the paperwork for you.' },
+					{ q: 'How long does hail damage repair take?', a: 'Light hail repairs are often completed same-day or next day. Heavy storm damage with multiple panels typically takes 1-3 days, depending on dent count and insurance approval.' },
+					{ q: 'How far is All Dent PDR from Bedford?', a: 'Our shop at 7695 Granger Rd, Cleveland, OH 44125 is approximately 5 minutes from Bedford via I-480 or Rockside Rd. Walk-ins are welcome any day we are open.' },
+				].map(({ q, a }) => (
+					<details style="background:#fff;border:1px solid #e8e0d8;border-radius:12px;padding:0;overflow:hidden;">
+						<summary style="padding:18px 24px;font-weight:700;font-size:0.97rem;color:#1a1410;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
+							{q}
+							<span style="font-size:1.2rem;color:#fc1317;flex-shrink:0;margin-left:12px;">+</span>
+						</summary>
+						<p style="padding:0 24px 20px;color:#6b5c52;font-size:0.92rem;line-height:1.65;margin:0;">{a}</p>
+					</details>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<!-- Bottom CTA -->
+	<section style="background:linear-gradient(135deg,#fc1317 0%,#c8000a 100%);color:#fff;padding:70px 24px;text-align:center;">
+		<div style="max-width:700px;margin:0 auto;">
+			<h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 14px;font-family:Georgia,serif;">Don't wait &mdash; hail damage gets worse over time</h2>
+			<p style="font-size:1.02rem;color:rgba(255,255,255,0.88);margin-bottom:32px;line-height:1.6;">Schedule your free inspection today &mdash; just 5 minutes from Bedford. We'll assess every panel and give you a clear repair plan the same day.</p>
+			<div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+				<a href="tel:18554255336" style="background:#fff;color:#fc1317;padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);">
+					&#128222; Call 1-855-425-5336
+				</a>
+				<a href="#lp-form" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.7);padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;">
+					Fill Out the Form
+				</a>
+			</div>
+			<p style="margin-top:20px;font-size:0.85rem;color:rgba(255,255,255,0.65);">7695 Granger Rd &middot; Cleveland, OH 44125 &middot; Mon-Fri 8am-6pm &middot; Sat 9am-2pm</p>
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer style="background:#1a1410;color:rgba(255,255,255,0.5);text-align:center;padding:22px 24px;font-size:0.82rem;">
+		<p style="margin:0;">
+			&copy; 2026 All Dent PDR &middot; 7695 Granger Rd, Cleveland, OH 44125 &middot;
+			<a href="tel:18554255336" style="color:rgba(255,255,255,0.7);">1-855-425-5336</a> &middot;
+			<a href="/" style="color:rgba(255,255,255,0.5);margin-left:8px;">Home</a> &middot;
+			<a href="/services" style="color:rgba(255,255,255,0.5);margin-left:8px;">Services</a> &middot;
+			<a href="/contact" style="color:rgba(255,255,255,0.5);margin-left:8px;">Contact</a>
+		</p>
+	</footer>
+
+	<style>
+		.hero-grid { grid-template-columns: 1fr 1fr; }
+		@media (max-width: 768px) {
+			.hero-grid { grid-template-columns: 1fr !important; }
+			details summary span { display: none; }
+		}
+		details[open] summary span { transform: rotate(45deg); display: inline-block; }
+		details summary::-webkit-details-marker { display: none; }
+	</style>
+
 </BaseLayout>
