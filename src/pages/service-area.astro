@@ -204,11 +204,11 @@ const sorted = [...serviceAreas].sort((a, b) => a.distanceMiles - b.distanceMile
     <div class="container">
       <span class="section-label">FAQ</span>
       <h2>Service area questions</h2>
-      <div style="display:flex;flex-direction:column;gap:16px;max-width:780px;margin:0 auto;">
+      <div class="service-area-faq-list" style="display:flex;flex-direction:column;gap:16px;max-width:780px;margin:0 auto;">
         {faqItems.map(item => (
-          <details style="background:white;border-radius:12px;padding:20px 24px;border:1px solid #e8e0d8;">
-            <summary style="font-weight:600;cursor:pointer;font-size:1.05rem;">{item.question}</summary>
-            <p style="margin-top:12px;color:#4a3f35;">{item.answer}</p>
+          <details class="service-area-faq-item" style="background:white;border-radius:12px;padding:20px 24px;border:1px solid #e8e0d8;">
+            <summary class="service-area-faq-question" style="font-weight:600;cursor:pointer;font-size:1.05rem;">{item.question}</summary>
+            <p class="service-area-faq-answer" style="margin-top:12px;color:#4a3f35;">{item.answer}</p>
           </details>
         ))}
       </div>
@@ -291,6 +291,43 @@ const sorted = [...serviceAreas].sort((a, b) => a.distanceMiles - b.distanceMile
     font-size: 0.9rem;
     margin-top: auto;
   }
+
+  body.theme-liquid-dark .city-card {
+    color: #eaf2ff;
+  }
+
+  body.theme-liquid-dark .city-name {
+    color: #ffffff;
+  }
+
+  body.theme-liquid-dark .city-counties {
+    color: #b8c6df;
+  }
+
+  body.theme-liquid-dark .city-tagline {
+    color: #d6e3f7;
+  }
+
+  body.theme-liquid-dark .city-cta {
+    color: #ffffff;
+  }
+
+  body.theme-liquid-dark .service-area-faq-item {
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)) border-box, rgba(12, 21, 35, 0.78) !important;
+    border: 1px solid rgba(184, 207, 242, 0.3) !important;
+    box-shadow: 0 20px 44px rgba(2, 6, 12, 0.42) !important;
+    backdrop-filter: blur(14px) saturate(1.15);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  }
+
+  body.theme-liquid-dark .service-area-faq-question {
+    color: #eef4ff;
+  }
+
+  body.theme-liquid-dark .service-area-faq-answer {
+    color: #d3e0f5 !important;
+  }
+
   .map-grid {
     grid-template-columns: 1fr 1fr;
   }

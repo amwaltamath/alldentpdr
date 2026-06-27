@@ -242,6 +242,38 @@ const breadcrumbs = [
     .about-hero-meta strong { color: var(--ink); font-size: 14px; }
     .about-hero-meta span { color: var(--muted); font-size: 13px; }
 
+    body.theme-liquid-dark .about-hero-panel {
+      background: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)) border-box, rgba(12, 21, 35, 0.82);
+      border: 1px solid rgba(184, 207, 242, 0.32);
+      box-shadow: 0 24px 52px rgba(2, 6, 12, 0.46);
+      backdrop-filter: blur(14px) saturate(1.15);
+      -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    }
+
+    body.theme-liquid-dark .about-hero-panel h3 {
+      color: #eef4ff;
+    }
+
+    body.theme-liquid-dark .about-hero-panel li {
+      color: #d6e2f6;
+    }
+
+    body.theme-liquid-dark .about-hero-panel li::before {
+      background: #ff808b;
+    }
+
+    body.theme-liquid-dark .about-hero-meta {
+      border-top-color: rgba(184, 207, 242, 0.24);
+    }
+
+    body.theme-liquid-dark .about-hero-meta strong {
+      color: #eef4ff;
+    }
+
+    body.theme-liquid-dark .about-hero-meta span {
+      color: #9caecc;
+    }
+
     @media (max-width: 920px) {
       .about-hero-overlay { padding: 56px 0; }
       .about-hero-grid { grid-template-columns: 1fr; }
