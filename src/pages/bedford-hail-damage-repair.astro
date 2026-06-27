@@ -60,7 +60,7 @@ const faqSchema = {
 	</Fragment>
 
 	<!-- Header -->
-	<header style="background:#fff;border-bottom:3px solid #fc1317;padding:14px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+	<header class="bedford-header" style="background:#fff;border-bottom:3px solid #fc1317;padding:14px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
 		<div style="max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
 			<a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
 				<img src="/images/logo.jpg" alt="All Dent PDR" style="height:44px;width:auto;border-radius:6px;" />
@@ -79,9 +79,9 @@ const faqSchema = {
 	</header>
 
 	<!-- Hero + Form -->
-	<section style="position:relative;color:#fff;padding:70px 24px 60px;background:url('/images/hail.jpg') center/cover no-repeat;">
+	<section class="bedford-hero" style="position:relative;color:#fff;padding:70px 24px 60px;background:url('/images/hail.jpg') center/cover no-repeat;">
 		<div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,8,6,0.78) 0%,rgba(20,12,8,0.70) 100%);"></div>
-		<div class="hero-grid" style="position:relative;z-index:1;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;">
+		<div class="hero-grid bedford-hero-grid" style="position:relative;z-index:1;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;">
 
 			<div>
 				<span style="background:#fc1317;color:#fff;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Hail Damage Specialists &mdash; Bedford, OH</span>
@@ -126,7 +126,7 @@ const faqSchema = {
 			</div>
 
 			<!-- Lead form -->
-			<div style="background:#fff;border-radius:18px;padding:34px;box-shadow:0 12px 40px rgba(0,0,0,0.35);">
+			<div class="bedford-form-card" style="background:#fff;border-radius:18px;padding:34px;box-shadow:0 12px 40px rgba(0,0,0,0.35);">
 				<h2 style="color:#1a1410;font-size:1.35rem;margin:0 0 6px;font-family:Georgia,serif;">Request your free inspection</h2>
 				<p style="color:#6b5c52;font-size:0.88rem;margin:0 0 20px;">We'll reply within 2 hours during business hours.</p>
 				<form id="lp-form" style="display:flex;flex-direction:column;gap:14px;">
@@ -218,7 +218,7 @@ const faqSchema = {
 	</section>
 
 	<!-- Trust bar -->
-	<section style="background:#fff;border-top:1px solid #eee;border-bottom:1px solid #eee;padding:28px 24px;">
+	<section class="bedford-trust" style="background:#fff;border-top:1px solid #eee;border-bottom:1px solid #eee;padding:28px 24px;">
 		<div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:36px;text-align:center;">
 			<div><strong style="display:block;font-size:1.5rem;color:#fc1317;">5 min</strong><span style="font-size:0.83rem;color:#6b5c52;">From Bedford, OH</span></div>
 			<div><strong style="display:block;font-size:1.5rem;color:#fc1317;">1,000+</strong><span style="font-size:0.83rem;color:#6b5c52;">Vehicles Restored</span></div>
@@ -229,18 +229,18 @@ const faqSchema = {
 	</section>
 
 	<!-- How it works -->
-	<section style="padding:70px 24px;background:#f9f7f5;">
+	<section class="bedford-steps" style="padding:70px 24px;background:#f9f7f5;">
 		<div style="max-width:960px;margin:0 auto;text-align:center;">
 			<span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Simple Process</span>
 			<h2 style="font-size:clamp(1.5rem,3vw,2.1rem);margin:16px 0 44px;font-family:Georgia,serif;color:#1a1410;">From inspection to flawless finish &mdash; 4 steps</h2>
-			<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;text-align:left;">
+			<div class="bedford-steps-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;text-align:left;">
 				{[
 					{ n: '1', h: 'Stop in or call', p: '7695 Granger Rd, Cleveland &mdash; just 5 minutes from Bedford, no appointment needed.' },
 					{ n: '2', h: 'Get your estimate', p: 'Transparent, panel-by-panel pricing. No hidden fees, no pressure.' },
 					{ n: '3', h: 'We handle insurance', p: 'Direct billing with most major carriers &mdash; we manage all the paperwork.' },
 					{ n: '4', h: 'Drive away perfect', p: 'Factory-quality results with your original paint completely intact.' },
 				].map(({ n, h, p }) => (
-					<div style="background:#fff;border:1px solid #e8e0d8;border-radius:14px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+					<div class="bedford-step-card" style="background:#fff;border:1px solid #e8e0d8;border-radius:14px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
 						<div style="font-size:2rem;font-weight:800;color:#fc1317;margin-bottom:10px;font-family:Georgia,serif;">{n}</div>
 						<h3 style="font-size:1.02rem;margin:0 0 8px;color:#1a1410;">{h}</h3>
 						<p style="font-size:0.88rem;color:#6b5c52;margin:0;line-height:1.55;">{p}</p>
@@ -251,17 +251,17 @@ const faqSchema = {
 	</section>
 
 	<!-- Testimonials -->
-	<section style="padding:70px 24px;background:#fff;">
+	<section class="bedford-testimonials" style="padding:70px 24px;background:#fff;">
 		<div style="max-width:1000px;margin:0 auto;text-align:center;">
 			<span style="background:#fff3f3;color:#fc1317;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">What Bedford-Area Customers Say</span>
 			<h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 40px;font-family:Georgia,serif;color:#1a1410;">Real results, real customers</h2>
-			<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;text-align:left;">
+			<div class="bedford-testimonial-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;text-align:left;">
 				{[
 					{ q: 'Our neighborhood got hammered with hail. I drove over from Bedford and they had my truck looking brand new in two days. Insurance handled, zero hassle.', a: 'Mike T.', loc: 'Bedford, OH' },
 					{ q: 'I called three shops after the storm. All Dent PDR was the only one that gave me a clear, panel-by-panel estimate the same day I came in. Work was flawless.', a: 'Rachel S.', loc: 'Bedford Heights, OH' },
 					{ q: "They found damage my adjuster completely missed, documented it, and got it covered. Factory paint is perfect &mdash; you'd never know anything happened.", a: 'Dan W.', loc: 'Maple Heights, OH' },
 				].map(({ q, a, loc }) => (
-					<blockquote style="background:#fffbf6;border:1px solid #e8e0d8;border-radius:14px;padding:28px;margin:0;box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+					<blockquote class="bedford-testimonial-card" style="background:#fffbf6;border:1px solid #e8e0d8;border-radius:14px;padding:28px;margin:0;box-shadow:0 2px 10px rgba(0,0,0,0.05);">
 						<div style="color:#f59e0b;font-size:1.1rem;margin-bottom:12px;">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
 						<p style="color:#3a2e28;font-size:0.93rem;line-height:1.65;margin:0 0 16px;">&ldquo;{q}&rdquo;</p>
 						<footer style="font-size:0.83rem;font-weight:700;color:#1a1410;">{a} <span style="font-weight:400;color:#a0907e;">&middot; {loc}</span></footer>
@@ -272,18 +272,18 @@ const faqSchema = {
 	</section>
 
 	<!-- FAQ -->
-	<section style="padding:70px 24px;background:#f9f7f5;">
+	<section class="bedford-faq" style="padding:70px 24px;background:#f9f7f5;">
 		<div style="max-width:760px;margin:0 auto;">
 			<span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">FAQ</span>
 			<h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 36px;font-family:Georgia,serif;color:#1a1410;">Hail damage repair near Bedford &mdash; common questions</h2>
-			<div style="display:flex;flex-direction:column;gap:16px;">
+			<div class="bedford-faq-list" style="display:flex;flex-direction:column;gap:16px;">
 				{[
 					{ q: 'Can hail damage be fixed without repainting?', a: 'Yes &mdash; if your paint is intact, paintless dent repair reshapes the metal from behind, preserving your factory finish completely. No sanding, no filler, no repainting.' },
 					{ q: 'Does my insurance cover hail damage near Bedford?', a: 'Most comprehensive auto policies cover hail damage after your deductible. We work directly with State Farm, Progressive, Allstate, and most major carriers to handle the paperwork for you.' },
 					{ q: 'How long does hail damage repair take?', a: 'Light hail repairs are often completed same-day or next day. Heavy storm damage with multiple panels typically takes 1-3 days, depending on dent count and insurance approval.' },
 					{ q: 'How far is All Dent PDR from Bedford?', a: 'Our shop at 7695 Granger Rd, Cleveland, OH 44125 is approximately 5 minutes from Bedford via I-480 or Rockside Rd. Walk-ins are welcome any day we are open.' },
 				].map(({ q, a }) => (
-					<details style="background:#fff;border:1px solid #e8e0d8;border-radius:12px;padding:0;overflow:hidden;">
+					<details class="bedford-faq-item" style="background:#fff;border:1px solid #e8e0d8;border-radius:12px;padding:0;overflow:hidden;">
 						<summary style="padding:18px 24px;font-weight:700;font-size:0.97rem;color:#1a1410;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
 							{q}
 							<span style="font-size:1.2rem;color:#fc1317;flex-shrink:0;margin-left:12px;">+</span>
@@ -296,7 +296,7 @@ const faqSchema = {
 	</section>
 
 	<!-- Bottom CTA -->
-	<section style="background:linear-gradient(135deg,#fc1317 0%,#c8000a 100%);color:#fff;padding:70px 24px;text-align:center;">
+	<section class="bedford-bottom-cta" style="background:linear-gradient(135deg,#fc1317 0%,#c8000a 100%);color:#fff;padding:70px 24px;text-align:center;">
 		<div style="max-width:700px;margin:0 auto;">
 			<h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 14px;font-family:Georgia,serif;">Don't wait &mdash; hail damage gets worse over time</h2>
 			<p style="font-size:1.02rem;color:rgba(255,255,255,0.88);margin-bottom:32px;line-height:1.6;">Schedule your free inspection today &mdash; just 5 minutes from Bedford. We'll assess every panel and give you a clear repair plan the same day.</p>
@@ -313,7 +313,7 @@ const faqSchema = {
 	</section>
 
 	<!-- Footer -->
-	<footer style="background:#1a1410;color:rgba(255,255,255,0.5);text-align:center;padding:22px 24px;font-size:0.82rem;">
+	<footer class="bedford-footer" style="background:#1a1410;color:rgba(255,255,255,0.5);text-align:center;padding:22px 24px;font-size:0.82rem;">
 		<p style="margin:0;">
 			&copy; 2026 All Dent PDR &middot; 7695 Granger Rd, Cleveland, OH 44125 &middot;
 			<a href="tel:18554255336" style="color:rgba(255,255,255,0.7);">1-855-425-5336</a> &middot;
@@ -325,6 +325,83 @@ const faqSchema = {
 
 	<style>
 		.hero-grid { grid-template-columns: 1fr 1fr; }
+		body.theme-liquid-dark .bedford-header {
+			background: rgba(8, 14, 23, 0.74) !important;
+			border-bottom: 1px solid rgba(170, 196, 235, 0.35) !important;
+			backdrop-filter: blur(16px) saturate(1.2);
+			-webkit-backdrop-filter: blur(16px) saturate(1.2);
+		}
+		body.theme-liquid-dark .bedford-header a,
+		body.theme-liquid-dark .bedford-header div,
+		body.theme-liquid-dark .bedford-header span {
+			color: #eaf2ff !important;
+		}
+		body.theme-liquid-dark .bedford-hero {
+			background:
+				linear-gradient(145deg, rgba(4, 11, 20, 0.86), rgba(4, 11, 20, 0.58)),
+				radial-gradient(560px 260px at 100% 0%, rgba(10, 113, 208, 0.2), transparent 68%),
+				radial-gradient(620px 280px at 0% 100%, rgba(252, 19, 23, 0.17), transparent 70%),
+				url('/images/hail.jpg') center/cover no-repeat !important;
+		}
+		body.theme-liquid-dark .bedford-form-card,
+		body.theme-liquid-dark .bedford-step-card,
+		body.theme-liquid-dark .bedford-testimonial-card,
+		body.theme-liquid-dark .bedford-faq-item,
+		body.theme-liquid-dark .bedford-trust {
+			background: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)) border-box, rgba(12, 21, 35, 0.78) !important;
+			border: 1px solid rgba(184, 207, 242, 0.28) !important;
+			box-shadow: 0 24px 52px rgba(2, 6, 12, 0.44) !important;
+			backdrop-filter: blur(14px) saturate(1.15);
+			-webkit-backdrop-filter: blur(14px) saturate(1.15);
+		}
+		body.theme-liquid-dark .bedford-form-card h2,
+		body.theme-liquid-dark .bedford-form-card p,
+		body.theme-liquid-dark .bedford-step-card h3,
+		body.theme-liquid-dark .bedford-step-card p,
+		body.theme-liquid-dark .bedford-testimonial-card p,
+		body.theme-liquid-dark .bedford-faq-item summary,
+		body.theme-liquid-dark .bedford-faq-item p,
+		body.theme-liquid-dark .bedford-trust span,
+		body.theme-liquid-dark .bedford-trust strong {
+			color: #d9e5f7 !important;
+		}
+		body.theme-liquid-dark .bedford-steps,
+		body.theme-liquid-dark .bedford-faq,
+		body.theme-liquid-dark .bedford-testimonials {
+			background: rgba(7, 12, 20, 0.72) !important;
+		}
+		body.theme-liquid-dark .bedford-bottom-cta {
+			background: linear-gradient(145deg, rgba(252, 19, 23, 0.92), rgba(120, 8, 18, 0.96)) !important;
+		}
+		body.theme-liquid-dark .bedford-footer {
+			background: #060b12 !important;
+			color: #8ea0be !important;
+		}
+		body.theme-liquid-dark .bedford-footer a {
+			color: #b5c8e7 !important;
+		}
+		body.theme-liquid-dark .bedford-form-card input,
+		body.theme-liquid-dark .bedford-form-card textarea {
+			background: rgba(7, 12, 20, 0.8) !important;
+			border-color: rgba(128, 156, 196, 0.42) !important;
+			color: #eaf2ff !important;
+		}
+		body.theme-liquid-dark .bedford-form-card input::placeholder,
+		body.theme-liquid-dark .bedford-form-card textarea::placeholder {
+			color: #8394b2 !important;
+		}
+		body.theme-liquid-dark .bedford-faq-item summary span {
+			color: #ff9ea8 !important;
+		}
+		body.theme-liquid-dark .bedford-steps-grid .bedford-step-card,
+		body.theme-liquid-dark .bedford-testimonial-grid .bedford-testimonial-card {
+			transition: transform 220ms ease, box-shadow 220ms ease;
+		}
+		body.theme-liquid-dark .bedford-steps-grid .bedford-step-card:hover,
+		body.theme-liquid-dark .bedford-testimonial-grid .bedford-testimonial-card:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 28px 60px rgba(2, 6, 12, 0.5) !important;
+		}
 		@media (max-width: 768px) {
 			.hero-grid { grid-template-columns: 1fr !important; }
 			details summary span { display: none; }

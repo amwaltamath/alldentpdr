@@ -3915,6 +3915,99 @@ body.theme-liquid-dark .site-footer {
   min-height: 44px;
 }
 
+/* Services page polish - dark automotive glass */
+body.theme-liquid-dark .services-hero-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+body.theme-liquid-dark .services-hero-shell::after {
+  content: '';
+  position: absolute;
+  inset: auto -14% -38% -14%;
+  height: 220px;
+  background: radial-gradient(60% 85% at 50% 0%, rgba(10, 113, 208, 0.26), transparent 70%);
+  pointer-events: none;
+}
+
+.services-kpi-strip {
+  position: relative;
+  margin-top: -32px;
+  z-index: 3;
+}
+
+.services-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+}
+
+.services-kpi-item {
+  border-radius: 16px;
+  padding: 16px 14px;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.services-kpi-item strong {
+  display: block;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.services-kpi-item span {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+body.theme-liquid-dark .services-kpi-item {
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01)) border-box, rgba(12, 21, 35, 0.76);
+  border: 1px solid rgba(180, 205, 242, 0.3);
+  box-shadow: 0 18px 36px rgba(2, 6, 12, 0.38);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+}
+
+body.theme-liquid-dark .services-kpi-item strong {
+  color: #ffb9c0;
+}
+
+body.theme-liquid-dark .services-kpi-item span {
+  color: #9caecc;
+}
+
+body.theme-liquid-dark .services-lane-card,
+body.theme-liquid-dark .services-process-card {
+  position: relative;
+  overflow: hidden;
+}
+
+body.theme-liquid-dark .services-lane-card::before,
+body.theme-liquid-dark .services-process-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 55%);
+  pointer-events: none;
+}
+
+body.theme-liquid-dark .services-cta-shell {
+  background:
+    radial-gradient(560px 240px at 100% 0%, rgba(10, 113, 208, 0.28), transparent 64%),
+    linear-gradient(140deg, #28080d 0%, #501017 50%, #8b101b 100%);
+}
+
+@media (max-width: 720px) {
+  .services-kpi-strip {
+    margin-top: -18px;
+  }
+}
+
 /* ── Print styles ──────────────────────────────────────────── */
 @media print {
   .dash-aside,

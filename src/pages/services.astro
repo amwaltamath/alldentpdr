@@ -19,7 +19,7 @@ const faqItems = [
 ---
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services" breadcrumbs={breadcrumbs} faqItems={faqItems}>
-  <section class="page-hero page-hero--services">
+  <section class="page-hero page-hero--services services-hero-shell">
     <div class="container">
       <span class="section-label">Our Services — Bedford &amp; Northeast Ohio</span>
       <h1>Paintless dent repair &amp; hail damage repair in Northeast Ohio</h1>
@@ -31,19 +31,28 @@ const faqItems = [
     </div>
   </section>
 
-  <section class="section alt">
+  <section class="services-kpi-strip" aria-label="Service highlights">
+    <div class="container services-kpi-grid">
+      <div class="services-kpi-item"><strong>5 min</strong><span>From Bedford</span></div>
+      <div class="services-kpi-item"><strong>1,000+</strong><span>Vehicles Repaired</span></div>
+      <div class="services-kpi-item"><strong>20+</strong><span>NE Ohio Areas</span></div>
+      <div class="services-kpi-item"><strong>Insurance</strong><span>Direct Billing</span></div>
+    </div>
+  </section>
+
+  <section class="section alt services-lane-section">
     <div class="container grid-3">
-      <article class="card">
+      <article class="card services-lane-card">
         <span class="tag">Door Dings</span>
         <h3>Paintless door ding repair</h3>
         <p>Professional PDR for parking lot dents and light creases that preserves your factory paint finish.</p>
       </article>
-      <article class="card">
+      <article class="card services-lane-card">
         <span class="tag">Hail Damage</span>
         <h3>Hail storm damage repair — nationwide</h3>
         <p>We deploy to storm-affected areas across the U.S. for systematic panel-by-panel paintless dent repair with fast turnaround.</p>
       </article>
-      <article class="card">
+      <article class="card services-lane-card">
         <span class="tag">Minor Collision</span>
         <h3>Collision dent removal</h3>
         <p>Paintless repair for soft impact dents from low-speed bumps where paint remains undamaged.</p>
@@ -51,25 +60,25 @@ const faqItems = [
     </div>
   </section>
 
-  <section class="section">
+  <section class="section services-process-section">
     <div class="container">
       <span class="section-label">How It Works</span>
       <h2>The paintless dent repair process</h2>
       <p>Simple, transparent, and efficient — start to finish.</p>
       <div class="process-grid">
-        <div class="process-step card">
+        <div class="process-step card services-process-card">
           <h3>Request an Inspection</h3>
           <p>Tell us about the damage, vehicle, and location so we can set up the right evaluation.</p>
         </div>
-        <div class="process-step card">
+        <div class="process-step card services-process-card">
           <h3>Get Your Quote</h3>
           <p>Receive upfront pricing — no hidden fees, no upsells.</p>
         </div>
-        <div class="process-step card">
+        <div class="process-step card services-process-card">
           <h3>Bring It to Our Shop</h3>
           <p>Visit All Dent PDR at 7695 Granger Rd, Cleveland, OH 44125 for a professional in-shop repair.</p>
         </div>
-        <div class="process-step card">
+        <div class="process-step card services-process-card">
           <h3>Flawless Finish</h3>
           <p>Your vehicle is restored to factory condition with original paint intact.</p>
         </div>
@@ -188,7 +197,7 @@ const faqItems = [
     </div>
   </section>
 
-  <section class="cta-banner">
+  <section class="cta-banner services-cta-shell">
     <div class="container">
       <h2>Visit our shop or call for a same-day response</h2>
       <p>All Dent PDR · 7695 Granger Rd, Cleveland, OH 44125 · Serving Bedford, OH and 20+ Northeast Ohio communities</p>
