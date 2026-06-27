@@ -1730,6 +1730,16 @@ p {
   transform: translateY(-1px);
 }
 
+.nav a.is-active {
+  background: var(--rust-50);
+  color: var(--rust-700);
+}
+
+.nav a.is-active:hover {
+  background: var(--rust-50);
+  color: var(--rust-700);
+}
+
 .nav-cta {
   margin-left: 6px;
   padding: 10px 18px;
@@ -2281,6 +2291,16 @@ select:focus {
   background: var(--line-2);
   color: var(--ink);
   transform: translateX(2px);
+}
+
+.mobile-nav a.is-active {
+  background: var(--rust-50);
+  color: var(--rust-700);
+}
+
+.mobile-nav a.is-active:hover {
+  background: var(--rust-50);
+  color: var(--rust-700);
 }
 
 .mobile-nav .nav-cta,

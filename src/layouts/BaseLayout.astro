@@ -17,6 +17,9 @@ const {
 } = Astro.props;
 
 const gaId: string = 'G-T7RLXD05RW';
+const adsId: string = 'AW-18153754648';
+const adsLeadSendTo: string = `${adsId}/o4LuCOyPm60cEJigsdBD`;
+const metaPixelId: string = import.meta.env.PUBLIC_META_PIXEL_ID || '1284377713827510';
 const pathname = Astro.url?.pathname || '/';
 const landingPrefixes = ['/hail-damage-repair/', '/paintless-dent-repair/', '/door-ding-repair/'];
 const landingExact = new Set([
@@ -31,6 +34,16 @@ const landingExact = new Set([
 ]);
 const isLandingPage = landingExact.has(pathname) || landingPrefixes.some((prefix) => pathname.startsWith(prefix));
 const shouldShowLeadPopup = pathname === '/' || isLandingPage;
+const navLinks = [
+  { href: '/services', label: 'Services' },
+  { href: '/service-area', label: 'Service Area' },
+  { href: '/about', label: 'About' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/register', label: 'Vehicle Registration' },
+  { href: '/portal/customer-login', label: 'Customer Login' },
+];
+
+const isActiveLink = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 ---
 
 <!DOCTYPE html>
@@ -69,11 +82,18 @@ const shouldShowLeadPopup = pathname === '/' || isLandingPage;
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#b0522b" />
     
-    <!-- Google Analytics -->
+    <!-- Google Analytics + Google Ads -->
     {gaId && (
       <>
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
-        <script is:inline set:html={`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`}></script>
+        <script is:inline set:html={`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}'); gtag('config', '${adsId}');`}></script>
+      </>
+    )}
+
+    <!-- Meta Pixel -->
+    {metaPixelId && (
+      <>
+        <script is:inline set:html={`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod? n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js'); fbq('init', '${metaPixelId}'); fbq('track', 'PageView');`}></script>
       </>
     )}
 
@@ -178,15 +198,6 @@ const shouldShowLeadPopup = pathname === '/' || isLandingPage;
       })} />
     )}
     <slot name="head" />
-    <!-- Google Analytics 4 + Google Ads -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T7RLXD05RW"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-T7RLXD05RW');
-      gtag('config', 'AW-18153754648');
-    </script>
   </head>
   <body>
     {!bare && (
@@ -200,15 +211,18 @@ const shouldShowLeadPopup = pathname === '/' || isLandingPage;
             </div>
           </a>
           <nav class="nav">
-            <a href="/services">Services</a>
-            <a href="/service-area">Service Area</a>
-            <a href="/about">About</a>
-            <a href="/blog">Blog</a>
-            <a href="/register">Vehicle Registration</a>
-            <a href="/portal/customer-login">Customer Login</a>
+            {navLinks.map((link) => (
+              <a
+                href={link.href}
+                class:list={{ 'is-active': isActiveLink(link.href) }}
+                aria-current={isActiveLink(link.href) ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            ))}
             <a class="nav-cta" href="/contact">Request Inspection</a>
           </nav>
-          <MobileMenu client:load />
+          <MobileMenu client:load pathname={pathname} />
         </div>
       </header>
     )}
@@ -308,7 +322,7 @@ const shouldShowLeadPopup = pathname === '/' || isLandingPage;
     )}
 
     {shouldShowLeadPopup && (
-      <script is:inline define:vars={{ pageTitle: title, pagePath: pathname }}>
+      <script is:inline define:vars={{ pageTitle: title, pagePath: pathname, adsLeadSendTo }}>
         (() => {
           const KEY = 'alldent_lead_popup_last_closed_at';
           const COOLDOWN_MS = 1000 * 60 * 60 * 24;
@@ -348,6 +362,12 @@ const shouldShowLeadPopup = pathname === '/' || isLandingPage;
             event.preventDefault();
             const data = new FormData(form);
             const message = String(data.get('message') || '').trim();
+            const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+            const utm = JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
+            const getCookie = (name) => {
+              const found = document.cookie.match(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`);
+              return found ? found[2] : '';
+            };
             const payload = {
               name: String(data.get('name') || '').trim(),
               email: String(data.get('email') || '').trim(),
@@ -355,12 +375,15 @@ const shouldShowLeadPopup = pathname === '/' || isLandingPage;
               location: 'Website popup lead',
               vehicle: pageTitle,
               message,
-              utm_source: sessionStorage.getItem('utm_source') || '',
-              utm_medium: sessionStorage.getItem('utm_medium') || '',
-              utm_campaign: sessionStorage.getItem('utm_campaign') || '',
-              utm_content: sessionStorage.getItem('utm_content') || '',
-              utm_term: sessionStorage.getItem('utm_term') || '',
-              referrer: document.referrer || ''
+              utm_source: utm.utm_source || '',
+              utm_medium: utm.utm_medium || '',
+              utm_campaign: utm.utm_campaign || '',
+              utm_content: utm.utm_content || '',
+              utm_term: utm.utm_term || '',
+              referrer: utm.referrer || document.referrer || '',
+              event_id: eventId,
+              fbc: getCookie('_fbc'),
+              fbp: getCookie('_fbp'),
             };
 
             status.textContent = 'Sending...';
@@ -379,9 +402,12 @@ const shouldShowLeadPopup = pathname === '/' || isLandingPage;
               form.reset();
               localStorage.setItem(KEY, String(Date.now()));
 
+              if (typeof window.fbq === 'function') {
+                window.fbq('track', 'Lead', {}, { eventID: eventId });
+              }
               if (typeof window.gtag === 'function') {
                 window.gtag('event', 'conversion', {
-                  send_to: 'AW-18153754648',
+                  send_to: adsLeadSendTo,
                   event_callback: () => {}
                 });
               }

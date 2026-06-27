@@ -48,6 +48,9 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       utm_content: utm_content || null,
       utm_term: utm_term || null,
       referrer: referrer || null,
+      event_id: event_id || null,
+      fbc: fbc || null,
+      fbp: fbp || null,
     }).then(({ error }) => {
       if (error) console.error('[contact] Supabase lead insert error:', error.message);
     });

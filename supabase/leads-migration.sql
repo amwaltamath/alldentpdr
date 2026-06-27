@@ -14,6 +14,9 @@ create table if not exists public.leads (
   utm_content text,   -- ad set / creative ID
   utm_term text,      -- keyword (Google Ads)
   referrer text,      -- document.referrer at time of submission
+  event_id text,      -- Meta/Google deduplication ID
+  fbc text,           -- _fbc cookie for Meta CAPI
+  fbp text,           -- _fbp cookie for Meta CAPI
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

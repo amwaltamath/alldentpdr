@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-export default function MobileMenu() {
+export default function MobileMenu({ pathname = '/' }) {
   const [isOpen, setIsOpen] = useState(false);
   
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
+
+  const isActive = (href) => pathname === href || pathname.startsWith(`${href}/`);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -47,16 +49,16 @@ export default function MobileMenu() {
             </div>
 
             <div className="mobile-nav-links">
-              <a href="/services" onClick={closeMenu}>Services</a>
-              <a href="/service-area" onClick={closeMenu}>Service Area</a>
-              <a href="/our-work" onClick={closeMenu}>Our Work</a>
-              <a href="/about" onClick={closeMenu}>About</a>
-              <a href="/blog" onClick={closeMenu}>Blog</a>
+              <a href="/services" className={isActive('/services') ? 'is-active' : ''} aria-current={isActive('/services') ? 'page' : undefined} onClick={closeMenu}>Services</a>
+              <a href="/service-area" className={isActive('/service-area') ? 'is-active' : ''} aria-current={isActive('/service-area') ? 'page' : undefined} onClick={closeMenu}>Service Area</a>
+              <a href="/our-work" className={isActive('/our-work') ? 'is-active' : ''} aria-current={isActive('/our-work') ? 'page' : undefined} onClick={closeMenu}>Our Work</a>
+              <a href="/about" className={isActive('/about') ? 'is-active' : ''} aria-current={isActive('/about') ? 'page' : undefined} onClick={closeMenu}>About</a>
+              <a href="/blog" className={isActive('/blog') ? 'is-active' : ''} aria-current={isActive('/blog') ? 'page' : undefined} onClick={closeMenu}>Blog</a>
             </div>
 
             <div className="mobile-nav-meta">
-              <a href="/register" onClick={closeMenu}>Vehicle Registration</a>
-              <a href="/portal/customer-login" onClick={closeMenu}>Customer Login</a>
+              <a href="/register" className={isActive('/register') ? 'is-active' : ''} aria-current={isActive('/register') ? 'page' : undefined} onClick={closeMenu}>Vehicle Registration</a>
+              <a href="/portal/customer-login" className={isActive('/portal/customer-login') ? 'is-active' : ''} aria-current={isActive('/portal/customer-login') ? 'page' : undefined} onClick={closeMenu}>Customer Login</a>
             </div>
 
             <a className="nav-cta mobile-nav-cta" href="/contact" onClick={closeMenu}>Get Free Estimate</a>
