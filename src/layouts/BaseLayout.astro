@@ -34,6 +34,9 @@ const landingExact = new Set([
 ]);
 const isLandingPage = landingExact.has(pathname) || landingPrefixes.some((prefix) => pathname.startsWith(prefix));
 const shouldShowLeadPopup = pathname === '/' || isLandingPage;
+const isPortalRoute = pathname.startsWith('/portal/');
+const useLiquidDarkTheme = !isPortalRoute;
+const themeColor = useLiquidDarkTheme ? '#080d14' : '#b0522b';
 const navLinks = [
   { href: '/services', label: 'Services' },
   { href: '/service-area', label: 'Service Area' },
@@ -80,7 +83,7 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/images/logo.jpg" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#b0522b" />
+    <meta name="theme-color" content={themeColor} />
     
     <!-- Google Analytics + Google Ads -->
     {gaId && (
@@ -199,7 +202,7 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
     )}
     <slot name="head" />
   </head>
-  <body>
+  <body class:list={{ 'theme-liquid-dark': useLiquidDarkTheme }}>
     {!bare && (
       <header class="site-header">
         <div class="container header-inner">

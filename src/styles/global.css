@@ -3703,6 +3703,192 @@ label {
   background: #fff;
 }
 
+/* Liquid glass dark theme (public marketing pages) */
+body.theme-liquid-dark {
+  --ink: #eef4ff;
+  --ink-soft: #bac6dc;
+  --ink-700: #d7e1f3;
+  --muted: #9aa8c2;
+  --muted-2: #7f8da7;
+  --line: rgba(149, 174, 212, 0.22);
+  --line-2: rgba(149, 174, 212, 0.14);
+  --surface: rgba(11, 19, 32, 0.78);
+  --surface-2: rgba(10, 16, 27, 0.9);
+  --card: rgba(12, 21, 35, 0.74);
+  --sky: #0b1321;
+  --bg: #060a11;
+  --glass-stroke: rgba(185, 207, 240, 0.3);
+  --glass-highlight: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 24px 50px rgba(2, 6, 12, 0.5);
+  background:
+    radial-gradient(900px 520px at 90% -10%, rgba(10, 113, 208, 0.18), transparent 62%),
+    radial-gradient(800px 440px at -8% 20%, rgba(252, 19, 23, 0.16), transparent 56%),
+    linear-gradient(180deg, #070d16 0%, #050910 55%, #03060b 100%);
+  color: var(--ink);
+}
+
+body.theme-liquid-dark h1,
+body.theme-liquid-dark h2,
+body.theme-liquid-dark h3,
+body.theme-liquid-dark h4,
+body.theme-liquid-dark h5,
+body.theme-liquid-dark p,
+body.theme-liquid-dark .logo-mark,
+body.theme-liquid-dark .logo-sub,
+body.theme-liquid-dark .section-label,
+body.theme-liquid-dark .tag,
+body.theme-liquid-dark label {
+  color: inherit;
+}
+
+body.theme-liquid-dark .site-header {
+  background: rgba(8, 14, 23, 0.72);
+  border-bottom: 1px solid rgba(185, 207, 240, 0.2);
+  backdrop-filter: blur(16px) saturate(1.25);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+}
+
+body.theme-liquid-dark .nav a,
+body.theme-liquid-dark .mobile-nav a {
+  color: var(--ink-700);
+}
+
+body.theme-liquid-dark .nav a:hover,
+body.theme-liquid-dark .mobile-nav a:hover {
+  background: rgba(133, 160, 200, 0.12);
+  color: #f4f8ff;
+}
+
+body.theme-liquid-dark .nav a.is-active,
+body.theme-liquid-dark .mobile-nav a.is-active {
+  background: rgba(252, 19, 23, 0.22);
+  color: #ffd6db;
+  border: 1px solid rgba(252, 19, 23, 0.38);
+}
+
+body.theme-liquid-dark .hero {
+  background-image:
+    linear-gradient(160deg, rgba(4, 10, 18, 0.84), rgba(4, 10, 18, 0.56)),
+    radial-gradient(600px 280px at 100% 0%, rgba(10, 113, 208, 0.18), transparent 68%),
+    radial-gradient(620px 320px at 0% 100%, rgba(252, 19, 23, 0.16), transparent 70%),
+    url('/images/hail.jpg');
+}
+
+body.theme-liquid-dark .hero-card,
+body.theme-liquid-dark .card,
+body.theme-liquid-dark .testimonial-card,
+body.theme-liquid-dark .trust-strip,
+body.theme-liquid-dark .form-card,
+body.theme-liquid-dark .blog-item,
+body.theme-liquid-dark .article-shell,
+body.theme-liquid-dark .mobile-nav,
+body.theme-liquid-dark .mobile-menu-toggle,
+body.theme-liquid-dark .lead-popup {
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)) border-box, var(--card);
+  border: 1px solid var(--glass-stroke);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+}
+
+body.theme-liquid-dark .trust-strip {
+  border-radius: 24px;
+}
+
+body.theme-liquid-dark .hero-card {
+  position: relative;
+  overflow: hidden;
+}
+
+body.theme-liquid-dark .hero-card::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -12%;
+  width: 42%;
+  height: 180%;
+  transform: rotate(20deg);
+  background: linear-gradient(180deg, transparent 0%, var(--glass-highlight) 48%, transparent 100%);
+  pointer-events: none;
+  opacity: 0.42;
+  animation: liquidSweep 7s ease-in-out infinite;
+}
+
+body.theme-liquid-dark .hero-card li,
+body.theme-liquid-dark .trust-item span,
+body.theme-liquid-dark .testimonial-text,
+body.theme-liquid-dark .blog-item p,
+body.theme-liquid-dark .lead-popup-copy {
+  color: var(--ink-soft);
+}
+
+body.theme-liquid-dark .section.alt {
+  background: rgba(7, 12, 20, 0.72);
+  border-top-color: rgba(149, 174, 212, 0.2);
+  border-bottom-color: rgba(149, 174, 212, 0.2);
+}
+
+body.theme-liquid-dark .section .button.ghost,
+body.theme-liquid-dark .section.alt .button.ghost {
+  border-color: rgba(121, 159, 208, 0.6);
+  color: #d2e4ff;
+  background: rgba(20, 34, 54, 0.45);
+}
+
+body.theme-liquid-dark .section .button.ghost:hover,
+body.theme-liquid-dark .section.alt .button.ghost:hover {
+  border-color: rgba(165, 197, 243, 0.8);
+  background: rgba(34, 56, 89, 0.65);
+  color: #eef5ff;
+}
+
+body.theme-liquid-dark input,
+body.theme-liquid-dark select,
+body.theme-liquid-dark textarea {
+  background: rgba(7, 13, 22, 0.82);
+  color: var(--ink);
+  border-color: rgba(126, 152, 191, 0.42);
+}
+
+body.theme-liquid-dark input::placeholder,
+body.theme-liquid-dark textarea::placeholder {
+  color: #8091ae;
+}
+
+body.theme-liquid-dark .mobile-nav-backdrop {
+  background: rgba(2, 7, 13, 0.62);
+}
+
+body.theme-liquid-dark .site-footer {
+  background: linear-gradient(180deg, #090f18 0%, #050911 100%);
+}
+
+@supports not ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
+  body.theme-liquid-dark .hero-card,
+  body.theme-liquid-dark .card,
+  body.theme-liquid-dark .testimonial-card,
+  body.theme-liquid-dark .trust-strip,
+  body.theme-liquid-dark .form-card,
+  body.theme-liquid-dark .blog-item,
+  body.theme-liquid-dark .article-shell,
+  body.theme-liquid-dark .mobile-nav,
+  body.theme-liquid-dark .lead-popup {
+    background: #111a29;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-liquid-dark .hero-card::before {
+    animation: none;
+  }
+}
+
+@keyframes liquidSweep {
+  0%,
+  100% { transform: translateX(0) rotate(20deg); opacity: 0.2; }
+  50% { transform: translateX(150%) rotate(20deg); opacity: 0.48; }
+}
+
 .chat-admin-thread-head {
   padding: 14px 18px;
   border-bottom: 1px solid var(--line, #e6e6e6);
