@@ -433,7 +433,7 @@ body.popup-open { overflow: hidden; }
   position: fixed;
   inset: 0;
   background: rgba(11, 18, 32, 0.58);
-  z-index: 120;
+  z-index: 10001;
   display: grid;
   place-items: center;
   padding: 16px;
@@ -528,6 +528,52 @@ body.popup-open { overflow: hidden; }
 
 .lead-popup-status.is-success { color: var(--ok); }
 .lead-popup-status.is-error { color: var(--danger); }
+
+/* Sticky mobile CTA bar --------------------------------------- */
+.mobile-cta-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: var(--ink, #0b1220);
+  border-top: 2px solid var(--rust, #fc1317);
+  padding: 10px 16px;
+  gap: 10px;
+}
+
+.mobile-cta-bar a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 13px 10px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: filter 0.2s;
+}
+
+.mobile-cta-bar a:hover { filter: brightness(1.1); }
+
+.mobile-cta-bar .mcta-call {
+  background: var(--rust, #fc1317);
+  color: #fff;
+}
+
+.mobile-cta-bar .mcta-quote {
+  background: var(--sage, #0a71d0);
+  color: #fff;
+}
+
+@media (max-width: 767px) {
+  .mobile-cta-bar { display: flex; }
+  body:not(.popup-open) { padding-bottom: 76px; }
+}
 
 /* Mobile menu ------------------------------------------------- */
 .mobile-menu-toggle {
@@ -3748,22 +3794,55 @@ body.theme-liquid-dark .site-header {
   -webkit-backdrop-filter: blur(16px) saturate(1.25);
 }
 
-body.theme-liquid-dark .nav a,
-body.theme-liquid-dark .mobile-nav a {
+body.theme-liquid-dark .nav a {
   color: var(--ink-700);
 }
 
-body.theme-liquid-dark .nav a:hover,
-body.theme-liquid-dark .mobile-nav a:hover {
+body.theme-liquid-dark .nav a:hover {
   background: rgba(133, 160, 200, 0.12);
   color: #f4f8ff;
 }
 
-body.theme-liquid-dark .nav a.is-active,
-body.theme-liquid-dark .mobile-nav a.is-active {
+body.theme-liquid-dark .nav a.is-active {
   background: rgba(252, 19, 23, 0.22);
   color: #ffd6db;
   border: 1px solid rgba(252, 19, 23, 0.38);
+}
+
+body.theme-liquid-dark .mobile-nav {
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)) border-box,
+    rgba(5, 10, 18, 0.94);
+  border-color: rgba(149, 174, 212, 0.32);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+}
+
+body.theme-liquid-dark .mobile-nav-head h3,
+body.theme-liquid-dark .mobile-nav-kicker {
+  color: #eef4ff;
+}
+
+body.theme-liquid-dark .mobile-nav-close {
+  background: rgba(12, 20, 34, 0.92);
+  color: #eef4ff;
+  border-color: rgba(149, 174, 212, 0.28);
+}
+
+body.theme-liquid-dark .mobile-nav a {
+  color: #e8f0ff;
+}
+
+body.theme-liquid-dark .mobile-nav a:hover {
+  background: rgba(133, 160, 200, 0.18);
+  color: #fff;
+}
+
+body.theme-liquid-dark .mobile-nav a.is-active {
+  background: rgba(252, 19, 23, 0.28);
+  color: #ffe8ea;
+  border: 1px solid rgba(252, 19, 23, 0.45);
 }
 
 body.theme-liquid-dark .hero {
@@ -3781,7 +3860,6 @@ body.theme-liquid-dark .trust-strip,
 body.theme-liquid-dark .form-card,
 body.theme-liquid-dark .blog-item,
 body.theme-liquid-dark .article-shell,
-body.theme-liquid-dark .mobile-nav,
 body.theme-liquid-dark .mobile-menu-toggle,
 body.theme-liquid-dark .lead-popup {
   background: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)) border-box, var(--card);
@@ -3856,7 +3934,20 @@ body.theme-liquid-dark textarea::placeholder {
 }
 
 body.theme-liquid-dark .mobile-nav-backdrop {
-  background: rgba(2, 7, 13, 0.62);
+  background: rgba(2, 7, 13, 0.78);
+}
+
+body.theme-liquid-dark .mobile-cta-bar {
+  background: rgba(5, 9, 16, 0.96);
+  border-top-color: rgba(252, 19, 23, 0.72);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+}
+
+body.theme-liquid-dark .lead-popup {
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)) border-box,
+    rgba(8, 14, 24, 0.96);
 }
 
 body.theme-liquid-dark .site-footer {
@@ -3873,7 +3964,7 @@ body.theme-liquid-dark .site-footer {
   body.theme-liquid-dark .article-shell,
   body.theme-liquid-dark .mobile-nav,
   body.theme-liquid-dark .lead-popup {
-    background: #111a29;
+    background: #0d1522;
   }
 }
 

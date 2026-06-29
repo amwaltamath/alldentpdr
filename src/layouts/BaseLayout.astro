@@ -21,20 +21,8 @@ const adsId: string = 'AW-18153754648';
 const adsLeadSendTo: string = `${adsId}/o4LuCOyPm60cEJigsdBD`;
 const metaPixelId: string = import.meta.env.PUBLIC_META_PIXEL_ID || '1284377713827510';
 const pathname = Astro.url?.pathname || '/';
-const landingPrefixes = ['/hail-damage-repair/', '/paintless-dent-repair/', '/door-ding-repair/'];
-const landingExact = new Set([
-  '/hail-damage-repair',
-  '/paintless-dent-repair',
-  '/door-ding-repair',
-  '/hail-damage-repair-cleveland',
-  '/hail-damage-repair-bedford-ohio',
-  '/bedford-hail-damage-repair',
-  '/bedford-paintless-dent-repair',
-  '/bedford-door-ding-repair'
-]);
-const isLandingPage = landingExact.has(pathname) || landingPrefixes.some((prefix) => pathname.startsWith(prefix));
-const shouldShowLeadPopup = pathname === '/' || isLandingPage;
 const isPortalRoute = pathname.startsWith('/portal/');
+const shouldShowLeadPopup = !bare && !isPortalRoute;
 const useLiquidDarkTheme = !isPortalRoute;
 const themeColor = useLiquidDarkTheme ? '#080d14' : '#b0522b';
 const navLinks = [
@@ -292,6 +280,13 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
           <span><a href="/about">About</a> · <a href="/service-area">Service Area</a> · <a href="/blog">Blog</a> · <a href="/contact">Contact</a></span>
         </div>
       </footer>
+    )}
+
+    {!bare && (
+      <div class="mobile-cta-bar" aria-label="Quick contact">
+        <a class="mcta-call" href="tel:18554255336">Call Now</a>
+        <a class="mcta-quote" href="/contact">Get Free Estimate</a>
+      </div>
     )}
 
     {shouldShowLeadPopup && (
