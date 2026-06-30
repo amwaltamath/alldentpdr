@@ -61,17 +61,6 @@ const breadcrumbs = [
         </form>
 
         <script>
-          // Capture UTM params on every page load and persist in sessionStorage
-          (function () {
-            const p = new URLSearchParams(window.location.search);
-            const keys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
-            const stored = JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
-            let changed = false;
-            keys.forEach((k) => { if (p.get(k)) { stored[k] = p.get(k); changed = true; } });
-            if (!stored.referrer) { stored.referrer = document.referrer || ''; changed = true; }
-            if (changed) sessionStorage.setItem('alldent_utm', JSON.stringify(stored));
-          })();
-
           const form = document.getElementById('contact-form');
           const btn = document.getElementById('contact-submit');
           const status = document.getElementById('contact-status');
@@ -84,6 +73,15 @@ const breadcrumbs = [
             status.style.display = 'none';
 
             const data = Object.fromEntries(new FormData(form));
+            const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+            const getCookie = (name: string) => {
+              const found = document.cookie.match(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`);
+              return found ? found[2] : '';
+            };
+
+            data.event_id = eventId;
+            data.fbc = getCookie('_fbc');
+            data.fbp = getCookie('_fbp');
 
             // Attach UTM attribution stored from any page visit in this session
             const utm = JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
@@ -100,8 +98,11 @@ const breadcrumbs = [
                 form.reset();
                 status.textContent = '✓ Request sent! We\'ll reply within 24 hours.';
                 status.style.color = '#4a7a5c';
-                // Google Ads conversion — contact form submitted
                 const gtagFn = (globalThis as { gtag?: (...args: unknown[]) => void }).gtag;
+                const fbqFn = (globalThis as { fbq?: (...args: unknown[]) => void }).fbq;
+                if (typeof fbqFn === 'function') {
+                  fbqFn('track', 'Lead', {}, { eventID: eventId });
+                }
                 if (typeof gtagFn === 'function') {
                   gtagFn('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
                 }

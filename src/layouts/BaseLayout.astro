@@ -191,6 +191,28 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
     <slot name="head" />
   </head>
   <body class:list={{ 'theme-liquid-dark': useLiquidDarkTheme }}>
+    <script is:inline>
+      (function () {
+        const p = new URLSearchParams(window.location.search);
+        const stored = JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
+        let changed = false;
+        ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach((key) => {
+          if (p.get(key)) { stored[key] = p.get(key); changed = true; }
+        });
+        if (p.get('gclid')) {
+          stored.gclid = p.get('gclid');
+          if (!stored.utm_source) { stored.utm_source = 'google'; stored.utm_medium = stored.utm_medium || 'cpc'; }
+          changed = true;
+        }
+        if (p.get('fbclid')) {
+          stored.fbclid = p.get('fbclid');
+          if (!stored.utm_source) { stored.utm_source = 'facebook'; stored.utm_medium = stored.utm_medium || 'paid'; }
+          changed = true;
+        }
+        if (!stored.referrer && document.referrer) { stored.referrer = document.referrer; changed = true; }
+        if (changed) sessionStorage.setItem('alldent_utm', JSON.stringify(stored));
+      })();
+    </script>
     {!bare && (
       <header class="site-header">
         <div class="container header-inner">
@@ -297,16 +319,19 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
           <p class="lead-popup-kicker">Free Estimate</p>
           <h3 id="lead-popup-title">Get your quick estimate</h3>
           <p class="lead-popup-copy">Tell us about your vehicle and damage. We will contact you shortly.</p>
+          <p class="lead-popup-call">
+            <a href="tel:18554255336" class="lead-popup-call-link">Prefer to talk? Call 1-855-425-5336</a>
+          </p>
 
           <form id="lead-popup-form" class="lead-popup-form">
             <label for="lead-popup-name">Full name</label>
             <input id="lead-popup-name" name="name" type="text" required placeholder="Jane Smith" />
 
+            <label for="lead-popup-phone">Phone</label>
+            <input id="lead-popup-phone" name="phone" type="tel" required placeholder="(555) 555-5555" />
+
             <label for="lead-popup-email">Email</label>
             <input id="lead-popup-email" name="email" type="email" required placeholder="you@email.com" />
-
-            <label for="lead-popup-phone">Phone</label>
-            <input id="lead-popup-phone" name="phone" type="tel" placeholder="(555) 555-5555" />
 
             <label for="lead-popup-details">Vehicle and damage details</label>
             <input id="lead-popup-details" name="message" type="text" required placeholder="2019 Toyota Camry, hail dents on hood and roof" />
@@ -323,7 +348,21 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
       <script is:inline define:vars={{ pageTitle: title, pagePath: pathname, adsLeadSendTo }}>
         (() => {
           const KEY = 'alldent_lead_popup_last_closed_at';
-          const COOLDOWN_MS = 1000 * 60 * 60 * 24;
+          const getAttribution = () => JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
+          const isPaidTraffic = () => {
+            const utm = getAttribution();
+            const src = String(utm.utm_source || '').toLowerCase();
+            const med = String(utm.utm_medium || '').toLowerCase();
+            return Boolean(
+              utm.gclid ||
+              utm.fbclid ||
+              /google|facebook|meta|fb|instagram|ig/.test(src) ||
+              /cpc|paid|ppc/.test(med)
+            );
+          };
+          const paid = isPaidTraffic();
+          const COOLDOWN_MS = paid ? 1000 * 60 * 60 * 4 : 1000 * 60 * 60 * 24;
+          const OPEN_DELAY_MS = paid ? 1200 : 3500;
           const backdrop = document.getElementById('lead-popup-backdrop');
           const closeBtn = document.getElementById('lead-popup-close');
           const laterBtn = document.getElementById('lead-popup-later');
@@ -350,7 +389,7 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
           };
 
           if (!wasRecentlyClosed()) {
-            window.setTimeout(openPopup, 5000);
+            window.setTimeout(openPopup, OPEN_DELAY_MS);
           }
 
           closeBtn?.addEventListener('click', closePopup);
@@ -361,7 +400,7 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
             const data = new FormData(form);
             const message = String(data.get('message') || '').trim();
             const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-            const utm = JSON.parse(sessionStorage.getItem('alldent_utm') || '{}');
+            const utm = getAttribution();
             const getCookie = (name) => {
               const found = document.cookie.match(`(^|;)\\s*${name}\\s*=\\s*([^;]+)`);
               return found ? found[2] : '';
@@ -416,6 +455,19 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
             }
           });
         })();
+      </script>
+    )}
+
+    {!bare && (
+      <script is:inline>
+        document.addEventListener('click', (event) => {
+          const link = event.target instanceof Element ? event.target.closest('a[href^="tel:"]') : null;
+          if (!(link instanceof HTMLAnchorElement)) return;
+          if (typeof window.fbq === 'function') window.fbq('track', 'Contact');
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'generate_lead', { method: 'phone_click' });
+          }
+        });
       </script>
     )}
 

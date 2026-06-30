@@ -1209,7 +1209,7 @@ function AnalyticsView() {
       try {
         const res = await fetch('/api/analytics');
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error || 'Failed to load analytics');
+        if (!res.ok) throw new Error(json.message || json.error || 'Failed to load analytics');
         if (active) setData(json);
       } catch (e) {
         if (active) setError(e.message);
@@ -1229,13 +1229,29 @@ function AnalyticsView() {
         <ol>
           <li>In <a href="https://console.cloud.google.com" target="_blank" rel="noopener">Google Cloud Console</a> — enable the <strong>Google Analytics Data API</strong> and create a <strong>Service Account</strong>. Download its JSON key.</li>
           <li>In <a href="https://analytics.google.com" target="_blank" rel="noopener">GA4 Admin</a> → Property Access Management — add the service account email as <strong>Viewer</strong>.</li>
-          <li>In <a href="https://vercel.com" target="_blank" rel="noopener">Vercel</a> → Project Settings → Environment Variables — add either:<br /><code>GA4_SERVICE_ACCOUNT_KEY</code> = full service account JSON (one line)<br />or<br /><code>GA_CLIENT_EMAIL</code> + <code>GA_PRIVATE_KEY</code> (with escaped \n newlines), plus <code>GA4_PROPERTY_ID</code> = your numeric GA4 property ID (e.g. <code>123456789</code>)</li>
+          <li>In <a href="https://vercel.com" target="_blank" rel="noopener">Vercel</a> → Project Settings → Environment Variables — add either:<br /><code>GA4_SERVICE_ACCOUNT_KEY</code> = full service account JSON (one line)<br />or<br /><code>GA_CLIENT_EMAIL</code> + <code>GA_PRIVATE_KEY</code> (with escaped \n newlines), plus <code>GA4_PROPERTY_ID</code> = <code>484524259</code></li>
+          <li><strong>Important:</strong> <code>GA4_PROPERTY_ID</code> is <em>not</em> the website Measurement ID (<code>G-T7RLXD05RW</code>). In GA4 go to <strong>Admin → Property settings</strong> and copy the numeric <strong>Property ID</strong>.</li>
+          <li>Add the service account email (from the JSON key, looks like <code>something@project-id.iam.gserviceaccount.com</code>) in GA4 <strong>Admin → Property access management</strong> as <strong>Viewer</strong>. Your personal Google login access does not count for the API.</li>
           <li>Redeploy — analytics will appear here automatically.</li>
         </ol>
       </div>
     </section>
   );
-  if (error) return <section className="panel"><div className="kanban-empty" style={{color:'#c0392b'}}>Error: {error}</div></section>;
+  if (error) return (
+    <section className="panel">
+      <div className="panel-head"><h3>Analytics</h3></div>
+      <div className="analytics-setup-notice">
+        <p><strong>Could not load GA4 analytics.</strong></p>
+        <p style={{ color: '#c0392b' }}>{error}</p>
+        <p>If the error mentions property ID, double-check Vercel env var <code>GA4_PROPERTY_ID</code>:</p>
+        <ul>
+          <li>Use the numeric Property ID from GA4 Admin → Property settings</li>
+          <li>Do <strong>not</strong> use the Measurement ID from the website tag (<code>G-T7RLXD05RW</code>)</li>
+          <li>Grant the <strong>service account email</strong> Viewer access in GA4 — not just your personal Google account</li>
+        </ul>
+      </div>
+    </section>
+  );
 
   // Parse summary KPIs
   const kpiRow  = data?.summary?.rows?.[0]?.metricValues || [];

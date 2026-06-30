@@ -488,6 +488,22 @@ body.popup-open { overflow: hidden; }
   text-align: center;
 }
 
+.lead-popup-call {
+  margin: 0 0 14px;
+  text-align: center;
+}
+
+.lead-popup-call-link {
+  color: var(--rust);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lead-popup-call-link:hover {
+  text-decoration: underline;
+}
+
 .lead-popup-logo {
   width: 140px;
   height: auto;
@@ -3898,6 +3914,10 @@ body.theme-liquid-dark .testimonial-text,
 body.theme-liquid-dark .blog-item p,
 body.theme-liquid-dark .lead-popup-copy {
   color: var(--ink-soft);
+}
+
+body.theme-liquid-dark .lead-popup-call-link {
+  color: #ffb4ba;
 }
 
 body.theme-liquid-dark .section.alt {

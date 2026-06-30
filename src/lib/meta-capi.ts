@@ -60,7 +60,7 @@ export async function sendCapiEvent(event: CapiEvent): Promise<void> {
   if (userData.fbc)       ud['fbc']  = userData.fbc;
   if (userData.fbp)       ud['fbp']  = userData.fbp;
 
-  const payload = {
+  const payload: Record<string, unknown> = {
     data: [
       {
         event_name:        event.eventName,
@@ -72,8 +72,10 @@ export async function sendCapiEvent(event: CapiEvent): Promise<void> {
         ...(event.customData ? { custom_data: event.customData } : {}),
       },
     ],
-    test_event_code: 'TEST85056', // ⚠️ REMOVE before production
   };
+
+  const testCode = process.env.META_TEST_EVENT_CODE ?? import.meta.env.META_TEST_EVENT_CODE;
+  if (testCode) payload.test_event_code = testCode;
 
   try {
     const res = await fetch(
