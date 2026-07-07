@@ -3,6 +3,9 @@ layout: ../../layouts/BlogPost.astro
 title: "PDR vs. Traditional Body Shop: Which Is Right for Your Dent?"
 description: "Compare paintless dent repair to conventional body shop repair. Learn the differences in cost, time, paint preservation, and when each method is the better choice."
 pubDate: "2026-02-27"
+tag: "Comparison"
+heroImage: "/images/topdoorbefore.jpg"
+heroImageAlt: "Door dent before paintless dent repair"
 ---
 
 When your vehicle gets a dent, you have two main repair options: **paintless dent repair (PDR)** or **traditional body shop repair**. Both can fix your car, but they use very different methods — and the right choice depends on the type of damage.

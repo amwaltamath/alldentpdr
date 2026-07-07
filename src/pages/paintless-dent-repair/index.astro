@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { serviceAreas } from '../../data/serviceAreas';
+
+const title = 'Paintless Dent Repair Service Areas | Greater Cleveland OH | AllDent PDR';
+const description = 'AllDent PDR serves Bedford, Cleveland, Parma, Akron, and 14+ communities across Greater Cleveland with mobile paintless dent repair. Find your city and get a free estimate.';
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Service Areas', url: 'https://alldentpdr.com/paintless-dent-repair' }
+];
+---
+
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/paintless-dent-repair" breadcrumbs={breadcrumbs}>
+  <section class="page-hero container">
+    <span class="section-label">Service Areas</span>
+    <h1>Mobile paintless dent repair across Greater Cleveland</h1>
+    <p>AllDent PDR is based in Bedford, OH and provides mobile paintless dent repair throughout Northeast Ohio. Select your city for local pricing, FAQs, and service details.</p>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <div class="service-area-cards">
+        {serviceAreas.map((area) => (
+          <a class="card service-area-card" href={`/paintless-dent-repair/${area.slug}`}>
+            {area.isHomeBase && <span class="tag">Home Base</span>}
+            <h3>{area.name}, OH</h3>
+            <p>{area.intro ? area.intro.slice(0, 120) + '…' : `Mobile paintless dent repair in ${area.name}, OH.`}</p>
+            <span class="service-area-link">View {area.name} PDR →</span>
+          </a>
+        ))}
+      </div>
+      <div class="button-row" style="justify-content: center; margin-top: 2rem;">
+        <a class="button primary" href="/contact">Get a Free Estimate</a>
+        <a class="button ghost" href="/services">View All Services</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

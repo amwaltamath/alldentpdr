@@ -1,19 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { serviceAreas } from '../data/serviceAreas';
 
-const title = 'About AllDent PDR | Paintless Dent Repair Experts — Cincinnati-Based, Nationwide';
-const description = 'AllDent PDR specializes in paintless dent repair with mobile service from Cincinnati to anywhere in the U.S. Expert PDR technicians, transparent estimates, and factory-quality hail damage repair results.';
+const title = 'About AllDent PDR | Paintless Dent Repair Experts — Bedford & Cleveland OH';
+const description = 'AllDent PDR specializes in paintless dent repair with mobile service from Bedford, OH — serving Greater Cleveland and nationwide. Expert PDR technicians, transparent estimates, and factory-quality hail damage repair results.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'About', url: 'https://alldentpdr.com/about' }
 ];
+
 ---
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/about" breadcrumbs={breadcrumbs}>
   <section class="page-hero container">
     <span class="section-label">About Us</span>
-    <h1>Cincinnati's paintless dent repair specialists</h1>
-    <p>AllDent PDR travels across the United States to repair hail damage on-site — delivering factory-quality paintless dent repair results without the body shop wait.</p>
+    <h1>Greater Cleveland's paintless dent repair specialists</h1>
+    <p>AllDent PDR is based in Bedford, OH and travels across the United States to repair hail damage on-site — delivering factory-quality paintless dent repair results without the body shop wait.</p>
   </section>
 
   <section class="section alt">
@@ -27,8 +29,8 @@ const breadcrumbs = [
         <p>Photo-based estimates, realistic timelines, and straight answers from start to finish.</p>
       </article>
       <article class="card">
-        <h3>Cincinnati home base</h3>
-        <p>Proudly rooted in Cincinnati with the ability to serve drivers and dealerships nationwide.</p>
+        <h3>Bedford home base</h3>
+        <p>Proudly rooted in Bedford, OH with daily mobile service throughout Greater Cleveland and nationwide storm response.</p>
       </article>
     </div>
   </section>
@@ -47,11 +49,11 @@ const breadcrumbs = [
   <section class="section alt">
     <div class="container">
       <h2>Where we serve</h2>
-      <p>AllDent PDR is based in Cincinnati but our mobile service reaches anywhere storms hit across the United States.</p>
+      <p>AllDent PDR is based in Bedford, OH. We provide mobile paintless dent repair throughout Greater Cleveland and travel nationwide for hail storm damage.</p>
       <div class="grid-3">
         <article class="card">
-          <h3>Cincinnati, OH</h3>
-          <p>Our home base. Local Cincinnati and Northern Kentucky customers can schedule anytime.</p>
+          <h3>Bedford &amp; Greater Cleveland</h3>
+          <p>Our home service area. We come to your driveway, workplace, or dealership anywhere in the Cleveland metro.</p>
         </article>
         <article class="card">
           <h3>Storm-affected areas</h3>
@@ -62,6 +64,18 @@ const breadcrumbs = [
           <p>From the Midwest to the South and beyond — wherever hail damage happens, we can be there.</p>
         </article>
       </div>
+
+      <div class="service-area-list" style="margin-top: 2rem;">
+        <h3>Local service areas</h3>
+        <p>We regularly serve drivers in these communities and surrounding areas:</p>
+        <ul class="service-area-grid">
+          {serviceAreas.map((area) => (
+            <li><a href={`/paintless-dent-repair/${area.slug}`}>{area.name}</a></li>
+          ))}
+        </ul>
+        <p style="margin-top: 1rem;"><a href="/paintless-dent-repair">View all service area pages →</a></p>
+      </div>
+
       <div class="button-row" style="justify-content: center; margin-top: 32px;">
         <a class="button primary" href="/contact">Get a Free Estimate</a>
         <a class="button ghost" href="/services">View Services</a>
@@ -72,7 +86,7 @@ const breadcrumbs = [
   <section class="cta-banner">
     <div class="container">
       <h2>Need paintless dent repair?</h2>
-      <p>Get a free estimate from AllDent PDR — Cincinnati's mobile PDR experts serving the entire U.S.</p>
+      <p>Get a free estimate from AllDent PDR — Bedford's mobile PDR experts serving Greater Cleveland and the entire U.S.</p>
       <div class="button-row" style="justify-content: center;">
         <a class="button primary" href="/contact">Contact Us Today</a>
         <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>

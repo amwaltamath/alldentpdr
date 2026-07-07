@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BeforeAfter from '../../components/BeforeAfter.jsx';
+import { serviceAreas, getNearbyAreas, type ServiceArea } from '../../data/serviceAreas';
+
+export function getStaticPaths() {
+  return serviceAreas.map((area) => ({
+    params: { city: area.slug },
+    props: { area }
+  }));
+}
+
+interface Props {
+  area: ServiceArea;
+}
+
+const { area } = Astro.props;
+const nearby = getNearbyAreas(area);
+const cityLabel = `${area.name}, OH`;
+const title = `Paintless Dent Repair ${area.name} OH | Mobile PDR | AllDent PDR`;
+const description = `Mobile paintless dent repair in ${cityLabel}. Door ding removal, hail damage repair, and collision dent repair — we come to you. Free photo estimates from AllDent PDR. Call 1-855-425-5336.`;
+const canonical = `https://alldentpdr.com/paintless-dent-repair/${area.slug}`;
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Service Areas', url: 'https://alldentpdr.com/paintless-dent-repair' },
+  { name: cityLabel, url: canonical }
+];
+const faqItems = [
+  {
+    question: `How much does paintless dent repair cost in ${area.name}?`,
+    answer: `PDR pricing in ${area.name} depends on dent size, location, and panel accessibility. Small door dings typically range from $75–$150. Hail damage is quoted per panel. Contact AllDent PDR for a free photo-based estimate.`
+  },
+  {
+    question: `Do you offer mobile PDR in ${area.name}, OH?`,
+    answer: `Yes. AllDent PDR is a fully mobile paintless dent repair service. We come to your home, workplace, or dealership anywhere in ${area.name} and throughout Greater Cleveland.`
+  },
+  {
+    question: 'How long does a typical PDR repair take?',
+    answer: 'Most single-dent repairs are completed in 1–3 hours. Multi-panel hail damage may take a full day. We provide a timeline upfront so you can plan accordingly.'
+  }
+];
+
+const defaultIntro = `AllDent PDR provides mobile paintless dent repair throughout ${cityLabel} and the surrounding Greater Cleveland area. We come to your location for door dings, hail damage, and minor collision dents — preserving your factory finish without repainting.`;
+const intro = area.intro ?? defaultIntro;
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems}>
+  <section class="page-hero container">
+    <span class="section-label">{area.isHomeBase ? 'Home Base' : 'Service Area'}</span>
+    <h1>Paintless dent repair in {cityLabel}</h1>
+    <p>{intro}</p>
+    <div class="button-row" style="margin-top: 1.5rem;">
+      <a class="button primary" href="/contact">Get a Free Estimate</a>
+      <a class="button ghost" href="/blog/pdr-cost-guide">PDR Cost Guide</a>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container grid-3">
+      <article class="card">
+        <span class="tag">Door Dings</span>
+        <h3>Parking lot dent repair</h3>
+        <p>Quick PDR for small dings and creases in {area.name} — no fillers, no repainting, no body shop wait.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Hail Damage</span>
+        <h3>Storm damage repair</h3>
+        <p>Panel-by-panel hail dent restoration that preserves your OEM factory finish. We also deploy nationwide after major storms.</p>
+      </article>
+      <article class="card">
+        <span class="tag">Mobile Service</span>
+        <h3>We come to you</h3>
+        <p>Our technicians arrive at your {area.name} location — home, office, or dealership — with everything needed for on-site repair.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <span class="section-label">Our Work</span>
+      <h2>Before &amp; after results in the {area.name} area</h2>
+      <p>Real paintless dent repair results — factory paint preserved, dents removed.</p>
+      <div class="gallery-grid">
+        <div class="card">
+          <BeforeAfter
+            client:load
+            before="/images/topdoorbefore.jpg"
+            after="/images/topdoorafter.jpg"
+            alt={`Paintless dent repair ${area.name} OH - Door ding before and after`}
+          />
+        </div>
+        <div class="card">
+          <BeforeAfter
+            client:load
+            before="/images/haildamangetopbefore.jpg"
+            after="/images/haildamagetopafter.jpg"
+            alt={`Hail damage repair ${area.name} OH - Before and after PDR`}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <h2>PDR pricing in {area.name}</h2>
+      <p>Transparent, photo-based estimates with no hidden fees. Typical ranges for {area.name} drivers:</p>
+      <ul class="city-pricing-list">
+        <li><strong>Small door ding:</strong> $75 – $150</li>
+        <li><strong>Medium dent (one panel):</strong> $150 – $300</li>
+        <li><strong>Hail damage:</strong> quoted per panel — see our <a href="/blog/pdr-cost-guide">full cost guide</a></li>
+      </ul>
+      <p>Every repair starts with a free estimate. <a href="/contact">Send us photos</a> and we'll reply the same day.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>Nearby service areas</h2>
+      <p>We also provide mobile paintless dent repair in these communities near {area.name}:</p>
+      <ul class="service-area-grid">
+        {nearby.map((nearbyArea) => (
+          <li><a href={`/paintless-dent-repair/${nearbyArea.slug}`}>{nearbyArea.name}, OH</a></li>
+        ))}
+      </ul>
+      <p style="margin-top: 1.5rem;"><a href="/paintless-dent-repair">View all service areas →</a></p>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <h2>Frequently asked questions — {area.name}</h2>
+      <div class="faq-list">
+        {faqItems.map((item) => (
+          <details class="faq-item">
+            <summary>{item.question}</summary>
+            <p>{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Need PDR in {area.name}?</h2>
+      <p>Get a free photo-based estimate — we reply the same day with pricing and availability.</p>
+      <div class="button-row" style="justify-content: center;">
+        <a class="button primary" href="/contact">Start Your Free Estimate</a>
+        <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -3,6 +3,9 @@ layout: ../../layouts/BlogPost.astro
 title: "Hail Damage Repair: The Complete Guide to Restoring Your Vehicle"
 description: "Everything you need to know about hail damage repair. Learn how PDR restores storm-damaged vehicles, what to do after a hail storm, and why mobile repair is the fastest path to recovery."
 pubDate: "2026-02-20"
+tag: "Hail Damage"
+heroImage: "/images/haildamangetopbefore.jpg"
+heroImageAlt: "Hail damage dents across a vehicle hood before paintless dent repair"
 ---
 
 Hail storms can strike fast and leave behind hundreds of dents across every panel of your vehicle. If you've been caught in a storm, the good news is that most hail damage can be repaired without repainting — using **paintless dent repair (PDR)**.
@@ -12,6 +15,8 @@ This guide covers everything you need to know about hail damage repair, from ass
 ## How hail damages your vehicle
 
 Hailstones range from pea-sized to golf-ball-sized — and sometimes larger. When they hit your car at speed, they create shallow, round dents across exposed surfaces like the hood, roof, trunk, and sometimes doors and fenders.
+
+![Hail damage on a vehicle hood before PDR repair](/images/haildamangetopbefore.jpg)
 
 **Common hail damage characteristics:**
 
@@ -40,6 +45,8 @@ Paintless dent repair is the industry-standard method for hail damage restoratio
 | **Cost** | Typically 40–60% less | Higher due to materials and labor |
 | **Resale value** | Maintained | May show on vehicle history |
 | **Filler used** | None | Yes |
+
+![Vehicle hood restored after paintless dent repair](/images/haildamagetopafter.jpg)
 
 ## How mobile hail repair works
 
@@ -88,4 +95,4 @@ AllDent PDR has extensive experience with storm damage repair across the country
 
 If your vehicle was caught in a hail storm, [contact AllDent PDR](/contact) for a free photo-based estimate. Just send pictures of the damage and your location — we'll reply the same day with pricing, timeline, and next steps.
 
-Based in Cincinnati and serving storm-affected areas nationwide.
+Based in Bedford, OH — serving Greater Cleveland and storm-affected areas nationwide.

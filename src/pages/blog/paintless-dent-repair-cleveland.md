@@ -1,13 +1,16 @@
 ---
 layout: ../../layouts/BlogPost.astro
-title: "Paintless Dent Repair Cincinnati: What to Know Before You Book"
-description: "A complete guide to paintless dent repair in Cincinnati, OH. Learn about PDR cost, repair timelines, what dents qualify, and how to get a fast estimate from AllDent PDR."
+title: "Paintless Dent Repair Cleveland & Bedford: What to Know Before You Book"
+description: "A complete guide to paintless dent repair in the Cleveland area. Based in Bedford, OH — learn about PDR cost, repair timelines, what dents qualify, and how to get a fast estimate from AllDent PDR."
 pubDate: "2026-02-13"
+tag: "PDR Basics"
+heroImage: "/images/topdoorafter.jpg"
+heroImageAlt: "Door panel restored with paintless dent repair in the Cleveland area"
 ---
 
 Paintless dent repair (PDR) is the preferred method for removing dents when your vehicle's paint is intact. Instead of filling and repainting, a trained PDR technician uses specialized tools to reshape the metal from behind the panel. The result is a smooth, factory-quality finish — without the cost or downtime of conventional body work.
 
-If you're searching for **paintless dent repair in Cincinnati**, here's everything you need to know before booking.
+If you're searching for **paintless dent repair in Cleveland, Bedford, or anywhere in Greater Cleveland**, here's everything you need to know before booking.
 
 ## When is PDR a good fit?
 
@@ -20,7 +23,7 @@ PDR works best for dents where the paint surface hasn't cracked or chipped. Comm
 
 If the dent has damaged paint, deep scratches, or severely stretched metal, conventional body repair may be required instead. Not sure? [Send us photos for a free assessment](/contact).
 
-## How much does paintless dent repair cost in Cincinnati?
+## How much does paintless dent repair cost in Cleveland?
 
 PDR pricing depends on several factors:
 
@@ -29,7 +32,9 @@ PDR pricing depends on several factors:
 - **Number of dents** — hail damage with dozens of dents is priced per panel
 - **Accessibility** — some panels require interior trim removal for tool access
 
-Small door dings in Cincinnati typically range from **$75–$150**. Hail damage is quoted per panel after reviewing photos. AllDent PDR provides free, no-obligation photo-based estimates so you know exactly what to expect.
+Small door dings in the Cleveland area typically range from **$75–$150**. Hail damage is quoted per panel after reviewing photos. For a detailed breakdown, see our [PDR cost guide](/blog/pdr-cost-guide).
+
+AllDent PDR provides free, no-obligation photo-based estimates so you know exactly what to expect.
 
 ## Typical PDR repair timelines
 
@@ -37,7 +42,7 @@ Small door dings in Cincinnati typically range from **$75–$150**. Hail damage 
 - **Multiple dings on one panel**: half a day
 - **Full hail damage repair**: 1–2 days depending on panel count
 
-Most Cincinnati drivers have their vehicle back the same day for single-dent repairs. We schedule transparently so you can plan around the repair.
+Most Greater Cleveland drivers have their vehicle back the same day for single-dent repairs. We schedule transparently so you can plan around the repair.
 
 ## Why choose PDR over conventional dent repair?
 
@@ -51,9 +56,22 @@ Most Cincinnati drivers have their vehicle back the same day for single-dent rep
 
 PDR is not only faster and more affordable — it also **preserves your vehicle's resale value** by keeping the original factory finish intact.
 
+## Service areas we cover locally
+
+AllDent PDR is based in **Bedford, OH** and provides mobile paintless dent repair throughout Greater Cleveland, including:
+
+- Bedford & Bedford Heights
+- Cleveland & Cleveland Heights
+- Shaker Heights, Warrensville Heights & Maple Heights
+- Garfield Heights, Beachwood & Parma
+- Solon, Strongsville, Lakewood & North Olmsted
+- Akron, Mentor, Elyria & Brunswick
+
+Don't see your city listed? [Contact us](/contact) — if you're in the Cleveland metro, we can almost certainly come to you.
+
 ## About AllDent PDR
 
-AllDent PDR is a mobile paintless dent repair service based in Cincinnati, OH that travels across the United States to repair hail storm damage on-site. Whether you need a quick door ding fix locally or full hail damage recovery after a major storm, we bring our tools and expertise directly to you — wherever you are. We provide transparent quotes, fast turnaround, and factory-quality results.
+AllDent PDR is a mobile paintless dent repair service based in Bedford, OH that serves Greater Cleveland daily and travels across the United States to repair hail storm damage on-site. Whether you need a quick door ding fix locally or full hail damage recovery after a major storm, we bring our tools and expertise directly to you — wherever you are. We provide transparent quotes, fast turnaround, and factory-quality results.
 
 **Hours**: Monday–Friday 8am–6pm, Saturday 9am–2pm  
 **Phone**: [1-855-425-5336](tel:18554255336)  

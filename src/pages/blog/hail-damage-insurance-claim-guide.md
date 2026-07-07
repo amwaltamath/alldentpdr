@@ -3,6 +3,9 @@ layout: ../../layouts/BlogPost.astro
 title: "How to File an Insurance Claim for Hail Damage"
 description: "Step-by-step guide to filing a hail damage insurance claim. Learn what your policy covers, how to document damage, and how to get your vehicle repaired quickly."
 pubDate: "2026-03-02"
+tag: "Insurance"
+heroImage: "/images/hail.jpg"
+heroImageAlt: "Severe hail storm damage on vehicles"
 ---
 
 After a hail storm, one of the first questions vehicle owners ask is: **"Will my insurance cover this?"** The short answer is yes — if you have comprehensive coverage. Here's exactly how to navigate the process from start to finish.

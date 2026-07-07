@@ -3,6 +3,9 @@ layout: ../../layouts/BlogPost.astro
 title: "Why Mobile PDR Is the Future of Dent Repair"
 description: "Discover why mobile paintless dent repair is replacing traditional shop visits. Learn the benefits of on-site PDR service — convenience, speed, and factory-quality results wherever you are."
 pubDate: "2026-03-01"
+tag: "Mobile PDR"
+heroImage: "/images/sidedentbefore.jpg"
+heroImageAlt: "Side panel dent being assessed for mobile paintless dent repair"
 ---
 
 The way dent repair works is changing. Instead of dropping your car off at a body shop and waiting days or weeks, **mobile paintless dent repair (PDR) brings the technician directly to you** — at your home, office, dealership, or wherever your vehicle is parked.
@@ -39,7 +42,7 @@ Since repairs happen at your location and take hours rather than days, you typic
 
 After a major hail storm, local body shops get overwhelmed with months-long backlogs. Mobile PDR technicians can **deploy to storm-affected areas immediately** and start repairing vehicles on-site — in driveways, parking lots, or dealer lots.
 
-This is exactly what AllDent PDR does. We're based in Cincinnati and travel across the U.S. to wherever storms hit, bringing our full tool setup to repair hail damage on location.
+This is exactly what AllDent PDR does. We're based in Bedford, OH and travel across the U.S. to wherever storms hit, bringing our full tool setup to repair hail damage on location.
 
 ### 5. Perfect for dealerships and fleets
 
@@ -67,7 +70,7 @@ Mobile PDR is the best option when:
 
 1. **Send us photos** of the damage and your location via our [contact form](/contact) or email
 2. **Receive a same-day estimate** with pricing and timeline
-3. **We schedule and travel to you** — locally in Cincinnati or anywhere in the U.S. for storm damage
+3. **We schedule and travel to you** — locally in Greater Cleveland or anywhere in the U.S. for storm damage
 4. **Repairs are completed on-site** with professional-grade PDR tools
 5. **You inspect the results** before we leave
 

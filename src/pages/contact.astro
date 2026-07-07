@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import VinCapture from '../components/VinCapture.jsx';
 
-const title = 'Free Paintless Dent Repair Estimate | Contact AllDent PDR | Cincinnati & Nationwide';
-const description = 'Get a free paintless dent repair estimate from AllDent PDR. Mobile hail damage repair in Cincinnati and nationwide. Same-day replies. Call 1-855-425-5336 or submit your photos online.';
+const title = 'Free Paintless Dent Repair Estimate | Contact AllDent PDR | Cleveland & Nationwide';
+const description = 'Get a free paintless dent repair estimate from AllDent PDR. Mobile hail damage repair in Bedford, Greater Cleveland, and nationwide. Same-day replies. Call 1-855-425-5336 or submit your photos online.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Contact', url: 'https://alldentpdr.com/contact' }
@@ -36,8 +37,9 @@ const breadcrumbs = [
           </label>
           <label>
             Vehicle
-            <input type="text" name="vehicle" placeholder="Year, make, model" />
+            <input id="vehicle-field" type="text" name="vehicle" placeholder="Year, make, model" />
           </label>
+          <VinCapture client:load />
           <label>
             Describe the damage
             <textarea name="message" rows="4" placeholder="Location, size, and any details" required></textarea>
@@ -49,7 +51,7 @@ const breadcrumbs = [
         <h3>Reach us directly</h3>
         <p>Phone: 1 855-425-5336</p>
         <p>Email: alldentpdr@gmail.com</p>
-        <p>Service area: Based in Cincinnati, OH — traveling nationwide for hail storm repairs.</p>
+        <p>Service area: Based in Bedford, OH — serving Greater Cleveland and traveling nationwide for hail storm repairs.</p>
         <div class="button-row">
           <a class="button ghost" href="/services">Review services</a>
         </div>

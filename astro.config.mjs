@@ -8,5 +8,8 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://alldentpdr.com',
   trailingSlash: 'never',
+  redirects: {
+    '/blog/paintless-dent-repair-cincinnati': '/blog/paintless-dent-repair-cleveland'
+  },
   integrations: [react(), sitemap()]
 });
