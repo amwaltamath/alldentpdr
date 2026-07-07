@@ -1,8 +1,8 @@
 # All Dent PDR Website
 
-Fast, modern marketing site and blog for **All Dent PDR** — a mobile paintless dent repair service based in Cincinnati, serving nationwide.
+Fast, modern marketing site and portal for **All Dent PDR** — a paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125, serving Bedford and greater Northeast Ohio.
 
-Built with **Astro 5**, **React**, and **CSS3** for optimal performance and SEO.
+Built with **Astro 6**, **React 19**, and **CSS3** for performance, SEO, and portal workflows.
 
 ## Features
 
@@ -17,11 +17,13 @@ Built with **Astro 5**, **React**, and **CSS3** for optimal performance and SEO.
 - **CTA Banners** — High-conversion call-to-action sections throughout
 - **Local SEO** — Geo-targeting, business schema, area served metadata
 - **Customer Portal MVP** — Customer status login plus admin vehicle registration dashboard
+- **VIN Scanning** — Barcode/QR VIN scanner with OCR text fallback in registration and admin quote flows
+- **VIN Decode API** — Free NHTSA vPIC integration to auto-populate year/make/model from VIN
 - **Fast Performance** — Static site generation, optimized assets, ~6ms build time
 
 ## Tech Stack
 
-- **Astro 5.17** — Static site generation framework
+- **Astro 6.x** — Static site generation framework
 - **React 19** — Interactive components (image comparisons, mobile menu)
 - **Supabase Client** — Optional live portal data backend
 - **CSS3** — Custom properties, grid, flexbox, animations
@@ -120,9 +122,16 @@ git push                    # Now just 'git push' — upstream is configured
 ### Deployment Flow
 
 1. Push to `main` branch
-2. Vercel automatically detects changes
+2. Vercel automatically creates a deployment
 3. Build runs (Astro static generation)
-4. Site auto-deploys to production
+4. Production uses the `main` branch deployment
+
+## July 2026 Updates
+
+- Added OCR fallback to VIN scanning in public registration form: [src/components/RegistrationForm.jsx](src/components/RegistrationForm.jsx)
+- Added OCR fallback to VIN scanning in admin dashboard quote builder: [src/components/AdminDashboard.jsx](src/components/AdminDashboard.jsx)
+- Tightened VIN parsing to only accept valid 17-character VIN matches from scanner input
+- Continued use of free VIN decode endpoint for vehicle data autofill: [src/pages/api/vin-decode.ts](src/pages/api/vin-decode.ts)
 
 ## Deployment
 
@@ -213,4 +222,4 @@ For website questions or updates, contact the development team or submit changes
 
 ---
 
-**Last updated**: April 20, 2026
+**Last updated**: July 7, 2026

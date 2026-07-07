@@ -20,7 +20,19 @@
 **Hosting**: Vercel (auto-deploy from `main` branch)  
 **Domain**: alldentpdr.com
 
-## Recent Updates (May 2026)
+## Recent Updates
+
+### VIN Scanning & Decode Reliability (July 2026)
+- **Public registration scanner improved**: Added OCR fallback button to read VIN text if barcode/QR scan does not lock quickly
+- **Admin dashboard scanner improved**: Added the same OCR fallback in quote workflow to match public behavior
+- **Stricter VIN capture**: Scanner now requires a valid 17-character VIN match before auto-accept
+- **VIN decode remains free**: Uses NHTSA vPIC API through `src/pages/api/vin-decode.ts` to auto-fill year/make/model
+- **Key files updated**:
+	- `src/components/RegistrationForm.jsx`
+	- `src/components/AdminDashboard.jsx`
+	- `src/pages/api/vin-decode.ts`
+
+### Admin Dashboard — Registration Form Print/Download (May 2026)
 
 ### Admin Dashboard — Registration Form Print/Download
 - **New button**: "📄 Print / Download" in the job detail panel (expand any job row → left column → **Registration Form** section, above Vehicle Release)
@@ -87,6 +99,7 @@ git push                      # Auto-deploys to Vercel
 - **Branch**: `main` (production branch)
 - **Upstream**: Configured for easy pushes (`git push` alone works)
 - **Old branch**: `master` (deprecated, can remove from GitHub)
+- **Release rule**: Keep production changes scoped and land on `main`; avoid broad cross-branch cherry-picks when `master`/`preview` diverge
 
 ## Design System
 
@@ -139,6 +152,8 @@ Push to `main` → Auto-builds → Manually promote in Vercel if needed
 **Images missing**: Verify paths in `public/images/` directory  
 **Deploy not showing**: Check Vercel dashboard, verify `main` is set as production branch
 
+**VIN scan misses barcode**: Use the scanner's **Read VIN Text** fallback (OCR) and confirm camera permission is enabled
+
 ## Resources
 
 - [Astro Docs](https://docs.astro.build/)
@@ -148,5 +163,5 @@ Push to `main` → Auto-builds → Manually promote in Vercel if needed
 
 ---
 
-**Last Updated**: May 29, 2026  
+**Last Updated**: July 7, 2026  
 **Maintained by**: All Dent PDR Development Team
