@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { decodeVin, normalizeVin } from '../lib/vin';
+import VinScanner from './VinScanner';
 import { registerVehiclePublic } from './portal/storage';
 
 const STATES = [
@@ -21,199 +23,6 @@ const BLANK = {
   loanerAgreementSigned: false,
 };
 
-function normalizeVin(value) {
-  return String(value || '')
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, '');
-}
-
-function extractVin(value) {
-  const normalized = normalizeVin(value)
-    .replace(/[IOQ]/g, (char) => (char === 'I' ? '1' : '0'));
-  const match = normalized.match(/[A-HJ-NPR-Z0-9]{17}/);
-  return match ? match[0] : '';
-}
-
-function VinScanner({ onScan, onClose }) {
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const readerRef = useRef(null);
-  const [scanError, setScanError] = useState('');
-  const [ready, setReady] = useState(false);
-  const [ocrBusy, setOcrBusy] = useState(false);
-  const [ocrMessage, setOcrMessage] = useState('');
-
-  const captureAndReadVinText = async () => {
-    if (ocrBusy) return;
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-
-    if (!video || !canvas || !video.videoWidth || !video.videoHeight) {
-      setScanError('Camera is not ready yet. Please wait a moment and try again.');
-      return;
-    }
-
-    setScanError('');
-    setOcrMessage('Reading VIN text from camera image...');
-    setOcrBusy(true);
-
-    try {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const context = canvas.getContext('2d', { willReadFrequently: true });
-      if (!context) {
-        throw new Error('Could not access camera frame.');
-      }
-
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      const { createWorker } = await import('tesseract.js');
-      const worker = await createWorker('eng');
-
-      try {
-        const result = await worker.recognize(canvas);
-        const vin = extractVin(result?.data?.text || '');
-        if (!vin) {
-          setScanError('No 17-character VIN found in the captured image. Try barcode scan or manual entry.');
-          return;
-        }
-
-        onScan(vin);
-      } finally {
-        await worker.terminate();
-      }
-    } catch (err) {
-      console.error('[VinScanner OCR]', err);
-      setScanError('Text scan failed. Please try again or enter the VIN manually.');
-    } finally {
-      setOcrBusy(false);
-      setOcrMessage('');
-    }
-  };
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    let active = true;
-
-    import('@zxing/browser').then(async ({ BrowserMultiFormatReader }) => {
-      if (!active) return;
-
-      const reader = new BrowserMultiFormatReader();
-      readerRef.current = reader;
-
-      const decodeHandler = (result, err) => {
-        if (!active) return;
-
-        if (result) {
-          setReady(true);
-          const vin = extractVin(result.getText().replace(/\*/g, ''));
-          if (vin.length === 17) {
-            active = false;
-            onScan(vin);
-          }
-        }
-
-        if (err && err.name !== 'NotFoundException') {
-          console.warn('[VinScanner]', err);
-        }
-
-        if (!ready) setReady(true);
-      };
-
-      try {
-        // Prefer the rear phone camera for VIN scanning on mobile devices.
-        await reader.decodeFromConstraints(
-          {
-            video: {
-              facingMode: { ideal: 'environment' },
-            },
-          },
-          videoRef.current,
-          decodeHandler
-        );
-        return;
-      } catch (constraintErr) {
-        console.warn('[VinScanner constraints fallback]', constraintErr);
-      }
-
-      BrowserMultiFormatReader.listVideoInputDevices()
-        .then((devices) => {
-          if (!active) return;
-          if (!devices.length) {
-            setScanError('No camera found. Please enter the VIN manually.');
-            return;
-          }
-
-          const preferred = devices.find((device) => /back|rear|environment/i.test(device.label)) || devices[devices.length - 1];
-
-          return reader.decodeFromVideoDevice(preferred.deviceId, videoRef.current, decodeHandler);
-        })
-        .catch((err) => {
-          console.error('[VinScanner camera]', err);
-          if (active) setScanError('Camera access denied. Please allow camera access or enter the VIN manually.');
-        });
-    }).catch((err) => {
-      console.error('[VinScanner import]', err);
-      if (active) setScanError('Scanner failed to load. Please enter the VIN manually.');
-    });
-
-    return () => {
-      active = false;
-      readerRef.current?.reset();
-    };
-  }, []);
-
-  return (
-    <div className="vin-scanner-overlay" onClick={onClose}>
-      <div className="vin-scanner-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="vin-scanner-head">
-          <h3>Scan VIN</h3>
-          <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
-        </div>
-        <p className="vin-scanner-hint">
-          Point the camera at the VIN barcode on the door jamb sticker, windshield, or QR code.
-        </p>
-        {scanError ? (
-          <p style={{ color: 'var(--rust,#b0522b)', textAlign: 'center', padding: '24px 0', fontSize: 14 }}>
-            {scanError}
-          </p>
-        ) : (
-          <>
-            <div style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', background: '#111', minHeight: 180 }}>
-              <video
-                ref={videoRef}
-                style={{ width: '100%', display: 'block' }}
-                muted
-                playsInline
-              />
-              {ready && <div className="vin-scan-reticle" />}
-              {!ready && !scanError && (
-                <p style={{ color: '#aaa', textAlign: 'center', padding: '48px 16px', fontSize: 13, margin: 0, position: 'absolute', inset: 0 }}>
-                  Starting camera…
-                </p>
-              )}
-            </div>
-            <canvas ref={canvasRef} style={{ display: 'none' }} />
-            <div style={{ marginTop: 12, display: 'flex', gap: 8, justifyContent: 'space-between', alignItems: 'center' }}>
-              <button
-                type="button"
-                className="button ghost btn-scan-vin"
-                onClick={captureAndReadVinText}
-                disabled={ocrBusy}
-              >
-                {ocrBusy ? 'Reading Text…' : 'Read VIN Text'}
-              </button>
-              {ocrMessage ? (
-                <span style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'right' }}>{ocrMessage}</span>
-              ) : null}
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export default function RegistrationForm() {
   const [form, setForm] = useState(BLANK);
   const [step, setStep] = useState(1); // 1=customer, 2=vehicle, 3=auth
@@ -223,6 +32,8 @@ export default function RegistrationForm() {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [vinLookupStatus, setVinLookupStatus] = useState('idle'); // idle | loading | success | error
   const [vinLookupMessage, setVinLookupMessage] = useState('');
+  const lastDecodedVin = useRef('');
+  const lookupRequestId = useRef(0);
 
   const set = (key) => (e) => {
     const rawVal = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -261,40 +72,48 @@ export default function RegistrationForm() {
     if (!vin) {
       setVinLookupStatus('idle');
       setVinLookupMessage('');
+      lastDecodedVin.current = '';
       return;
     }
 
     setForm((prev) => ({ ...prev, vin }));
 
     if (vin.length !== 17) {
+      setVinLookupStatus('idle');
+      setVinLookupMessage('');
+      lastDecodedVin.current = '';
       return;
     }
 
+    if (vin === lastDecodedVin.current) return;
+
+    const requestId = ++lookupRequestId.current;
     setVinLookupStatus('loading');
     setVinLookupMessage('Looking up vehicle details…');
 
     try {
-      const response = await fetch('/api/vin-decode', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vin }),
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok || !data?.ok) {
-        throw new Error(data?.error || 'Unable to decode that VIN right now.');
-      }
+      const data = await decodeVin(vin);
+      if (requestId !== lookupRequestId.current) return;
 
       applyVinData(data.vehicle || {});
+      lastDecodedVin.current = vin;
       setVinLookupStatus('success');
       setVinLookupMessage(data.message || 'Vehicle details loaded from VIN.');
     } catch (err) {
+      if (requestId !== lookupRequestId.current) return;
       console.error('[VIN decode]', err);
+      lastDecodedVin.current = '';
       setVinLookupStatus('error');
       setVinLookupMessage(err instanceof Error ? err.message : 'Unable to decode that VIN right now.');
     }
   };
+
+  useEffect(() => {
+    const vin = normalizeVin(form.vin);
+    if (vin.length === 17) {
+      lookupVin(vin);
+    }
+  }, [form.vin]);
 
   const handleVinScan = async (vin) => {
     setScannerOpen(false);
@@ -512,7 +331,7 @@ export default function RegistrationForm() {
                 type="text"
                 value={form.vin}
                 onChange={set('vin')}
-                onBlur={() => lookupVin(form.vin)}
+                onBlur={(e) => lookupVin(e.target.value)}
                 required
                 placeholder="1HGCM82633A004352"
                 maxLength={17}
