@@ -1019,22 +1019,328 @@ function PipelineView({
   );
 }
 
-function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
-  const hasRegistrationData = Boolean(
-    v.directionToPaySigned ||
-    v.repairAuthSigned ||
-    v.signatureName ||
-    v.signedAt ||
-    v.insuranceAuthName
-  );
+function escFormHtml(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
-  const handlePrintRegistration = () => {
-    const html = buildRegistrationHtml(v);
-    const win = window.open('', '_blank', 'width=900,height=760');
-    if (win) {
-      win.document.write(html);
-      win.document.close();
-    }
+function openPrintWindow(html) {
+  const win = window.open('', '_blank', 'width=900,height=760');
+  if (win) {
+    win.document.write(html);
+    win.document.close();
+  }
+}
+
+function getLoanerAgreement(job) {
+  const nested = job.releaseFormData?.loanerAgreement;
+  if (nested) return nested;
+  if (job.requiresLoaner || job.loanerAgreementSigned) {
+    return {
+      loanerProvided: Boolean(job.requiresLoaner),
+      termsAccepted: Boolean(job.loanerAgreementSigned),
+      dlNumber: job.dlNumber || '',
+      dlState: job.dlState || '',
+      dlExpiration: job.dlExpiration || '',
+      signatureName: job.signatureName || '',
+      signedAt: job.signedAt || null,
+    };
+  }
+  return null;
+}
+
+function hasVehicleRelease(job) {
+  const data = job.releaseFormData;
+  return Boolean(data && (data.custSig || data.paid || data.witnessedBy));
+}
+
+const FORM_PRINT_STYLES = `
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:28px 34px}
+  .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:3px solid #b0522b;margin-bottom:20px}
+  .hd-brand strong{font-size:22px;font-weight:800;color:#b0522b}
+  .hd-brand span{display:block;font-size:12px;color:#666;margin-top:2px}
+  .hd-meta{text-align:right;font-size:12px;color:#555;line-height:1.7}
+  .hd-meta .title{font-size:18px;font-weight:800;color:#1a1410;display:block;margin-bottom:4px}
+  .info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}
+  .cell{border:1px solid #e8e2db;border-radius:8px;padding:8px 10px}
+  .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;display:block;margin-bottom:3px}
+  .val{font-size:13px;color:#1a1410}
+  .section{border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;padding:12px 14px;background:#fffbf6;margin-bottom:14px}
+  .section h3{font-size:14px;font-weight:800;margin-bottom:8px;color:#1a1410}
+  .section p,.section li{font-size:13px;line-height:1.65;color:#1a1410;margin-bottom:10px}
+  .section p:last-child,.section ul:last-child{margin-bottom:0}
+  .section ul{margin:0 0 10px 18px}
+  .status{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 16px}
+  .badge{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #e8e2db;background:#fff;font-weight:700;font-size:12px}
+  .ok{color:#2f7a4a;border-color:#c9e6d5;background:#eefaf3}
+  .no{color:#8f2d2d;border-color:#efc8c8;background:#fff3f3}
+  .sig{margin-top:10px;border-top:1px solid #d9d2ca;padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .sig-line{border-top:1.5px solid #1a1410;padding-top:6px;margin-top:34px;font-size:11px;color:#666}
+  .sig-val{display:block;font-size:16px;font-style:italic;color:#1a1410;margin-top:-26px;margin-bottom:6px}
+  .footer{font-size:11px;color:#9e8f84;text-align:center;padding-top:14px;border-top:1px solid #e8e2db;line-height:1.8;margin-top:10px}
+  @media print { body{padding:14px 18px} }
+`;
+
+function wrapFormDocument({ title, job, formTitle, bodyHtml, signedBadge }) {
+  const esc = escFormHtml;
+  const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const insuranceName = job.insuranceAuthName || job.insuranceCompany || '[ Insurance Company ]';
+  const signedDisplay = job.signedAt ? new Date(job.signedAt).toLocaleString() : '—';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>${esc(title)} - ${esc(job.id)}</title>
+  <style>${FORM_PRINT_STYLES}</style>
+</head>
+<body>
+  <div class="hd">
+    <div class="hd-brand">
+      <strong>AllDent PDR</strong>
+      <span>${esc(formTitle)}</span>
+      <span>1-855-425-5336 · alldentpdr@gmail.com</span>
+    </div>
+    <div class="hd-meta">
+      <span class="title">${esc(formTitle.toUpperCase())}</span>
+      <span>Job #${esc(job.id)}</span><br/>
+      <span>Date: ${esc(dateStr)}</span>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="cell"><span class="lbl">Customer</span><span class="val">${esc(job.customerName || '—')}</span></div>
+    <div class="cell"><span class="lbl">Vehicle</span><span class="val">${esc([job.year, job.make, job.model].filter(Boolean).join(' ') || '—')}</span></div>
+    <div class="cell"><span class="lbl">Plate</span><span class="val">${esc(job.plate || '—')}</span></div>
+    <div class="cell"><span class="lbl">VIN</span><span class="val" style="font-family:monospace">${esc(job.vin || '—')}</span></div>
+    <div class="cell"><span class="lbl">Insurance Company</span><span class="val">${esc(insuranceName)}</span></div>
+    <div class="cell"><span class="lbl">Signed At</span><span class="val">${esc(signedDisplay)}</span></div>
+  </div>
+
+  ${signedBadge ? `<div class="status">${signedBadge}</div>` : ''}
+
+  ${bodyHtml}
+
+  <div class="sig">
+    <div class="sig-line">
+      ${job.signatureName ? `<span class="sig-val">${esc(job.signatureName)}</span>` : ''}
+      Customer Signature
+    </div>
+    <div class="sig-line">
+      ${job.signedAt ? `<span class="sig-val">${esc(signedDisplay)}</span>` : ''}
+      Date Signed
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>AllDent PDR · Paintless Dent Repair Shop</strong><br/>
+    1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com
+  </div>
+
+  <script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
+}
+
+function buildDirectionToPayHtml(job) {
+  const esc = escFormHtml;
+  const insuranceName = job.insuranceAuthName || job.insuranceCompany || '[ Insurance Company ]';
+  const directionMark = job.directionToPaySigned ? '✓ Agreed' : '✗ Not signed';
+
+  return wrapFormDocument({
+    title: 'Direction to Pay',
+    job,
+    formTitle: 'Direction to Pay',
+    signedBadge: `<span class="badge ${job.directionToPaySigned ? 'ok' : 'no'}">${esc(directionMark)}</span>`,
+    bodyHtml: `
+      <section class="section">
+        <h3>Direction to Pay</h3>
+        <p>
+          I authorize <strong>${esc(insuranceName)}</strong> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.
+        </p>
+        <p>
+          I do hereby appoint All Dent PDR to accept on my behalf, any and all checks/drafts and to endorse all such checks/drafts for deposit to All Dent PDR account for payment for repairs to said vehicle, which have been accepted and released. The total amount of repair charges must be paid in full before the vehicle can be released for delivery or picked up. If insurance coverage pays either a portion of or the total amount due, I acknowledge that the insurance check/draft must be obtained by me or sent in advance by the insurance company and received by All Dent PDR. I also acknowledge that I must make arrangements with any lien holder or other payees to endorse the insurance check/draft prior to the release of the above repaired vehicle. I authorize any and all supplements payable directly to All Dent PDR for the consideration of repairs made to the vehicle. If I remove my vehicle from the shop prior to the completion of repairs, I agree to pay for parts, labor, handling fees, service charges, and rental car fees associated with the repair. To secure payment in amount of repairs, an expressed mechanics lien on the vehicle is acknowledged and I further agree to pay reasonable attorney's fees and court costs in the event legal action becomes necessary to enforce this contract. All Dent PDR may repossess my vehicle if payment is not secured.
+        </p>
+      </section>
+    `,
+  });
+}
+
+function buildRepairAuthorizationHtml(job) {
+  const esc = escFormHtml;
+  const repairMark = job.repairAuthSigned ? '✓ Agreed' : '✗ Not signed';
+
+  return wrapFormDocument({
+    title: 'Repair Authorization',
+    job,
+    formTitle: 'Repair Authorization',
+    signedBadge: `<span class="badge ${job.repairAuthSigned ? 'ok' : 'no'}">${esc(repairMark)}</span>`,
+    bodyHtml: `
+      <section class="section">
+        <h3>Repair Authorization</h3>
+        <p>
+          I hereby authorize All Dent PDR employees/contractors to operate my vehicle for the purpose of testing, inspection, delivery to and from for repairs. I acknowledge and agree that All Dent PDR will not be held responsible for loss or damage to the vehicle or articles left in the vehicle in case of fire, theft, vehicle accident, or any other cause beyond the control of All Dent PDR. Further, I acknowledge, that if closer analysis reveals additional repairs are necessary, either I or my insurance company will be contacted for authorization of any additional repair charges. If new parts listed in the insurance estimate are not available or replaceable by All Dent PDR, I authorize All Dent PDR to repair such parts when possible. Old parts will be disposed of unless otherwise instructed. I authorize All Dent PDR to manufacture access to dents that may not be accessible due to their location on the vehicle. And as such, All Dent PDR is not responsible for any unrelated prior damage (UPD) noted in the estimate or damage caused by prior work performed on the vehicle.
+        </p>
+        <p><strong>I authorize All Dent PDR to perform repairs on my vehicle per All Dent PDR estimate.</strong></p>
+      </section>
+    `,
+  });
+}
+
+function buildLoanerAgreementHtml(job, loaner) {
+  const esc = escFormHtml;
+  const data = loaner || getLoanerAgreement(job) || {};
+  const signedDisplay = data.signedAt ? new Date(data.signedAt).toLocaleString() : (job.signedAt ? new Date(job.signedAt).toLocaleString() : '—');
+  const loanerMark = data.termsAccepted ? '✓ Agreed' : '✗ Not signed';
+  const address = [job.address, job.city, job.state, job.zip].filter(Boolean).join(', ') || '—';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>AllDent PDR - Loaner Agreement - ${esc(job.id)}</title>
+  <style>${FORM_PRINT_STYLES}</style>
+</head>
+<body>
+  <div class="hd">
+    <div class="hd-brand">
+      <strong>AllDent PDR</strong>
+      <span>Loaner Vehicle Agreement</span>
+      <span>1-855-425-5336 · alldentpdr@gmail.com</span>
+    </div>
+    <div class="hd-meta">
+      <span class="title">LOANER AGREEMENT</span>
+      <span>Job #${esc(job.id)}</span><br/>
+      <span>Date: ${esc(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}</span>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="cell"><span class="lbl">Customer</span><span class="val">${esc(job.customerName || '—')}</span></div>
+    <div class="cell"><span class="lbl">Vehicle</span><span class="val">${esc([job.year, job.make, job.model].filter(Boolean).join(' ') || '—')}</span></div>
+    <div class="cell"><span class="lbl">Plate</span><span class="val">${esc(job.plate || '—')}</span></div>
+    <div class="cell"><span class="lbl">Phone</span><span class="val">${esc(job.phone || '—')}</span></div>
+    <div class="cell"><span class="lbl">Driver's License</span><span class="val">${esc(data.dlNumber || '—')} · ${esc(data.dlState || '—')}</span></div>
+    <div class="cell"><span class="lbl">DL Expiration</span><span class="val">${esc(data.dlExpiration || '—')}</span></div>
+  </div>
+
+  <div class="status">
+    <span class="badge ${data.termsAccepted ? 'ok' : 'no'}">${esc(loanerMark)} · Loaner Agreement</span>
+  </div>
+
+  <section class="section">
+    <h3>Customer &amp; Driver Information</h3>
+    <p><strong>Name:</strong> ${esc(job.customerName || '—')}</p>
+    <p><strong>Address:</strong> ${esc(address)}</p>
+    <p><strong>Phone:</strong> ${esc(job.phone || '—')}</p>
+    <p><strong>Driver's License:</strong> ${esc(data.dlNumber || '—')} &nbsp;|&nbsp; <strong>State:</strong> ${esc(data.dlState || '—')} &nbsp;|&nbsp; <strong>Expires:</strong> ${esc(data.dlExpiration || '—')}</p>
+    <p>
+      Customer has requested the use of a loaner vehicle while customer's vehicle is being repaired;
+      and All Dent PDR is willing to loan customer a vehicle at no charge, used as a courtesy vehicle
+      and not a rental, subject to the terms and conditions of this Agreement.
+    </p>
+  </section>
+
+  <section class="section">
+    <h3>Driver &amp; Use</h3>
+    <p>
+      Only the customer listed above is authorized to operate the loaner vehicle unless prior written
+      approval is given by the repair facility. The customer confirms they are at least 25 years of age
+      and hold a valid driver's license.
+    </p>
+    <p>The loaner vehicle is <strong>PROHIBITED</strong> to be used for:</p>
+    <ul>
+      <li>Commercial purposes (rideshare, delivery, etc.)</li>
+      <li>Racing, off-road use, or illegal activities</li>
+      <li>Towing or hauling</li>
+      <li>Transporting hazardous or illegal materials</li>
+      <li>Allowing unauthorized drivers to operate the vehicle</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h3>Insurance &amp; Responsibility</h3>
+    <p>
+      The Customer confirms they carry valid automobile insurance that includes liability and collision
+      coverage ($60,000.00 bodily injury each person / $120,000.00 per accident / $20,000.00 property damage).
+    </p>
+    <p>
+      The Customer's insurance will be primary in the event of any traffic/driving violation, accident,
+      damage, theft, or loss.
+    </p>
+    <p>
+      The Customer agrees to be financially responsible for all damages, traffic infractions, insurance
+      deductibles, loss of use, towing, impound fees, and diminished value.
+    </p>
+  </section>
+
+  <section class="section">
+    <h3>Condition &amp; Return</h3>
+    <p>
+      The Customer acknowledges receipt of the loaner vehicle in good operating condition, except existing
+      damage as noted at time of vehicle assignment.
+    </p>
+    <p>
+      The Customer agrees that if any mechanical trouble with the vehicle including, but not limited to,
+      warning lights, smoke or strange noises, Customer will pull over as soon as it is reasonable and
+      practical to do so and call for assistance. If Customer fails to do so and damage occurs to the
+      vehicle, the Customer may be held responsible for said damage.
+    </p>
+    <p>
+      The Customer is expected to return the vehicle immediately upon completion of repairs or upon
+      request by the Repair Facility and return vehicle in the same condition as provided. Failure to
+      return the vehicle as agreed may result in daily charges and/or reporting the vehicle as unauthorized use.
+    </p>
+    <p>
+      The vehicle must be returned with the same fuel level as provided. Excessive mileage, smoking,
+      pet damage, cleaning, or misuse may result in additional charges. The Repair Facility is not
+      responsible for personal items left in the loaner vehicle.
+    </p>
+  </section>
+
+  <section class="section">
+    <h3>Liability</h3>
+    <p>
+      The Customer agrees to indemnify and hold harmless the repair facility from any claims, losses,
+      damages, or expenses arising from the use or operation of the loaner vehicle.
+    </p>
+  </section>
+
+  <div class="sig">
+    <div class="sig-line">
+      ${data.signatureName || job.signatureName ? `<span class="sig-val">${esc(data.signatureName || job.signatureName)}</span>` : ''}
+      Customer Signature
+    </div>
+    <div class="sig-line">
+      ${signedDisplay !== '—' ? `<span class="sig-val">${esc(signedDisplay)}</span>` : ''}
+      Date Signed
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>AllDent PDR · Paintless Dent Repair Shop</strong><br/>
+    1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com
+  </div>
+
+  <script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
+}
+
+function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
+  const loaner = getLoanerAgreement(v);
+  const hasLoaner = Boolean(loaner?.loanerProvided || v.requiresLoaner);
+
+  const handlePrintDirectionToPay = () => {
+    openPrintWindow(buildDirectionToPayHtml(v));
+  };
+
+  const handlePrintRepairAuth = () => {
+    openPrintWindow(buildRepairAuthorizationHtml(v));
+  };
+
+  const handlePrintLoanerAgreement = () => {
+    openPrintWindow(buildLoanerAgreementHtml(v, loaner));
   };
 
   return (
@@ -1061,50 +1367,75 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
             </select>
           </div>
 
-          <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Form</h4>
-          <div style={{ display: 'grid', gap: 8 }}>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: v.directionToPaySigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
-                {v.directionToPaySigned ? '✓' : '✗'} Direction to Pay
-              </span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: v.repairAuthSigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
-                {v.repairAuthSigned ? '✓' : '✗'} Repair Authorization
-              </span>
-            </div>
-            <div style={{ display: 'grid', gap: 2 }}>
-              <span className="cell-sub" style={{ margin: 0 }}>
-                Signature: {v.signatureName || '—'}
-              </span>
-              <span className="cell-sub" style={{ margin: 0 }}>
-                Insurance Company: {v.insuranceAuthName || v.insuranceCompany || '—'}
-              </span>
-              <span className="cell-sub" style={{ margin: 0 }}>
-                Signed: {v.signedAt ? new Date(v.signedAt).toLocaleString() : '—'}
-              </span>
-            </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                className="button primary sm"
-                onClick={handlePrintRegistration}
-                disabled={!hasRegistrationData}
-                title={hasRegistrationData ? 'Print or download signed registration form' : 'No signed registration form data on this job'}
-              >
-                {hasRegistrationData ? 'View / Print Registration' : 'Issue Registration Form'}
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Forms</h4>
+          <div className="job-form-grid">
+            <div className="job-form-card">
+              <div className="job-form-card-head">
+                <span style={{ fontSize: 12, fontWeight: 600, color: v.directionToPaySigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
+                  {v.directionToPaySigned ? '✓' : '✗'} Direction to Pay
+                </span>
+              </div>
+              <p className="cell-sub" style={{ margin: '0 0 10px' }}>
+                Insurance: {v.insuranceAuthName || v.insuranceCompany || '—'}
+              </p>
+              <button type="button" className="button primary sm" onClick={handlePrintDirectionToPay}>
+                View / Print Direction to Pay
               </button>
-              {!hasRegistrationData && (
-                <span className="cell-sub" style={{ margin: 0 }}>No signed registration data on this job yet.</span>
-              )}
+            </div>
+
+            <div className="job-form-card">
+              <div className="job-form-card-head">
+                <span style={{ fontSize: 12, fontWeight: 600, color: v.repairAuthSigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
+                  {v.repairAuthSigned ? '✓' : '✗'} Repair Authorization
+                </span>
+              </div>
+              <p className="cell-sub" style={{ margin: '0 0 10px' }}>
+                Signature: {v.signatureName || '—'}
+              </p>
+              <button type="button" className="button primary sm" onClick={handlePrintRepairAuth}>
+                View / Print Repair Authorization
+              </button>
             </div>
           </div>
+          {v.signedAt && (
+            <p className="cell-sub" style={{ margin: '10px 0 0' }}>
+              Registration signed: {new Date(v.signedAt).toLocaleString()}
+            </p>
+          )}
+
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Loaner Agreement</h4>
+          {hasLoaner ? (
+            <div className="job-form-card job-form-card--loaner">
+              <div className="job-form-card-head">
+                <span style={{ fontSize: 12, fontWeight: 600, color: loaner?.termsAccepted ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
+                  {loaner?.termsAccepted ? '✓' : '✗'} Loaner vehicle requested
+                </span>
+              </div>
+              <div style={{ display: 'grid', gap: 4, marginBottom: 10 }}>
+                <span className="cell-sub" style={{ margin: 0 }}>
+                  Driver&apos;s license: {loaner?.dlNumber || '—'} · {loaner?.dlState || '—'} · Exp {loaner?.dlExpiration || '—'}
+                </span>
+                {loaner?.signedAt && (
+                  <span className="cell-sub" style={{ margin: 0 }}>
+                    Agreement signed: {new Date(loaner.signedAt).toLocaleString()}
+                  </span>
+                )}
+              </div>
+              <button type="button" className="button primary sm" onClick={handlePrintLoanerAgreement}>
+                View / Print Loaner Agreement
+              </button>
+            </div>
+          ) : (
+            <p className="cell-sub" style={{ margin: 0 }}>No loaner vehicle requested for this job.</p>
+          )}
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Vehicle Release</h4>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            {v.releaseFormData && (
+            {hasVehicleRelease(v) && (
               <span style={{ fontSize: 12, color: 'var(--sage,#4a7a5c)', fontWeight: 600 }}>✓ Signed {v.releaseFormData.signedAt || ''}</span>
             )}
             <button type="button" className="button primary sm" onClick={() => onRelease(v)}>
-              {v.releaseFormData ? '📋 View / Re-sign Release' : '📋 Issue Vehicle Release'}
+              {hasVehicleRelease(v) ? '📋 View / Re-sign Release' : '📋 Issue Vehicle Release'}
             </button>
           </div>
 
@@ -1266,11 +1597,11 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
                     <td onClick={(e) => e.stopPropagation()}>
                       <button
                         type="button"
-                        className={`button sm ${v.releaseFormData ? 'ghost' : 'primary'}`}
+                        className={`button sm ${hasVehicleRelease(v) ? 'ghost' : 'primary'}`}
                         onClick={() => onRelease(v)}
-                        title={v.releaseFormData ? 'View signed release' : 'Issue vehicle release form'}
+                        title={hasVehicleRelease(v) ? 'View signed release' : 'Issue vehicle release form'}
                       >
-                        {v.releaseFormData ? '✓ Release' : '📋 Release'}
+                        {hasVehicleRelease(v) ? '✓ Release' : '📋 Release'}
                       </button>
                     </td>
                     <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
@@ -2144,6 +2475,12 @@ function QuoteView({ vehicles }) {
     await lookupVin(vin);
   };
 
+  const handleScannerManual = (message) => {
+    setScanning(false);
+    setVinLookupStatus('idle');
+    setVinLookupMessage(message || 'Enter your 17-character VIN below.');
+  };
+
   const handleLinkJob = (e) => {
     const v = vehicles.find((veh) => veh.id === e.target.value);
     if (!v) return;
@@ -2366,7 +2703,13 @@ function QuoteView({ vehicles }) {
 
   return (
     <div className="quote-wrap" id="quote-print-area">
-      {scanning && <VinScanner onScan={handleVinScan} onClose={() => setScanning(false)} />}
+      {scanning && (
+        <VinScanner
+          onScan={handleVinScan}
+          onClose={() => setScanning(false)}
+          onManualEntry={handleScannerManual}
+        />
+      )}
 
       {/* ── Vehicle / Header ── */}
       <div className="panel">
@@ -2601,113 +2944,6 @@ function QuoteView({ vehicles }) {
   );
 }
 
-function buildRegistrationHtml(job) {
-  const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const insuranceName = job.insuranceAuthName || job.insuranceCompany || '[ Insurance Company ]';
-  const signedDisplay = job.signedAt ? new Date(job.signedAt).toLocaleString() : '—';
-  const directionMark = job.directionToPaySigned ? '✓ Agreed' : '✗ Not signed';
-  const repairMark = job.repairAuthSigned ? '✓ Agreed' : '✗ Not signed';
-  const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <title>AllDent PDR - Registration Form - ${esc(job.id)}</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:#1a1410;background:#fff;padding:28px 34px}
-    .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:3px solid #b0522b;margin-bottom:20px}
-    .hd-brand strong{font-size:22px;font-weight:800;color:#b0522b}
-    .hd-brand span{display:block;font-size:12px;color:#666;margin-top:2px}
-    .hd-meta{text-align:right;font-size:12px;color:#555;line-height:1.7}
-    .hd-meta .title{font-size:18px;font-weight:800;color:#1a1410;display:block;margin-bottom:4px}
-    .info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}
-    .cell{border:1px solid #e8e2db;border-radius:8px;padding:8px 10px}
-    .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9e8f84;display:block;margin-bottom:3px}
-    .val{font-size:13px;color:#1a1410}
-    .section{border:1px solid #e8e2db;border-left:3px solid #b0522b;border-radius:0 8px 8px 0;padding:12px 14px;background:#fffbf6;margin-bottom:14px}
-    .section h3{font-size:14px;font-weight:800;margin-bottom:8px;color:#1a1410}
-    .section p{font-size:13px;line-height:1.65;color:#1a1410;margin-bottom:10px}
-    .section p:last-child{margin-bottom:0}
-    .status{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 16px}
-    .badge{display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid #e8e2db;background:#fff;font-weight:700;font-size:12px}
-    .ok{color:#2f7a4a;border-color:#c9e6d5;background:#eefaf3}
-    .no{color:#8f2d2d;border-color:#efc8c8;background:#fff3f3}
-    .sig{margin-top:10px;border-top:1px solid #d9d2ca;padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
-    .sig-line{border-top:1.5px solid #1a1410;padding-top:6px;margin-top:34px;font-size:11px;color:#666}
-    .sig-val{display:block;font-size:16px;font-style:italic;color:#1a1410;margin-top:-26px;margin-bottom:6px}
-    .footer{font-size:11px;color:#9e8f84;text-align:center;padding-top:14px;border-top:1px solid #e8e2db;line-height:1.8;margin-top:10px}
-    @media print { body{padding:14px 18px} }
-  </style>
-</head>
-<body>
-  <div class="hd">
-    <div class="hd-brand">
-      <strong>AllDent PDR</strong>
-      <span>Vehicle Registration Agreement</span>
-      <span>1-855-425-5336 · alldentpdr@gmail.com</span>
-    </div>
-    <div class="hd-meta">
-      <span class="title">REGISTRATION FORM</span>
-      <span>Job #${esc(job.id)}</span><br/>
-      <span>Date: ${esc(dateStr)}</span>
-    </div>
-  </div>
-
-  <div class="info">
-    <div class="cell"><span class="lbl">Customer</span><span class="val">${esc(job.customerName || '—')}</span></div>
-    <div class="cell"><span class="lbl">Vehicle</span><span class="val">${esc([job.year, job.make, job.model].filter(Boolean).join(' ') || '—')}</span></div>
-    <div class="cell"><span class="lbl">Plate</span><span class="val">${esc(job.plate || '—')}</span></div>
-    <div class="cell"><span class="lbl">VIN</span><span class="val" style="font-family:monospace">${esc(job.vin || '—')}</span></div>
-    <div class="cell"><span class="lbl">Insurance Company</span><span class="val">${esc(insuranceName)}</span></div>
-    <div class="cell"><span class="lbl">Signed At</span><span class="val">${esc(signedDisplay)}</span></div>
-  </div>
-
-  <div class="status">
-    <span class="badge ${job.directionToPaySigned ? 'ok' : 'no'}">${esc(directionMark)} · Direction to Pay</span>
-    <span class="badge ${job.repairAuthSigned ? 'ok' : 'no'}">${esc(repairMark)} · Repair Authorization</span>
-  </div>
-
-  <section class="section">
-    <h3>Direction to Pay</h3>
-    <p>
-      I authorize <strong>${esc(insuranceName)}</strong> Insurance Company to pay All Dent PDR directly for repairs done to my vehicle and ANY rental charges during the time my vehicle is at the shop being repaired.
-    </p>
-    <p>
-      I do hereby appoint All Dent PDR to accept on my behalf, any and all checks/drafts and to endorse all such checks/drafts for deposit to All Dent PDR account for payment for repairs to said vehicle, which have been accepted and released. The total amount of repair charges must be paid in full before the vehicle can be released for delivery or picked up. If insurance coverage pays either a portion of or the total amount due, I acknowledge that the insurance check/draft must be obtained by me or sent in advance by the insurance company and received by All Dent PDR. I also acknowledge that I must make arrangements with any lien holder or other payees to endorse the insurance check/draft prior to the release of the above repaired vehicle. I authorize any and all supplements payable directly to All Dent PDR for the consideration of repairs made to the vehicle. If I remove my vehicle from the shop prior to the completion of repairs, I agree to pay for parts, labor, handling fees, service charges, and rental car fees associated with the repair. To secure payment in amount of repairs, an expressed mechanics lien on the vehicle is acknowledged and I further agree to pay reasonable attorney's fees and court costs in the event legal action becomes necessary to enforce this contract. All Dent PDR may repossess my vehicle if payment is not secured.
-    </p>
-  </section>
-
-  <section class="section">
-    <h3>Repair Authorization</h3>
-    <p>
-      I hereby authorize All Dent PDR employees/contractors to operate my vehicle for the purpose of testing, inspection, delivery to and from for repairs. I acknowledge and agree that All Dent PDR will not be held responsible for loss or damage to the vehicle or articles left in the vehicle in case of fire, theft, vehicle accident, or any other cause beyond the control of All Dent PDR. Further, I acknowledge, that if closer analysis reveals additional repairs are necessary, either I or my insurance company will be contacted for authorization of any additional repair charges. If new parts listed in the insurance estimate are not available or replaceable by All Dent PDR, I authorize All Dent PDR to repair such parts when possible. Old parts will be disposed of unless otherwise instructed. I authorize All Dent PDR to manufacture access to dents that may not be accessible due to their location on the vehicle. And as such, All Dent PDR is not responsible for any unrelated prior damage (UPD) noted in the estimate or damage caused by prior work performed on the vehicle.
-    </p>
-    <p><strong>I authorize All Dent PDR to perform repairs on my vehicle per All Dent PDR estimate.</strong></p>
-  </section>
-
-  <div class="sig">
-    <div class="sig-line">
-      ${job.signatureName ? `<span class="sig-val">${esc(job.signatureName)}</span>` : ''}
-      Customer Signature
-    </div>
-    <div class="sig-line">
-      ${job.signedAt ? `<span class="sig-val">${esc(signedDisplay)}</span>` : ''}
-      Date Signed
-    </div>
-  </div>
-
-  <div class="footer">
-    <strong>AllDent PDR · Paintless Dent Repair Shop</strong><br/>
-    1-855-425-5336 · alldentpdr.com · alldentpdr@gmail.com
-  </div>
-
-  <script>window.onload = function(){ window.print(); }<\/script>
-</body>
-</html>`;
-}
-
 /* ─────────────────────────────────────────────────────────────
    Vehicle Release Form Modal
 ───────────────────────────────────────────────────────────── */
@@ -2826,6 +3062,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
   };
 
   const releaseData = {
+    ...(existing.loanerAgreement ? { loanerAgreement: existing.loanerAgreement } : {}),
     paid,
     custSig,
     signedAt:    signedAt    || today,

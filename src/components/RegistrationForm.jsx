@@ -57,13 +57,25 @@ export default function RegistrationForm() {
   const canSubmit = form.directionToPaySigned && form.repairAuthSigned && form.signatureName.trim() && form.insuranceAuthName.trim() &&
     (!form.requiresLoaner || form.loanerAgreementSigned);
 
+  const setVin = (e) => {
+    const normalized = normalizeVin(e.target.value).slice(0, 17);
+    setForm((prev) => ({ ...prev, vin: normalized }));
+  };
+
   const applyVinData = (vehicleData) => {
+    const formatName = (value) => {
+      if (!value) return '';
+      return String(value)
+        .toLowerCase()
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+    };
+
     setForm((prev) => ({
       ...prev,
       vin: vehicleData.vin || prev.vin,
       year: vehicleData.year || prev.year,
-      make: vehicleData.make || prev.make,
-      model: vehicleData.model || prev.model,
+      make: formatName(vehicleData.make) || prev.make,
+      model: formatName(vehicleData.model) || prev.model,
     }));
   };
 
@@ -118,6 +130,13 @@ export default function RegistrationForm() {
   const handleVinScan = async (vin) => {
     setScannerOpen(false);
     await lookupVin(vin);
+  };
+
+  const handleScannerManual = (message) => {
+    setScannerOpen(false);
+    setVinLookupStatus('idle');
+    setVinLookupMessage(message || 'Enter your 17-character VIN below.');
+    window.setTimeout(() => document.getElementById('r-vin')?.focus(), 120);
   };
 
   const handleSubmit = async (e) => {
@@ -330,13 +349,18 @@ export default function RegistrationForm() {
                 id="r-vin"
                 type="text"
                 value={form.vin}
-                onChange={set('vin')}
+                onChange={setVin}
                 onBlur={(e) => lookupVin(e.target.value)}
                 required
                 placeholder="1HGCM82633A004352"
-                maxLength={17}
+                maxLength={21}
+                autoComplete="off"
+                spellCheck={false}
                 className="quote-vin-input"
               />
+              {!vinLookupMessage && (
+                <p className="reg-vin-hint">Year, make, and model fill in automatically after 17 characters.</p>
+              )}
               {vinLookupMessage && (
                 <p
                   aria-live="polite"
@@ -595,7 +619,13 @@ export default function RegistrationForm() {
         )}
       </div>
 
-      {scannerOpen && <VinScanner onScan={handleVinScan} onClose={() => setScannerOpen(false)} />}
+      {scannerOpen && (
+        <VinScanner
+          onScan={handleVinScan}
+          onClose={() => setScannerOpen(false)}
+          onManualEntry={handleScannerManual}
+        />
+      )}
     </form>
   );
 }

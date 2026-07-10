@@ -418,7 +418,12 @@ export async function registerVehiclePublic(data) {
       p_repair_auth_signed:      Boolean(data.repairAuthSigned),
       p_insurance_auth_name:     data.insuranceAuthName || '',
       p_signature_name:          data.signatureName    || '',
-      p_signed_at:               data.signedAt         || new Date().toISOString()
+      p_signed_at:               data.signedAt         || new Date().toISOString(),
+      p_requires_loaner:         Boolean(data.requiresLoaner),
+      p_dl_number:               data.dlNumber         || '',
+      p_dl_state:                data.dlState          || '',
+      p_dl_expiration:           data.dlExpiration     || '',
+      p_loaner_agreement_signed: Boolean(data.loanerAgreementSigned),
     });
     if (error) throw error;
     return result;

@@ -964,6 +964,26 @@ body.popup-open { overflow: hidden; }
   gap: 32px;
 }
 .jid-col { min-width: 0; }
+.job-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.job-form-card {
+  border: 1px solid var(--line, #e8e2db);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--surface, #fff);
+}
+.job-form-card--loaner {
+  max-width: 100%;
+}
+.job-form-card-head {
+  margin-bottom: 8px;
+}
+@media (max-width: 768px) {
+  .job-form-grid { grid-template-columns: 1fr; }
+}
 @media (max-width: 768px) {
   .jid-body { grid-template-columns: 1fr; gap: 20px; }
 }
@@ -1724,6 +1744,12 @@ body.popup-open { overflow: hidden; }
 .reg-row-3 { grid-template-columns: 2fr 1fr 1fr; }
 .reg-field { margin-bottom: 14px; }
 .reg-field.full { grid-column: 1 / -1; }
+.reg-vin-hint {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
 @media (max-width: 560px) {
   .reg-row, .reg-row-3 { grid-template-columns: 1fr; }
 }
@@ -3333,6 +3359,38 @@ label {
   color: var(--muted, #9e8f84);
   margin: 0 0 14px;
   line-height: 1.5;
+}
+
+.vin-scanner-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0 4px;
+  text-align: center;
+}
+
+.vin-scanner-error {
+  color: var(--rust, #b0522b);
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
+  text-align: center;
+}
+
+.vin-scanner-error-sub {
+  color: var(--muted, #9e8f84);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.vin-scanner-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
 }
 
 /* Scanning reticle overlay */

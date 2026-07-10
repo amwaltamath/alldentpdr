@@ -40,22 +40,35 @@ export function cropVinScanRegion(sourceCanvas) {
   return cropped;
 }
 
-export async function recognizeVinFromImage(image) {
-  const { createWorker, PSM } = await import('tesseract.js');
-  const worker = await createWorker('eng', 1, {
-    logger: () => {},
+export async function recognizeVinFromImage(image, timeoutMs = 45000) {
+  const runRecognition = async () => {
+    const { createWorker, PSM } = await import('tesseract.js');
+    const worker = await createWorker('eng', 1, {
+      logger: () => {},
+    });
+
+    try {
+      await worker.setParameters({
+        tessedit_pageseg_mode: PSM.SINGLE_LINE,
+        tessedit_char_whitelist: 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789',
+      });
+
+      const result = await worker.recognize(image);
+      return extractVin(result?.data?.text || '');
+    } finally {
+      await worker.terminate();
+    }
+  };
+
+  let timeoutId;
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error('VIN text scan timed out')), timeoutMs);
   });
 
   try {
-    await worker.setParameters({
-      tessedit_pageseg_mode: PSM.SINGLE_LINE,
-      tessedit_char_whitelist: 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789',
-    });
-
-    const result = await worker.recognize(image);
-    return extractVin(result?.data?.text || '');
+    return await Promise.race([runRecognition(), timeout]);
   } finally {
-    await worker.terminate();
+    clearTimeout(timeoutId);
   }
 }
 

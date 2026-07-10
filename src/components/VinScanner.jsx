@@ -1,15 +1,39 @@
 import { useEffect, useRef, useState } from 'react';
 import { cropVinScanRegion, extractVin, recognizeVinFromImage } from '../lib/vin';
 
-export default function VinScanner({ onScan, onClose }) {
+function stopCamera(videoEl) {
+  const stream = videoEl?.srcObject;
+  if (stream && typeof stream.getTracks === 'function') {
+    stream.getTracks().forEach((track) => track.stop());
+  }
+  if (videoEl) videoEl.srcObject = null;
+}
+
+export default function VinScanner({ onScan, onClose, onManualEntry }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const readerRef = useRef(null);
+  const activeRef = useRef(true);
   const [cameraError, setCameraError] = useState('');
   const [scanFeedback, setScanFeedback] = useState('');
   const [ready, setReady] = useState(false);
   const [ocrBusy, setOcrBusy] = useState(false);
   const [ocrProgress, setOcrProgress] = useState('');
+
+  const cleanupScanner = () => {
+    activeRef.current = false;
+    readerRef.current?.reset();
+    stopCamera(videoRef.current);
+  };
+
+  const returnToManualEntry = (message) => {
+    cleanupScanner();
+    if (onManualEntry) {
+      onManualEntry(message);
+      return;
+    }
+    onClose();
+  };
 
   const captureAndReadVinText = async () => {
     if (ocrBusy) return;
@@ -46,14 +70,15 @@ export default function VinScanner({ onScan, onClose }) {
       }
 
       if (!vin) {
-        setScanFeedback('No VIN found. Center the 17-character VIN in the box and try again, or enter it manually.');
+        returnToManualEntry('Could not read a VIN from the photo. Please type your 17-character VIN below.');
         return;
       }
 
+      cleanupScanner();
       onScan(vin);
     } catch (err) {
       console.error('[VinScanner OCR]', err);
-      setScanFeedback('Text scan failed. Try again or enter the VIN manually.');
+      returnToManualEntry('VIN text scan failed. Please type your 17-character VIN below.');
     } finally {
       setOcrBusy(false);
       setOcrProgress('');
@@ -61,23 +86,23 @@ export default function VinScanner({ onScan, onClose }) {
   };
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    let active = true;
+    if (typeof window === 'undefined') return undefined;
+    activeRef.current = true;
 
     import('@zxing/browser').then(async ({ BrowserMultiFormatReader }) => {
-      if (!active) return;
+      if (!activeRef.current) return;
 
       const reader = new BrowserMultiFormatReader();
       readerRef.current = reader;
 
       const decodeHandler = (result, err) => {
-        if (!active) return;
+        if (!activeRef.current) return;
 
         if (result) {
           setReady(true);
           const vin = extractVin(result.getText().replace(/\*/g, ''));
           if (vin.length === 17) {
-            active = false;
+            cleanupScanner();
             onScan(vin);
           }
         }
@@ -106,9 +131,9 @@ export default function VinScanner({ onScan, onClose }) {
 
       BrowserMultiFormatReader.listVideoInputDevices()
         .then((devices) => {
-          if (!active) return;
+          if (!activeRef.current) return;
           if (!devices.length) {
-            setCameraError('No camera found. Please enter the VIN manually.');
+            setCameraError('No camera found.');
             return;
           }
 
@@ -117,34 +142,46 @@ export default function VinScanner({ onScan, onClose }) {
         })
         .catch((err) => {
           console.error('[VinScanner camera]', err);
-          if (active) setCameraError('Camera access denied. Please allow camera access or enter the VIN manually.');
+          if (activeRef.current) setCameraError('Camera access was denied.');
         });
     }).catch((err) => {
       console.error('[VinScanner import]', err);
-      if (active) setCameraError('Scanner failed to load. Please enter the VIN manually.');
+      if (activeRef.current) setCameraError('Scanner failed to load.');
     });
 
     return () => {
-      active = false;
-      readerRef.current?.reset();
+      cleanupScanner();
     };
   }, [onScan]);
 
+  const handleClose = () => {
+    cleanupScanner();
+    onClose();
+  };
+
   return (
-    <div className="vin-scanner-overlay" onClick={onClose}>
+    <div className="vin-scanner-overlay" onClick={handleClose}>
       <div className="vin-scanner-modal" onClick={(e) => e.stopPropagation()}>
         <div className="vin-scanner-head">
           <h3>Scan VIN</h3>
-          <button type="button" className="job-drawer-close" onClick={onClose} aria-label="Close">✕</button>
+          <button type="button" className="job-drawer-close" onClick={handleClose} aria-label="Close">✕</button>
         </div>
         <p className="vin-scanner-hint">
           Point the camera at the VIN barcode on the door jamb sticker, windshield, or QR code.
         </p>
 
         {cameraError ? (
-          <p style={{ color: 'var(--rust,#b0522b)', textAlign: 'center', padding: '24px 0', fontSize: 14 }}>
-            {cameraError}
-          </p>
+          <div className="vin-scanner-fallback">
+            <p className="vin-scanner-error">{cameraError}</p>
+            <p className="vin-scanner-error-sub">You can still enter the VIN manually on the form.</p>
+            <button
+              type="button"
+              className="button primary"
+              onClick={() => returnToManualEntry('Camera unavailable. Please type your 17-character VIN below.')}
+            >
+              Enter VIN manually
+            </button>
+          </div>
         ) : (
           <>
             <div style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', background: '#111', minHeight: 180 }}>
@@ -176,15 +213,24 @@ export default function VinScanner({ onScan, onClose }) {
               ) : null}
             </div>
             {scanFeedback ? (
-              <p style={{ color: 'var(--rust,#b0522b)', fontSize: 13, lineHeight: 1.45, margin: '12px 0 0' }}>
+              <p className="vin-scanner-error" style={{ margin: '12px 0 0' }}>
                 {scanFeedback}
               </p>
             ) : null}
           </>
         )}
 
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <button type="button" className="button ghost sm" onClick={onClose}>Cancel</button>
+        <div className="vin-scanner-actions">
+          {!cameraError ? (
+            <button
+              type="button"
+              className="button primary sm"
+              onClick={() => returnToManualEntry('Enter your 17-character VIN in the field below.')}
+            >
+              Enter VIN manually
+            </button>
+          ) : null}
+          <button type="button" className="button ghost sm" onClick={handleClose}>Cancel</button>
         </div>
       </div>
     </div>

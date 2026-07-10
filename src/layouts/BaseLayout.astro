@@ -22,7 +22,8 @@ const adsLeadSendTo: string = `${adsId}/o4LuCOyPm60cEJigsdBD`;
 const metaPixelId: string = import.meta.env.PUBLIC_META_PIXEL_ID || '1284377713827510';
 const pathname = Astro.url?.pathname || '/';
 const isPortalRoute = pathname.startsWith('/portal/');
-const shouldShowLeadPopup = !bare && !isPortalRoute;
+const isRegisterRoute = pathname === '/register';
+const shouldShowLeadPopup = !bare && !isPortalRoute && !isRegisterRoute;
 const useLiquidDarkTheme = !isPortalRoute;
 const themeColor = useLiquidDarkTheme ? '#080d14' : '#b0522b';
 const navLinks = [
