@@ -31,6 +31,7 @@ import VinScanner from './VinScanner';
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
 const ADMIN_PASS = import.meta.env.PUBLIC_PORTAL_ADMIN_PASS || 'allDent2026';
 const STATUS_OPTIONS = ['Registered', 'Estimate', 'Pending Insurance', 'In Progress', 'In Repair', 'On Hold', 'Complete'];
+const STATUS_COLUMNS = STATUS_OPTIONS;
 
 const initialForm = {
   // Customer Information
@@ -550,6 +551,9 @@ export default function AdminDashboard() {
               mode={pipelineMode}
               setMode={setPipelineMode}
               onStatusChange={handleStatusChange}
+              onNotificationChange={handleNotificationChange}
+              onRelease={setReleaseJob}
+              onDelete={handleDelete}
               loading={loading}
             />
           )}
@@ -663,85 +667,357 @@ function OverviewView({ metrics, recent, loading, onJump, remoteMode }) {
   );
 }
 
-function PipelineView({ grouped, mode, setMode, onStatusChange, loading }) {
+
+const PIPELINE_STAGE_META = {
+  Registered: { hint: 'New intake forms', short: 'Registered', accent: 'stage-info' },
+  Estimate: { hint: 'Quotes & inspections', short: 'Estimate', accent: 'stage-indigo' },
+  'Pending Insurance': { hint: 'Waiting on carrier', short: 'Insurance', accent: 'stage-purple' },
+  'In Progress': { hint: 'Scheduled / queued', short: 'In Progress', accent: 'stage-warn' },
+  'In Repair': { hint: 'On the bench now', short: 'In Repair', accent: 'stage-rust' },
+  'On Hold': { hint: 'Paused jobs', short: 'On Hold', accent: 'stage-muted' },
+  Complete: { hint: 'Ready for pickup', short: 'Complete', accent: 'stage-ok' },
+};
+
+const PIPELINE_NEXT_STATUS = {
+  Registered: 'Estimate',
+  Estimate: 'Pending Insurance',
+  'Pending Insurance': 'In Progress',
+  'In Progress': 'In Repair',
+  'In Repair': 'Complete',
+  'On Hold': 'In Progress',
+};
+
+function daysWaiting(updatedAt) {
+  const ms = Date.now() - new Date(updatedAt).getTime();
+  return Math.max(0, Math.floor(ms / (1000 * 60 * 60 * 24)));
+}
+
+function formatDaysWaiting(updatedAt) {
+  const days = daysWaiting(updatedAt);
+  if (days === 0) return 'Today';
+  if (days === 1) return '1 day';
+  return `${days} days`;
+}
+
+function getNextPipelineStatus(status) {
+  return PIPELINE_NEXT_STATUS[status] || null;
+}
+
+function PipelineView({
+  grouped,
+  mode,
+  setMode,
+  onStatusChange,
+  onNotificationChange,
+  onRelease,
+  onDelete,
+  loading,
+}) {
+  const [selectedId, setSelectedId] = useState(null);
+  const [draggingId, setDraggingId] = useState(null);
+  const [dropTarget, setDropTarget] = useState(null);
+
+  const findJob = (jobId) => {
+    for (const col of STATUS_COLUMNS) {
+      const match = grouped[col].find((v) => v.id === jobId);
+      if (match) return match;
+    }
+    return null;
+  };
+
+  const totals = useMemo(() => {
+    const active = STATUS_COLUMNS.slice(0, -1).reduce((sum, col) => sum + grouped[col].length, 0);
+    const inRepair = grouped['In Repair'].length + grouped['In Progress'].length;
+    const onHold = grouped['On Hold'].length;
+    const complete = grouped.Complete.length;
+    const registered = grouped.Registered.length;
+    return { active, inRepair, onHold, complete, registered };
+  }, [grouped]);
+
+  const selectedJob = useMemo(() => {
+    if (!selectedId) return null;
+    return findJob(selectedId);
+  }, [grouped, selectedId]);
+
+  const handleDragStart = (event, job) => {
+    setDraggingId(job.id);
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', job.id);
+    event.dataTransfer.setData('application/x-alldent-status', job.status);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingId(null);
+    setDropTarget(null);
+  };
+
+  const handleColumnDragOver = (event, col) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    setDropTarget(col);
+  };
+
+  const handleColumnDragLeave = (event, col) => {
+    if (event.currentTarget.contains(event.relatedTarget)) return;
+    setDropTarget((current) => (current === col ? null : current));
+  };
+
+  const handleColumnDrop = (event, col) => {
+    event.preventDefault();
+    const jobId = event.dataTransfer.getData('text/plain') || draggingId;
+    setDraggingId(null);
+    setDropTarget(null);
+    if (!jobId) return;
+
+    const job = findJob(jobId);
+    if (job && job.status !== col) {
+      onStatusChange(job.id, col);
+    }
+  };
+
+  const handleAdvance = (job) => {
+    const next = getNextPipelineStatus(job.status);
+    if (next) onStatusChange(job.id, next);
+  };
+
+  const toggleDetails = (id) => {
+    setSelectedId((current) => (current === id ? null : id));
+  };
+
   return (
-    <>
-      <div className="panel-head" style={{ marginBottom: 18, borderRadius: 12, background: 'transparent', borderBottom: 'none', padding: 0 }}>
+    <section className="panel pipeline-panel">
+      <div className="pipeline-head">
         <div>
-          <h3 style={{ marginBottom: 4 }}>Repair pipeline</h3>
-          <p className="meta" style={{ margin: 0 }}>Move jobs through registration, estimate, insurance, repair, and completion.</p>
+          <h3>Repair pipeline</h3>
+          <p className="meta">Drag cards between stages, or use → Advance to move jobs forward.</p>
         </div>
-        <div className="tabs">
-          <button type="button" className={mode === 'kanban' ? 'is-active' : ''} onClick={() => setMode('kanban')}>Kanban</button>
+        <div className="tabs pipeline-tabs">
+          <button type="button" className={mode === 'kanban' ? 'is-active' : ''} onClick={() => setMode('kanban')}>Board</button>
           <button type="button" className={mode === 'list' ? 'is-active' : ''} onClick={() => setMode('list')}>List</button>
         </div>
       </div>
 
-      {mode === 'kanban' ? (
-        <div className="kanban">
-          {STATUS_COLUMNS.map((col) => (
-            <section key={col} className="kanban-col" data-col={col}>
-              <div className="kanban-col-head">
-                <strong>{col}</strong>
-                <span className="count">{grouped[col].length}</span>
-              </div>
-              {grouped[col].length === 0 && <div className="kanban-empty">No jobs here.</div>}
-              {grouped[col].map((v) => (
-                <article key={v.id} className="kanban-card">
-                  <div className="kc-id">{v.id}</div>
-                  <div className="kc-title">{v.year} {v.make} {v.model}</div>
-                  <div className="kc-meta">{v.customerName} · {v.plate}</div>
-                  <div className="kc-foot">
-                    <span className={statusBadge(v.status)}>{v.status}</span>
-                    <select
-                      value={v.status}
-                      onChange={(e) => onStatusChange(v.id, e.target.value)}
-                      aria-label={`Change status for ${v.id}`}
-                    >
-                      {STATUS_COLUMNS.map((s) => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </div>
-                </article>
-              ))}
-            </section>
-          ))}
+      <div className="pipeline-summary">
+        <div className="pipeline-stat">
+          <span className="pipeline-stat-val">{totals.active}</span>
+          <span className="pipeline-stat-lbl">Active jobs</span>
         </div>
-      ) : (
-        <section className="panel">
-          <div className="table-scroll">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Job</th>
-                  <th>Vehicle</th>
-                  <th>Customer</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {STATUS_COLUMNS.flatMap((col) => grouped[col]).map((v) => (
-                  <tr key={v.id}>
-                    <td><div className="cell-strong">{v.id}</div><div className="cell-sub">{v.plate}</div></td>
-                    <td>{v.year} {v.make} {v.model}</td>
-                    <td><div className="cell-strong">{v.customerName}</div><div className="cell-sub">{v.email}</div></td>
-                    <td>
-                      <select value={v.status} onChange={(e) => onStatusChange(v.id, e.target.value)}>
-                        {STATUS_COLUMNS.map((s) => <option key={s} value={s}>{s}</option>)}
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-                {loading && <tr><td colSpan={4} className="kanban-empty">Loading…</td></tr>}
-              </tbody>
-            </table>
+        <div className="pipeline-stat accent-info">
+          <span className="pipeline-stat-val">{totals.registered}</span>
+          <span className="pipeline-stat-lbl">New / registered</span>
+        </div>
+        <div className="pipeline-stat accent-warn">
+          <span className="pipeline-stat-val">{totals.inRepair}</span>
+          <span className="pipeline-stat-lbl">In shop</span>
+        </div>
+        <div className="pipeline-stat accent-muted">
+          <span className="pipeline-stat-val">{totals.onHold}</span>
+          <span className="pipeline-stat-lbl">On hold</span>
+        </div>
+        <div className="pipeline-stat accent-ok">
+          <span className="pipeline-stat-val">{totals.complete}</span>
+          <span className="pipeline-stat-lbl">Complete</span>
+        </div>
+      </div>
+
+      {mode === 'kanban' ? (
+        <>
+          <div className="kanban-board" aria-label="Repair pipeline board">
+            <div className="kanban-track">
+              {STATUS_COLUMNS.map((col) => {
+                const meta = PIPELINE_STAGE_META[col] || { hint: '', short: col, accent: 'stage-info' };
+                return (
+                  <section key={col} className={`kanban-col ${meta.accent}`} data-col={col}>
+                    <div className="kanban-col-head">
+                      <div className="kanban-col-title">
+                        <strong>{meta.short}</strong>
+                        <span className="kanban-col-hint">{meta.hint}</span>
+                      </div>
+                      <span className="count">{grouped[col].length}</span>
+                    </div>
+
+                    <div
+                      className={`kanban-col-body${dropTarget === col ? ' is-drop-target' : ''}`}
+                      onDragOver={(event) => handleColumnDragOver(event, col)}
+                      onDragLeave={(event) => handleColumnDragLeave(event, col)}
+                      onDrop={(event) => handleColumnDrop(event, col)}
+                    >
+                      {grouped[col].length === 0 && (
+                        <div className={`kanban-empty${dropTarget === col ? ' is-drop-hint' : ''}`}>
+                          {dropTarget === col ? 'Drop here' : 'No jobs in this stage.'}
+                        </div>
+                      )}
+                      {grouped[col].map((v) => {
+                        const next = getNextPipelineStatus(v.status);
+                        const waiting = daysWaiting(v.updatedAt);
+                        const isSelected = selectedId === v.id;
+                        const isDragging = draggingId === v.id;
+                        return (
+                          <article
+                            key={v.id}
+                            className={`kanban-card${isSelected ? ' is-selected' : ''}${waiting >= 5 ? ' is-stale' : ''}${isDragging ? ' is-dragging' : ''}`}
+                          >
+                            <div className="kanban-card-top">
+                              <div
+                                role="button"
+                                tabIndex={0}
+                                className="kc-drag-handle"
+                                draggable
+                                onDragStart={(event) => handleDragStart(event, v)}
+                                onDragEnd={handleDragEnd}
+                                aria-label={`Drag ${v.id} to another stage`}
+                                title="Drag to move"
+                              >
+                                ⠿
+                              </div>
+                              <button
+                                type="button"
+                                className="kanban-card-main"
+                                onClick={() => toggleDetails(v.id)}
+                                aria-expanded={isSelected}
+                              >
+                                <div className="kc-top">
+                                  <span className="kc-id">{v.id}</span>
+                                  <span className={`kc-age${waiting >= 5 ? ' is-stale' : ''}`}>{formatDaysWaiting(v.updatedAt)}</span>
+                                </div>
+                                <div className="kc-title">{v.year} {v.make} {v.model}</div>
+                                <div className="kc-meta">{v.customerName}</div>
+                                <div className="kc-sub">{v.plate}{v.insuranceCompany ? ` · ${v.insuranceCompany}` : ''}</div>
+                              </button>
+                            </div>
+
+                            <div className="kc-actions">
+                              {v.phone ? (
+                                <a className="button ghost sm kc-call" href={`tel:${v.phone.replace(/\D/g, '')}`} onClick={(e) => e.stopPropagation()}>
+                                  Call
+                                </a>
+                              ) : null}
+                              {next ? (
+                                <button
+                                  type="button"
+                                  className="button primary sm kc-advance"
+                                  onClick={() => handleAdvance(v)}
+                                >
+                                  → {PIPELINE_STAGE_META[next]?.short || next}
+                                </button>
+                              ) : null}
+                              <label className="kc-move">
+                                <span className="sr-only">Move {v.id}</span>
+                                <select
+                                  value={v.status}
+                                  onChange={(e) => onStatusChange(v.id, e.target.value)}
+                                  aria-label={`Move ${v.id} to another stage`}
+                                >
+                                  {STATUS_COLUMNS.map((s) => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                              </label>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
           </div>
-        </section>
+
+          {selectedJob && (
+            <div className="pipeline-detail">
+              <JobDetail
+                v={selectedJob}
+                onClose={() => setSelectedId(null)}
+                onStatusChange={onStatusChange}
+                onNotificationChange={onNotificationChange}
+                onRelease={onRelease}
+                onDelete={onDelete}
+              />
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="pipeline-list">
+          {STATUS_COLUMNS.map((col) => {
+            if (!grouped[col].length) return null;
+            const meta = PIPELINE_STAGE_META[col] || { short: col, hint: '' };
+            return (
+              <section key={col} className="pipeline-list-section">
+                <div className="pipeline-list-head">
+                  <div>
+                    <h4>{meta.short}</h4>
+                    <p>{meta.hint}</p>
+                  </div>
+                  <span className="count">{grouped[col].length}</span>
+                </div>
+                <div className="table-scroll">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>Job</th>
+                        <th>Vehicle</th>
+                        <th>Customer</th>
+                        <th>Waiting</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {grouped[col].map((v) => {
+                        const next = getNextPipelineStatus(v.status);
+                        return (
+                          <tr key={v.id}>
+                            <td><div className="cell-strong">{v.id}</div><div className="cell-sub">{v.plate}</div></td>
+                            <td>{v.year} {v.make} {v.model}</td>
+                            <td>
+                              <div className="cell-strong">{v.customerName}</div>
+                              <div className="cell-sub">{v.email}</div>
+                            </td>
+                            <td>{formatDaysWaiting(v.updatedAt)}</td>
+                            <td className="pipeline-list-actions">
+                              {next ? (
+                                <button type="button" className="button primary sm" onClick={() => handleAdvance(v)}>
+                                  → {PIPELINE_STAGE_META[next]?.short || next}
+                                </button>
+                              ) : null}
+                              <select value={v.status} onChange={(e) => onStatusChange(v.id, e.target.value)}>
+                                {STATUS_COLUMNS.map((s) => <option key={s} value={s}>{s}</option>)}
+                              </select>
+                              <button type="button" className="button ghost sm" onClick={() => toggleDetails(v.id)}>
+                                Details
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            );
+          })}
+
+          {!loading && STATUS_COLUMNS.every((col) => grouped[col].length === 0) && (
+            <div className="kanban-empty">No jobs in the pipeline yet.</div>
+          )}
+
+          {selectedJob && (
+            <div className="pipeline-detail">
+              <JobDetail
+                v={selectedJob}
+                onClose={() => setSelectedId(null)}
+                onStatusChange={onStatusChange}
+                onNotificationChange={onNotificationChange}
+                onRelease={onRelease}
+                onDelete={onDelete}
+              />
+            </div>
+          )}
+        </div>
       )}
-    </>
+
+      {loading && <div className="kanban-empty">Loading pipeline…</div>}
+    </section>
   );
 }
-
-const STATUS_COLUMNS = ['Registered', 'Estimate', 'Pending Insurance', 'In Progress', 'In Repair', 'On Hold', 'Complete'];
 
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
   const hasRegistrationData = Boolean(
