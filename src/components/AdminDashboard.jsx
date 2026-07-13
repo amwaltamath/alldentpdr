@@ -1142,16 +1142,20 @@ function wrapFormDocument({ title, job, formTitle, bodyHtml, signedBadge }) {
 </html>`;
 }
 
-function buildDirectionToPayHtml(job) {
+function buildRegistrationHtml(job) {
   const esc = escFormHtml;
   const insuranceName = job.insuranceAuthName || job.insuranceCompany || '[ Insurance Company ]';
   const directionMark = job.directionToPaySigned ? '✓ Agreed' : '✗ Not signed';
+  const repairMark = job.repairAuthSigned ? '✓ Agreed' : '✗ Not signed';
 
   return wrapFormDocument({
-    title: 'Direction to Pay',
+    title: 'Registration Form',
     job,
-    formTitle: 'Direction to Pay',
-    signedBadge: `<span class="badge ${job.directionToPaySigned ? 'ok' : 'no'}">${esc(directionMark)}</span>`,
+    formTitle: 'Vehicle Registration Agreement',
+    signedBadge: `
+      <span class="badge ${job.directionToPaySigned ? 'ok' : 'no'}">${esc(directionMark)} · Direction to Pay</span>
+      <span class="badge ${job.repairAuthSigned ? 'ok' : 'no'}">${esc(repairMark)} · Repair Authorization</span>
+    `,
     bodyHtml: `
       <section class="section">
         <h3>Direction to Pay</h3>
@@ -1162,20 +1166,6 @@ function buildDirectionToPayHtml(job) {
           I do hereby appoint All Dent PDR to accept on my behalf, any and all checks/drafts and to endorse all such checks/drafts for deposit to All Dent PDR account for payment for repairs to said vehicle, which have been accepted and released. The total amount of repair charges must be paid in full before the vehicle can be released for delivery or picked up. If insurance coverage pays either a portion of or the total amount due, I acknowledge that the insurance check/draft must be obtained by me or sent in advance by the insurance company and received by All Dent PDR. I also acknowledge that I must make arrangements with any lien holder or other payees to endorse the insurance check/draft prior to the release of the above repaired vehicle. I authorize any and all supplements payable directly to All Dent PDR for the consideration of repairs made to the vehicle. If I remove my vehicle from the shop prior to the completion of repairs, I agree to pay for parts, labor, handling fees, service charges, and rental car fees associated with the repair. To secure payment in amount of repairs, an expressed mechanics lien on the vehicle is acknowledged and I further agree to pay reasonable attorney's fees and court costs in the event legal action becomes necessary to enforce this contract. All Dent PDR may repossess my vehicle if payment is not secured.
         </p>
       </section>
-    `,
-  });
-}
-
-function buildRepairAuthorizationHtml(job) {
-  const esc = escFormHtml;
-  const repairMark = job.repairAuthSigned ? '✓ Agreed' : '✗ Not signed';
-
-  return wrapFormDocument({
-    title: 'Repair Authorization',
-    job,
-    formTitle: 'Repair Authorization',
-    signedBadge: `<span class="badge ${job.repairAuthSigned ? 'ok' : 'no'}">${esc(repairMark)}</span>`,
-    bodyHtml: `
       <section class="section">
         <h3>Repair Authorization</h3>
         <p>
@@ -1330,13 +1320,16 @@ function buildLoanerAgreementHtml(job, loaner) {
 function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
   const loaner = getLoanerAgreement(v);
   const hasLoaner = Boolean(loaner?.loanerProvided || v.requiresLoaner);
+  const hasRegistrationData = Boolean(
+    v.directionToPaySigned ||
+    v.repairAuthSigned ||
+    v.signatureName ||
+    v.signedAt ||
+    v.insuranceAuthName
+  );
 
-  const handlePrintDirectionToPay = () => {
-    openPrintWindow(buildDirectionToPayHtml(v));
-  };
-
-  const handlePrintRepairAuth = () => {
-    openPrintWindow(buildRepairAuthorizationHtml(v));
+  const handlePrintRegistration = () => {
+    openPrintWindow(buildRegistrationHtml(v));
   };
 
   const handlePrintLoanerAgreement = () => {
@@ -1367,50 +1360,51 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
             </select>
           </div>
 
-          <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Forms</h4>
-          <div className="job-form-grid">
-            <div className="job-form-card">
-              <div className="job-form-card-head">
-                <span style={{ fontSize: 12, fontWeight: 600, color: v.directionToPaySigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
-                  {v.directionToPaySigned ? '✓' : '✗'} Direction to Pay
-                </span>
-              </div>
-              <p className="cell-sub" style={{ margin: '0 0 10px' }}>
-                Insurance: {v.insuranceAuthName || v.insuranceCompany || '—'}
-              </p>
-              <button type="button" className="button primary sm" onClick={handlePrintDirectionToPay}>
-                View / Print Direction to Pay
-              </button>
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Form</h4>
+          <div className="job-form-card">
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: v.directionToPaySigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
+                {v.directionToPaySigned ? '✓' : '✗'} Direction to Pay
+              </span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: v.repairAuthSigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
+                {v.repairAuthSigned ? '✓' : '✗'} Repair Authorization
+              </span>
             </div>
-
-            <div className="job-form-card">
-              <div className="job-form-card-head">
-                <span style={{ fontSize: 12, fontWeight: 600, color: v.repairAuthSigned ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
-                  {v.repairAuthSigned ? '✓' : '✗'} Repair Authorization
-                </span>
-              </div>
-              <p className="cell-sub" style={{ margin: '0 0 10px' }}>
+            <div style={{ display: 'grid', gap: 4, marginBottom: 10 }}>
+              <span className="cell-sub" style={{ margin: 0 }}>
                 Signature: {v.signatureName || '—'}
-              </p>
-              <button type="button" className="button primary sm" onClick={handlePrintRepairAuth}>
-                View / Print Repair Authorization
-              </button>
+              </span>
+              <span className="cell-sub" style={{ margin: 0 }}>
+                Insurance: {v.insuranceAuthName || v.insuranceCompany || '—'}
+              </span>
+              {v.signedAt && (
+                <span className="cell-sub" style={{ margin: 0 }}>
+                  Signed: {new Date(v.signedAt).toLocaleString()}
+                </span>
+              )}
             </div>
+            <button
+              type="button"
+              className="button primary sm"
+              onClick={handlePrintRegistration}
+            >
+              View / Print Registration
+            </button>
+            {!hasRegistrationData && (
+              <p className="cell-sub" style={{ margin: '8px 0 0' }}>No signed registration data on this job yet.</p>
+            )}
           </div>
-          {v.signedAt && (
-            <p className="cell-sub" style={{ margin: '10px 0 0' }}>
-              Registration signed: {new Date(v.signedAt).toLocaleString()}
-            </p>
-          )}
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Loaner Agreement</h4>
-          {hasLoaner ? (
-            <div className="job-form-card job-form-card--loaner">
-              <div className="job-form-card-head">
-                <span style={{ fontSize: 12, fontWeight: 600, color: loaner?.termsAccepted ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
-                  {loaner?.termsAccepted ? '✓' : '✗'} Loaner vehicle requested
-                </span>
-              </div>
+          <div className="job-form-card job-form-card--loaner">
+            <div className="job-form-card-head">
+              <span style={{ fontSize: 12, fontWeight: 600, color: hasLoaner && loaner?.termsAccepted ? 'var(--sage,#4a7a5c)' : 'var(--muted,#9e8f84)' }}>
+                {hasLoaner
+                  ? `${loaner?.termsAccepted ? '✓' : '✗'} Loaner vehicle requested`
+                  : 'Loaner agreement (optional)'}
+              </span>
+            </div>
+            {hasLoaner ? (
               <div style={{ display: 'grid', gap: 4, marginBottom: 10 }}>
                 <span className="cell-sub" style={{ margin: 0 }}>
                   Driver&apos;s license: {loaner?.dlNumber || '—'} · {loaner?.dlState || '—'} · Exp {loaner?.dlExpiration || '—'}
@@ -1421,13 +1415,13 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
                   </span>
                 )}
               </div>
-              <button type="button" className="button primary sm" onClick={handlePrintLoanerAgreement}>
-                View / Print Loaner Agreement
-              </button>
-            </div>
-          ) : (
-            <p className="cell-sub" style={{ margin: 0 }}>No loaner vehicle requested for this job.</p>
-          )}
+            ) : (
+              <p className="cell-sub" style={{ margin: '0 0 10px' }}>No loaner requested at registration. You can still issue or print the agreement in shop.</p>
+            )}
+            <button type="button" className="button primary sm" onClick={handlePrintLoanerAgreement}>
+              View / Print Loaner Agreement
+            </button>
+          </div>
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Vehicle Release</h4>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
