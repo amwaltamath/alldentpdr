@@ -9,16 +9,25 @@ function stopCamera(videoEl) {
   if (videoEl) videoEl.srcObject = null;
 }
 
+function truncateText(value, max = 42) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (text.length <= max) return text;
+  return `${text.slice(0, max)}…`;
+}
+
 export default function VinScanner({ onScan, onClose, onManualEntry }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const readerRef = useRef(null);
   const activeRef = useRef(true);
+  const scannedRef = useRef(false);
+  const invalidScanRef = useRef({ text: '', at: 0 });
   const [cameraError, setCameraError] = useState('');
   const [scanFeedback, setScanFeedback] = useState('');
   const [ready, setReady] = useState(false);
   const [ocrBusy, setOcrBusy] = useState(false);
   const [ocrProgress, setOcrProgress] = useState('');
+  const [lastFormat, setLastFormat] = useState('');
 
   const cleanupScanner = () => {
     activeRef.current = false;
@@ -33,6 +42,37 @@ export default function VinScanner({ onScan, onClose, onManualEntry }) {
       return;
     }
     onClose();
+  };
+
+  const acceptVin = (vin) => {
+    if (scannedRef.current || !activeRef.current) return;
+    scannedRef.current = true;
+    cleanupScanner();
+    onScan(vin);
+  };
+
+  const handleDecodedText = (rawText, formatName = '') => {
+    if (!activeRef.current || scannedRef.current) return;
+
+    if (formatName) setLastFormat(formatName);
+
+    const vin = extractVin(rawText);
+    if (vin.length === 17) {
+      setScanFeedback('');
+      acceptVin(vin);
+      return;
+    }
+
+    const now = Date.now();
+    const snippet = truncateText(rawText);
+    if (snippet && (snippet !== invalidScanRef.current.text || now - invalidScanRef.current.at > 3500)) {
+      invalidScanRef.current = { text: snippet, at: now };
+      setScanFeedback(
+        formatName
+          ? `Scanned ${formatName} but no valid VIN found (${snippet}). Align the barcode or QR code in the frame.`
+          : `Scanned "${snippet}" but no valid 17-character VIN found. Try again or use Read VIN Text.`
+      );
+    }
   };
 
   const captureAndReadVinText = async () => {
@@ -74,8 +114,7 @@ export default function VinScanner({ onScan, onClose, onManualEntry }) {
         return;
       }
 
-      cleanupScanner();
-      onScan(vin);
+      acceptVin(vin);
     } catch (err) {
       console.error('[VinScanner OCR]', err);
       returnToManualEntry('VIN text scan failed. Please type your 17-character VIN below.');
@@ -88,11 +127,27 @@ export default function VinScanner({ onScan, onClose, onManualEntry }) {
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
     activeRef.current = true;
+    scannedRef.current = false;
 
-    import('@zxing/browser').then(async ({ BrowserMultiFormatReader }) => {
+    Promise.all([
+      import('@zxing/browser'),
+      import('@zxing/library'),
+    ]).then(async ([{ BrowserMultiFormatReader }, { BarcodeFormat, DecodeHintType }]) => {
       if (!activeRef.current) return;
 
-      const reader = new BrowserMultiFormatReader();
+      const hints = new Map();
+      hints.set(DecodeHintType.POSSIBLE_FORMATS, [
+        BarcodeFormat.QR_CODE,
+        BarcodeFormat.CODE_39,
+        BarcodeFormat.CODE_128,
+        BarcodeFormat.DATA_MATRIX,
+        BarcodeFormat.PDF_417,
+        BarcodeFormat.AZTEC,
+      ]);
+      hints.set(DecodeHintType.TRY_HARDER, true);
+      hints.set(DecodeHintType.ASSUME_GS1, true);
+
+      const reader = new BrowserMultiFormatReader(hints, { delayBetweenScanAttempts: 120 });
       readerRef.current = reader;
 
       const decodeHandler = (result, err) => {
@@ -100,11 +155,11 @@ export default function VinScanner({ onScan, onClose, onManualEntry }) {
 
         if (result) {
           setReady(true);
-          const vin = extractVin(result.getText().replace(/\*/g, ''));
-          if (vin.length === 17) {
-            cleanupScanner();
-            onScan(vin);
-          }
+          const formatEnum = result.getBarcodeFormat?.();
+          const formatName = formatEnum != null
+            ? String(formatEnum).replace(/_/g, ' ').toLowerCase()
+            : 'barcode';
+          handleDecodedText(result.getText() || '', formatName);
         }
 
         if (err && err.name !== 'NotFoundException') {
@@ -114,13 +169,15 @@ export default function VinScanner({ onScan, onClose, onManualEntry }) {
         setReady(true);
       };
 
+      const videoConstraints = {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+      };
+
       try {
         await reader.decodeFromConstraints(
-          {
-            video: {
-              facingMode: { ideal: 'environment' },
-            },
-          },
+          { video: videoConstraints },
           videoRef.current,
           decodeHandler
         );
@@ -137,7 +194,8 @@ export default function VinScanner({ onScan, onClose, onManualEntry }) {
             return;
           }
 
-          const preferred = devices.find((device) => /back|rear|environment/i.test(device.label)) || devices[devices.length - 1];
+          const preferred = devices.find((device) => /back|rear|environment/i.test(device.label))
+            || devices[devices.length - 1];
           return reader.decodeFromVideoDevice(preferred.deviceId, videoRef.current, decodeHandler);
         })
         .catch((err) => {
@@ -167,7 +225,7 @@ export default function VinScanner({ onScan, onClose, onManualEntry }) {
           <button type="button" className="job-drawer-close" onClick={handleClose} aria-label="Close">✕</button>
         </div>
         <p className="vin-scanner-hint">
-          Point the camera at the VIN barcode on the door jamb sticker, windshield, or QR code.
+          Point the camera at the VIN barcode (Code 39 / Code 128), QR code on the door jamb sticker, or printed VIN text.
         </p>
 
         {cameraError ? (
@@ -184,22 +242,21 @@ export default function VinScanner({ onScan, onClose, onManualEntry }) {
           </div>
         ) : (
           <>
-            <div style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', background: '#111', minHeight: 180 }}>
+            <div className="vin-scanner-preview">
               <video
                 ref={videoRef}
-                style={{ width: '100%', display: 'block' }}
+                className="vin-scanner-video"
                 muted
                 playsInline
+                autoPlay
               />
-              {ready && <div className="vin-scan-reticle" />}
+              {ready && <div className="vin-scan-reticle" aria-hidden="true" />}
               {!ready && (
-                <p style={{ color: '#aaa', textAlign: 'center', padding: '48px 16px', fontSize: 13, margin: 0, position: 'absolute', inset: 0 }}>
-                  Starting camera…
-                </p>
+                <p className="vin-scanner-loading">Starting camera…</p>
               )}
             </div>
             <canvas ref={canvasRef} style={{ display: 'none' }} />
-            <div style={{ marginTop: 12, display: 'flex', gap: 8, justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="vin-scanner-toolbar">
               <button
                 type="button"
                 className="button ghost btn-scan-vin"
@@ -208,12 +265,12 @@ export default function VinScanner({ onScan, onClose, onManualEntry }) {
               >
                 {ocrBusy ? 'Reading Text…' : 'Read VIN Text'}
               </button>
-              {ocrProgress ? (
-                <span style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'right' }}>{ocrProgress}</span>
-              ) : null}
+              <span className="vin-scanner-status">
+                {ocrProgress || (ready ? (lastFormat ? `Scanning (${lastFormat})…` : 'Scanning for barcode or QR…') : '')}
+              </span>
             </div>
             {scanFeedback ? (
-              <p className="vin-scanner-error" style={{ margin: '12px 0 0' }}>
+              <p className="vin-scanner-error vin-scanner-feedback">
                 {scanFeedback}
               </p>
             ) : null}

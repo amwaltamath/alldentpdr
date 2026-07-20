@@ -10,16 +10,22 @@ const breadcrumbs = [
   { name: 'Our Work', url: canonical }
 ];
 
-// Fetch published projects at build/request time from Supabase
+type ProjectImage = {
+  id: string;
+  image_url: string;
+  display_order: number;
+};
+
 let projects: Array<{
   id: string;
   title: string;
   description: string | null;
   vehicle: string | null;
   category: string | null;
-  image_url: string;
+  image_url: string | null;
   before_url: string | null;
   display_order: number;
+  project_images: ProjectImage[] | null;
 }> = [];
 
 try {
@@ -29,7 +35,7 @@ try {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { data } = await supabase
       .from('projects')
-      .select('id, title, description, vehicle, category, image_url, before_url, display_order')
+      .select('id, title, description, vehicle, category, image_url, before_url, display_order, project_images(id, image_url, display_order)')
       .eq('is_published', true)
       .order('display_order', { ascending: false })
       .order('created_at', { ascending: false });
@@ -37,6 +43,21 @@ try {
   }
 } catch {
   // fail silently — page still renders without projects
+}
+
+function getProjectPhotos(project: typeof projects[number]) {
+  const nested = (project.project_images || [])
+    .slice()
+    .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0))
+    .map((img) => img.image_url)
+    .filter(Boolean);
+
+  if (nested.length) return nested;
+
+  const legacy: string[] = [];
+  if (project.before_url) legacy.push(project.before_url);
+  if (project.image_url) legacy.push(project.image_url);
+  return legacy;
 }
 
 const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))];
@@ -70,42 +91,51 @@ const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))]
         )}
 
         <div class="ow-grid" id="ow-grid">
-          {projects.map((proj) => (
-            <article class="ow-card" data-category={proj.category || ''}>
-              {proj.before_url ? (
-                <div class="ow-ba-wrap">
-                  <div class="ow-ba-slider" aria-label="Before and after comparison">
-                    <img class="ow-img ow-after" src={proj.image_url} alt={`After — ${proj.title}`} loading="lazy" />
-                    <div class="ow-before-reveal">
-                      <img class="ow-img ow-before" src={proj.before_url} alt={`Before — ${proj.title}`} loading="lazy" />
+          {projects.map((proj) => {
+            const photos = getProjectPhotos(proj);
+            const carouselId = `ow-carousel-${proj.id}`;
+            return (
+              <article class="ow-card" data-category={proj.category || ''}>
+                {photos.length > 1 ? (
+                  <div class="ow-carousel" data-carousel={carouselId}>
+                    <div class="ow-carousel-track">
+                      {photos.map((photo, index) => (
+                        <div class="ow-carousel-slide" data-slide={index}>
+                          <img class="ow-img" src={photo} alt={`${proj.title} — photo ${index + 1}`} loading={index === 0 ? 'eager' : 'lazy'} />
+                        </div>
+                      ))}
                     </div>
-                    <div class="ow-ba-labels">
-                      <span class="ow-ba-label after">After</span>
-                      <span class="ow-ba-label before">Before</span>
+                    <button type="button" class="ow-carousel-btn prev" aria-label="Previous photo">‹</button>
+                    <button type="button" class="ow-carousel-btn next" aria-label="Next photo">›</button>
+                    <div class="ow-carousel-dots">
+                      {photos.map((_, index) => (
+                        <button
+                          type="button"
+                          class={`ow-carousel-dot${index === 0 ? ' is-active' : ''}`}
+                          data-target={index}
+                          aria-label={`Show photo ${index + 1}`}
+                        />
+                      ))}
                     </div>
-                    <input
-                      type="range"
-                      class="ow-ba-range"
-                      min="0"
-                      max="100"
-                      value="50"
-                      aria-label="Drag to compare before and after"
-                    />
                   </div>
+                ) : photos.length === 1 ? (
+                  <div class="ow-img-wrap">
+                    <img class="ow-img" src={photos[0]} alt={proj.title} loading="lazy" />
+                  </div>
+                ) : (
+                  <div class="ow-img-wrap ow-img-wrap--empty">
+                    <span>No photos</span>
+                  </div>
+                )}
+                <div class="ow-card-body">
+                  {proj.category && <span class="tag">{proj.category}</span>}
+                  <h3 class="ow-card-title">{proj.title}</h3>
+                  {proj.vehicle && <p class="ow-card-vehicle">{proj.vehicle}</p>}
+                  {proj.description && <p class="ow-card-desc">{proj.description}</p>}
                 </div>
-              ) : (
-                <div class="ow-img-wrap">
-                  <img class="ow-img" src={proj.image_url} alt={proj.title} loading="lazy" />
-                </div>
-              )}
-              <div class="ow-card-body">
-                {proj.category && <span class="tag">{proj.category}</span>}
-                <h3 class="ow-card-title">{proj.title}</h3>
-                {proj.vehicle && <p class="ow-card-vehicle">{proj.vehicle}</p>}
-                {proj.description && <p class="ow-card-desc">{proj.description}</p>}
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -131,164 +161,10 @@ const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))]
   </section>
 </BaseLayout>
 
-<style>
-  /* Filter buttons */
-  .ow-filter-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 28px;
-  }
-  .ow-filter {
-    background: var(--card, #fffbf6);
-    border: 1.5px solid var(--line, #e8e2db);
-    border-radius: 20px;
-    padding: 6px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    color: var(--ink, #1a1410);
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
-  }
-  .ow-filter:hover,
-  .ow-filter.is-active {
-    background: var(--rust, #fc1317);
-    border-color: var(--rust, #fc1317);
-    color: #fff;
-  }
-
-  /* Projects grid */
-  .ow-grid {
-    display: grid;
-    gap: 24px;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
-  .ow-card {
-    background: var(--card, #fffbf6);
-    border: 1px solid var(--line, #e8e2db);
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,.06);
-    transition: transform 0.25s, box-shadow 0.25s;
-  }
-  .ow-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,.12);
-  }
-  .ow-card.is-hidden { display: none; }
-
-  /* Single image */
-  .ow-img-wrap {
-    aspect-ratio: 4/3;
-    overflow: hidden;
-    background: var(--sky, #eef5fb);
-  }
-  .ow-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.4s ease;
-  }
-  .ow-card:hover .ow-img { transform: scale(1.03); }
-
-  /* Before/After slider */
-  .ow-ba-wrap {
-    aspect-ratio: 4/3;
-    overflow: hidden;
-    position: relative;
-    background: #111;
-  }
-  .ow-ba-slider {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    user-select: none;
-  }
-  .ow-ba-slider .ow-after {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .ow-before-reveal {
-    position: absolute;
-    inset: 0;
-    width: 50%;
-    overflow: hidden;
-    border-right: 2px solid #fff;
-  }
-  .ow-ba-slider .ow-before {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    max-width: none;
-  }
-  .ow-ba-labels {
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 14px;
-    pointer-events: none;
-  }
-  .ow-ba-label {
-    background: rgba(0,0,0,.55);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    padding: 3px 10px;
-    border-radius: 20px;
-  }
-  .ow-ba-range {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: ew-resize;
-    margin: 0;
-  }
-
-  /* Card body */
-  .ow-card-body {
-    padding: 16px 18px 18px;
-  }
-  .ow-card-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin: 6px 0 2px;
-    color: var(--ink, #1a1410);
-    line-height: 1.3;
-  }
-  .ow-card-vehicle {
-    font-size: 13px;
-    color: var(--muted, #9e8f84);
-    margin: 0 0 6px;
-  }
-  .ow-card-desc {
-    font-size: 14px;
-    color: var(--ink, #1a1410);
-    line-height: 1.55;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-</style>
-
 <script>
   // Category filter
   const filters = document.querySelectorAll<HTMLButtonElement>('.ow-filter');
-  const cards   = document.querySelectorAll<HTMLElement>('.ow-card');
+  const cards = document.querySelectorAll<HTMLElement>('.ow-card');
 
   filters.forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -302,19 +178,28 @@ const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))]
     });
   });
 
-  // Before/After range slider
-  document.querySelectorAll<HTMLElement>('.ow-ba-slider').forEach((slider) => {
-    const range = slider.querySelector<HTMLInputElement>('.ow-ba-range');
-    const reveal = slider.querySelector<HTMLElement>('.ow-before-reveal');
-    if (!range || !reveal) return;
+  // Multi-photo carousel
+  document.querySelectorAll<HTMLElement>('.ow-carousel').forEach((carousel) => {
+    const slides = Array.from(carousel.querySelectorAll<HTMLElement>('.ow-carousel-slide'));
+    const dots = Array.from(carousel.querySelectorAll<HTMLButtonElement>('.ow-carousel-dot'));
+    const prev = carousel.querySelector<HTMLButtonElement>('.ow-carousel-btn.prev');
+    const next = carousel.querySelector<HTMLButtonElement>('.ow-carousel-btn.next');
+    if (!slides.length) return;
 
-    const update = (val: number) => {
-      reveal.style.width = val + '%';
-      const divider = slider.querySelector<HTMLElement>('.ow-before-reveal');
-      if (divider) divider.style.borderRightWidth = val > 0 && val < 100 ? '2px' : '0';
+    let index = 0;
+
+    const show = (nextIndex: number) => {
+      index = (nextIndex + slides.length) % slides.length;
+      slides.forEach((slide, i) => slide.classList.toggle('is-active', i === index));
+      dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
     };
 
-    range.addEventListener('input', () => update(Number(range.value)));
-    update(50);
+    prev?.addEventListener('click', () => show(index - 1));
+    next?.addEventListener('click', () => show(index + 1));
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => show(Number(dot.dataset.target || 0)));
+    });
+
+    show(0);
   });
 </script>

@@ -489,3 +489,221 @@ export async function updateLead(id, updates) {
   }
 }
 
+/* ============================================================
+   Our Work / Projects gallery
+   ============================================================ */
+
+const PROJECT_PHOTOS_BUCKET = 'project-photos';
+
+function mapRemoteProject(item) {
+  const images = (item.project_images || [])
+    .slice()
+    .sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0) || String(a.created_at).localeCompare(String(b.created_at)));
+
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description || '',
+    vehicle: item.vehicle || '',
+    category: item.category || '',
+    imageUrl: item.image_url || '',
+    beforeUrl: item.before_url || '',
+    displayOrder: item.display_order ?? 0,
+    isPublished: Boolean(item.is_published),
+    createdAt: item.created_at,
+    updatedAt: item.updated_at,
+    images: images.map((img) => ({
+      id: img.id,
+      projectId: img.project_id,
+      imageUrl: img.image_url,
+      displayOrder: img.display_order ?? 0,
+      createdAt: img.created_at,
+    })),
+  };
+}
+
+function mapProjectPayload(payload) {
+  const row = {};
+  if (payload.title !== undefined) row.title = payload.title;
+  if (payload.description !== undefined) row.description = payload.description;
+  if (payload.vehicle !== undefined) row.vehicle = payload.vehicle;
+  if (payload.category !== undefined) row.category = payload.category;
+  if (payload.displayOrder !== undefined) row.display_order = payload.displayOrder;
+  if (payload.isPublished !== undefined) row.is_published = Boolean(payload.isPublished);
+  if (payload.imageUrl !== undefined) row.image_url = payload.imageUrl;
+  if (payload.beforeUrl !== undefined) row.before_url = payload.beforeUrl;
+  row.updated_at = new Date().toISOString();
+  return row;
+}
+
+function getProjectPhotoStoragePath(projectId, fileName) {
+  return `${projectId}/${fileName}`;
+}
+
+function getStoragePathFromPublicUrl(url) {
+  if (!url) return null;
+  const marker = `/storage/v1/object/public/${PROJECT_PHOTOS_BUCKET}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return decodeURIComponent(url.slice(idx + marker.length));
+}
+
+export async function getProjects() {
+  if (!isSupabaseEnabled()) return [];
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*, project_images(id, project_id, image_url, display_order, created_at)')
+    .order('display_order', { ascending: false })
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data || []).map(mapRemoteProject);
+}
+
+export async function createProject(payload) {
+  if (!isSupabaseEnabled()) throw new Error('Our Work requires Supabase.');
+  const { data, error } = await supabase
+    .from('projects')
+    .insert({
+      title: payload.title,
+      description: payload.description || '',
+      vehicle: payload.vehicle || '',
+      category: payload.category || '',
+      display_order: payload.displayOrder ?? 0,
+      is_published: Boolean(payload.isPublished),
+      image_url: payload.imageUrl || null,
+      before_url: payload.beforeUrl || null,
+    })
+    .select('*, project_images(id, project_id, image_url, display_order, created_at)')
+    .single();
+  if (error) throw error;
+  return mapRemoteProject(data);
+}
+
+export async function updateProject(id, updates) {
+  if (!isSupabaseEnabled()) throw new Error('Our Work requires Supabase.');
+  const { data, error } = await supabase
+    .from('projects')
+    .update(mapProjectPayload(updates))
+    .eq('id', id)
+    .select('*, project_images(id, project_id, image_url, display_order, created_at)')
+    .single();
+  if (error) throw error;
+  return mapRemoteProject(data);
+}
+
+export async function deleteProject(id) {
+  if (!isSupabaseEnabled()) throw new Error('Our Work requires Supabase.');
+
+  const { data: images, error: imagesError } = await supabase
+    .from('project_images')
+    .select('image_url')
+    .eq('project_id', id);
+  if (imagesError) throw imagesError;
+
+  const paths = (images || [])
+    .map((img) => getStoragePathFromPublicUrl(img.image_url))
+    .filter(Boolean);
+
+  if (paths.length) {
+    const { error: storageError } = await supabase.storage.from(PROJECT_PHOTOS_BUCKET).remove(paths);
+    if (storageError) throw storageError;
+  }
+
+  const { error } = await supabase.from('projects').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function uploadProjectPhoto(projectId, file, displayOrder = 0) {
+  if (!isSupabaseEnabled()) throw new Error('Our Work requires Supabase.');
+  if (!projectId || !file) throw new Error('Project and file are required.');
+
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+  const fileName = `${crypto.randomUUID()}.${ext}`;
+  const storagePath = getProjectPhotoStoragePath(projectId, fileName);
+
+  const { error: uploadError } = await supabase.storage
+    .from(PROJECT_PHOTOS_BUCKET)
+    .upload(storagePath, file, { upsert: false, contentType: file.type || 'image/jpeg' });
+  if (uploadError) throw uploadError;
+
+  const { data: publicData } = supabase.storage.from(PROJECT_PHOTOS_BUCKET).getPublicUrl(storagePath);
+  const imageUrl = publicData.publicUrl;
+
+  const { data, error } = await supabase
+    .from('project_images')
+    .insert({
+      project_id: projectId,
+      image_url: imageUrl,
+      display_order: displayOrder,
+    })
+    .select('*')
+    .single();
+  if (error) throw error;
+
+  const { data: projectRow } = await supabase
+    .from('projects')
+    .select('image_url')
+    .eq('id', projectId)
+    .maybeSingle();
+
+  if (!projectRow?.image_url) {
+    await supabase.from('projects').update({ image_url: imageUrl }).eq('id', projectId);
+  }
+
+  return {
+    id: data.id,
+    projectId: data.project_id,
+    imageUrl: data.image_url,
+    displayOrder: data.display_order ?? 0,
+    createdAt: data.created_at,
+  };
+}
+
+export async function deleteProjectPhoto(imageId) {
+  if (!isSupabaseEnabled()) throw new Error('Our Work requires Supabase.');
+
+  const { data: image, error: fetchError } = await supabase
+    .from('project_images')
+    .select('id, project_id, image_url')
+    .eq('id', imageId)
+    .maybeSingle();
+  if (fetchError) throw fetchError;
+  if (!image) return;
+
+  const storagePath = getStoragePathFromPublicUrl(image.image_url);
+  if (storagePath) {
+    const { error: storageError } = await supabase.storage.from(PROJECT_PHOTOS_BUCKET).remove([storagePath]);
+    if (storageError) throw storageError;
+  }
+
+  const { error } = await supabase.from('project_images').delete().eq('id', imageId);
+  if (error) throw error;
+
+  const { data: remaining } = await supabase
+    .from('project_images')
+    .select('image_url')
+    .eq('project_id', image.project_id)
+    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: true })
+    .limit(1);
+
+  await supabase
+    .from('projects')
+    .update({ image_url: remaining?.[0]?.image_url || null })
+    .eq('id', image.project_id);
+}
+
+export async function reorderProjectPhotos(projectId, orderedIds) {
+  if (!isSupabaseEnabled()) throw new Error('Our Work requires Supabase.');
+  if (!projectId || !orderedIds?.length) return;
+
+  await Promise.all(
+    orderedIds.map((id, index) =>
+      supabase
+        .from('project_images')
+        .update({ display_order: index })
+        .eq('id', id)
+        .eq('project_id', projectId)
+    )
+  );
+}

@@ -1,12 +1,16 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
+  createProject,
   deleteLead,
+  deleteProject,
+  deleteProjectPhoto,
   deleteVehicle,
   getChatConversations,
   getChatMessages,
   getLeads,
   getPricing,
+  getProjects,
   getRemoteAuthUser,
   getSession,
   getVehicles,
@@ -14,6 +18,7 @@ import {
   isRemotePortalEnabled,
   markChatRead,
   registerVehicle,
+  reorderProjectPhotos,
   saveReleaseForm,
   savePricing,
   sendChatReply,
@@ -22,8 +27,10 @@ import {
   signOutRemoteAdmin,
   subscribeChatChanges,
   updateLeadStatus,
+  updateProject,
   updateVehicle,
-  updateVehicleStatus
+  updateVehicleStatus,
+  uploadProjectPhoto,
 } from './portal/storage';
 import { decodeVin, normalizeVin } from '../lib/vin';
 import VinScanner from './VinScanner';
@@ -32,6 +39,16 @@ const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
 const ADMIN_PASS = import.meta.env.PUBLIC_PORTAL_ADMIN_PASS || 'allDent2026';
 const STATUS_OPTIONS = ['Registered', 'Estimate', 'Pending Insurance', 'In Progress', 'In Repair', 'On Hold', 'Complete'];
 const STATUS_COLUMNS = STATUS_OPTIONS;
+const PROJECT_CATEGORIES = ['Hail Damage', 'Door Ding', 'Crease', 'Bumper', 'Other'];
+
+const emptyProjectForm = {
+  title: '',
+  description: '',
+  vehicle: '',
+  category: 'Hail Damage',
+  displayOrder: 0,
+  isPublished: true,
+};
 
 const initialForm = {
   // Customer Information
@@ -71,6 +88,7 @@ const NAV_ITEMS = [
   { id: 'quote',    label: 'New Quote',         icon: '$' },
   { id: 'pricing',  label: 'Pricing Matrix',    icon: '☰£' },
   { id: 'register', label: 'Register Vehicle',  icon: '+' },
+  { id: 'our-work', label: 'Our Work',          icon: '◫' },
   { id: 'cards',    label: 'Business Cards',    icon: '▣' },
 ];
 
@@ -109,6 +127,8 @@ export default function AdminDashboard() {
   const [activeConvId, setActiveConvId] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatLoading, setChatLoading] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(false);
 
   const remoteMode = isRemotePortalEnabled();
 
@@ -165,17 +185,28 @@ export default function AdminDashboard() {
       }
       setLoading(true);
       setLeadsLoading(true);
+      setProjectsLoading(true);
       try {
-        const [next, leadsNext, convNext] = await Promise.all([
+        const [next, leadsNext, convNext, projectsNext] = await Promise.all([
           getVehicles(),
           getLeads(),
-          getChatConversations().catch(() => [])
+          getChatConversations().catch(() => []),
+          getProjects().catch(() => []),
         ]);
-        if (active) { setVehicles(next); setLeads(leadsNext); setConversations(convNext); }
+        if (active) {
+          setVehicles(next);
+          setLeads(leadsNext);
+          setConversations(convNext);
+          setProjects(projectsNext);
+        }
       } catch {
         if (active) setAuthError('Unable to load vehicle data.');
       } finally {
-        if (active) { setLoading(false); setLeadsLoading(false); }
+        if (active) {
+          setLoading(false);
+          setLeadsLoading(false);
+          setProjectsLoading(false);
+        }
       }
     }
 
@@ -378,6 +409,66 @@ export default function AdminDashboard() {
       setLeads((prev) => prev.filter((l) => l.id !== id));
     } catch (err) {
       alert('Delete lead failed: ' + err.message);
+    }
+  };
+
+  const refreshProjects = async () => {
+    const next = await getProjects();
+    setProjects(next);
+  };
+
+  const handleProjectSave = async (payload, pendingFiles = []) => {
+    let project;
+    if (payload.id) {
+      project = await updateProject(payload.id, payload);
+    } else {
+      project = await createProject(payload);
+    }
+
+    if (pendingFiles.length) {
+      for (let i = 0; i < pendingFiles.length; i += 1) {
+        await uploadProjectPhoto(project.id, pendingFiles[i], (project.images?.length || 0) + i);
+      }
+    }
+
+    await refreshProjects();
+    return project;
+  };
+
+  const handleProjectDelete = async (id) => {
+    if (!window.confirm('Delete this Our Work post and all photos?')) return;
+    try {
+      await deleteProject(id);
+      await refreshProjects();
+    } catch (err) {
+      alert('Delete project failed: ' + err.message);
+    }
+  };
+
+  const handleProjectTogglePublish = async (project) => {
+    try {
+      await updateProject(project.id, { isPublished: !project.isPublished });
+      await refreshProjects();
+    } catch (err) {
+      alert('Update failed: ' + err.message);
+    }
+  };
+
+  const handleProjectPhotoDelete = async (imageId) => {
+    try {
+      await deleteProjectPhoto(imageId);
+      await refreshProjects();
+    } catch (err) {
+      alert('Delete photo failed: ' + err.message);
+    }
+  };
+
+  const handleProjectPhotoReorder = async (projectId, orderedIds) => {
+    try {
+      await reorderProjectPhotos(projectId, orderedIds);
+      await refreshProjects();
+    } catch (err) {
+      alert('Reorder failed: ' + err.message);
     }
   };
 
@@ -607,6 +698,19 @@ export default function AdminDashboard() {
           )}
 
           {view === 'analytics' && <AnalyticsView />}
+
+          {view === 'our-work' && (
+            <OurWorkView
+              projects={projects}
+              loading={projectsLoading}
+              remoteMode={remoteMode}
+              onSave={handleProjectSave}
+              onDelete={handleProjectDelete}
+              onTogglePublish={handleProjectTogglePublish}
+              onPhotoDelete={handleProjectPhotoDelete}
+              onPhotoReorder={handleProjectPhotoReorder}
+            />
+          )}
 
           {view === 'cards' && <CardsView />}
         </main>
@@ -1982,6 +2086,346 @@ function channelClass(ch) {
   return 'other';
 }
 
+function OurWorkView({
+  projects,
+  loading,
+  remoteMode,
+  onSave,
+  onDelete,
+  onTogglePublish,
+  onPhotoDelete,
+  onPhotoReorder,
+}) {
+  const [form, setForm] = useState(emptyProjectForm);
+  const [editingId, setEditingId] = useState(null);
+  const [pendingFiles, setPendingFiles] = useState([]);
+  const [pendingPreviews, setPendingPreviews] = useState([]);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+  const fileInputRef = useRef(null);
+  const pendingPreviewsRef = useRef([]);
+
+  pendingPreviewsRef.current = pendingPreviews;
+
+  useEffect(() => () => {
+    pendingPreviewsRef.current.forEach((url) => URL.revokeObjectURL(url));
+  }, []);
+
+  const editingProject = useMemo(
+    () => projects.find((p) => p.id === editingId) || null,
+    [projects, editingId]
+  );
+
+  const resetForm = () => {
+    pendingPreviews.forEach((url) => URL.revokeObjectURL(url));
+    setForm(emptyProjectForm);
+    setEditingId(null);
+    setPendingFiles([]);
+    setPendingPreviews([]);
+    setMessage('');
+  };
+
+  const startEdit = (project) => {
+    pendingPreviews.forEach((url) => URL.revokeObjectURL(url));
+    setEditingId(project.id);
+    setForm({
+      title: project.title || '',
+      description: project.description || '',
+      vehicle: project.vehicle || '',
+      category: project.category || 'Hail Damage',
+      displayOrder: project.displayOrder ?? 0,
+      isPublished: Boolean(project.isPublished),
+    });
+    setPendingFiles([]);
+    setPendingPreviews([]);
+    setMessage('');
+  };
+
+  const handleFilesSelected = (event) => {
+    const files = Array.from(event.target.files || []).filter((f) => f.type.startsWith('image/'));
+    if (!files.length) return;
+    setPendingFiles((prev) => [...prev, ...files]);
+    setPendingPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+    event.target.value = '';
+  };
+
+  const removePendingFile = (index) => {
+    setPendingFiles((prev) => prev.filter((_, i) => i !== index));
+    setPendingPreviews((prev) => {
+      const next = [...prev];
+      const [removed] = next.splice(index, 1);
+      if (removed) URL.revokeObjectURL(removed);
+      return next;
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!form.title.trim() || !form.description.trim()) {
+      setMessage('Title and job description are required.');
+      return;
+    }
+
+    const hasExistingPhotos = (editingProject?.images?.length || 0) > 0;
+    if (!hasExistingPhotos && pendingFiles.length === 0) {
+      setMessage('Add at least one photo for this project.');
+      return;
+    }
+
+    setSaving(true);
+    setMessage('');
+    try {
+      const wasEdit = Boolean(editingId);
+      await onSave(
+        {
+          id: editingId || undefined,
+          title: form.title.trim(),
+          description: form.description.trim(),
+          vehicle: form.vehicle.trim(),
+          category: form.category,
+          displayOrder: Number(form.displayOrder) || 0,
+          isPublished: Boolean(form.isPublished),
+        },
+        pendingFiles
+      );
+      resetForm();
+      setMessage(wasEdit ? 'Project updated.' : 'Project published to Our Work.');
+    } catch (err) {
+      setMessage(err.message || 'Unable to save project.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const moveExistingPhoto = async (project, imageId, direction) => {
+    const ids = (project.images || []).map((img) => img.id);
+    const index = ids.indexOf(imageId);
+    if (index === -1) return;
+    const swap = direction === 'up' ? index - 1 : index + 1;
+    if (swap < 0 || swap >= ids.length) return;
+    [ids[index], ids[swap]] = [ids[swap], ids[index]];
+    await onPhotoReorder(project.id, ids);
+  };
+
+  if (!remoteMode) {
+    return (
+      <section className="panel">
+        <div className="panel-head">
+          <h3>Our Work Gallery</h3>
+        </div>
+        <p className="meta">Our Work publishing requires live Supabase (database + photo storage). Connect Supabase to manage gallery posts.</p>
+      </section>
+    );
+  }
+
+  return (
+    <div className="our-work-admin">
+      <section className="panel">
+        <div className="panel-head">
+          <div>
+            <h3>{editingId ? 'Edit Our Work Post' : 'New Our Work Post'}</h3>
+            <p className="meta" style={{ margin: '2px 0 0' }}>
+              Every post uses the same format on the public gallery: title, vehicle, description, and photo carousel.
+            </p>
+          </div>
+          {editingId && (
+            <button type="button" className="button ghost sm" onClick={resetForm}>Cancel edit</button>
+          )}
+        </div>
+
+        <form className="ow-admin-form" onSubmit={handleSubmit}>
+          <div className="ow-admin-grid">
+            <label className="ow-admin-field">
+              <span>Title</span>
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+                placeholder="Hail damage — 2022 Toyota Camry"
+                required
+              />
+            </label>
+            <label className="ow-admin-field">
+              <span>Vehicle (optional)</span>
+              <input
+                type="text"
+                value={form.vehicle}
+                onChange={(e) => setForm((prev) => ({ ...prev, vehicle: e.target.value }))}
+                placeholder="2022 Toyota Camry"
+              />
+            </label>
+            <label className="ow-admin-field">
+              <span>Category</span>
+              <select
+                value={form.category}
+                onChange={(e) => setForm((prev) => ({ ...prev, category: e.target.value }))}
+              >
+                {PROJECT_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </label>
+            <label className="ow-admin-field">
+              <span>Display order</span>
+              <input
+                type="number"
+                value={form.displayOrder}
+                onChange={(e) => setForm((prev) => ({ ...prev, displayOrder: e.target.value }))}
+                min="0"
+              />
+            </label>
+          </div>
+
+          <label className="ow-admin-field">
+            <span>About this job</span>
+            <textarea
+              rows={4}
+              value={form.description}
+              onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+              placeholder="Describe the damage, repair approach, and outcome."
+              required
+            />
+          </label>
+
+          <label className="ow-admin-check">
+            <input
+              type="checkbox"
+              checked={form.isPublished}
+              onChange={(e) => setForm((prev) => ({ ...prev, isPublished: e.target.checked }))}
+            />
+            <span>Published on public Our Work page</span>
+          </label>
+
+          <div className="ow-admin-photos">
+            <div className="ow-admin-photos-head">
+              <span>Photos</span>
+              <button type="button" className="button ghost sm" onClick={() => fileInputRef.current?.click()}>
+                Add photos
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={handleFilesSelected}
+              />
+            </div>
+
+            {editingProject?.images?.length > 0 && (
+              <div className="ow-admin-photo-grid">
+                {editingProject.images.map((img, index) => (
+                  <div key={img.id} className="ow-admin-photo-card">
+                    <img src={img.imageUrl} alt="" />
+                    <div className="ow-admin-photo-actions">
+                      <button type="button" className="button ghost sm" disabled={index === 0} onClick={() => moveExistingPhoto(editingProject, img.id, 'up')}>↑</button>
+                      <button type="button" className="button ghost sm" disabled={index === editingProject.images.length - 1} onClick={() => moveExistingPhoto(editingProject, img.id, 'down')}>↓</button>
+                      <button type="button" className="button ghost sm" onClick={() => onPhotoDelete(img.id)}>Remove</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {pendingPreviews.length > 0 && (
+              <div className="ow-admin-photo-grid">
+                {pendingPreviews.map((src, index) => (
+                  <div key={src} className="ow-admin-photo-card is-pending">
+                    <img src={src} alt="" />
+                    <div className="ow-admin-photo-actions">
+                      <span className="cell-sub">New</span>
+                      <button type="button" className="button ghost sm" onClick={() => removePendingFile(index)}>Remove</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!editingProject?.images?.length && pendingPreviews.length === 0 && (
+              <p className="meta">Upload one or more photos. They will appear as a carousel on the public gallery card.</p>
+            )}
+          </div>
+
+          <div className="button-row" style={{ marginTop: 16 }}>
+            <button type="submit" className="button primary" disabled={saving}>
+              {saving ? 'Saving…' : editingId ? 'Save changes' : 'Publish post'}
+            </button>
+            {message && <span className="cell-sub" style={{ alignSelf: 'center' }}>{message}</span>}
+          </div>
+        </form>
+      </section>
+
+      <section className="panel" style={{ marginTop: 18 }}>
+        <div className="panel-head">
+          <div>
+            <h3>Published posts</h3>
+            <p className="meta" style={{ margin: '2px 0 0' }}>{projects.length} total · visible at /our-work when published</p>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="kanban-empty">Loading projects…</div>
+        ) : projects.length === 0 ? (
+          <div className="kanban-empty">No Our Work posts yet.</div>
+        ) : (
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Preview</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Photos</th>
+                  <th>Status</th>
+                  <th>Updated</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projects.map((project) => {
+                  const thumb = project.images?.[0]?.imageUrl || project.imageUrl || project.beforeUrl;
+                  return (
+                    <tr key={project.id}>
+                      <td>
+                        {thumb ? (
+                          <img src={thumb} alt="" className="ow-admin-thumb" />
+                        ) : (
+                          <span className="cell-sub">—</span>
+                        )}
+                      </td>
+                      <td>
+                        <div className="cell-strong">{project.title}</div>
+                        {project.vehicle && <div className="cell-sub">{project.vehicle}</div>}
+                      </td>
+                      <td>{project.category || '—'}</td>
+                      <td>{project.images?.length || (project.imageUrl ? 1 : 0)}</td>
+                      <td>
+                        <span className={project.isPublished ? 'badge complete' : 'badge registered'}>
+                          {project.isPublished ? 'Published' : 'Draft'}
+                        </span>
+                      </td>
+                      <td>{project.updatedAt ? new Date(project.updatedAt).toLocaleDateString() : '—'}</td>
+                      <td>
+                        <div className="button-row" style={{ gap: 6 }}>
+                          <button type="button" className="button ghost sm" onClick={() => startEdit(project)}>Edit</button>
+                          <button type="button" className="button ghost sm" onClick={() => onTogglePublish(project)}>
+                            {project.isPublished ? 'Unpublish' : 'Publish'}
+                          </button>
+                          <button type="button" className="button ghost sm" onClick={() => onDelete(project.id)}>Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
 const TEAM_CARDS = [
   { slug: 'zachary', name: 'Zachary', title: 'PDR Specialist', email: 'zachary@alldentpdr.com' },
   { slug: 'kevin',   name: 'Kevin',   title: 'PDR Specialist', email: 'kevin@alldentpdr.com' },
@@ -3266,10 +3710,71 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
 }
 
 function RegisterView({ form, setForm, onSubmit, saveMessage }) {
-  const onField = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [vinLookupMessage, setVinLookupMessage] = useState('');
+  const lastDecodedVin = useRef('');
+
+  const onField = (key) => (e) => {
+    const value = key === 'vin' ? String(e.target.value || '').toUpperCase() : e.target.value;
+    setForm({ ...form, [key]: value });
+  };
+
+  const applyVehicleFromVin = (vehicleData = {}) => {
+    setForm((prev) => ({
+      ...prev,
+      vin: vehicleData.vin || prev.vin,
+      year: vehicleData.year || prev.year,
+      make: vehicleData.make || prev.make,
+      model: vehicleData.model || prev.model,
+    }));
+  };
+
+  const lookupVin = async (rawVin) => {
+    const vin = normalizeVin(rawVin);
+    if (!vin) return;
+    setForm((prev) => ({ ...prev, vin }));
+    if (vin.length !== 17) {
+      setVinLookupMessage('Enter all 17 characters to look up year, make, and model.');
+      return;
+    }
+    if (vin === lastDecodedVin.current) return;
+
+    setVinLookupMessage('Looking up VIN…');
+    try {
+      const data = await decodeVin(vin);
+      applyVehicleFromVin({ ...data.vehicle, vin });
+      lastDecodedVin.current = vin;
+      setVinLookupMessage(data.message || 'Vehicle details loaded.');
+    } catch (err) {
+      lastDecodedVin.current = '';
+      setVinLookupMessage(err.message || 'VIN lookup failed.');
+    }
+  };
+
+  useEffect(() => {
+    const vin = normalizeVin(form.vin);
+    if (vin.length === 17) lookupVin(vin);
+  }, [form.vin]);
+
+  const handleVinScan = async (vin) => {
+    setScannerOpen(false);
+    await lookupVin(vin);
+  };
+
+  const handleScannerManual = (message) => {
+    setScannerOpen(false);
+    setVinLookupMessage(message || 'Enter your 17-character VIN below.');
+  };
 
   return (
     <section className="panel" style={{ maxWidth: 800 }}>
+      {scannerOpen && (
+        <VinScanner
+          onScan={handleVinScan}
+          onClose={() => setScannerOpen(false)}
+          onManualEntry={handleScannerManual}
+        />
+      )}
       <div className="panel-head">
         <div>
           <h3>Register a vehicle</h3>
@@ -3360,8 +3865,16 @@ function RegisterView({ form, setForm, onSubmit, saveMessage }) {
 
           <div className="form-grid-3">
             <div>
-              <label>VIN #</label>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                <label style={{ marginBottom: 0 }}>VIN #</label>
+                <button type="button" className="button ghost btn-scan-vin" onClick={() => setScannerOpen(true)}>
+                  Scan VIN
+                </button>
+              </div>
               <input type="text" value={form.vin} onChange={onField('vin')} maxLength={17} style={{ textTransform: 'uppercase' }} />
+              {vinLookupMessage && (
+                <p className="cell-sub" style={{ margin: '6px 0 0', fontSize: 12 }}>{vinLookupMessage}</p>
+              )}
             </div>
             <div>
               <label>Color</label>

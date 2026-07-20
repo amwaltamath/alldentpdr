@@ -4,11 +4,69 @@ export function normalizeVin(value) {
     .replace(/[^A-Z0-9]/g, '');
 }
 
-export function extractVin(value) {
-  const normalized = normalizeVin(value)
-    .replace(/[IOQ]/g, (char) => (char === 'I' ? '1' : '0'));
-  const match = normalized.match(/[A-HJ-NPR-Z0-9]{17}/);
+function extractVinFromNormalized(normalized) {
+  const corrected = normalized.replace(/[IOQ]/g, (char) => (char === 'I' ? '1' : '0'));
+  const match = corrected.match(/[A-HJ-NPR-Z0-9]{17}/);
   return match ? match[0] : '';
+}
+
+/** Extract a 17-character VIN from barcode, QR, URL, or plain text. */
+export function extractVin(value) {
+  if (value == null || value === '') return '';
+
+  const raw = String(value).trim();
+  if (!raw) return '';
+
+  // QR / barcode URLs (Monroney stickers, manufacturer lookup links)
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      const url = new URL(raw);
+      for (const key of ['vin', 'VIN', 'Vin', 'vehicleIdentificationNumber']) {
+        const param = url.searchParams.get(key);
+        if (param) {
+          const fromParam = extractVinFromNormalized(normalizeVin(param));
+          if (fromParam) return fromParam;
+        }
+      }
+
+      const pathMatch = url.pathname.match(/[A-HJ-NPR-Z0-9]{17}/i);
+      if (pathMatch) {
+        const fromPath = extractVinFromNormalized(normalizeVin(pathMatch[0]));
+        if (fromPath) return fromPath;
+      }
+    } catch {
+      // fall through to generic parsing
+    }
+  }
+
+  // JSON payloads from some QR codes
+  if (raw.startsWith('{') || raw.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(raw);
+      const objects = Array.isArray(parsed) ? parsed : [parsed];
+      for (const obj of objects) {
+        if (!obj || typeof obj !== 'object') continue;
+        for (const key of ['vin', 'VIN', 'Vin', 'vehicleIdentificationNumber', 'VehicleIdentificationNumber']) {
+          if (obj[key]) {
+            const fromJson = extractVinFromNormalized(normalizeVin(obj[key]));
+            if (fromJson) return fromJson;
+          }
+        }
+      }
+    } catch {
+      // fall through
+    }
+  }
+
+  // Label formats: VIN: XXXX, VIN=XXXX, VIN# XXXX
+  const labelMatch = raw.match(/VIN\s*[:#=]\s*([A-HJ-NPR-Z0-9IOQ]{17})/i);
+  if (labelMatch) {
+    const fromLabel = extractVinFromNormalized(normalizeVin(labelMatch[1]));
+    if (fromLabel) return fromLabel;
+  }
+
+  // Code 39 wraps VIN with asterisks — strip noise then find 17 chars
+  return extractVinFromNormalized(normalizeVin(raw.replace(/\*/g, '')));
 }
 
 /** Crop the center scan band (matches the on-screen reticle). */
