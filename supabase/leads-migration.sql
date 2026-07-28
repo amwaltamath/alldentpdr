@@ -52,3 +52,11 @@ for update
 to authenticated
 using (public.is_portal_admin())
 with check (public.is_portal_admin());
+
+-- Only portal admins can delete leads (spam removal)
+drop policy if exists "Portal admins can delete leads" on public.leads;
+create policy "Portal admins can delete leads"
+on public.leads
+for delete
+to authenticated
+using (public.is_portal_admin());

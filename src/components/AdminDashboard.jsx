@@ -403,12 +403,18 @@ export default function AdminDashboard() {
   };
 
   const handleLeadDelete = async (id) => {
-    if (!window.confirm('Delete this lead as spam? This cannot be undone.')) return;
+    if (!window.confirm('Delete this lead? This cannot be undone.')) return;
     try {
       await deleteLead(id);
       setLeads((prev) => prev.filter((l) => l.id !== id));
+      setSelectedId((cur) => (cur === id ? null : cur));
     } catch (err) {
-      alert('Delete lead failed: ' + err.message);
+      const msg = err?.message || 'Unknown error';
+      alert(
+        msg.includes('row-level security') || msg.includes('permission')
+          ? `Delete failed: ${msg}\n\nIf this keeps happening, run supabase/leads-delete-migration.sql in the Supabase SQL editor.`
+          : `Delete lead failed: ${msg}`
+      );
     }
   };
 
@@ -2213,7 +2219,12 @@ function OurWorkView({
         <div className="panel-head">
           <h3>Our Work Gallery</h3>
         </div>
-        <p className="meta">Our Work publishing requires live Supabase (database + photo storage). Connect Supabase to manage gallery posts.</p>
+        <div className="panel-body">
+          <p className="meta">
+            Photo uploads require the live Supabase connection (database + <code>project-photos</code> storage).
+            Sign in with your Supabase admin account on the deployed site—not demo mode—to see the upload form.
+          </p>
+        </div>
       </section>
     );
   }
@@ -2233,9 +2244,10 @@ function OurWorkView({
           )}
         </div>
 
+        <div className="panel-body">
         <form className="ow-admin-form" onSubmit={handleSubmit}>
           <div className="ow-admin-grid">
-            <label className="ow-admin-field">
+            <label className="ow-admin-field ow-admin-field--full">
               <span>Title</span>
               <input
                 type="text"
@@ -2245,6 +2257,98 @@ function OurWorkView({
                 required
               />
             </label>
+          </div>
+
+          <div className="ow-admin-photos">
+            <span className="ow-admin-photos-label">Photos</span>
+            <input
+              ref={fileInputRef}
+              id="ow-admin-photo-input"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/*"
+              multiple
+              className="ow-admin-file-input"
+              onChange={handleFilesSelected}
+            />
+            <div
+              className="ow-admin-upload-zone"
+              role="button"
+              tabIndex={0}
+              onClick={() => fileInputRef.current?.click()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.add('is-dragover');
+              }}
+              onDragLeave={(e) => {
+                e.currentTarget.classList.remove('is-dragover');
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove('is-dragover');
+                const files = Array.from(e.dataTransfer?.files || []).filter((f) => f.type.startsWith('image/'));
+                if (!files.length) return;
+                setPendingFiles((prev) => [...prev, ...files]);
+                setPendingPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+              }}
+            >
+              <span className="ow-admin-upload-icon" aria-hidden="true">📷</span>
+              <strong>Upload photos</strong>
+              <p className="meta" style={{ margin: '6px 0 12px' }}>
+                Click here or drag images from your phone or computer. Add before/after shots for the gallery carousel.
+              </p>
+              <button
+                type="button"
+                className="button primary sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                Choose files
+              </button>
+            </div>
+
+            {editingProject?.images?.length > 0 && (
+              <div className="ow-admin-photo-grid">
+                {editingProject.images.map((img, index) => (
+                  <div key={img.id} className="ow-admin-photo-card">
+                    <img src={img.imageUrl} alt="" />
+                    <div className="ow-admin-photo-actions">
+                      <button type="button" className="button ghost sm" disabled={index === 0} onClick={() => moveExistingPhoto(editingProject, img.id, 'up')}>↑</button>
+                      <button type="button" className="button ghost sm" disabled={index === editingProject.images.length - 1} onClick={() => moveExistingPhoto(editingProject, img.id, 'down')}>↓</button>
+                      <button type="button" className="button ghost sm" onClick={() => onPhotoDelete(img.id)}>Remove</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {pendingPreviews.length > 0 && (
+              <div className="ow-admin-photo-grid">
+                {pendingPreviews.map((src, index) => (
+                  <div key={src} className="ow-admin-photo-card is-pending">
+                    <img src={src} alt="" />
+                    <div className="ow-admin-photo-actions">
+                      <span className="cell-sub">New</span>
+                      <button type="button" className="button ghost sm" onClick={() => removePendingFile(index)}>Remove</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!editingProject?.images?.length && pendingPreviews.length === 0 && (
+              <p className="meta ow-admin-photos-empty">No photos selected yet.</p>
+            )}
+          </div>
+
+          <div className="ow-admin-grid" style={{ marginTop: 16 }}>
             <label className="ow-admin-field">
               <span>Vehicle (optional)</span>
               <input
@@ -2296,56 +2400,6 @@ function OurWorkView({
             <span>Published on public Our Work page</span>
           </label>
 
-          <div className="ow-admin-photos">
-            <div className="ow-admin-photos-head">
-              <span>Photos</span>
-              <button type="button" className="button ghost sm" onClick={() => fileInputRef.current?.click()}>
-                Add photos
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                hidden
-                onChange={handleFilesSelected}
-              />
-            </div>
-
-            {editingProject?.images?.length > 0 && (
-              <div className="ow-admin-photo-grid">
-                {editingProject.images.map((img, index) => (
-                  <div key={img.id} className="ow-admin-photo-card">
-                    <img src={img.imageUrl} alt="" />
-                    <div className="ow-admin-photo-actions">
-                      <button type="button" className="button ghost sm" disabled={index === 0} onClick={() => moveExistingPhoto(editingProject, img.id, 'up')}>↑</button>
-                      <button type="button" className="button ghost sm" disabled={index === editingProject.images.length - 1} onClick={() => moveExistingPhoto(editingProject, img.id, 'down')}>↓</button>
-                      <button type="button" className="button ghost sm" onClick={() => onPhotoDelete(img.id)}>Remove</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {pendingPreviews.length > 0 && (
-              <div className="ow-admin-photo-grid">
-                {pendingPreviews.map((src, index) => (
-                  <div key={src} className="ow-admin-photo-card is-pending">
-                    <img src={src} alt="" />
-                    <div className="ow-admin-photo-actions">
-                      <span className="cell-sub">New</span>
-                      <button type="button" className="button ghost sm" onClick={() => removePendingFile(index)}>Remove</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {!editingProject?.images?.length && pendingPreviews.length === 0 && (
-              <p className="meta">Upload one or more photos. They will appear as a carousel on the public gallery card.</p>
-            )}
-          </div>
-
           <div className="button-row" style={{ marginTop: 16 }}>
             <button type="submit" className="button primary" disabled={saving}>
               {saving ? 'Saving…' : editingId ? 'Save changes' : 'Publish post'}
@@ -2353,6 +2407,7 @@ function OurWorkView({
             {message && <span className="cell-sub" style={{ alignSelf: 'center' }}>{message}</span>}
           </div>
         </form>
+        </div>
       </section>
 
       <section className="panel" style={{ marginTop: 18 }}>
