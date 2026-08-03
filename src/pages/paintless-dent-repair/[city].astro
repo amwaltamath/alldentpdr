@@ -50,6 +50,10 @@ const faqItems = [
     question: `Do I need an appointment to drop off my vehicle from ${city.name}?`,
     answer: `Walk-ins are welcome at our Cleveland shop at ${shopAddress} — just ${city.driveMinutes} minutes from ${city.name}. You can also call ${shopPhone} to schedule ahead. Estimates are always free.`,
   },
+  {
+    question: `What ZIP codes near ${city.name} does All Dent PDR serve for paintless dent repair?`,
+    answer: `We serve ${city.name} (${city.zipCodes.join(', ')}) along with nearby ${city.nearbyShops.join(', ')} and the rest of ${city.county} County from our Cleveland shop.`,
+  },
 ];
 
 const localBusinessSchema = {
@@ -159,6 +163,11 @@ const localBusinessSchema = {
       <span class="section-label">Services Covered</span>
       <h2>One provider for your full dent repair needs in {city.name}</h2>
       <p>{city.uniqueNote}</p>
+      <p>
+        Whether the damage came from a spring hailstorm, a parking lot ding, or a minor bump, our shop at
+        {shopAddress} serves {city.name} (ZIP {city.zipCodes.join(', ')}) and the surrounding {city.county} County
+        area with one consistent standard: paint preserved, no fillers, and an honest assessment before any work begins.
+      </p>
       <div class="grid-3" style="margin-top:36px;">
         <article class="card">
           <h3>Hail damage PDR</h3>

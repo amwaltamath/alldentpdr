@@ -50,6 +50,10 @@ const faqItems = [
     question: `Will door ding repair require repainting?`,
     answer: `In most cases, no. If your paint is intact, we use paintless dent repair to reshape the metal from behind the panel — preserving your factory finish and resale value.`,
   },
+  {
+    question: `What ZIP codes near ${city.name} does All Dent PDR serve for door ding repair?`,
+    answer: `We serve ${city.name} (${city.zipCodes.join(', ')}) and nearby ${city.nearbyShops.join(', ')} throughout ${city.county} County from our Granger Rd shop.`,
+  },
 ];
 
 const localBusinessSchema = {
@@ -161,6 +165,11 @@ const localBusinessSchema = {
       <p>
         Drivers in {city.name} can reach our shop via a quick {city.driveMinutes}-minute drive to
         <strong>{shopAddress}</strong>. Walk-ins are welcome any day we're open — no appointment needed for a free assessment.
+      </p>
+      <p>
+        Door dings and shopping-cart dents are an everyday reality in {city.name} (ZIP {city.zipCodes.join(', ')}) —
+        tight parking lots and busy retail areas mean most vehicles pick up at least a few over time. We keep
+        turnaround fast precisely because these smaller repairs are our specialty, not an afterthought.
       </p>
       <div class="grid-3" style="margin-top:36px;">
         <article class="card">

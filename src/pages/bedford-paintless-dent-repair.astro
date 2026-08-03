@@ -118,7 +118,7 @@ const faqSchema = {
 
         <div style="margin-top:28px;border-top:1px solid rgba(255,255,255,0.12);padding-top:20px;">
           <BeforeAfter
-            client:load
+            client:visible
             before="/images/alldentbefore.jpg"
             after="/images/alldentafter.jpg"
             alt="Paintless dent repair near Bedford OH &mdash; All Dent PDR before and after"
@@ -152,6 +152,9 @@ const faqSchema = {
             Describe the dent damage *
             <textarea name="message" rows="3" placeholder="Where are the dents located? Any other details?" required style="padding:10px 14px;border:1.5px solid #d8cfc8;border-radius:8px;font-size:0.95rem;outline:none;resize:vertical;"></textarea>
           </label>
+          <div class="hp-field" aria-hidden="true">
+            <label>Website<input type="text" name="hp_website" tabindex="-1" autocomplete="off" /></label>
+          </div>
           <button id="lp-submit" type="submit" style="background:#fc1317;color:#fff;border:none;padding:15px;border-radius:999px;font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px rgba(252,19,23,0.35);transition:opacity 0.2s;">
             Request Free Inspection
           </button>
@@ -180,6 +183,7 @@ const faqSchema = {
               return;
             }
 
+            const formRenderedAt = Date.now();
             form.addEventListener('submit', async (e) => {
               e.preventDefault();
               btn.disabled = true;
@@ -188,6 +192,7 @@ const faqSchema = {
               const eventId = `lead-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
               const data = Object.fromEntries(new FormData(form));
               data.event_id = eventId;
+              data.form_rendered_at = String(formRenderedAt);
               data.location = data.location || 'Bedford, OH';
 
               const getCookie = (n: string) => (document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)') || [])[2] || '';

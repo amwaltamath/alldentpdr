@@ -46,8 +46,10 @@ export default function ChatWidget() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [unread, setUnread] = useState(0);
+  const [hpWebsite, setHpWebsite] = useState('');
   const lastSeenRef = useRef(null);
   const scrollerRef = useRef(null);
+  const renderedAtRef = useRef(Date.now());
 
   // Persist token + identity
   useEffect(() => {
@@ -112,6 +114,8 @@ export default function ChatWidget() {
           token, name: name.trim(), email: email.trim(), phone: phone.trim(),
           page_url: typeof window !== 'undefined' ? window.location.href : '',
           message: trimmedMsg,
+          hp_website: hpWebsite,
+          form_rendered_at: renderedAtRef.current,
         }),
       });
       if (!res.ok) {
@@ -247,6 +251,19 @@ export default function ChatWidget() {
                   required
                 />
               </label>
+              <div className="hp-field" aria-hidden="true">
+                <label>
+                  Website
+                  <input
+                    type="text"
+                    name="hp_website"
+                    value={hpWebsite}
+                    onChange={(e) => setHpWebsite(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </label>
+              </div>
               {error && <div className="chat-error">{error}</div>}
               <button type="submit" className="chat-send-btn" disabled={sending}>
                 {sending ? 'Sending…' : 'Start chat'}

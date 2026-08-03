@@ -16,6 +16,8 @@ export default function BeforeAfter({ before, after, alt = 'Before and after rep
         src={showBefore ? before : after}
         alt={alt}
         className="before-after-image"
+        loading="lazy"
+        decoding="async"
       />
     </div>
   );

@@ -3,6 +3,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { isRateLimited } from '../../../lib/spam-guard';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const FROM = 'noreply@alldentpdr.com';
@@ -42,6 +43,9 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (message.length > 4000) {
     return new Response(JSON.stringify({ error: 'Message too long' }), { status: 422 });
+  }
+  if (isRateLimited(`chat-send:${token}`, 20, 5 * 60 * 1000)) {
+    return new Response(JSON.stringify({ error: 'Too many messages. Please slow down.' }), { status: 429 });
   }
 
   const { data: msgId, error } = await supabase.rpc('chat_send_visitor_message', {

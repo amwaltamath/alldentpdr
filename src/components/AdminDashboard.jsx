@@ -26,6 +26,7 @@ import {
   signInRemoteAdmin,
   signOutRemoteAdmin,
   subscribeChatChanges,
+  subscribeLeadChanges,
   updateLeadStatus,
   updateProject,
   updateVehicle,
@@ -33,6 +34,8 @@ import {
   uploadProjectPhoto,
 } from './portal/storage';
 import { decodeVin, normalizeVin } from '../lib/vin';
+import { compressImages } from '../lib/image';
+import { getNotificationPermission, playChime, requestNotificationPermission, showBrowserNotification } from '../lib/notify';
 import VinScanner from './VinScanner';
 
 const ADMIN_USER = import.meta.env.PUBLIC_PORTAL_ADMIN_USER || 'admin';
@@ -214,10 +217,18 @@ export default function AdminDashboard() {
     return () => { active = false; };
   }, [remoteMode, session]);
 
+  // Desktop notification permission (for new leads + new chat messages)
+  const [notifPermission, setNotifPermission] = useState('default');
+  useEffect(() => { setNotifPermission(getNotificationPermission()); }, []);
+  const handleEnableNotifications = async () => {
+    const result = await requestNotificationPermission();
+    setNotifPermission(result);
+  };
+
   // Realtime chat updates for admin
   useEffect(() => {
     if (remoteMode && (!session || session.role !== 'admin')) return;
-    const unsub = subscribeChatChanges(async () => {
+    const unsub = subscribeChatChanges(async (payload) => {
       try {
         const list = await getChatConversations();
         setConversations(list);
@@ -225,12 +236,42 @@ export default function AdminDashboard() {
           const msgs = await getChatMessages(activeConvId);
           setChatMessages(msgs);
         }
+        const isNewVisitorMessage =
+          payload?.table === 'chat_messages' &&
+          payload?.eventType === 'INSERT' &&
+          payload?.new?.sender === 'visitor';
+        if (isNewVisitorMessage && payload.new.conversation_id !== activeConvId) {
+          playChime();
+          showBrowserNotification('New live chat message', {
+            body: (payload.new.body || '').slice(0, 140) || 'A visitor sent a new message.',
+            tag: `chat-${payload.new.conversation_id}`,
+            onClick: () => { setView('messages'); setActiveConvId(payload.new.conversation_id); },
+          });
+        }
       } catch {
         // Ignore transient realtime refresh errors.
       }
     });
     return unsub;
   }, [remoteMode, session, activeConvId]);
+
+  // Realtime new-lead notifications for admin
+  useEffect(() => {
+    if (remoteMode && (!session || session.role !== 'admin')) return;
+    const unsub = subscribeLeadChanges((payload) => {
+      if (payload?.eventType !== 'INSERT' || !payload.new) return;
+      const lead = payload.new;
+      setLeads((prev) => (prev.some((l) => l.id === lead.id) ? prev : [lead, ...prev]));
+      if (lead.status === 'Spam') return; // don't alert on auto-flagged spam
+      playChime();
+      showBrowserNotification('New lead received', {
+        body: `${lead.name || 'Someone'} — ${(lead.message || '').slice(0, 120)}`,
+        tag: `lead-${lead.id}`,
+        onClick: () => setView('leads'),
+      });
+    });
+    return unsub;
+  }, [remoteMode, session]);
 
   // Load messages when opening a conversation
   useEffect(() => {
@@ -625,6 +666,19 @@ export default function AdminDashboard() {
               placeholder="Search by customer, plate, or job ID…"
             />
           </div>
+          {notifPermission !== 'unsupported' && notifPermission !== 'granted' && (
+            <button
+              type="button"
+              className="button ghost sm dash-notif-btn"
+              onClick={handleEnableNotifications}
+              disabled={notifPermission === 'denied'}
+              title={notifPermission === 'denied'
+                ? 'Notifications are blocked in your browser settings for this site'
+                : 'Get desktop alerts for new leads and chat messages'}
+            >
+              🔔 {notifPermission === 'denied' ? 'Notifications blocked' : 'Enable notifications'}
+            </button>
+          )}
           <div className="dash-user">
             <span className="dash-avatar">{userInitials}</span>
             <span>{userLabel}</span>
@@ -1748,7 +1802,7 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
   );
 }
 
-const LEAD_STATUSES = ['New', 'Contacted', 'Quoted', 'Converted', 'Closed'];
+const LEAD_STATUSES = ['New', 'Contacted', 'Quoted', 'Converted', 'Closed', 'Spam'];
 
 function sourceLabel(src) {
   if (!src) return 'Organic';
@@ -1800,6 +1854,7 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
         <div className="leads-kpi accent-google"><span className="leads-kpi-val">{googleCount}</span><span className="leads-kpi-lbl">Google Ads</span></div>
         <div className="leads-kpi accent-meta"><span className="leads-kpi-val">{metaCount}</span><span className="leads-kpi-lbl">Meta / FB</span></div>
         <div className="leads-kpi accent-muted"><span className="leads-kpi-val">{organicCount}</span><span className="leads-kpi-lbl">Organic / Direct</span></div>
+        {byStatus['Spam'] > 0 && <div className="leads-kpi accent-warn"><span className="leads-kpi-val">{byStatus['Spam']}</span><span className="leads-kpi-lbl">Auto-flagged Spam</span></div>}
         {otherCount > 0 && <div className="leads-kpi"><span className="leads-kpi-val">{otherCount}</span><span className="leads-kpi-lbl">Other</span></div>}
       </div>
 
@@ -2107,6 +2162,7 @@ function OurWorkView({
   const [pendingFiles, setPendingFiles] = useState([]);
   const [pendingPreviews, setPendingPreviews] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [compressing, setCompressing] = useState(false);
   const [message, setMessage] = useState('');
   const fileInputRef = useRef(null);
   const pendingPreviewsRef = useRef([]);
@@ -2147,12 +2203,23 @@ function OurWorkView({
     setMessage('');
   };
 
+  const addFiles = async (files) => {
+    if (!files.length) return;
+    setCompressing(true);
+    setMessage('');
+    try {
+      const compressed = await compressImages(files);
+      setPendingFiles((prev) => [...prev, ...compressed]);
+      setPendingPreviews((prev) => [...prev, ...compressed.map((f) => URL.createObjectURL(f))]);
+    } finally {
+      setCompressing(false);
+    }
+  };
+
   const handleFilesSelected = (event) => {
     const files = Array.from(event.target.files || []).filter((f) => f.type.startsWith('image/'));
-    if (!files.length) return;
-    setPendingFiles((prev) => [...prev, ...files]);
-    setPendingPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
     event.target.value = '';
+    addFiles(files);
   };
 
   const removePendingFile = (index) => {
@@ -2292,25 +2359,26 @@ function OurWorkView({
                 e.preventDefault();
                 e.currentTarget.classList.remove('is-dragover');
                 const files = Array.from(e.dataTransfer?.files || []).filter((f) => f.type.startsWith('image/'));
-                if (!files.length) return;
-                setPendingFiles((prev) => [...prev, ...files]);
-                setPendingPreviews((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
+                addFiles(files);
               }}
             >
               <span className="ow-admin-upload-icon" aria-hidden="true">📷</span>
               <strong>Upload photos</strong>
               <p className="meta" style={{ margin: '6px 0 12px' }}>
-                Click here or drag images from your phone or computer. Add before/after shots for the gallery carousel.
+                {compressing
+                  ? 'Compressing photos…'
+                  : 'Click here or drag images from your phone or computer. Add before/after shots for the gallery carousel. Photos are automatically compressed before upload.'}
               </p>
               <button
                 type="button"
                 className="button primary sm"
+                disabled={compressing}
                 onClick={(e) => {
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
               >
-                Choose files
+                {compressing ? 'Compressing…' : 'Choose files'}
               </button>
             </div>
 
@@ -2401,7 +2469,7 @@ function OurWorkView({
           </label>
 
           <div className="button-row" style={{ marginTop: 16 }}>
-            <button type="submit" className="button primary" disabled={saving}>
+            <button type="submit" className="button primary" disabled={saving || compressing}>
               {saving ? 'Saving…' : editingId ? 'Save changes' : 'Publish post'}
             </button>
             {message && <span className="cell-sub" style={{ alignSelf: 'center' }}>{message}</span>}

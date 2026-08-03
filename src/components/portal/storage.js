@@ -304,6 +304,15 @@ export async function deleteLead(id) {
   if (error) throw error;
 }
 
+export function subscribeLeadChanges(onChange) {
+  if (!isSupabaseEnabled()) return () => {};
+  const channel = supabase
+    .channel('admin-leads')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'leads' }, onChange)
+    .subscribe();
+  return () => { supabase.removeChannel(channel); };
+}
+
 // ===== Chat (admin) =====
 
 export async function getChatConversations() {

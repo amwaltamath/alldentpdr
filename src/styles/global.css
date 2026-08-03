@@ -642,7 +642,7 @@ body.popup-open { overflow: hidden; }
   border: 1px solid var(--line);
   background: var(--surface-2);
 }
-.before-after-image { width: 100%; height: auto; }
+.before-after-image { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
 .before-after-toggle {
   position: absolute; top: 12px; right: 12px;
   background: rgba(11,18,32,.85);
@@ -1072,6 +1072,7 @@ body.popup-open { overflow: hidden; }
 .leads-kpi.accent-google { border-color: #bcd4f7; background: #f0f6ff; }
 .leads-kpi.accent-meta  { border-color: #d5c5f7; background: #f8f4ff; }
 .leads-kpi.accent-muted { border-color: var(--line); background: var(--bg, #f5f0eb); }
+.leads-kpi.accent-warn  { border-color: #e8c9a0; background: #fff8ef; }
 .leads-kpi-val {
   font-size: 26px;
   font-weight: 700;
@@ -1083,6 +1084,7 @@ body.popup-open { overflow: hidden; }
 .leads-kpi.accent-sage  .leads-kpi-val { color: #3a6b4a; }
 .leads-kpi.accent-google .leads-kpi-val { color: #1a6fd4; }
 .leads-kpi.accent-meta  .leads-kpi-val { color: #6c3fc5; }
+.leads-kpi.accent-warn  .leads-kpi-val { color: #b5790a; }
 .leads-kpi-lbl {
   font-size: 11px;
   font-weight: 600;
@@ -1182,6 +1184,8 @@ body.popup-open { overflow: hidden; }
     no-repeat center / contain;
   pointer-events: none;
 }
+
+.dash-notif-btn { white-space: nowrap; flex-shrink: 0; }
 
 .dash-user { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--muted); }
 .dash-avatar {
@@ -2474,6 +2478,8 @@ select:focus {
 .before-after-image {
   width: 100%;
   height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
   display: block;
 }
 
@@ -3823,8 +3829,18 @@ label {
   }
 }
 
+/* Honeypot field: visually hidden from real visitors, but present in the DOM for bots to fill in. */
+.hp-field {
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
 .chat-head {
-  background: linear-gradient(135deg, #b0522b, #8a3f1f);
+  background: linear-gradient(135deg, #ff4b00, #6c2000);
   color: #fff;
   padding: 14px 18px;
   display: flex;
@@ -4339,6 +4355,75 @@ body.theme-liquid-dark .lead-popup {
 
 body.theme-liquid-dark .site-footer {
   background: linear-gradient(180deg, #090f18 0%, #050911 100%);
+}
+
+/* Live chat widget: force readable contrast against the liquid dark theme,
+   since the panel keeps its own glass background regardless of route. */
+body.theme-liquid-dark .chat-panel {
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015)) border-box,
+    rgba(9, 15, 26, 0.97);
+  border: 1px solid var(--glass-stroke);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+
+body.theme-liquid-dark .chat-intro-lead,
+body.theme-liquid-dark .chat-foot-note,
+body.theme-liquid-dark .chat-system,
+body.theme-liquid-dark .chat-meta {
+  color: var(--muted);
+}
+
+body.theme-liquid-dark .chat-intro label {
+  color: var(--ink-700);
+}
+
+body.theme-liquid-dark .chat-foot-note a {
+  color: #ff9d85;
+}
+
+body.theme-liquid-dark .chat-intro input,
+body.theme-liquid-dark .chat-intro textarea,
+body.theme-liquid-dark .chat-composer textarea {
+  background: rgba(6, 11, 20, 0.85);
+  color: var(--ink);
+  border-color: var(--glass-stroke);
+}
+
+body.theme-liquid-dark .chat-intro input::placeholder,
+body.theme-liquid-dark .chat-composer textarea::placeholder {
+  color: var(--muted-2);
+}
+
+body.theme-liquid-dark .chat-intro input:focus,
+body.theme-liquid-dark .chat-intro textarea:focus,
+body.theme-liquid-dark .chat-composer textarea:focus {
+  outline-color: rgba(252, 19, 23, 0.4);
+  border-color: #fc1317;
+}
+
+body.theme-liquid-dark .chat-log {
+  background: rgba(4, 8, 14, 0.85);
+}
+
+body.theme-liquid-dark .chat-msg-visitor .chat-bubble,
+body.theme-liquid-dark .chat-msg-visitor-in .chat-bubble {
+  background: rgba(22, 32, 50, 0.92);
+  color: var(--ink);
+  border-color: var(--glass-stroke);
+}
+
+body.theme-liquid-dark .chat-composer {
+  background: rgba(9, 15, 26, 0.92);
+  border-top-color: var(--line);
+}
+
+body.theme-liquid-dark .chat-error {
+  background: rgba(176, 40, 25, 0.22);
+  color: #ffb4a3;
+  border-color: rgba(252, 19, 23, 0.4);
 }
 
 @supports not ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {

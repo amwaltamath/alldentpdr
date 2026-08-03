@@ -3,6 +3,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
+import { isHoneypotTripped, isRateLimited, submittedTooFast } from '../../../lib/spam-guard';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const FROM = 'noreply@alldentpdr.com';
@@ -18,7 +19,7 @@ function esc(s: string) {
   } as Record<string, string>)[c]);
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   if (!supabase) {
     return new Response(JSON.stringify({ error: 'Chat unavailable' }), { status: 503 });
   }
@@ -39,6 +40,12 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (!message) {
     return new Response(JSON.stringify({ error: 'Message required' }), { status: 422 });
+  }
+  if (isHoneypotTripped(body.hp_website) || submittedTooFast(body.form_rendered_at)) {
+    return new Response(JSON.stringify({ error: 'Could not start chat' }), { status: 400 });
+  }
+  if (isRateLimited(`chat-start:${clientAddress}`, 5, 10 * 60 * 1000)) {
+    return new Response(JSON.stringify({ error: 'Too many attempts. Please try again later.' }), { status: 429 });
   }
 
   const { data, error } = await supabase.rpc('chat_start_conversation', {

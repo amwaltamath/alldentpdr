@@ -4,6 +4,7 @@ import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { createClient } from '@supabase/supabase-js';
 import { sendCapiEvent } from '../../lib/meta-capi';
+import { isHoneypotTripped, isRateLimited, looksLikeSpamContent, submittedTooFast } from '../../lib/spam-guard';
 
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const FROM = 'noreply@alldentpdr.com';
@@ -24,11 +25,25 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   const { name, email, location, vehicle, message,
           utm_source, utm_medium, utm_campaign, utm_content, utm_term, referrer,
-          fbc, fbp, event_id } = body;
+          fbc, fbp, event_id, hp_website, form_rendered_at } = body;
 
   if (!name || !email || !message) {
     return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 422 });
   }
+
+  // Silently accept-and-drop obvious bot submissions (honeypot filled or submitted too fast).
+  // Returning a fake success avoids tipping off bots that they were blocked.
+  if (isHoneypotTripped(hp_website) || submittedTooFast(form_rendered_at)) {
+    return new Response(JSON.stringify({ ok: true }), { status: 200 });
+  }
+
+  if (isRateLimited(`contact:${clientAddress}`, 5, 10 * 60 * 1000)) {
+    return new Response(JSON.stringify({ error: 'Too many requests. Please try again later or call us directly.' }), { status: 429 });
+  }
+
+  // Heuristically-suspicious messages are still saved (in case of a false positive) but
+  // filed under a "Spam" status and skipped from admin email / ad-conversion pixels.
+  const isSuspectedSpam = looksLikeSpamContent(message);
 
   // Save lead to Supabase (best-effort — don't fail the request if Supabase is unavailable)
   if (supabase) {
@@ -41,7 +56,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       location: (location || '').trim() || null,
       vehicle: (vehicle || '').trim() || null,
       message: message.trim(),
-      status: 'New',
+      status: isSuspectedSpam ? 'Spam' : 'New',
       utm_source: utm_source || null,
       utm_medium: utm_medium || null,
       utm_campaign: utm_campaign || null,
@@ -54,6 +69,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     }).then(({ error }) => {
       if (error) console.error('[contact] Supabase lead insert error:', error.message);
     });
+  }
+
+  // Suspected spam: skip the admin email + ad-conversion pixels, but still return
+  // success so the (likely bot) submitter has no signal it was flagged.
+  if (isSuspectedSpam) {
+    return new Response(JSON.stringify({ ok: true }), { status: 200 });
   }
 
   try {

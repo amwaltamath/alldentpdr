@@ -13,6 +13,7 @@ const BASE = 'https://alldentpdr.com';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const corePages = [
+  '/',
   '/about',
   '/services',
   '/contact',
