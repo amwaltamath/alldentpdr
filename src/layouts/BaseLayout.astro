@@ -196,6 +196,21 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
     <slot name="head" />
   </head>
   <body class:list={{ 'theme-liquid-dark': useLiquidDarkTheme }}>
+    {!isPortalRoute && (
+      <script is:inline>
+        (function () {
+          try {
+            var saved = localStorage.getItem('alldent-theme');
+            if (saved === 'light') document.body.classList.remove('theme-liquid-dark');
+            else if (saved === 'dark') document.body.classList.add('theme-liquid-dark');
+          } catch (e) {}
+          var metaTheme = document.querySelector('meta[name="theme-color"]');
+          if (metaTheme) {
+            metaTheme.setAttribute('content', document.body.classList.contains('theme-liquid-dark') ? '#080d14' : '#b0522b');
+          }
+        })();
+      </script>
+    )}
     <script is:inline>
       (function () {
         const p = new URLSearchParams(window.location.search);
@@ -240,9 +255,49 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
             ))}
             <a class="nav-cta" href="/contact">Request Inspection</a>
           </nav>
+          {!isPortalRoute && (
+            <button
+              type="button"
+              id="theme-toggle-btn"
+              class="theme-toggle"
+              role="switch"
+              aria-checked={useLiquidDarkTheme ? 'true' : 'false'}
+              aria-label="Toggle dark mode"
+              title="Toggle light / dark mode"
+            >
+              <span class="theme-toggle-icon theme-toggle-icon--sun" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+              </span>
+              <span class="theme-toggle-icon theme-toggle-icon--moon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+              </span>
+              <span class="theme-toggle-thumb" aria-hidden="true"></span>
+            </button>
+          )}
           <MobileMenu client:load pathname={pathname} />
         </div>
       </header>
+    )}
+    {!isPortalRoute && (
+      <script is:inline>
+        (function () {
+          var btn = document.getElementById('theme-toggle-btn');
+          if (!btn) return;
+          var metaTheme = document.querySelector('meta[name="theme-color"]');
+          function isDark() { return document.body.classList.contains('theme-liquid-dark'); }
+          function sync() {
+            btn.setAttribute('aria-checked', isDark() ? 'true' : 'false');
+            if (metaTheme) metaTheme.setAttribute('content', isDark() ? '#080d14' : '#b0522b');
+          }
+          sync();
+          btn.addEventListener('click', function () {
+            document.body.classList.toggle('theme-liquid-dark');
+            var dark = isDark();
+            try { localStorage.setItem('alldent-theme', dark ? 'dark' : 'light'); } catch (e) {}
+            sync();
+          });
+        })();
+      </script>
     )}
 
     <main>

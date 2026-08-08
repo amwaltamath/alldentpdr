@@ -1596,6 +1596,12 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
               {hasVehicleRelease(v) ? '📋 View / Re-sign Release' : '📋 Issue Vehicle Release'}
             </button>
           </div>
+          {v.releaseFormData?.notes && (
+            <div style={{ marginTop: 10 }}>
+              <span className="jd-label">Release Notes</span>
+              <p style={{ fontSize: 14, lineHeight: 1.6, margin: '4px 0 0', whiteSpace: 'pre-wrap' }}>{v.releaseFormData.notes}</p>
+            </div>
+          )}
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Customer</h4>
           <div className="job-drawer-grid">
@@ -3566,7 +3572,7 @@ function buildReleaseHtml(job, data) {
     <div class="info-cell"><span class="lbl">Paid</span><span class="val">${esc(data.paid || '—')}</span></div>
   </div>
 
-  ${job.notes ? `<div class="notes-box"><div class="lbl">Repair Notes</div><p style="font-size:13px;line-height:1.6;white-space:pre-wrap">${esc(job.notes)}</p></div>` : ''}
+  ${data.notes ? `<div class="notes-box"><div class="lbl">Repair Notes</div><p style="font-size:13px;line-height:1.6;white-space:pre-wrap">${esc(data.notes)}</p></div>` : ''}
 
   <p class="agreement">
     The repairs on the vehicle listed above have been completed, as explained to me by All Dent PDR.
@@ -3604,6 +3610,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
   const today = new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
 
   const [paid, setPaid]             = useState(existing.paid    || job.deductible || '');
+  const [notes, setNotes]           = useState(existing.notes   || '');
   const [custSig, setCustSig]       = useState(existing.custSig || '');
   const [signedAt, setSignedAt]     = useState(existing.signedAt || '');
   const [witnessedBy, setWitnessBy] = useState(existing.witnessedBy || '');
@@ -3625,6 +3632,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
   const releaseData = {
     ...(existing.loanerAgreement ? { loanerAgreement: existing.loanerAgreement } : {}),
     paid,
+    notes: notes.trim(),
     custSig,
     signedAt:    signedAt    || today,
     witnessedBy,
@@ -3659,7 +3667,7 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
           vin:          job.vin,
           deductible:   job.deductible,
           paid,
-          notes:        job.notes,
+          notes:        releaseData.notes,
           custSig,
           signedAt:     releaseData.signedAt,
           witnessedBy,
@@ -3743,14 +3751,24 @@ function VehicleReleaseModal({ job, onClose, onSaved }) {
             </div>
           </div>
 
-          {/* Notes (read-only) */}
+          {/* Notes */}
           {job.notes && (
             <div style={{ marginTop: 12 }}>
-              <label>Repair Notes</label>
-              <textarea rows={3} value={job.notes} readOnly tabIndex={-1}
+              <label>Customer Intake Notes</label>
+              <textarea rows={2} value={job.notes} readOnly tabIndex={-1}
                 style={{ background: 'var(--sky,#eef5fb)', color: 'var(--muted)', resize: 'none' }} />
             </div>
           )}
+
+          <div style={{ marginTop: 12 }}>
+            <label>Repair Notes</label>
+            <textarea
+              rows={4}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Additional notes about the repair — panels worked, paint condition, warranty details, etc."
+            />
+          </div>
 
           {/* Agreement text */}
           <div className="reg-legal-box" style={{ marginTop: 14 }}>
