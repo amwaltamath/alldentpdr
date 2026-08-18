@@ -1499,14 +1499,90 @@ function buildLoanerAgreementHtml(job, loaner) {
 
 function JobNotesPanel({ job, adminEmail, onUpdated }) {
   const [draft, setDraft] = useState('');
-  const [visibility, setVisibility] = useState('internal');
   const [saving, setSaving] = useState(false);
-  const [pushingId, setPushingId] = useState(null);
   const [message, setMessage] = useState(null);
 
-  const notes = [...(job.jobNotes || [])].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  const notes = [...(job.jobNotes || [])]
+    .filter((note) => note.visibility !== 'customer')
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  const saveNote = async () => {
+    const trimmed = draft.trim();
+    if (!trimmed) {
+      setMessage({ type: 'err', text: 'Enter a note before saving.' });
+      return;
+    }
+
+    setSaving(true);
+    setMessage(null);
+    try {
+      const updated = await appendJobNote(job.id, {
+        body: trimmed,
+        visibility: 'internal',
+        author: adminEmail || 'Staff',
+      });
+      setDraft('');
+      onUpdated(updated);
+      setMessage({ type: 'ok', text: 'Note saved.' });
+    } catch (err) {
+      setMessage({ type: 'err', text: err.message || 'Unable to save note.' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="job-notes-panel">
+      <p className="cell-sub" style={{ margin: '0 0 8px' }}>Internal notes for your team — not visible to the customer.</p>
+      <div className="job-notes-list" aria-label="Job notes">
+        {!notes.length && (
+          <p className="cell-sub" style={{ margin: 0 }}>No internal notes yet.</p>
+        )}
+        {notes.map((note) => (
+          <article key={note.id} className="job-note-item is-internal">
+            <div className="job-note-head">
+              <span className="job-note-badge is-internal">Internal</span>
+              <span className="cell-sub" style={{ margin: 0 }}>
+                {note.author || 'Staff'} · {new Date(note.createdAt).toLocaleString()}
+              </span>
+            </div>
+            <p className="job-note-body">{note.body}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="job-notes-compose">
+        <label htmlFor={`job-note-${job.id}`}>Add internal note</label>
+        <textarea
+          id={`job-note-${job.id}`}
+          rows={3}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Parts on order, panel access issue, tech assignment…"
+        />
+        <div className="job-notes-actions">
+          <button type="button" className="button primary sm" onClick={saveNote} disabled={saving}>
+            {saving ? 'Saving…' : 'Save note'}
+          </button>
+        </div>
+        {message && (
+          <p className={`job-notes-msg ${message.type === 'ok' ? 'is-ok' : 'is-err'}`}>{message.text}</p>
+        )}
+      </div>
+    </div>
   );
+}
+
+function CustomerNotificationsPanel({ job, adminEmail, onUpdated, onNotificationChange }) {
+  const [draft, setDraft] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [pushingId, setPushingId] = useState(null);
+  const [sendingStatus, setSendingStatus] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  const notifications = [...(job.jobNotes || [])]
+    .filter((note) => note.visibility === 'customer')
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const sendNoteEmail = async (noteBody) => {
     const res = await fetch('/api/send-job-note-email', {
@@ -1528,17 +1604,58 @@ function JobNotesPanel({ job, adminEmail, onUpdated }) {
     if (!res.ok) throw new Error(data.error || 'Email failed');
   };
 
-  const saveNote = async (notifyCustomer = false) => {
+  const sendStatusEmail = async (customNote = '') => {
+    const res = await fetch('/api/send-status-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jobId: job.id,
+        customerName: job.customerName,
+        email: job.email,
+        status: job.status,
+        year: job.year,
+        make: job.make,
+        model: job.model,
+        plate: job.plate,
+        customNote: customNote.trim(),
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Email failed');
+  };
+
+  const postToPortal = async () => {
     const trimmed = draft.trim();
     if (!trimmed) {
-      setMessage({ type: 'err', text: 'Enter a note before saving.' });
+      setMessage({ type: 'err', text: 'Enter a message before posting.' });
       return;
     }
-    if (notifyCustomer && visibility !== 'customer') {
-      setMessage({ type: 'err', text: 'Switch visibility to customer before pushing an update.' });
+
+    setSaving(true);
+    setMessage(null);
+    try {
+      const updated = await appendJobNote(job.id, {
+        body: trimmed,
+        visibility: 'customer',
+        author: adminEmail || 'Staff',
+      });
+      setDraft('');
+      onUpdated(updated);
+      setMessage({ type: 'ok', text: 'Posted to customer portal (email not sent).' });
+    } catch (err) {
+      setMessage({ type: 'err', text: err.message || 'Unable to post update.' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const sendToCustomer = async () => {
+    const trimmed = draft.trim();
+    if (!trimmed) {
+      setMessage({ type: 'err', text: 'Enter a message before sending.' });
       return;
     }
-    if (notifyCustomer && !job.email) {
+    if (!job.email) {
       setMessage({ type: 'err', text: 'No customer email on file.' });
       return;
     }
@@ -1548,33 +1665,25 @@ function JobNotesPanel({ job, adminEmail, onUpdated }) {
     try {
       let updated = await appendJobNote(job.id, {
         body: trimmed,
-        visibility,
+        visibility: 'customer',
         author: adminEmail || 'Staff',
       });
-
-      if (notifyCustomer) {
-        await sendNoteEmail(trimmed);
-        const newNote = updated.jobNotes[updated.jobNotes.length - 1];
-        if (newNote?.id) {
-          updated = await markJobNoteNotified(job.id, newNote.id);
-        }
+      await sendNoteEmail(trimmed);
+      const newNote = updated.jobNotes[updated.jobNotes.length - 1];
+      if (newNote?.id) {
+        updated = await markJobNoteNotified(job.id, newNote.id);
       }
-
       setDraft('');
-      setVisibility('internal');
       onUpdated(updated);
-      setMessage({
-        type: 'ok',
-        text: notifyCustomer ? `Note saved and sent to ${job.email}.` : 'Note saved.',
-      });
+      setMessage({ type: 'ok', text: `Update posted and emailed to ${job.email}.` });
     } catch (err) {
-      setMessage({ type: 'err', text: err.message || 'Unable to save note.' });
+      setMessage({ type: 'err', text: err.message || 'Unable to send update.' });
     } finally {
       setSaving(false);
     }
   };
 
-  const pushNote = async (note) => {
+  const pushNotification = async (note) => {
     if (!job.email) {
       setMessage({ type: 'err', text: 'No customer email on file.' });
       return;
@@ -1585,7 +1694,7 @@ function JobNotesPanel({ job, adminEmail, onUpdated }) {
       await sendNoteEmail(note.body);
       const updated = await markJobNoteNotified(job.id, note.id);
       onUpdated(updated);
-      setMessage({ type: 'ok', text: `Update sent to ${job.email}.` });
+      setMessage({ type: 'ok', text: `Email sent to ${job.email}.` });
     } catch (err) {
       setMessage({ type: 'err', text: err.message || 'Unable to notify customer.' });
     } finally {
@@ -1593,85 +1702,104 @@ function JobNotesPanel({ job, adminEmail, onUpdated }) {
     }
   };
 
+  const handleStatusPush = async () => {
+    if (!job.email) {
+      setMessage({ type: 'err', text: 'No customer email on file.' });
+      return;
+    }
+    setSendingStatus(true);
+    setMessage(null);
+    try {
+      await sendStatusEmail(draft);
+      const updated = await updateVehicle(job.id, { lastNotifiedAt: new Date().toISOString() });
+      onUpdated(updated);
+      setMessage({ type: 'ok', text: `Status update (${job.status}) sent to ${job.email}.` });
+    } catch (err) {
+      setMessage({ type: 'err', text: err.message || 'Unable to send status update.' });
+    } finally {
+      setSendingStatus(false);
+    }
+  };
+
   return (
-    <div className="job-notes-panel">
-      <div className="job-notes-list" aria-label="Job notes">
-        {!notes.length && (
-          <p className="cell-sub" style={{ margin: 0 }}>No notes yet. Add repair updates for your team or the customer.</p>
+    <div className="customer-notifications-panel">
+      <div className="customer-notifications-settings">
+        <label className="checkbox-row" style={{ margin: 0 }}>
+          <input
+            type="checkbox"
+            checked={Boolean(job.notificationsEnabled)}
+            onChange={(e) => onNotificationChange(job.id, 'notificationsEnabled', e.target.checked)}
+          />
+          <span style={{ fontSize: 13 }}>Auto status alerts enabled</span>
+        </label>
+        <select
+          value={job.notificationChannel || 'email'}
+          onChange={(e) => onNotificationChange(job.id, 'notificationChannel', e.target.value)}
+          aria-label="Notification channel"
+        >
+          <option value="email">Email</option>
+          <option value="web-push">Web Push</option>
+        </select>
+      </div>
+      <p className="cell-sub" style={{ margin: '8px 0 0' }}>
+        {job.email ? <>Customer email: <strong>{job.email}</strong></> : 'No customer email on file.'}
+        {job.lastNotifiedAt ? <> · Last emailed {new Date(job.lastNotifiedAt).toLocaleString()}</> : ''}
+      </p>
+
+      <div className="job-notes-list" aria-label="Customer notifications" style={{ marginTop: 14 }}>
+        {!notifications.length && (
+          <p className="cell-sub" style={{ margin: 0 }}>No customer updates posted yet.</p>
         )}
-        {notes.map((note) => (
-          <article
-            key={note.id}
-            className={`job-note-item ${note.visibility === 'customer' ? 'is-customer' : 'is-internal'}`}
-          >
+        {notifications.map((note) => (
+          <article key={note.id} className="job-note-item is-customer">
             <div className="job-note-head">
-              <span className={`job-note-badge ${note.visibility === 'customer' ? 'is-customer' : 'is-internal'}`}>
-                {note.visibility === 'customer' ? 'Customer visible' : 'Internal only'}
-              </span>
+              <span className="job-note-badge is-customer">Customer update</span>
               <span className="cell-sub" style={{ margin: 0 }}>
                 {note.author || 'Staff'} · {new Date(note.createdAt).toLocaleString()}
-                {note.notifiedAt ? ' · Notified' : ''}
+                {note.notifiedAt ? ' · Emailed' : ' · Portal only'}
               </span>
             </div>
             <p className="job-note-body">{note.body}</p>
-            {note.visibility === 'customer' && !note.notifiedAt && (
+            {!note.notifiedAt && (
               <button
                 type="button"
                 className="button primary sm"
-                onClick={() => pushNote(note)}
+                onClick={() => pushNotification(note)}
                 disabled={pushingId === note.id || !job.email}
               >
-                {pushingId === note.id ? 'Sending…' : 'Push to customer'}
+                {pushingId === note.id ? 'Sending…' : 'Email customer'}
               </button>
             )}
           </article>
         ))}
       </div>
 
-      <div className="job-notes-compose">
-        <label htmlFor={`job-note-${job.id}`}>Add note</label>
+      <div className="job-notes-compose" style={{ marginTop: 14 }}>
+        <label htmlFor={`customer-notif-${job.id}`}>New customer update</label>
         <textarea
-          id={`job-note-${job.id}`}
+          id={`customer-notif-${job.id}`}
           rows={3}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Repair progress, parts status, pickup instructions…"
+          placeholder="Repair progress update the customer should see…"
         />
-
-        <div className="job-notes-visibility" role="radiogroup" aria-label="Note visibility">
-          <label className={`job-notes-vis-option ${visibility === 'internal' ? 'is-active' : ''}`}>
-            <input
-              type="radio"
-              name={`note-vis-${job.id}`}
-              value="internal"
-              checked={visibility === 'internal'}
-              onChange={() => setVisibility('internal')}
-            />
-            <span>Internal — techs only</span>
-          </label>
-          <label className={`job-notes-vis-option ${visibility === 'customer' ? 'is-active' : ''}`}>
-            <input
-              type="radio"
-              name={`note-vis-${job.id}`}
-              value="customer"
-              checked={visibility === 'customer'}
-              onChange={() => setVisibility('customer')}
-            />
-            <span>Customer visible</span>
-          </label>
-        </div>
-
         <div className="job-notes-actions">
-          <button type="button" className="button ghost sm" onClick={() => saveNote(false)} disabled={saving}>
-            {saving ? 'Saving…' : 'Save note'}
+          <button type="button" className="button ghost sm" onClick={postToPortal} disabled={saving}>
+            {saving ? 'Saving…' : 'Post to portal only'}
           </button>
-          {visibility === 'customer' && (
-            <button type="button" className="button primary sm" onClick={() => saveNote(true)} disabled={saving || !job.email}>
-              {saving ? 'Sending…' : 'Save & push to customer'}
-            </button>
-          )}
+          <button type="button" className="button primary sm" onClick={sendToCustomer} disabled={saving || !job.email}>
+            {saving ? 'Sending…' : 'Post & email customer'}
+          </button>
+          <button
+            type="button"
+            className="button ghost sm"
+            onClick={handleStatusPush}
+            disabled={sendingStatus || !job.email}
+            title={`Send the standard ${job.status} status email`}
+          >
+            {sendingStatus ? 'Sending…' : `Send status email (${job.status})`}
+          </button>
         </div>
-
         {message && (
           <p className={`job-notes-msg ${message.type === 'ok' ? 'is-ok' : 'is-err'}`}>{message.text}</p>
         )}
@@ -1725,6 +1853,14 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Job Notes</h4>
           <JobNotesPanel job={v} adminEmail={adminEmail} onUpdated={onJobUpdated} />
+
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Customer Notifications</h4>
+          <CustomerNotificationsPanel
+            job={v}
+            adminEmail={adminEmail}
+            onUpdated={onJobUpdated}
+            onNotificationChange={onNotificationChange}
+          />
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Form</h4>
           <div className="job-form-card">
@@ -1839,25 +1975,6 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
               <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>{v.notes}</p>
             </>
           )}
-
-          <h4 className="form-section-label" style={{ marginTop: 18 }}>Notifications</h4>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-            <label className="checkbox-row" style={{ margin: 0 }}>
-              <input
-                type="checkbox"
-                checked={Boolean(v.notificationsEnabled)}
-                onChange={(e) => onNotificationChange(v.id, 'notificationsEnabled', e.target.checked)}
-              />
-              <span style={{ fontSize: 13 }}>Alerts enabled</span>
-            </label>
-            <select
-              value={v.notificationChannel || 'email'}
-              onChange={(e) => onNotificationChange(v.id, 'notificationChannel', e.target.value)}
-            >
-              <option value="email">Email</option>
-              <option value="web-push">Web Push</option>
-            </select>
-          </div>
 
           <p className="cell-sub" style={{ marginTop: 16 }}>
             Registered {new Date(v.createdAt).toLocaleDateString()} · Updated {new Date(v.updatedAt).toLocaleDateString()}

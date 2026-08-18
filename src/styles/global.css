@@ -1036,6 +1036,22 @@ body.popup-open { overflow: hidden; }
 .job-notes-msg.is-ok { color: var(--sage, #15803d); }
 .job-notes-msg.is-err { color: var(--rust, #fc1317); }
 
+.customer-notifications-panel {
+  display: grid;
+  gap: 0;
+  margin-top: 8px;
+  padding: 14px;
+  border: 1px solid var(--line, #e8e2db);
+  border-radius: var(--radius, 12px);
+  background: var(--surface-2, #fafbfd);
+}
+.customer-notifications-settings {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .portal-job-notes {
   display: grid;
   gap: 10px;

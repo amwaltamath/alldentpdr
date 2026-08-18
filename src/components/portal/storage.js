@@ -50,6 +50,7 @@ function mapRemoteVehicle(item) {
     signatureName: item.signature_name || '',
     signedAt: item.signed_at || null,
     releaseFormData: item.release_form_data || null,
+    lastNotifiedAt: item.last_notified_at || null,
     createdAt: item.created_at,
     updatedAt: item.updated_at
   };
