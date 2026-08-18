@@ -12,6 +12,12 @@ function parseJson(value, fallback) {
   }
 }
 
+function parseJobNotes(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  return [];
+}
+
 function mapRemoteVehicle(item) {
   return {
     id: item.id,
@@ -35,6 +41,7 @@ function mapRemoteVehicle(item) {
     plate: item.plate,
     status: item.status,
     notes: item.notes || '',
+    jobNotes: parseJobNotes(item.job_notes),
     notificationsEnabled: Boolean(item.notifications_enabled),
     notificationChannel: item.notification_channel || 'email',
     directionToPaySigned: Boolean(item.direction_to_pay_signed),
@@ -224,6 +231,7 @@ export async function updateVehicle(id, updates) {
     const remoteUpdates = {};
     if (nextUpdates.status !== undefined) remoteUpdates.status = nextUpdates.status;
     if (nextUpdates.notes !== undefined) remoteUpdates.notes = nextUpdates.notes;
+    if (nextUpdates.jobNotes !== undefined) remoteUpdates.job_notes = nextUpdates.jobNotes;
     if (nextUpdates.notificationsEnabled !== undefined) remoteUpdates.notifications_enabled = Boolean(nextUpdates.notificationsEnabled);
     if (nextUpdates.notificationChannel !== undefined) remoteUpdates.notification_channel = nextUpdates.notificationChannel;
     if (nextUpdates.lastNotifiedAt !== undefined) remoteUpdates.last_notified_at = nextUpdates.lastNotifiedAt;
@@ -255,6 +263,40 @@ export async function updateVehicle(id, updates) {
 
 export async function updateVehicleStatus(id, status) {
   return updateVehicle(id, { status, lastNotifiedAt: new Date().toISOString() });
+}
+
+export async function appendJobNote(jobId, { body, visibility, author, notifiedAt = null }) {
+  const trimmed = String(body || '').trim();
+  if (!trimmed) throw new Error('Note cannot be empty');
+
+  const current = await getVehicleById(jobId);
+  if (!current) throw new Error('Job not found');
+
+  const note = {
+    id: `note-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    body: trimmed,
+    visibility: visibility === 'customer' ? 'customer' : 'internal',
+    author: String(author || 'Staff').trim() || 'Staff',
+    createdAt: new Date().toISOString(),
+    notifiedAt: notifiedAt || null,
+  };
+
+  const jobNotes = [...(current.jobNotes || []), note];
+  return updateVehicle(jobId, { jobNotes });
+}
+
+export async function markJobNoteNotified(jobId, noteId) {
+  const current = await getVehicleById(jobId);
+  if (!current) throw new Error('Job not found');
+
+  const jobNotes = (current.jobNotes || []).map((note) =>
+    note.id === noteId ? { ...note, notifiedAt: new Date().toISOString() } : note
+  );
+
+  return updateVehicle(jobId, {
+    jobNotes,
+    lastNotifiedAt: new Date().toISOString(),
+  });
 }
 
 export async function saveReleaseForm(id, releaseData) {

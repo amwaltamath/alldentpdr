@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   clearSession,
+  appendJobNote,
   createProject,
   deleteLead,
   deleteProject,
@@ -16,6 +17,7 @@ import {
   getVehicles,
   isRemoteAdmin,
   isRemotePortalEnabled,
+  markJobNoteNotified,
   markChatRead,
   registerVehicle,
   reorderProjectPhotos,
@@ -433,6 +435,10 @@ export default function AdminDashboard() {
     setVehicles(await getVehicles());
   };
 
+  const handleJobUpdated = (updated) => {
+    setVehicles((prev) => prev.map((v) => (v.id === updated.id ? updated : v)));
+  };
+
   const handleReleaseSaved = (updatedJob) => {
     setVehicles((prev) => prev.map((v) => v.id === updatedJob.id ? { ...v, releaseFormData: updatedJob.releaseFormData } : v));
     setReleaseJob(null);
@@ -705,6 +711,8 @@ export default function AdminDashboard() {
               onNotificationChange={handleNotificationChange}
               onRelease={setReleaseJob}
               onDelete={handleDelete}
+              onJobUpdated={handleJobUpdated}
+              adminEmail={session.email}
               loading={loading}
             />
           )}
@@ -717,6 +725,8 @@ export default function AdminDashboard() {
               onNotificationChange={handleNotificationChange}
               onRelease={setReleaseJob}
               onDelete={handleDelete}
+              onJobUpdated={handleJobUpdated}
+              adminEmail={session.email}
             />
           )}
 
@@ -875,6 +885,8 @@ function PipelineView({
   onNotificationChange,
   onRelease,
   onDelete,
+  onJobUpdated,
+  adminEmail,
   loading,
 }) {
   const [selectedId, setSelectedId] = useState(null);
@@ -1095,6 +1107,8 @@ function PipelineView({
                 onNotificationChange={onNotificationChange}
                 onRelease={onRelease}
                 onDelete={onDelete}
+                onJobUpdated={onJobUpdated}
+                adminEmail={adminEmail}
               />
             </div>
           )}
@@ -1172,6 +1186,8 @@ function PipelineView({
                 onNotificationChange={onNotificationChange}
                 onRelease={onRelease}
                 onDelete={onDelete}
+                onJobUpdated={onJobUpdated}
+                adminEmail={adminEmail}
               />
             </div>
           )}
@@ -1481,7 +1497,190 @@ function buildLoanerAgreementHtml(job, loaner) {
 </html>`;
 }
 
-function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete }) {
+function JobNotesPanel({ job, adminEmail, onUpdated }) {
+  const [draft, setDraft] = useState('');
+  const [visibility, setVisibility] = useState('internal');
+  const [saving, setSaving] = useState(false);
+  const [pushingId, setPushingId] = useState(null);
+  const [message, setMessage] = useState(null);
+
+  const notes = [...(job.jobNotes || [])].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  const sendNoteEmail = async (noteBody) => {
+    const res = await fetch('/api/send-job-note-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jobId: job.id,
+        customerName: job.customerName,
+        email: job.email,
+        status: job.status,
+        year: job.year,
+        make: job.make,
+        model: job.model,
+        plate: job.plate,
+        note: noteBody,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Email failed');
+  };
+
+  const saveNote = async (notifyCustomer = false) => {
+    const trimmed = draft.trim();
+    if (!trimmed) {
+      setMessage({ type: 'err', text: 'Enter a note before saving.' });
+      return;
+    }
+    if (notifyCustomer && visibility !== 'customer') {
+      setMessage({ type: 'err', text: 'Switch visibility to customer before pushing an update.' });
+      return;
+    }
+    if (notifyCustomer && !job.email) {
+      setMessage({ type: 'err', text: 'No customer email on file.' });
+      return;
+    }
+
+    setSaving(true);
+    setMessage(null);
+    try {
+      let updated = await appendJobNote(job.id, {
+        body: trimmed,
+        visibility,
+        author: adminEmail || 'Staff',
+      });
+
+      if (notifyCustomer) {
+        await sendNoteEmail(trimmed);
+        const newNote = updated.jobNotes[updated.jobNotes.length - 1];
+        if (newNote?.id) {
+          updated = await markJobNoteNotified(job.id, newNote.id);
+        }
+      }
+
+      setDraft('');
+      setVisibility('internal');
+      onUpdated(updated);
+      setMessage({
+        type: 'ok',
+        text: notifyCustomer ? `Note saved and sent to ${job.email}.` : 'Note saved.',
+      });
+    } catch (err) {
+      setMessage({ type: 'err', text: err.message || 'Unable to save note.' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const pushNote = async (note) => {
+    if (!job.email) {
+      setMessage({ type: 'err', text: 'No customer email on file.' });
+      return;
+    }
+    setPushingId(note.id);
+    setMessage(null);
+    try {
+      await sendNoteEmail(note.body);
+      const updated = await markJobNoteNotified(job.id, note.id);
+      onUpdated(updated);
+      setMessage({ type: 'ok', text: `Update sent to ${job.email}.` });
+    } catch (err) {
+      setMessage({ type: 'err', text: err.message || 'Unable to notify customer.' });
+    } finally {
+      setPushingId(null);
+    }
+  };
+
+  return (
+    <div className="job-notes-panel">
+      <div className="job-notes-list" aria-label="Job notes">
+        {!notes.length && (
+          <p className="cell-sub" style={{ margin: 0 }}>No notes yet. Add repair updates for your team or the customer.</p>
+        )}
+        {notes.map((note) => (
+          <article
+            key={note.id}
+            className={`job-note-item ${note.visibility === 'customer' ? 'is-customer' : 'is-internal'}`}
+          >
+            <div className="job-note-head">
+              <span className={`job-note-badge ${note.visibility === 'customer' ? 'is-customer' : 'is-internal'}`}>
+                {note.visibility === 'customer' ? 'Customer visible' : 'Internal only'}
+              </span>
+              <span className="cell-sub" style={{ margin: 0 }}>
+                {note.author || 'Staff'} · {new Date(note.createdAt).toLocaleString()}
+                {note.notifiedAt ? ' · Notified' : ''}
+              </span>
+            </div>
+            <p className="job-note-body">{note.body}</p>
+            {note.visibility === 'customer' && !note.notifiedAt && (
+              <button
+                type="button"
+                className="button primary sm"
+                onClick={() => pushNote(note)}
+                disabled={pushingId === note.id || !job.email}
+              >
+                {pushingId === note.id ? 'Sending…' : 'Push to customer'}
+              </button>
+            )}
+          </article>
+        ))}
+      </div>
+
+      <div className="job-notes-compose">
+        <label htmlFor={`job-note-${job.id}`}>Add note</label>
+        <textarea
+          id={`job-note-${job.id}`}
+          rows={3}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Repair progress, parts status, pickup instructions…"
+        />
+
+        <div className="job-notes-visibility" role="radiogroup" aria-label="Note visibility">
+          <label className={`job-notes-vis-option ${visibility === 'internal' ? 'is-active' : ''}`}>
+            <input
+              type="radio"
+              name={`note-vis-${job.id}`}
+              value="internal"
+              checked={visibility === 'internal'}
+              onChange={() => setVisibility('internal')}
+            />
+            <span>Internal — techs only</span>
+          </label>
+          <label className={`job-notes-vis-option ${visibility === 'customer' ? 'is-active' : ''}`}>
+            <input
+              type="radio"
+              name={`note-vis-${job.id}`}
+              value="customer"
+              checked={visibility === 'customer'}
+              onChange={() => setVisibility('customer')}
+            />
+            <span>Customer visible</span>
+          </label>
+        </div>
+
+        <div className="job-notes-actions">
+          <button type="button" className="button ghost sm" onClick={() => saveNote(false)} disabled={saving}>
+            {saving ? 'Saving…' : 'Save note'}
+          </button>
+          {visibility === 'customer' && (
+            <button type="button" className="button primary sm" onClick={() => saveNote(true)} disabled={saving || !job.email}>
+              {saving ? 'Sending…' : 'Save & push to customer'}
+            </button>
+          )}
+        </div>
+
+        {message && (
+          <p className={`job-notes-msg ${message.type === 'ok' ? 'is-ok' : 'is-err'}`}>{message.text}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease, onDelete, onJobUpdated, adminEmail }) {
   const loaner = getLoanerAgreement(v);
   const hasLoaner = Boolean(loaner?.loanerProvided || v.requiresLoaner);
   const hasRegistrationData = Boolean(
@@ -1523,6 +1722,9 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
               {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
+
+          <h4 className="form-section-label" style={{ marginTop: 18 }}>Job Notes</h4>
+          <JobNotesPanel job={v} adminEmail={adminEmail} onUpdated={onJobUpdated} />
 
           <h4 className="form-section-label" style={{ marginTop: 18 }}>Registration Form</h4>
           <div className="job-form-card">
@@ -1633,8 +1835,8 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
 
           {v.notes && (
             <>
-              <h4 className="form-section-label" style={{ marginTop: 18 }}>Notes</h4>
-              <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0 }}>{v.notes}</p>
+              <h4 className="form-section-label" style={{ marginTop: 18 }}>Intake Notes</h4>
+              <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>{v.notes}</p>
             </>
           )}
 
@@ -1666,7 +1868,7 @@ function JobDetail({ v, onClose, onStatusChange, onNotificationChange, onRelease
   );
 }
 
-function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onRelease, onDelete }) {
+function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onRelease, onDelete, onJobUpdated, adminEmail }) {
   const [selectedId, setSelectedId] = useState(null);
   const [queue, setQueue] = useState('open');
 
@@ -1788,6 +1990,8 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
                           onNotificationChange={onNotificationChange}
                           onRelease={(job) => { setSelectedId(null); onRelease(job); }}
                           onDelete={(id) => { setSelectedId(null); onDelete(id); }}
+                          onJobUpdated={onJobUpdated}
+                          adminEmail={adminEmail}
                         />
                       </td>
                     </tr>

@@ -935,6 +935,125 @@ body.popup-open { overflow: hidden; }
 }
 .jd-val { display: block; font-size: 14px; color: var(--ink, #1a1410); font-weight: 500; }
 
+/* ── Job notes thread ─────────────────────────────────── */
+.job-notes-panel {
+  display: grid;
+  gap: 14px;
+  margin-top: 8px;
+}
+.job-notes-list {
+  display: grid;
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.job-note-item {
+  border: 1px solid var(--line, #e8e2db);
+  border-radius: var(--radius, 12px);
+  padding: 12px 14px;
+  background: var(--surface, #fff);
+}
+.job-note-item.is-internal {
+  border-left: 3px solid var(--muted-2, #8a93a3);
+  background: var(--surface-2, #fafbfd);
+}
+.job-note-item.is-customer {
+  border-left: 3px solid var(--sage, #0a71d0);
+}
+.job-note-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.job-note-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.job-note-badge.is-internal {
+  background: var(--line-2, #eef0f4);
+  color: var(--muted, #5b6577);
+}
+.job-note-badge.is-customer {
+  background: #eaf1ff;
+  color: #0860b5;
+}
+.job-note-body {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+.job-notes-compose textarea {
+  width: 100%;
+  margin-top: 4px;
+}
+.job-notes-visibility {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.job-notes-vis-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--line, #e8e2db);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--surface, #fff);
+  transition: border-color var(--t, 180ms ease), background var(--t, 180ms ease);
+}
+.job-notes-vis-option input { accent-color: var(--rust, #fc1317); }
+.job-notes-vis-option.is-active {
+  border-color: var(--rust, #fc1317);
+  background: var(--rust-50, #ffe9ea);
+  color: var(--rust-700, #c50d15);
+}
+.job-notes-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.job-notes-msg {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.job-notes-msg.is-ok { color: var(--sage, #15803d); }
+.job-notes-msg.is-err { color: var(--rust, #fc1317); }
+
+.portal-job-notes {
+  display: grid;
+  gap: 10px;
+}
+.portal-job-note {
+  padding-top: 10px;
+  border-top: 1px solid var(--line, #e6e8ee);
+}
+.portal-job-note:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+.portal-job-note-meta {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--muted, #5b6577);
+}
+
 /* ── Inline job detail expansion ─────────────────────── */
 .job-row-clickable.is-expanded td {
   background: var(--sky, #eef5fb);

@@ -181,8 +181,26 @@ export default function CustomerPortal() {
 
           {vehicle.notes && (
             <div className="portal-note-box">
-              <p className="portal-kicker">Technician notes</p>
-              <p>{vehicle.notes}</p>
+              <p className="portal-kicker">Your registration notes</p>
+              <p style={{ whiteSpace: 'pre-wrap' }}>{vehicle.notes}</p>
+            </div>
+          )}
+
+          {(vehicle.jobNotes || []).length > 0 && (
+            <div className="portal-note-box">
+              <p className="portal-kicker">Updates from our team</p>
+              <div className="portal-job-notes">
+                {[...(vehicle.jobNotes || [])]
+                  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                  .map((note) => (
+                    <article key={note.id} className="portal-job-note">
+                      <p className="portal-job-note-meta">
+                        {new Date(note.createdAt).toLocaleString()}
+                      </p>
+                      <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{note.body}</p>
+                    </article>
+                  ))}
+              </div>
             </div>
           )}
 
