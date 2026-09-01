@@ -52,6 +52,7 @@ export default function MobileMenu({ pathname = '/' }) {
               <a href="/services" className={isActive('/services') ? 'is-active' : ''} aria-current={isActive('/services') ? 'page' : undefined} onClick={closeMenu}>Services</a>
               <a href="/service-area" className={isActive('/service-area') ? 'is-active' : ''} aria-current={isActive('/service-area') ? 'page' : undefined} onClick={closeMenu}>Service Area</a>
               <a href="/our-work" className={isActive('/our-work') ? 'is-active' : ''} aria-current={isActive('/our-work') ? 'page' : undefined} onClick={closeMenu}>Our Work</a>
+              <a href="/testimonials" className={isActive('/testimonials') ? 'is-active' : ''} aria-current={isActive('/testimonials') ? 'page' : undefined} onClick={closeMenu}>Reviews</a>
               <a href="/about" className={isActive('/about') ? 'is-active' : ''} aria-current={isActive('/about') ? 'page' : undefined} onClick={closeMenu}>About</a>
               <a href="/blog" className={isActive('/blog') ? 'is-active' : ''} aria-current={isActive('/blog') ? 'page' : undefined} onClick={closeMenu}>Blog</a>
             </div>
