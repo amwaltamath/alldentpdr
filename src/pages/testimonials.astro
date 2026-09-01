@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GoogleReviewsSection from '../components/GoogleReviewsSection.astro';
+import { customerStories } from '../data/customer-stories';
+import { getGoogleReviews } from '../lib/google-reviews';
+
+const title = 'Customer Reviews & Testimonials | All Dent PDR Cleveland OH';
+const description = 'Read Google reviews and customer stories for All Dent PDR — paintless dent repair and hail damage repair at 7695 Granger Rd, Cleveland, OH.';
+const canonical = 'https://alldentpdr.com/testimonials';
+
+const googleReviews = await getGoogleReviews();
+---
+
+<BaseLayout title={title} description={description} canonical={canonical}>
+  <section class="hero hero-compact">
+    <div class="container">
+      <span class="section-label">Reviews</span>
+      <h1>Customer reviews &amp; testimonials</h1>
+      <p>
+        See what drivers, dealerships, and insurance partners say about paintless dent repair
+        and hail damage work from All Dent PDR in Cleveland, OH.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <span class="section-label">Google Reviews</span>
+      <h2>Rated on Google</h2>
+      <GoogleReviewsSection
+        data={googleReviews}
+        maxReviews={3}
+        heading="Rated on Google"
+        intro="Recent reviews from our Google Business Profile."
+      />
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <span class="section-label">Customer Stories</span>
+      <h2>More customer feedback</h2>
+      <p>Additional stories from hail damage repair, door ding removal, and dealership partners.</p>
+      <div class="testimonial-grid">
+        {customerStories.map((story) => (
+          <blockquote class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"{story.quote}"</p>
+            <footer class="testimonial-author">
+              <strong>{story.name}</strong>
+              <span>{story.detail}</span>
+            </footer>
+          </blockquote>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Happy with your repair?</h2>
+      <p>Your Google review helps other Northeast Ohio drivers find trusted paintless dent repair.</p>
+      <div class="button-row" style="justify-content: center;">
+        <a class="button primary" href={googleReviews.leaveReviewUri} target="_blank" rel="noopener noreferrer">
+          Leave a Google Review
+        </a>
+        <a class="button ghost" href="/contact">Request an Inspection</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-compact {
+    padding: 72px 0 48px;
+  }
+</style>

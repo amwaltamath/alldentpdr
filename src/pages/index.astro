@@ -1,6 +1,9 @@
 ﻿---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
+import GoogleReviewsSection from '../components/GoogleReviewsSection.astro';
+import { customerStories } from '../data/customer-stories';
+import { getGoogleReviews } from '../lib/google-reviews';
 
 const title = 'Paintless Dent Repair Cleveland OH | Hail Damage Repair Northeast Ohio | All Dent PDR';
 const description = 'All Dent PDR operates a paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125, serving the Greater Cleveland area and all of Northeast Ohio. Hail damage repair, door ding removal, and more. Call 1-855-425-5336.';
@@ -10,6 +13,9 @@ const faqItems = [
   { question: 'How much does paintless dent repair cost near Cleveland, Ohio?', answer: 'PDR cost depends on dent size, location, and accessibility. Small door dings typically range from $75-$150. Hail damage is quoted per panel after an in-person inspection so we can price the repair accurately.' },
   { question: 'How long does a typical PDR repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Multi-panel hail damage may take a full day. We provide a timeline upfront so you can plan accordingly.' }
 ];
+
+const googleReviews = await getGoogleReviews();
+const showStaticStories = googleReviews.source !== 'live' || googleReviews.reviews.length === 0;
 ---
 
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com" faqItems={faqItems}>
@@ -222,32 +228,24 @@ const faqItems = [
 			<span class="section-label">Testimonials</span>
 			<h2>What our customers say</h2>
 			<p>Real feedback from drivers and dealerships who trust All Dent PDR.</p>
-			<div class="testimonial-grid">
-				<blockquote class="testimonial-card">
-					<div class="testimonial-stars">★★★★★</div>
-					<p class="testimonial-text">"AllDent came out after a massive hail storm and fixed every dent on my truck. You can't even tell it was damaged. They saved me thousands compared to a body shop."</p>
-					<footer class="testimonial-author">
-						<strong>Mike R.</strong>
-						<span>Dallas, TX — Hail Damage Repair</span>
-					</footer>
-				</blockquote>
-				<blockquote class="testimonial-card">
-					<div class="testimonial-stars">★★★★★</div>
-					<p class="testimonial-text">"Super professional and fast. They came to my office parking lot, fixed a door ding in under an hour, and it looks perfect. Highly recommend All Dent PDR."</p>
-					<footer class="testimonial-author">
-						<strong>Sarah T.</strong>
-						<span>Cleveland, OH — Door Ding Removal</span>
-					</footer>
-				</blockquote>
-				<blockquote class="testimonial-card">
-					<div class="testimonial-stars">★★★★★</div>
-					<p class="testimonial-text">"We use AllDent for all our lot damage repairs. They're reliable, the pricing is fair, and the results are flawless every time. Our go-to PDR team."</p>
-					<footer class="testimonial-author">
-						<strong>James K.</strong>
-						<span>Louisville, KY — Dealership Partner</span>
-					</footer>
-				</blockquote>
-			</div>
+			<GoogleReviewsSection data={googleReviews} maxReviews={3} />
+			{showStaticStories && (
+				<div class="testimonial-grid" style="margin-top: 24px;">
+					{customerStories.slice(0, 3).map((story) => (
+						<blockquote class="testimonial-card">
+							<div class="testimonial-stars">★★★★★</div>
+							<p class="testimonial-text">"{story.quote}"</p>
+							<footer class="testimonial-author">
+								<strong>{story.name}</strong>
+								<span>{story.detail}</span>
+							</footer>
+						</blockquote>
+					))}
+				</div>
+			)}
+			<p style="margin-top: 18px; text-align: center;">
+				<a href="/testimonials">See all customer stories →</a>
+			</p>
 		</div>
 	</section>
 

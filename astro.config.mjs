@@ -19,6 +19,7 @@ const corePages = [
   '/contact',
   '/service-area',
   '/our-work',
+  '/testimonials',
   '/privacy-policy',
   '/hail-damage-repair',
   '/bedford-paintless-dent-repair',

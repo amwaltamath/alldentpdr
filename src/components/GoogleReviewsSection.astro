@@ -1,0 +1,136 @@
+---
+import { formatStarRating, type GoogleReviewsData } from '../lib/google-reviews';
+
+interface Props {
+  data: GoogleReviewsData;
+  maxReviews?: number;
+  heading?: string;
+  intro?: string;
+}
+
+const {
+  data,
+  maxReviews = 3,
+  heading = 'What our customers say',
+  intro = 'Real feedback from drivers who trust All Dent PDR.',
+} = Astro.props;
+
+const shownReviews = data.reviews.slice(0, maxReviews);
+const ratingLabel = data.rating != null ? data.rating.toFixed(1) : '5.0';
+const countLabel = data.reviewCount != null ? data.reviewCount.toLocaleString() : '47';
+const hasLiveReviews = data.source === 'live' && shownReviews.length > 0;
+---
+
+<section class="google-reviews-block">
+  <div class="google-reviews-summary">
+    <div class="google-reviews-rating">
+      <span class="google-reviews-stars" aria-hidden="true">{formatStarRating(data.rating)}</span>
+      <p class="google-reviews-score">
+        <strong>{ratingLabel}</strong>
+        <span> · {countLabel} Google reviews</span>
+      </p>
+      {data.source === 'live' ? (
+        <p class="cell-sub google-reviews-source">Live reviews from Google</p>
+      ) : (
+        <p class="cell-sub google-reviews-source">See our latest reviews on Google</p>
+      )}
+    </div>
+    <div class="google-reviews-actions">
+      <a class="button primary sm" href={data.leaveReviewUri} target="_blank" rel="noopener noreferrer">
+        Leave a Review
+      </a>
+      <a class="button ghost sm" href={data.googleMapsUri} target="_blank" rel="noopener noreferrer">
+        View on Google
+      </a>
+    </div>
+  </div>
+
+  {hasLiveReviews ? (
+    <div class="testimonial-grid google-reviews-grid">
+      {shownReviews.map((review) => (
+        <blockquote class="testimonial-card google-review-card">
+          <div class="testimonial-stars" aria-label={`${review.rating} out of 5 stars`}>
+            {'★'.repeat(review.rating)}{'☆'.repeat(Math.max(0, 5 - review.rating))}
+          </div>
+          <p class="testimonial-text">"{review.text}"</p>
+          <footer class="testimonial-author">
+            <strong>{review.author}</strong>
+            {review.relativeTime && <span>{review.relativeTime} · Google review</span>}
+          </footer>
+        </blockquote>
+      ))}
+    </div>
+  ) : (
+    <p class="google-reviews-fallback-copy">
+      Read what customers are saying about paintless dent repair and hail damage work at our Cleveland shop.
+    </p>
+  )}
+
+  <p class="google-attribution">
+    Reviews {hasLiveReviews ? 'sourced from' : 'available on'}{' '}
+    <a href={data.googleMapsUri} target="_blank" rel="noopener noreferrer">Google</a>.
+  </p>
+</section>
+
+<style>
+  .google-reviews-block {
+    margin-top: 8px;
+  }
+  .google-reviews-summary {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 18px 20px;
+    border: 1px solid var(--line, #e6e8ee);
+    border-radius: var(--radius-lg, 16px);
+    background: var(--surface, #fff);
+  }
+  .google-reviews-stars {
+    display: block;
+    color: #e3a857;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .google-reviews-score {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--ink-700, #1f2a3d);
+  }
+  .google-reviews-score strong {
+    font-size: 1.35rem;
+    color: var(--ink, #0b1220);
+  }
+  .google-reviews-source {
+    margin: 6px 0 0;
+  }
+  .google-reviews-grid {
+    margin-top: 20px;
+  }
+  .google-reviews-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .google-review-card {
+    border: 1px solid var(--line, #e6e8ee);
+  }
+  .google-reviews-fallback-copy {
+    margin: 16px 0 0;
+    color: var(--muted, #5b6577);
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+  .google-attribution {
+    margin: 14px 0 0;
+    font-size: 12px;
+    color: var(--muted-2, #8a93a3);
+  }
+  .google-attribution a {
+    color: inherit;
+    text-decoration: underline;
+  }
+</style>
