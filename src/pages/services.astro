@@ -2,14 +2,14 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
 
-const title = 'Paintless Dent Repair Services | Hail Damage Repair Shop Bedford &amp; Cleveland, OH | All Dent PDR';
-const description = 'Professional paintless dent repair and hail damage repair at All Dent PDR’s shop — 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, OH and 20+ Northeast Ohio communities. Call 1-855-425-5336.';
+const title = 'Paintless Dent Repair Services Cleveland, OH | All Dent PDR';
+const description = 'Professional paintless dent repair and hail damage repair at All Dent PDR’s shop — 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, Parma, and 20+ Northeast Ohio communities. Call 1-855-425-5336.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Services', url: 'https://alldentpdr.com/services' }
 ];
 const faqItems = [
-  { question: 'Where is All Dent PDR’s shop located?', answer: 'Our shop is at 7695 Granger Rd, Cleveland, OH 44125 — just minutes from Bedford, OH. We serve 20+ communities across Northeast Ohio and also offer mobile service nationwide for large hail events.' },
+  { question: 'Where is All Dent PDR’s shop located?', answer: 'Our shop is at 7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, Parma, Garfield Heights, and 20+ Northeast Ohio communities. Commercial nationwide hail deployment is available separately for storm events.' },
   { question: 'How much does paintless dent repair cost near Bedford, Ohio?', answer: 'PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75-$150, while hail damage is quoted per panel after an in-person inspection at our shop.' },
   { question: 'How long does paintless dent repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Hail damage with multiple panels may take 1-3 days. We provide realistic timelines upfront so you can plan.' },
   { question: 'Will PDR damage my factory paint?', answer: 'No. Paintless dent repair preserves your original factory finish. We reshape the metal from behind the panel without using fillers, sanding, or repainting.' },
@@ -21,8 +21,8 @@ const faqItems = [
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services" breadcrumbs={breadcrumbs} faqItems={faqItems}>
   <section class="page-hero page-hero--services services-hero-shell">
     <div class="container">
-      <span class="section-label">Our Services — Bedford &amp; Northeast Ohio</span>
-      <h1>Paintless dent repair &amp; hail damage repair in Northeast Ohio</h1>
+      <span class="section-label">Our Services — Cleveland, OH</span>
+      <h1>Paintless dent repair &amp; hail damage repair at our Cleveland shop</h1>
       <p>All Dent PDR's shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> serves Bedford, OH and 20+ surrounding communities. From single door dings to full hail storm recovery — expert PDR with insurance direct billing and free written estimates.</p>
       <div class="button-row" style="justify-content:center;margin-top:16px;">
         <a class="button primary" href="/service-area">View All Service Areas</a>
@@ -43,19 +43,34 @@ const faqItems = [
   <section class="section alt services-lane-section">
     <div class="container grid-3">
       <article class="card services-lane-card">
-        <span class="tag">Door Dings</span>
-        <h3>Paintless door ding repair</h3>
-        <p>Professional PDR for parking lot dents and light creases that preserves your factory paint finish.</p>
+        <span class="tag">Core service</span>
+        <h3><a href="/services/paintless-dent-repair">Paintless dent repair</a></h3>
+        <p>In-shop PDR for hail, dings, and minor dents — factory paint preserved.</p>
       </article>
       <article class="card services-lane-card">
         <span class="tag">Hail Damage</span>
-        <h3>Hail storm damage repair — nationwide</h3>
-        <p>We deploy to storm-affected areas across the U.S. for systematic panel-by-panel paintless dent repair with fast turnaround.</p>
+        <h3><a href="/hail-damage-repair">Hail damage repair</a></h3>
+        <p>Storm inspections, insurance support, and panel-by-panel restoration at our Cleveland shop.</p>
       </article>
       <article class="card services-lane-card">
-        <span class="tag">Minor Collision</span>
-        <h3>Collision dent removal</h3>
-        <p>Paintless repair for soft impact dents from low-speed bumps where paint remains undamaged.</p>
+        <span class="tag">Door Dings</span>
+        <h3><a href="/services/door-ding-repair">Door ding repair</a></h3>
+        <p>Fast paintless repair for parking lot dents and light creases.</p>
+      </article>
+      <article class="card services-lane-card">
+        <span class="tag">Collision</span>
+        <h3><a href="/services/minor-collision-dent-repair">Minor collision dent repair</a></h3>
+        <p>PDR for low-speed impacts when paint is still intact.</p>
+      </article>
+      <article class="card services-lane-card">
+        <span class="tag">Insurance</span>
+        <h3><a href="/services/insurance-hail-damage-repair">Insurance hail repair</a></h3>
+        <p>Claim documentation, adjuster coordination, and direct billing.</p>
+      </article>
+      <article class="card services-lane-card">
+        <span class="tag">Storm response</span>
+        <h3><a href="/nationwide-hail-damage-repair">Nationwide hail response</a></h3>
+        <p>Commercial deployment for major hail events — separate from daily local shop service.</p>
       </article>
     </div>
   </section>

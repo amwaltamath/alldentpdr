@@ -1,0 +1,36 @@
+---
+import ServiceLandingShell from '../../components/ServiceLandingShell.astro';
+import { BUSINESS } from '../../lib/business';
+
+const canonical = 'https://alldentpdr.com/services/insurance-hail-damage-repair';
+const title = 'Insurance Hail Damage Repair Cleveland, OH | All Dent PDR';
+const description = `Insurance hail damage repair and claim support at ${BUSINESS.fullAddress}. Direct billing, documentation, and paintless dent repair for Cleveland and Northeast Ohio.`;
+---
+
+<ServiceLandingShell
+  title={title}
+  description={description}
+  canonical={canonical}
+  breadcrumbs={[
+    { name: 'Home', url: 'https://alldentpdr.com' },
+    { name: 'Services', url: 'https://alldentpdr.com/services' },
+    { name: 'Insurance Hail Repair', url: canonical },
+  ]}
+  faqItems={[
+    { question: 'Does insurance cover hail damage repair?', answer: 'Comprehensive auto insurance typically covers hail damage after your deductible. We help document panels, communicate with adjusters, and align repair scope with your claim.' },
+    { question: 'Do you bill insurance directly?', answer: 'Yes — we work with major carriers and handle documentation so you can focus on getting your vehicle restored.' },
+  ]}
+  schemaName="All Dent PDR — Insurance Hail Damage Repair"
+  schemaDescription={description}
+  heroLabel="Insurance hail claims · Cleveland, OH"
+  h1="Insurance hail damage repair in Cleveland, Ohio"
+  heroLead={`After a storm, bring your vehicle to ${BUSINESS.fullAddress} for a free hail inspection. We support the insurance process from documentation through paintless dent repair.`}
+>
+  <span class="section-label">Insurance support</span>
+  <h2>Hail claims handled with clear documentation</h2>
+  <p>
+    We inspect every affected panel, explain what PDR can restore, and help you understand how your deductible applies.
+    Our goal is a factory-quality repair that matches your approved claim scope.
+  </p>
+  <p><a href="/blog/hail-damage-insurance-guide">Read our hail insurance guide →</a></p>
+</ServiceLandingShell>

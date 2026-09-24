@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../lib/business';
 
-const title = 'Contact AllDent PDR | Hail Damage Repair Shop — Bedford &amp; Cleveland, OH';
-const description = 'Contact AllDent PDR at our shop — 7695 Granger Rd, Cleveland, OH 44125. Serving Bedford, OH and all of Northeast Ohio with expert paintless dent and hail damage repair. Call 1-855-425-5336.';
+const title = 'Contact All Dent PDR | Cleveland, OH Shop | 7695 Granger Rd';
+const description = `Contact All Dent PDR at ${BUSINESS.fullAddress}. Serving Bedford, Parma, and all of Northeast Ohio with expert paintless dent and hail damage repair. Call ${BUSINESS.phone}.`;
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Contact', url: 'https://alldentpdr.com/contact' }
@@ -136,11 +137,12 @@ const breadcrumbs = [
         <p><strong>Email:</strong> <a href="mailto:admin@alldentpdr.com">admin@alldentpdr.com</a></p>
         <hr style="margin:16px 0;border:none;border-top:1px solid #e8e0d8;" />
         <p><strong>Shop Location</strong></p>
-        <p>7695 Granger Rd<br />Cleveland, OH 44125</p>
-        <p>Serving Bedford, Bedford Heights, Maple Heights, Garfield Heights, Solon, Warrensville Heights, Oakwood Village, Northfield, Twinsburg, and all of Northeast Ohio.</p>
+        <p>{BUSINESS.streetAddress}<br />{BUSINESS.addressLocality}, {BUSINESS.addressRegion} {BUSINESS.postalCode}</p>
+        <p><a href={BUSINESS.googleMapsUrl} target="_blank" rel="noopener noreferrer">Open in Google Maps →</a></p>
+        <p>Serving Cleveland, Bedford, Bedford Heights, Maple Heights, Garfield Heights, Parma, Solon, and all of Northeast Ohio.</p>
         <hr style="margin:16px 0;border:none;border-top:1px solid #e8e0d8;" />
         <p><strong>Hours:</strong> Mon–Fri 8am–6pm · Sat 9am–2pm</p>
-        <p>Mobile service also available nationwide for storm-affected areas.</p>
+        <p><a href="/nationwide-hail-damage-repair">Nationwide hail storm response</a> for commercial and fleet partners.</p>
         <p>What sets us apart: premium-quality dent removal, careful finishing, and honest recommendations instead of gimmick-first sales tactics.</p>
         <div class="button-row">
           <a class="button ghost" href="/services">Review services</a>

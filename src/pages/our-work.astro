@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { createClient } from '@supabase/supabase-js';
 
 const title = 'Our Work — Before & After Paintless Dent Repair | All Dent PDR';
-const description = 'See real before and after photos from All Dent PDR. Our technicians restore hail damage, door dings, and dents — preserving your factory paint finish. Serving Bedford & Northeast Ohio.';
+const description = 'See real before and after photos from All Dent PDR at 7695 Granger Rd, Cleveland, OH. Hail damage, door dings, and dents — factory paint preserved. Serving Northeast Ohio.';
 const canonical = 'https://alldentpdr.com/our-work';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
@@ -67,7 +67,7 @@ const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))]
   <section class="hero-img" style="background-image:url('/images/topofcarbeforandafter.jpg')">
     <div class="hero-img-overlay">
       <div class="container">
-        <span class="section-label">Gallery — Bedford &amp; Northeast Ohio</span>
+        <span class="section-label">Gallery — Cleveland &amp; Northeast Ohio</span>
         <h1>Our work — real results, real vehicles</h1>
         <p>Every project in our gallery was completed by All Dent PDR technicians using paintless dent repair techniques that preserve your factory finish. Hail damage, door dings, creases — see the difference for yourself.</p>
         <div class="button-row" style="justify-content:center;margin-top:16px;">

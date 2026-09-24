@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS, buildLocalBusinessSchema } from '../lib/business';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  breadcrumbs: { name: string; url: string }[];
+  faqItems: { question: string; answer: string }[];
+  schemaName: string;
+  schemaDescription: string;
+  heroLabel: string;
+  h1: string;
+  heroLead: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  breadcrumbs,
+  faqItems,
+  schemaName,
+  schemaDescription,
+  heroLabel,
+  h1,
+  heroLead,
+} = Astro.props;
+
+const schema = buildLocalBusinessSchema({
+  name: schemaName,
+  description: schemaDescription,
+  url: canonical,
+});
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </Fragment>
+
+  <section class="page-hero page-hero--services">
+    <div class="container">
+      <span class="section-label">{heroLabel}</span>
+      <h1>{h1}</h1>
+      <p>{heroLead}</p>
+      <div class="button-row" style="justify-content:center;margin-top:16px;">
+        <a class="button primary" href="/contact">Get a Free Estimate</a>
+        <a class="button ghost" href={`tel:${BUSINESS.phoneTel}`}>Call {BUSINESS.phone}</a>
+      </div>
+      <p style="margin-top:14px;text-align:center;font-size:0.95rem;">
+        <strong>{BUSINESS.fullAddress}</strong> · Mon–Fri 8am–6pm · Sat 9am–2pm
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <slot />
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <h2>Related services &amp; locations</h2>
+      <div class="grid-3">
+        <article class="card">
+          <h3><a href="/paintless-dent-repair-cleveland-oh">PDR Cleveland, OH</a></h3>
+          <p>Our primary local landing page with shop details, FAQs, and before/after work.</p>
+        </article>
+        <article class="card">
+          <h3><a href="/hail-damage-repair">Hail damage repair</a></h3>
+          <p>Storm damage inspections, insurance support, and factory-finish PDR.</p>
+        </article>
+        <article class="card">
+          <h3><a href="/service-area">Service area</a></h3>
+          <p>Bedford, Parma, Solon, Garfield Heights, and 20+ Northeast Ohio communities.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Visit our Cleveland shop</h2>
+      <p>{BUSINESS.fullAddress} · Walk-ins welcome for free damage assessments</p>
+      <div class="button-row" style="justify-content:center;">
+        <a class="button primary" href="/contact">Request an Inspection</a>
+        <a class="button ghost" href={BUSINESS.googleMapsUrl} target="_blank" rel="noopener noreferrer">Get Directions</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

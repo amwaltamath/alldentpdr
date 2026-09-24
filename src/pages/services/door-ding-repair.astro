@@ -1,0 +1,36 @@
+---
+import ServiceLandingShell from '../../components/ServiceLandingShell.astro';
+import { BUSINESS } from '../../lib/business';
+
+const canonical = 'https://alldentpdr.com/services/door-ding-repair';
+const title = 'Door Ding Repair Cleveland, OH | Paintless Dent Repair | All Dent PDR';
+const description = `Door ding and parking lot dent repair at ${BUSINESS.fullAddress}. Fast in-shop paintless dent repair for Cleveland, Bedford, Parma, and Northeast Ohio drivers.`;
+---
+
+<ServiceLandingShell
+  title={title}
+  description={description}
+  canonical={canonical}
+  breadcrumbs={[
+    { name: 'Home', url: 'https://alldentpdr.com' },
+    { name: 'Services', url: 'https://alldentpdr.com/services' },
+    { name: 'Door Ding Repair', url: canonical },
+  ]}
+  faqItems={[
+    { question: 'How much does door ding repair cost?', answer: 'Most single door dings fall in the $75–$150 range after inspection, depending on size, depth, and panel access.' },
+    { question: 'How long does door ding PDR take?', answer: 'Many door dings are completed the same day — often within a few hours at our Cleveland shop.' },
+  ]}
+  schemaName="All Dent PDR — Door Ding Repair"
+  schemaDescription={description}
+  heroLabel="Door Ding Repair · Cleveland, OH"
+  h1="Door ding repair in Cleveland, Ohio"
+  heroLead={`Remove parking lot dings, shopping cart marks, and minor creases at our shop on Granger Road. ${BUSINESS.fullAddress} — walk-ins welcome.`}
+>
+  <span class="section-label">Door dings &amp; creases</span>
+  <h2>Quick paintless door ding repair without repainting</h2>
+  <p>
+    Door dings are one of the most common reasons drivers visit All Dent PDR. Because PDR preserves factory paint,
+    it is often the best choice for lease returns, resale value, and vehicles you want to keep looking OEM-clean.
+  </p>
+  <p><a href="/door-ding-repair/bedford">Door ding repair near Bedford →</a> · <a href="/door-ding-repair/parma">Parma →</a></p>
+</ServiceLandingShell>

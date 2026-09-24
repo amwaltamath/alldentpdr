@@ -2169,7 +2169,7 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
       <div className="panel-head">
         <div>
           <h3>Leads &amp; Analytics</h3>
-          <p className="meta" style={{ margin: '2px 0 0' }}>{total} total leads from contact form · click a status to filter</p>
+          <p className="meta" style={{ margin: '2px 0 0' }}>{total} total leads from website &amp; Meta Lead Ads · click a status to filter</p>
         </div>
       </div>
 

@@ -1,0 +1,34 @@
+---
+import ServiceLandingShell from '../../components/ServiceLandingShell.astro';
+import { BUSINESS } from '../../lib/business';
+
+const canonical = 'https://alldentpdr.com/services/minor-collision-dent-repair';
+const title = 'Minor Collision Dent Repair Cleveland, OH | PDR | All Dent PDR';
+const description = `Minor collision and low-speed impact dent repair at ${BUSINESS.fullAddress}. Paintless dent repair when paint is intact — Cleveland and Northeast Ohio.`;
+---
+
+<ServiceLandingShell
+  title={title}
+  description={description}
+  canonical={canonical}
+  breadcrumbs={[
+    { name: 'Home', url: 'https://alldentpdr.com' },
+    { name: 'Services', url: 'https://alldentpdr.com/services' },
+    { name: 'Minor Collision Dent Repair', url: canonical },
+  ]}
+  faqItems={[
+    { question: 'Can PDR fix collision dents?', answer: 'When paint is not cracked or chipped, many low-speed collision dents can be repaired with paintless dent repair. We inspect each panel and recommend PDR only when it will deliver a quality result.' },
+  ]}
+  schemaName="All Dent PDR — Minor Collision Dent Repair"
+  schemaDescription={description}
+  heroLabel="Collision dents · Cleveland, OH"
+  h1="Minor collision dent repair in Cleveland, Ohio"
+  heroLead={`Low-speed bumps and soft-impact dents are evaluated in person at ${BUSINESS.fullAddress}. We focus on paint preservation and honest repair recommendations.`}
+>
+  <span class="section-label">Collision PDR</span>
+  <h2>When paintless repair beats conventional body work</h2>
+  <p>
+    Not every collision dent qualifies for PDR — sharp creases, stretched metal, or paint damage may need conventional repair.
+    We tell you upfront which approach protects your vehicle's finish and value.
+  </p>
+</ServiceLandingShell>

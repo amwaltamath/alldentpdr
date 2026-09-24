@@ -4,6 +4,26 @@
       "source": "/blog/paintless-dent-repair-cincinnati",
       "destination": "/blog",
       "permanent": true
+    },
+    {
+      "source": "/hail-damage-repair-cleveland-oh",
+      "destination": "/hail-damage-repair-cleveland",
+      "permanent": true
+    },
+    {
+      "source": "/paintless-dent-repair-cleveland",
+      "destination": "/paintless-dent-repair-cleveland-oh",
+      "permanent": true
+    },
+    {
+      "source": "/hail-damage-repair-bedford-oh",
+      "destination": "/bedford-hail-damage-repair",
+      "permanent": true
+    },
+    {
+      "source": "/paintless-dent-repair-bedford-oh",
+      "destination": "/bedford-paintless-dent-repair",
+      "permanent": true
     }
   ],
   "crons": [

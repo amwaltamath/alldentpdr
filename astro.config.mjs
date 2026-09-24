@@ -16,6 +16,11 @@ const corePages = [
   '/',
   '/about',
   '/services',
+  '/services/paintless-dent-repair',
+  '/services/door-ding-repair',
+  '/services/minor-collision-dent-repair',
+  '/services/insurance-hail-damage-repair',
+  '/nationwide-hail-damage-repair',
   '/contact',
   '/service-area',
   '/our-work',
@@ -27,6 +32,7 @@ const corePages = [
   '/bedford-door-ding-repair',
   '/hail-damage-repair-bedford-ohio',
   '/hail-damage-repair-cleveland',
+  '/paintless-dent-repair-cleveland-oh',
   '/blog',
 ];
 
