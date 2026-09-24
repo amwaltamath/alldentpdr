@@ -1,6 +1,7 @@
 ﻿---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
+import { BUSINESS } from '../lib/business';
 
 declare global {
   interface Window {
@@ -283,6 +284,39 @@ const faqSchema = {
     </div>
   </section>
 
+  <section style="padding:70px 24px;background:#fff;border-top:1px solid #eee;">
+    <div style="max-width:1000px;margin:0 auto;">
+      <span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Our Cleveland shop</span>
+      <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 20px;font-family:Georgia,serif;color:#1a1410;">Visit All Dent PDR on Granger Road</h2>
+      <p style="color:#6b5c52;line-height:1.65;max-width:720px;">
+        Our shop sits in <strong>south Cleveland (44125)</strong>, between Garfield Heights, Cuyahoga Heights, and Newburgh Heights.
+        Most drivers reach us from <strong>I-480</strong> or <strong>Rockside Rd</strong>, then north on Granger Rd.
+        Walk-ins are welcome for hail inspections and door ding estimates.
+      </p>
+      <p style="margin-top:14px;">
+        <a href={BUSINESS.googleMapsUrl} target="_blank" rel="noopener noreferrer" style="color:#fc1317;font-weight:700;">Get directions in Google Maps →</a>
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:32px;">
+        {[
+          { label: 'Hail damage', href: '/hail-damage-repair-cleveland' },
+          { label: 'Door ding repair', href: '/services/door-ding-repair' },
+          { label: 'Insurance hail claims', href: '/services/insurance-hail-damage-repair' },
+          { label: 'PDR near Bedford', href: '/bedford-paintless-dent-repair' },
+          { label: 'PDR Parma', href: '/paintless-dent-repair/parma' },
+          { label: 'Our work gallery', href: '/our-work' },
+        ].map(({ label, href }) => (
+          <a href={href} style="display:block;padding:16px 18px;border:1px solid #e8e0d8;border-radius:12px;color:#1a1410;font-weight:600;text-decoration:none;background:#fffbf6;">
+            {label} →
+          </a>
+        ))}
+      </div>
+      <h3 style="margin:36px 0 12px;font-size:1.1rem;color:#1a1410;">Nearby Cleveland suburbs we serve daily</h3>
+      <p style="color:#6b5c52;font-size:0.92rem;line-height:1.7;">
+        Garfield Heights · Parma · Bedford · Maple Heights · Independence · Solon · Warrensville Heights · Twinsburg · Beachwood
+      </p>
+    </div>
+  </section>
+
   <section style="padding:70px 24px;background:#f9f7f5;">
     <div style="max-width:760px;margin:0 auto;">
       <span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">FAQ</span>
@@ -290,7 +324,9 @@ const faqSchema = {
       <div style="display:flex;flex-direction:column;gap:16px;">
         {[
           { q: 'What is paintless dent repair?', a: 'PDR removes dents by reshaping metal from behind the panel without sanding, fillers, or repainting — preserving your factory finish.' },
-          { q: 'Where is your Cleveland PDR shop?', a: '7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, Parma, Garfield Heights, Maple Heights, Solon, and Northeast Ohio.' },
+          { q: 'Where is your Cleveland PDR shop?', a: '7695 Granger Rd, Cleveland, OH 44125 — south Cleveland near Garfield Heights. Serving Bedford, Parma, Maple Heights, Solon, and Northeast Ohio.' },
+          { q: 'Do I need an appointment for a Cleveland PDR estimate?', a: 'No appointment is required for an initial inspection. Walk-ins are welcome during shop hours (Mon–Fri 8am–6pm, Sat 9am–2pm).' },
+          { q: 'Is parking available at your Granger Rd shop?', a: 'Yes — customers can pull in for drop-off and inspection. Call ahead if you are bringing a heavily hail-damaged vehicle so we can plan bay space.' },
           { q: 'How long does paintless dent repair take?', a: 'Many single-panel dents can be completed same day. Multi-panel hail damage may take 1-3 days depending on severity and insurance approval.' },
           { q: 'Does insurance cover paintless dent repair?', a: 'Most comprehensive policies cover hail and qualifying dent damage after your deductible. We work directly with major insurance carriers.' },
         ].map(({ q, a }) => (

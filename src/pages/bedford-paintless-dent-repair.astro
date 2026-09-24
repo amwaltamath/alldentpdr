@@ -1,6 +1,7 @@
 ﻿---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
+import { BUSINESS } from '../lib/business';
 
 declare global {
   interface Window {
@@ -65,7 +66,7 @@ const faqSchema = {
         <img src="/images/logo.jpg" alt="All Dent PDR" style="height:44px;width:auto;border-radius:6px;" />
         <div>
           <div style="font-weight:700;font-size:1.1rem;color:#1a1410;">All Dent PDR</div>
-          <div style="font-size:0.78rem;color:#6b5c52;">Bedford &amp; Northeast Ohio</div>
+          <div style="font-size:0.78rem;color:#6b5c52;">Cleveland, OH shop · Serving Bedford</div>
         </div>
       </a>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
@@ -283,6 +284,31 @@ const faqSchema = {
     </div>
   </section>
 
+  <section style="padding:70px 24px;background:#fff;border-top:1px solid #eee;">
+    <div style="max-width:960px;margin:0 auto;">
+      <span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Directions from Bedford</span>
+      <h2 style="font-size:clamp(1.35rem,3vw,1.9rem);margin:16px 0 16px;font-family:Georgia,serif;color:#1a1410;">About 5 miles from Bedford (44146) to our Cleveland shop</h2>
+      <p style="color:#6b5c52;line-height:1.65;">
+        All Dent PDR is located at <strong>{BUSINESS.fullAddress}</strong> — not inside Bedford city limits, but close enough that most Bedford drivers are at the shop in about <strong>10 minutes</strong>.
+      </p>
+      <ul style="color:#3a2e28;line-height:1.7;margin:20px 0;padding-left:20px;">
+        <li><strong>From downtown Bedford:</strong> Head northwest on Broadway Ave toward I-480, continue to Granger Rd.</li>
+        <li><strong>From Turney Rd / Bedford Heights:</strong> Take Turney Rd north, connect to Granger Rd near Garfield Heights.</li>
+        <li><strong>From I-480:</strong> Exit toward Granger Rd — our shop is on the north side of Granger between Garfield Heights and Cuyahoga Heights.</li>
+      </ul>
+      <p>
+        <a href={BUSINESS.googleMapsUrl} target="_blank" rel="noopener noreferrer" style="color:#fc1317;font-weight:700;">Open directions in Google Maps →</a>
+        · <a href="/hail-damage-repair-bedford-ohio" style="color:#fc1317;font-weight:700;">Bedford hail damage repair →</a>
+        · <a href="/paintless-dent-repair-cleveland-oh" style="color:#fc1317;font-weight:700;">Cleveland PDR hub →</a>
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:28px;">
+        {['Bedford Heights', 'Maple Heights', 'Garfield Heights', 'Oakwood Village', 'Walton Hills'].map((city) => (
+          <span style="padding:10px 14px;background:#f9f7f5;border-radius:8px;font-size:0.88rem;color:#3a2e28;">{city} drivers welcome</span>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <section style="padding:70px 24px;background:#f9f7f5;">
     <div style="max-width:760px;margin:0 auto;">
       <span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">FAQ</span>
@@ -292,7 +318,9 @@ const faqSchema = {
           { q: 'Can paintless dent repair fix Bedford door dings and small dents?', a: 'Yes. Paintless dent repair is ideal for most door dings, parking lot dents, and many minor dents where paint remains intact.' },
           { q: 'Do I need repainting for dents?', a: 'In most cases, no. PDR reshapes metal from behind the panel, preserving your factory paint and finish.' },
           { q: 'How long does paintless dent repair take?', a: 'Many single-panel dents can be completed same day. Multi-panel or complex dents may take 1-2 days depending on access and severity.' },
-          { q: 'How far is All Dent PDR from Bedford?', a: 'Our shop at 7695 Granger Rd, Cleveland, OH 44125 is about 5 minutes from Bedford with easy access from I-480 and Rockside Rd.' },
+          { q: 'How far is All Dent PDR from Bedford?', a: 'Our shop at 7695 Granger Rd, Cleveland, OH 44125 is about 5 miles and roughly 10 minutes from Bedford (44146) via Broadway Ave or Turney Rd.' },
+          { q: 'Why is the shop address in Cleveland if you serve Bedford?', a: 'Our physical location is on Granger Rd in Cleveland 44125 — the closest professional PDR shop for Bedford, Bedford Heights, and south Cuyahoga County drivers.' },
+          { q: 'Do you repair hail damage for Bedford zip code 44146?', a: 'Yes. We inspect and repair hail-damaged vehicles from Bedford and file insurance claims from our Cleveland shop. See our Bedford hail page for storm-season guidance.' },
         ].map(({ q, a }) => (
           <details style="background:#fff;border:1px solid #e8e0d8;border-radius:12px;padding:0;overflow:hidden;">
             <summary style="padding:18px 24px;font-weight:700;font-size:0.97rem;color:#1a1410;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
@@ -309,7 +337,7 @@ const faqSchema = {
   <section style="background:linear-gradient(135deg,#fc1317 0%,#c8000a 100%);color:#fff;padding:70px 24px;text-align:center;">
     <div style="max-width:700px;margin:0 auto;">
       <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 14px;font-family:Georgia,serif;">Don't wait &mdash; dents spread over time</h2>
-      <p style="font-size:1.02rem;color:rgba(255,255,255,0.88);margin-bottom:32px;line-height:1.6;">Schedule your free inspection today &mdash; just minutes from Bedford. We'll assess every panel and give you a clear repair plan the same day.</p>
+      <p style="font-size:1.02rem;color:rgba(255,255,255,0.88);margin-bottom:32px;line-height:1.6;">Schedule your free inspection at our Cleveland shop on Granger Rd — a short drive from Bedford. We'll assess every panel and give you a clear repair plan the same day.</p>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
         <a href="tel:18554255336" style="background:#fff;color:#fc1317;padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);">
           &#128222; Call 1-855-425-5336
