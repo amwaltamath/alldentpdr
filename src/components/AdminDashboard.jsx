@@ -2147,6 +2147,34 @@ function sourceBadgeClass(src) {
   return 'source-badge other';
 }
 
+function leadPhoneHref(phone) {
+  const digits = String(phone || '').replace(/\D/g, '');
+  return digits ? `tel:+1${digits.replace(/^1/, '')}` : null;
+}
+
+function formatLeadDate(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function LeadDetailFields({ lead: l }) {
+  return (
+    <div className="lead-detail-fields">
+      <div><span className="jd-label">Vehicle</span> <span className="jd-val">{l.vehicle || '—'}</span></div>
+      {l.location && <div><span className="jd-label">Location</span> <span className="jd-val">{l.location}</span></div>}
+      {(l.utm_campaign || l.utm_term || l.utm_content) && (
+        <div>
+          <span className="jd-label">Campaign</span>{' '}
+          <span className="jd-val">{[l.utm_campaign, l.utm_term, l.utm_content].filter(Boolean).join(' · ') || '—'}</span>
+        </div>
+      )}
+      <div><span className="jd-label">Full Note</span></div>
+      <p className="lead-detail-note">{l.message || '—'}</p>
+    </div>
+  );
+}
+
 function LeadsView({ leads, loading, onStatusChange, onDelete }) {
   const [filter, setFilter] = useState('all');
   const [selectedId, setSelectedId] = useState(null);
@@ -2163,17 +2191,19 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
   const otherCount  = total - googleCount - metaCount - organicCount;
 
   const shown = filter === 'all' ? leads : leads.filter((l) => l.status === filter);
+  const emptyCopy = filter === 'all'
+    ? 'No leads yet — contact form submissions will appear here.'
+    : `No leads with status "${filter}".`;
 
   return (
-    <section className="panel">
+    <section className="panel leads-view">
       <div className="panel-head">
         <div>
           <h3>Leads &amp; Analytics</h3>
-          <p className="meta" style={{ margin: '2px 0 0' }}>{total} total leads from website &amp; Meta Lead Ads · click a status to filter</p>
+          <p className="meta" style={{ margin: '2px 0 0' }}>{total} total leads from website &amp; Meta Lead Ads · tap a status to filter</p>
         </div>
       </div>
 
-      {/* Source + status KPIs */}
       <div className="leads-kpi-row">
         <div className="leads-kpi"><span className="leads-kpi-val">{total}</span><span className="leads-kpi-lbl">Total Leads</span></div>
         <div className="leads-kpi accent-rust"><span className="leads-kpi-val">{byStatus['New']}</span><span className="leads-kpi-lbl">New</span></div>
@@ -2185,8 +2215,7 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
         {otherCount > 0 && <div className="leads-kpi"><span className="leads-kpi-val">{otherCount}</span><span className="leads-kpi-lbl">Other</span></div>}
       </div>
 
-      {/* Status filter tabs */}
-      <div className="queue-tabs" style={{ padding: '16px 0', borderBottom: '1px solid var(--line)', marginBottom: 16 }}>
+      <div className="queue-tabs leads-filter-tabs">
         <button type="button" className={`queue-tab${filter === 'all' ? ' active' : ''}`} onClick={() => setFilter('all')}>
           All <span className="queue-count">{total}</span>
         </button>
@@ -2197,7 +2226,7 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
         ))}
       </div>
 
-      <div className="table-scroll">
+      <div className="leads-desktop-table table-scroll">
         <table className="data-table">
           <thead>
             <tr>
@@ -2269,11 +2298,7 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
                   {isOpen && (
                     <tr className="job-detail-tr">
                       <td colSpan={9} className="job-detail-td" style={{ padding: '12px 20px' }}>
-                        <div style={{ display: 'grid', gap: 8 }}>
-                          <div><span className="jd-label">Vehicle</span> <span className="jd-val">{l.vehicle || '—'}</span></div>
-                          <div><span className="jd-label">Full Note</span></div>
-                          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{l.message || '—'}</p>
-                        </div>
+                        <LeadDetailFields lead={l} />
                       </td>
                     </tr>
                   )}
@@ -2281,13 +2306,68 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
               );
             })}
             {!loading && !shown.length && (
-              <tr><td colSpan={9} className="kanban-empty">{filter === 'all' ? 'No leads yet — contact form submissions will appear here.' : `No leads with status "${filter}".`}</td></tr>
+              <tr><td colSpan={9} className="kanban-empty">{emptyCopy}</td></tr>
             )}
             {loading && (
               <tr><td colSpan={9} className="kanban-empty">Loading…</td></tr>
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="leads-mobile-list">
+        {loading && <p className="kanban-empty">Loading…</p>}
+        {!loading && !shown.length && <p className="kanban-empty">{emptyCopy}</p>}
+        {shown.map((l) => {
+          const isOpen = selectedId === l.id;
+          const phoneHref = leadPhoneHref(l.phone);
+          return (
+            <article key={l.id} className={`lead-card${isOpen ? ' is-open' : ''}`}>
+              <button type="button" className="lead-card-main" onClick={() => toggle(l.id)} aria-expanded={isOpen}>
+                <div className="lead-card-top">
+                  <strong>{l.name || '—'}</strong>
+                  <span className={sourceBadgeClass(l.utm_source)}>{sourceLabel(l.utm_source)}</span>
+                </div>
+                <div className="lead-card-meta">
+                  <span>{formatLeadDate(l.created_at)}</span>
+                  {l.location && <span>{l.location}</span>}
+                  {l.vehicle && <span>{l.vehicle}</span>}
+                </div>
+                {l.message && (
+                  <p className="lead-card-preview">{l.message.slice(0, 90)}{l.message.length > 90 ? '…' : ''}</p>
+                )}
+              </button>
+              <div className="lead-card-actions">
+                {phoneHref ? (
+                  <a className="lead-card-link" href={phoneHref}>{l.phone}</a>
+                ) : (
+                  <span className="lead-card-link is-muted">No phone</span>
+                )}
+                {l.email && <a className="lead-card-link" href={`mailto:${l.email}`}>{l.email}</a>}
+                <select
+                  className="lead-card-status"
+                  value={l.status}
+                  onChange={(e) => onStatusChange(l.id, e.target.value)}
+                  aria-label={`Status for ${l.name}`}
+                >
+                  {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <button
+                  type="button"
+                  className="btn-delete-job"
+                  onClick={() => onDelete(l.id)}
+                  title="Delete spam lead"
+                  aria-label="Delete lead"
+                >🗑</button>
+              </div>
+              {isOpen && (
+                <div className="lead-card-detail">
+                  <LeadDetailFields lead={l} />
+                </div>
+              )}
+            </article>
+          );
+        })}
       </div>
     </section>
   );
