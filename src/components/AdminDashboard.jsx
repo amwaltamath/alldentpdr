@@ -1994,28 +1994,29 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
   const openJobs   = vehicles.filter((v) => v.status !== 'Complete');
   const closedJobs = vehicles.filter((v) => v.status === 'Complete');
   const shown      = queue === 'open' ? openJobs : closedJobs;
+  const emptyCopy  = queue === 'open' ? 'No open jobs.' : 'No closed jobs yet.';
 
   return (
-    <section className="panel">
+    <section className="panel jobs-view">
       <div className="panel-head">
         <div>
           <h3>All jobs</h3>
-          <p className="meta" style={{ margin: '2px 0 0' }}>{shown.length} {shown.length === 1 ? 'job' : 'jobs'} &mdash; click a row to expand details</p>
-        </div>
-        <div className="queue-tabs">
-          <button
-            type="button"
-            className={`queue-tab${queue === 'open' ? ' active' : ''}`}
-            onClick={() => { setQueue('open'); setSelectedId(null); }}
-          >Open <span className="queue-count">{openJobs.length}</span></button>
-          <button
-            type="button"
-            className={`queue-tab${queue === 'closed' ? ' active' : ''}`}
-            onClick={() => { setQueue('closed'); setSelectedId(null); }}
-          >Closed <span className="queue-count">{closedJobs.length}</span></button>
+          <p className="meta" style={{ margin: '2px 0 0' }}>{shown.length} {shown.length === 1 ? 'job' : 'jobs'} &mdash; tap a job to expand details</p>
         </div>
       </div>
-      <div className="table-scroll">
+      <div className="queue-tabs jobs-filter-tabs">
+        <button
+          type="button"
+          className={`queue-tab${queue === 'open' ? ' active' : ''}`}
+          onClick={() => { setQueue('open'); setSelectedId(null); }}
+        >Open <span className="queue-count">{openJobs.length}</span></button>
+        <button
+          type="button"
+          className={`queue-tab${queue === 'closed' ? ' active' : ''}`}
+          onClick={() => { setQueue('closed'); setSelectedId(null); }}
+        >Closed <span className="queue-count">{closedJobs.length}</span></button>
+      </div>
+      <div className="jobs-desktop-table table-scroll">
         <table className="data-table">
           <thead>
             <tr>
@@ -2117,13 +2118,84 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
               );
             })}
             {!loading && !shown.length && (
-              <tr><td colSpan={8} className="kanban-empty">{queue === 'open' ? 'No open jobs.' : 'No closed jobs yet.'}</td></tr>
+              <tr><td colSpan={8} className="kanban-empty">{emptyCopy}</td></tr>
             )}
             {loading && (
               <tr><td colSpan={8} className="kanban-empty">Loading…</td></tr>
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="jobs-mobile-list">
+        {loading && <p className="kanban-empty">Loading…</p>}
+        {!loading && !shown.length && <p className="kanban-empty">{emptyCopy}</p>}
+        {shown.map((v) => {
+          const isOpen = selectedId === v.id;
+          const phoneHref = leadPhoneHref(v.phone);
+          const vehicleLabel = [v.year, v.make, v.model].filter(Boolean).join(' ') || 'Vehicle';
+          return (
+            <article key={v.id} className={`job-card${isOpen ? ' is-open' : ''}`}>
+              <button type="button" className="job-card-main" onClick={() => toggle(v.id)} aria-expanded={isOpen}>
+                <div className="job-card-top">
+                  <strong>{vehicleLabel}</strong>
+                  <span className={statusBadge(v.status)}>{v.status}</span>
+                </div>
+                <div className="job-card-meta">
+                  <span>{v.id}</span>
+                  {v.plate && <span>{v.plate}</span>}
+                  <span>{formatLeadDate(v.updatedAt)}</span>
+                </div>
+                <p className="job-card-customer">{v.customerName || '—'}</p>
+              </button>
+              <div className="job-card-actions">
+                {phoneHref ? (
+                  <a className="job-card-link" href={phoneHref}>{v.phone}</a>
+                ) : (
+                  <span className="job-card-link is-muted">No phone</span>
+                )}
+                {v.email && <a className="job-card-link" href={`mailto:${v.email}`}>{v.email}</a>}
+                <select
+                  className="job-card-status"
+                  value={v.status}
+                  onChange={(e) => onStatusChange(v.id, e.target.value)}
+                  aria-label={`Status for ${vehicleLabel}`}
+                >
+                  {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <button
+                  type="button"
+                  className={`button sm ${hasVehicleRelease(v) ? 'ghost' : 'primary'}`}
+                  onClick={() => onRelease(v)}
+                  title={hasVehicleRelease(v) ? 'View signed release' : 'Issue vehicle release form'}
+                >
+                  {hasVehicleRelease(v) ? '✓ Release' : 'Release'}
+                </button>
+                <button
+                  type="button"
+                  className="btn-delete-job"
+                  onClick={() => onDelete(v.id)}
+                  title="Delete job"
+                  aria-label="Delete job"
+                >🗑</button>
+              </div>
+              {isOpen && (
+                <div className="job-card-detail">
+                  <JobDetail
+                    v={v}
+                    onClose={() => setSelectedId(null)}
+                    onStatusChange={onStatusChange}
+                    onNotificationChange={onNotificationChange}
+                    onRelease={(job) => { setSelectedId(null); onRelease(job); }}
+                    onDelete={(id) => { setSelectedId(null); onDelete(id); }}
+                    onJobUpdated={onJobUpdated}
+                    adminEmail={adminEmail}
+                  />
+                </div>
+              )}
+            </article>
+          );
+        })}
       </div>
     </section>
   );
