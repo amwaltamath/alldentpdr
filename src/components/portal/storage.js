@@ -173,6 +173,13 @@ export async function isRemoteAdmin() {
   return Boolean(data);
 }
 
+export async function isRemoteVendor() {
+  if (!isSupabaseEnabled()) return false;
+  const { data, error } = await supabase.rpc('is_portal_vendor');
+  if (error) return false;
+  return Boolean(data);
+}
+
 export async function getVehicles() {
   if (isSupabaseEnabled()) {
     const { data, error } = await supabase
@@ -539,6 +546,79 @@ export async function updateLead(id, updates) {
     const { error } = await supabase.from('leads').update(payload).eq('id', id);
     if (error) throw error;
   }
+}
+
+export async function getVendors() {
+  if (!isSupabaseEnabled()) return [];
+  const { data, error } = await supabase
+    .from('vendors')
+    .select('*')
+    .order('company_name', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function saveVendor(vendor) {
+  if (!isSupabaseEnabled()) throw new Error('Supabase is not configured.');
+  const payload = {
+    company_name: vendor.companyName.trim(),
+    contact_name: vendor.contactName.trim() || null,
+    email: vendor.email.trim().toLowerCase(),
+    phone: vendor.phone.trim() || null,
+    city: vendor.city.trim() || null,
+    notes: vendor.notes.trim() || null,
+    active: vendor.active !== false,
+  };
+  const query = vendor.id
+    ? supabase.from('vendors').update(payload).eq('id', vendor.id).select('*').single()
+    : supabase.from('vendors').insert(payload).select('*').single();
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+}
+
+export async function setVendorActive(id, active) {
+  if (!isSupabaseEnabled()) return;
+  const { error } = await supabase.from('vendors').update({ active }).eq('id', id);
+  if (error) throw error;
+}
+
+export async function assignLeadToVendor(id, vendorId) {
+  if (!isSupabaseEnabled()) return;
+  const assigned = Boolean(vendorId);
+  const { error } = await supabase
+    .from('leads')
+    .update({
+      assigned_vendor_id: assigned ? vendorId : null,
+      assignment_status: assigned ? 'offered' : null,
+      assignment_note: null,
+      vendor_response_note: null,
+      assigned_at: assigned ? new Date().toISOString() : null,
+      status: assigned ? 'Referred' : 'New',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id);
+  if (error) throw error;
+}
+
+export async function getVendorLeads() {
+  if (!isSupabaseEnabled()) return [];
+  const { data, error } = await supabase
+    .from('vendor_assigned_leads')
+    .select('*')
+    .order('assigned_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function respondToVendorLead(id, status, note = '') {
+  if (!isSupabaseEnabled()) return;
+  const { error } = await supabase.rpc('vendor_respond_to_lead', {
+    p_lead_id: id,
+    p_status: status,
+    p_note: note || null,
+  });
+  if (error) throw error;
 }
 
 /* ============================================================

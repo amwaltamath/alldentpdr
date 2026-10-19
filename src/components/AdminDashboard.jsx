@@ -3,6 +3,7 @@ import {
   clearSession,
   appendJobNote,
   createProject,
+  assignLeadToVendor,
   deleteLead,
   deleteProject,
   deleteProjectPhoto,
@@ -15,6 +16,7 @@ import {
   getRemoteAuthUser,
   getSession,
   getVehicles,
+  getVendors,
   isRemoteAdmin,
   isRemotePortalEnabled,
   markJobNoteNotified,
@@ -23,8 +25,10 @@ import {
   reorderProjectPhotos,
   saveReleaseForm,
   savePricing,
+  saveVendor,
   sendChatReply,
   setSession,
+  setVendorActive,
   signInRemoteAdmin,
   signOutRemoteAdmin,
   subscribeChatChanges,
@@ -88,6 +92,7 @@ const NAV_ITEMS = [
   { id: 'pipeline', label: 'Pipeline',          icon: '▦' },
   { id: 'jobs',     label: 'All Jobs',          icon: '☰' },
   { id: 'leads',    label: 'Leads',             icon: '◎' },
+  { id: 'vendors',  label: 'Vendors',           icon: '⧉' },
   { id: 'messages', label: 'Messages',          icon: '✉' },
   { id: 'analytics',label: 'Analytics',          icon: '📈' },
   { id: 'quote',    label: 'New Quote',         icon: '$' },
@@ -128,6 +133,7 @@ export default function AdminDashboard() {
   const [releaseJob, setReleaseJob] = useState(null);
   const [leads, setLeads] = useState([]);
   const [leadsLoading, setLeadsLoading] = useState(false);
+  const [vendors, setVendors] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [activeConvId, setActiveConvId] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
@@ -192,17 +198,19 @@ export default function AdminDashboard() {
       setLeadsLoading(true);
       setProjectsLoading(true);
       try {
-        const [next, leadsNext, convNext, projectsNext] = await Promise.all([
+        const [next, leadsNext, convNext, projectsNext, vendorsNext] = await Promise.all([
           getVehicles(),
           getLeads(),
           getChatConversations().catch(() => []),
           getProjects().catch(() => []),
+          getVendors().catch(() => []),
         ]);
         if (active) {
           setVehicles(next);
           setLeads(leadsNext);
           setConversations(convNext);
           setProjects(projectsNext);
+          setVendors(vendorsNext);
         }
       } catch {
         if (active) setAuthError('Unable to load vehicle data.');
@@ -447,6 +455,47 @@ export default function AdminDashboard() {
   const handleLeadStatusChange = async (id, status) => {
     await updateLeadStatus(id, status);
     setLeads((prev) => prev.map((l) => l.id === id ? { ...l, status } : l));
+  };
+
+  const handleLeadAssign = async (id, vendorId) => {
+    try {
+      await assignLeadToVendor(id, vendorId);
+      const vendor = vendors.find((v) => v.id === vendorId);
+      setLeads((prev) => prev.map((l) => (
+        l.id === id
+          ? {
+              ...l,
+              assigned_vendor_id: vendorId || null,
+              assignment_status: vendorId ? 'offered' : null,
+              vendor_response_note: null,
+              assigned_at: vendorId ? new Date().toISOString() : null,
+              status: vendorId ? 'Referred' : 'New',
+              vendor_company: vendor?.company_name || '',
+            }
+          : l
+      )));
+    } catch (err) {
+      const msg = err?.message || 'Unknown error';
+      alert(
+        msg.includes('assigned_vendor') || msg.includes('schema') || msg.includes('vendors')
+          ? `Assign failed: ${msg}\n\nRun supabase/vendor-portal-migration.sql in the Supabase SQL editor.`
+          : `Assign lead failed: ${msg}`
+      );
+    }
+  };
+
+  const handleVendorSave = async (vendor) => {
+    const saved = await saveVendor(vendor);
+    setVendors((prev) => {
+      const without = prev.filter((v) => v.id !== saved.id);
+      return [...without, saved].sort((a, b) => a.company_name.localeCompare(b.company_name));
+    });
+    return saved;
+  };
+
+  const handleVendorActive = async (id, active) => {
+    await setVendorActive(id, active);
+    setVendors((prev) => prev.map((v) => (v.id === id ? { ...v, active } : v)));
   };
 
   const handleLeadDelete = async (id) => {
@@ -750,9 +799,19 @@ export default function AdminDashboard() {
           {view === 'leads' && (
             <LeadsView
               leads={leads}
+              vendors={vendors}
               loading={leadsLoading}
               onStatusChange={handleLeadStatusChange}
+              onAssign={handleLeadAssign}
               onDelete={handleLeadDelete}
+            />
+          )}
+
+          {view === 'vendors' && (
+            <VendorsView
+              vendors={vendors}
+              onSave={handleVendorSave}
+              onActiveChange={handleVendorActive}
             />
           )}
 
@@ -2201,7 +2260,18 @@ function JobsView({ vehicles, loading, onStatusChange, onNotificationChange, onR
   );
 }
 
-const LEAD_STATUSES = ['New', 'Contacted', 'Quoted', 'Converted', 'Closed', 'Spam'];
+const LEAD_STATUSES = ['New', 'Contacted', 'Quoted', 'Referred', 'Converted', 'Closed', 'Spam'];
+
+const ASSIGNMENT_LABELS = {
+  offered: 'Offered',
+  accepted: 'Accepted',
+  declined: 'Declined',
+  completed: 'Completed',
+};
+
+function assignmentLabel(status) {
+  return ASSIGNMENT_LABELS[status] || 'Offered';
+}
 
 function sourceLabel(src) {
   if (!src) return 'Organic';
@@ -2230,7 +2300,35 @@ function formatLeadDate(value) {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-function LeadDetailFields({ lead: l }) {
+function LeadAssignControl({ lead, vendors, onAssign }) {
+  const choices = vendors.filter((v) => v.active || v.id === lead.assigned_vendor_id);
+  const vendor = vendors.find((v) => v.id === lead.assigned_vendor_id);
+  return (
+    <label className="lead-assign">
+      <span>Send to vendor</span>
+      <select
+        value={lead.assigned_vendor_id || ''}
+        onChange={(e) => onAssign(lead.id, e.target.value)}
+        aria-label={`Assign ${lead.name || 'lead'} to a vendor`}
+      >
+        <option value="">Keep in house</option>
+        {choices.map((v) => (
+          <option key={v.id} value={v.id}>
+            {v.company_name}{v.city ? ` · ${v.city}` : ''}{v.active ? '' : ' (inactive)'}
+          </option>
+        ))}
+      </select>
+      {vendor && (
+        <span className="cell-sub">
+          {vendor.company_name} · {assignmentLabel(lead.assignment_status)}
+          {lead.vendor_response_note ? ` — ${lead.vendor_response_note}` : ''}
+        </span>
+      )}
+    </label>
+  );
+}
+
+function LeadDetailFields({ lead: l, vendors, onAssign }) {
   return (
     <div className="lead-detail-fields">
       <div><span className="jd-label">Vehicle</span> <span className="jd-val">{l.vehicle || '—'}</span></div>
@@ -2241,13 +2339,14 @@ function LeadDetailFields({ lead: l }) {
           <span className="jd-val">{[l.utm_campaign, l.utm_term, l.utm_content].filter(Boolean).join(' · ') || '—'}</span>
         </div>
       )}
+      <LeadAssignControl lead={l} vendors={vendors} onAssign={onAssign} />
       <div><span className="jd-label">Full Note</span></div>
       <p className="lead-detail-note">{l.message || '—'}</p>
     </div>
   );
 }
 
-function LeadsView({ leads, loading, onStatusChange, onDelete }) {
+function LeadsView({ leads, vendors, loading, onStatusChange, onAssign, onDelete }) {
   const [filter, setFilter] = useState('all');
   const [selectedId, setSelectedId] = useState(null);
 
@@ -2356,6 +2455,9 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
                       <select value={l.status} onChange={(e) => onStatusChange(l.id, e.target.value)}>
                         {LEAD_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                       </select>
+                      {l.assigned_vendor_id && (
+                        <div className="cell-sub">{assignmentLabel(l.assignment_status)}</div>
+                      )}
                     </td>
                     <td onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
                       <button
@@ -2370,7 +2472,7 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
                   {isOpen && (
                     <tr className="job-detail-tr">
                       <td colSpan={9} className="job-detail-td" style={{ padding: '12px 20px' }}>
-                        <LeadDetailFields lead={l} />
+                        <LeadDetailFields lead={l} vendors={vendors} onAssign={onAssign} />
                       </td>
                     </tr>
                   )}
@@ -2434,12 +2536,124 @@ function LeadsView({ leads, loading, onStatusChange, onDelete }) {
               </div>
               {isOpen && (
                 <div className="lead-card-detail">
-                  <LeadDetailFields lead={l} />
+                  <LeadDetailFields lead={l} vendors={vendors} onAssign={onAssign} />
                 </div>
               )}
             </article>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+const emptyVendorForm = {
+  companyName: '',
+  contactName: '',
+  email: '',
+  phone: '',
+  city: '',
+  notes: '',
+  active: true,
+};
+
+function VendorsView({ vendors, onSave, onActiveChange }) {
+  const [form, setForm] = useState(emptyVendorForm);
+  const [editingId, setEditingId] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const startEdit = (vendor) => {
+    setEditingId(vendor.id);
+    setForm({
+      companyName: vendor.company_name || '',
+      contactName: vendor.contact_name || '',
+      email: vendor.email || '',
+      phone: vendor.phone || '',
+      city: vendor.city || '',
+      notes: vendor.notes || '',
+      active: vendor.active !== false,
+    });
+    setError('');
+  };
+
+  const reset = () => {
+    setEditingId(null);
+    setForm(emptyVendorForm);
+    setError('');
+  };
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setError('');
+    try {
+      await onSave({ ...form, id: editingId });
+      reset();
+    } catch (err) {
+      const msg = err?.message || 'Could not save vendor.';
+      setError(
+        msg.includes('vendors') || msg.includes('schema') || msg.includes('row-level')
+          ? `${msg} Run supabase/vendor-portal-migration.sql in the Supabase SQL editor.`
+          : msg
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className="panel">
+      <div className="panel-head">
+        <div>
+          <h3>Vendor shops</h3>
+          <p className="meta" style={{ margin: '2px 0 0' }}>
+            Shops that can take repairs All Dent does not want. They sign in at /portal/vendor.
+          </p>
+        </div>
+      </div>
+      <div className="panel-body vendor-layout">
+        <form className="vendor-form" onSubmit={onSubmit}>
+          <h4 className="form-section-label">{editingId ? 'Edit vendor' : 'Add vendor'}</h4>
+          <label>Company<input value={form.companyName} onChange={(e) => setForm({ ...form, companyName: e.target.value })} required /></label>
+          <label>Contact name<input value={form.contactName} onChange={(e) => setForm({ ...form, contactName: e.target.value })} /></label>
+          <label>Login email<input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></label>
+          <label>Phone<input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></label>
+          <label>City<input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></label>
+          <label>Notes<textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} /></label>
+          {error && <p className="portal-error">{error}</p>}
+          <div className="vendor-form-actions">
+            <button className="button primary" type="submit" disabled={saving}>{saving ? 'Saving…' : editingId ? 'Save vendor' : 'Add vendor'}</button>
+            {editingId && <button className="button ghost" type="button" onClick={reset}>Cancel</button>}
+          </div>
+          <p className="cell-sub">
+            Create a Supabase Auth user with this same email before the shop can sign in. Assign leads from the Leads tab.
+          </p>
+        </form>
+        <div className="vendor-list">
+          {!vendors.length && <p className="kanban-empty">No vendor shops yet.</p>}
+          {vendors.map((vendor) => (
+            <article key={vendor.id} className={`vendor-row${vendor.active ? '' : ' is-inactive'}`}>
+              <div>
+                <strong>{vendor.company_name}</strong>
+                <div className="cell-sub">
+                  {[vendor.contact_name, vendor.city, vendor.email, vendor.phone].filter(Boolean).join(' · ')}
+                </div>
+                {vendor.notes && <p className="vendor-notes">{vendor.notes}</p>}
+              </div>
+              <div className="vendor-row-actions">
+                <button type="button" className="button ghost sm" onClick={() => startEdit(vendor)}>Edit</button>
+                <button
+                  type="button"
+                  className="button ghost sm"
+                  onClick={() => onActiveChange(vendor.id, !vendor.active)}
+                >
+                  {vendor.active ? 'Deactivate' : 'Activate'}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
