@@ -21,12 +21,12 @@ const REMINDER_STATUSES = ['Estimate', 'Pending Insurance', 'In Repair', 'On Hol
 const STATUS_MESSAGES: Record<string, { headline: string; body: string; color: string }> = {
   'Estimate': {
     headline: 'Reminder: Your estimate is still awaiting your approval.',
-    body: "This is a friendly reminder that your estimate is ready and waiting for your response. Call us at 1-855-425-5336 or reply to this email and we'll get your repair scheduled right away.",
+    body: "This is a friendly reminder that your estimate is ready and waiting for your response. Reply to this email or submit an inspection request at alldentpdr.com/contact and we'll get your repair scheduled right away.",
     color: '#fc1317',
   },
   'Pending Insurance': {
     headline: 'Update: Your insurance claim is still in progress.',
-    body: "We're still working with your insurance company to get your claim approved. If you have your claim number handy, feel free to call us at 1-855-425-5336 to check on progress together.",
+    body: "We're still working with your insurance company to get your claim approved. If you have your claim number handy, reply to this email or use alldentpdr.com/contact to check on progress together.",
     color: '#6a5acd',
   },
   'In Repair': {
@@ -112,9 +112,9 @@ export const GET: APIRoute = async ({ request }) => {
                 ${job.plate ? `<p style="margin:0"><strong>Plate:</strong> ${escHtml(job.plate)}</p>` : ''}
               </div>
               <p>Track your repair anytime at <a href="https://alldentpdr.com/portal/customer-login" style="color:#fc1317">alldentpdr.com/portal/customer-login</a>.</p>
-              <p>Questions? Call us at <strong>1-855-425-5336</strong>.</p>
+              <p>Questions? Reply to this email or visit <a href="https://alldentpdr.com/contact">alldentpdr.com/contact</a>.</p>
               <div style="margin-top:32px;padding-top:24px;border-top:1px solid #e8e0d5;color:#888;font-size:12px">
-                <p style="margin:0">All Dent PDR &middot; 7695 Granger Rd, Cleveland, OH 44125 &middot; alldentpdr.com</p>
+                <p style="margin:0">All Dent PDR &middot; Greater Cleveland & Northeast Ohio &middot; alldentpdr.com</p>
               </div>
             </div>
           </div>

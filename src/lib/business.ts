@@ -1,4 +1,4 @@
-/** Canonical business identity for copy, schema, and NAP consistency. */
+/** Canonical business identity for copy, schema, and contact consistency. */
 
 export const BUSINESS = {
   name: 'All Dent PDR',
@@ -7,17 +7,22 @@ export const BUSINESS = {
   phone: '1-855-425-5336',
   phoneTel: '18554255336',
   email: 'admin@alldentpdr.com',
-  streetAddress: '7695 Granger Rd',
   addressLocality: 'Cleveland',
   addressRegion: 'OH',
-  postalCode: '44125',
   addressCountry: 'US',
-  fullAddress: '7695 Granger Rd, Cleveland, OH 44125',
-  latitude: 41.396,
-  longitude: -81.61,
-  googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=7695+Granger+Rd,+Cleveland,+OH+44125',
+  /** Public-facing service region (no street address on the website). */
+  regionLabel: 'Greater Cleveland & Northeast Ohio',
+  serviceAreaSummary:
+    'Bedford, Garfield Heights, Parma, Solon, Independence, and communities throughout Northeast Ohio',
   googleReviewUrl: 'https://share.google/7cCa7EhinPDCM8Owu',
   facebookUrl: 'https://www.facebook.com/alldentpdr/',
+} as const;
+
+/** Primary public lead action (forms only — no click-to-call on marketing pages). */
+export const LEAD_CTA = {
+  href: '/contact',
+  label: 'Get free estimate',
+  shortLabel: 'Free estimate',
 } as const;
 
 export const SAME_AS = [BUSINESS.googleReviewUrl, BUSINESS.facebookUrl];
@@ -37,7 +42,7 @@ export const SERVICE_AREA_CITIES = [
 ] as const;
 
 export const SHOP_TAGLINE =
-  'Professional paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125 — serving Bedford, Garfield Heights, Parma, and Northeast Ohio.';
+  'Professional paintless dent repair and hail damage restoration serving Greater Cleveland and Northeast Ohio.';
 
 export const OPENING_HOURS_SPECIFICATION = [
   {
@@ -57,19 +62,9 @@ export const OPENING_HOURS_SPECIFICATION = [
 export function postalAddressSchema() {
   return {
     '@type': 'PostalAddress',
-    streetAddress: BUSINESS.streetAddress,
     addressLocality: BUSINESS.addressLocality,
     addressRegion: BUSINESS.addressRegion,
-    postalCode: BUSINESS.postalCode,
     addressCountry: BUSINESS.addressCountry,
-  };
-}
-
-export function geoSchema() {
-  return {
-    '@type': 'GeoCoordinates',
-    latitude: BUSINESS.latitude,
-    longitude: BUSINESS.longitude,
   };
 }
 
@@ -103,7 +98,6 @@ export function buildLocalBusinessSchema(options: LocalBusinessSchemaOptions = {
     image: `${BUSINESS.url}/images/logo-branded.svg`,
     logo: `${BUSINESS.url}/images/logo-branded.svg`,
     address: postalAddressSchema(),
-    geo: geoSchema(),
     areaServed: (options.areaServed ?? SERVICE_AREA_CITIES.map((c) => `${c}, OH`)).map((item) =>
       typeof item === 'string' ? { '@type': 'City', name: item } : item,
     ),
@@ -117,7 +111,7 @@ export function buildLocalBusinessSchema(options: LocalBusinessSchemaOptions = {
           itemOffered: {
             '@type': 'Service',
             name: 'Paintless Dent Repair',
-            description: 'In-shop paintless dent repair preserving factory paint',
+            description: 'Paintless dent repair preserving factory paint',
           },
         },
         {

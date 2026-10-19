@@ -586,6 +586,11 @@ body.popup-open { overflow: hidden; }
   color: #fff;
 }
 
+.mobile-cta-bar .mcta-quote--solo {
+  flex: 1 1 100%;
+  background: var(--rust, #fc1317);
+}
+
 @media (max-width: 767px) {
   .mobile-cta-bar { display: flex; }
   body:not(.popup-open) { padding-bottom: 76px; }

@@ -7,7 +7,7 @@ pubDate: "2026-06-29"
 
 After a hail storm, the hardest part is often not the dents — it is the **wait**. Body shops fill up for weeks. Rental cars get expensive. Insurance adjusters want documentation fast. And every day you delay, rust risk on chipped paint goes up.
 
-**No-wait hail damage repair** means you can get assessed quickly, know your repair timeline upfront, and get back on the road without sitting in a month-long queue. At All Dent PDR, that is how we operate from our shop at [7695 Granger Rd, Cleveland, OH 44125](/hail-damage-repair-cleveland) — serving Bedford, Parma, Solon, and all of Northeast Ohio.
+**No-wait hail damage repair** means you can get assessed quickly, know your repair timeline upfront, and get back on the road without sitting in a month-long queue. At All Dent PDR, that is how we operate across [Greater Cleveland & Northeast Ohio](/hail-damage-repair-cleveland) — serving Bedford, Parma, Solon, and all of Northeast Ohio.
 
 ---
 
@@ -42,7 +42,7 @@ Paintless dent repair (PDR) is different. When paint is intact, technicians work
 
 ### 1. Come in or contact us the same day
 
-After the storm, [request an inspection online](/contact) or call [1-855-425-5336](tel:18554255336). Walk-ins are welcome at our Cleveland-area shop.
+After the storm, [request an inspection online](/contact)(/contact). Contact us to schedule at our Cleveland-area shop.
 
 Bring your insurance info if you plan to file a claim — we can help with next steps.
 
@@ -113,8 +113,8 @@ Waiting does not save money. It usually costs more in rental days, missed claim 
 Do not sit on a body shop waiting list if paintless dent repair is the right fix for your vehicle.
 
 **All Dent PDR**  
-7695 Granger Rd, Cleveland, OH 44125  
-Phone: [1-855-425-5336](tel:18554255336)  
+Greater Cleveland & Northeast Ohio  
+Phone: [request an inspection](/contact)  
 Hours: Mon–Fri 8am–6pm · Sat 9am–2pm
 
 [Get a free estimate](/contact) · [Bedford hail repair shop page](/hail-damage-repair-bedford-ohio) · [Cleveland hail damage repair](/hail-damage-repair-cleveland)

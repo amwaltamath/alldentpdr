@@ -14,12 +14,12 @@ export function getStaticPaths() {
 
 const { city } = Astro.props as { city: CityData };
 
-const shopAddress = '7695 Granger Rd, Cleveland, OH 44125';
+const shopAddress = 'Greater Cleveland & Northeast Ohio';
 const shopPhone = '1-855-425-5336';
 const shopEmail = 'alldentpdr@gmail.com';
 
 const title = `Door Ding Repair in ${city.name}, OH | All Dent PDR`;
-const description = `Door ding and dent removal near ${city.name}, OH — All Dent PDR's shop is only ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Paintless dent repair, fast turnaround, free estimates. Call ${shopPhone}.`;
+const description = `Door ding and dent removal near ${city.name}, OH. All Dent PDR serves Greater Cleveland & Northeast Ohio with paintless dent repair and free online estimates.`;
 const keywords = `door ding repair ${city.name} OH, dent removal ${city.name} OH, paintless dent repair ${city.name}, car door ding repair ${city.name}, ${city.name} dent repair, ${city.zipCodes.join(', ')}, All Dent PDR`;
 const canonical = `https://alldentpdr.com/door-ding-repair/${city.slug}`;
 
@@ -32,11 +32,11 @@ const breadcrumbs = [
 const faqItems = [
   {
     question: `How much does door ding repair cost near ${city.name}, OH?`,
-    answer: `Pricing depends on dent size, location, and panel access. Many small door dings are in the $75–$150 range. We confirm exact pricing after inspecting the vehicle. ${city.name} drivers can stop by our shop at ${shopAddress} — only ${city.driveMinutes} minutes away.`,
+    answer: `Pricing depends on dent size, location, and panel access. Many small door dings are in the $75–$150 range. We confirm exact pricing after inspecting the vehicle. ${city.name} drivers can stop by ${shopAddress} — only ${city.driveMinutes} minutes away.`,
   },
   {
     question: `Does All Dent PDR serve ${city.name} for door ding repairs?`,
-    answer: `Yes! ${city.name} drivers can reach our shop at ${shopAddress} in about ${city.driveMinutes} minutes. We also serve nearby ${city.nearbyShops.join(', ')} and throughout ${city.county} County.`,
+    answer: `Yes! ${city.name} drivers can reach ${shopAddress} in about ${city.driveMinutes} minutes. We also serve nearby ${city.nearbyShops.join(', ')} and throughout ${city.county} County.`,
   },
   {
     question: `Can you fix sharp creases on ${city.name} vehicles?`,
@@ -44,7 +44,7 @@ const faqItems = [
   },
   {
     question: `Do I need an appointment for door ding repair from ${city.name}?`,
-    answer: `Walk-ins are welcome at our Cleveland shop. You can also call ${shopPhone} to reserve a time. Our shop is only ${city.driveMinutes} minutes from ${city.name} via easy highway access.`,
+    answer: `Use our contact form to request a time in Northeast Ohio. We serve ${city.name} and nearby communities in ${city.county} County.`,
   },
   {
     question: `Will door ding repair require repainting?`,
@@ -52,7 +52,7 @@ const faqItems = [
   },
   {
     question: `What ZIP codes near ${city.name} does All Dent PDR serve for door ding repair?`,
-    answer: `We serve ${city.name} (${city.zipCodes.join(', ')}) and nearby ${city.nearbyShops.join(', ')} throughout ${city.county} County from our Granger Rd shop.`,
+    answer: `We serve ${city.name} (${city.zipCodes.join(', ')}) and nearby ${city.nearbyShops.join(', ')} throughout ${city.county} County from our  shop.`,
   },
 ];
 
@@ -60,23 +60,16 @@ const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': ['AutoRepair', 'LocalBusiness'],
   name: `All Dent PDR — Door Ding Repair serving ${city.name}, OH`,
-  description: `Expert door ding and dent removal serving ${city.name}, OH from our shop at ${shopAddress}.`,
+  description: `Expert door ding and dent removal serving ${city.name}, OH serving ${shopAddress}.`,
   url: canonical,
   telephone: shopPhone,
   email: shopEmail,
   image: 'https://alldentpdr.com/images/logo-branded.svg',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '7695 Granger Rd',
     addressLocality: 'Cleveland',
     addressRegion: 'OH',
-    postalCode: '44125',
     addressCountry: 'US',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: 41.3960,
-    longitude: -81.6100,
   },
   openingHoursSpecification: [
     { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '08:00', closes: '18:00' },
@@ -117,7 +110,7 @@ const localBusinessSchema = {
     <div class="container hero-inner">
       <div>
         <span class="hero-pill">
-          Serving {city.name}, OH · {city.distanceMiles} mi from shop · {city.driveMinutes} min drive
+          Serving {city.name}, OH · Northeast Ohio PDR
         </span>
         <h1>Door ding repair near {city.name}, Ohio</h1>
         <p>
@@ -164,7 +157,7 @@ const localBusinessSchema = {
       <p>{city.uniqueNote}</p>
       <p>
         Drivers in {city.name} can reach our shop via a quick {city.driveMinutes}-minute drive to
-        <strong>{shopAddress}</strong>. Walk-ins are welcome any day we're open — no appointment needed for a free assessment.
+        <strong>{shopAddress}</strong>. Contact us to schedule any day we're open — no appointment needed for a free assessment.
       </p>
       <p>
         Door dings and shopping-cart dents are an everyday reality in {city.name} (ZIP {city.zipCodes.join(', ')}) —
@@ -230,14 +223,14 @@ const localBusinessSchema = {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;" class="responsive-two-col">
         <div>
           <p>
-            Dropping off your vehicle from {city.name} is quick and easy. Our shop sits along Granger Rd
+            Dropping off your vehicle from {city.name} is quick and easy. Our shop sits along 
             in Cleveland with easy access from I-480, I-77, and Rockside Rd.
           </p>
-          <p><strong>Address:</strong><br />7695 Granger Rd<br />Cleveland, OH 44125</p>
+          
           <p><strong>Hours:</strong><br />Mon–Fri: 8:00am – 6:00pm<br />Saturday: 9:00am – 2:00pm<br />Sunday: Closed</p>
           <p>
-            <strong>Phone:</strong>{' '}
-            <a href={`tel:${shopPhone.replace(/-/g,'')}`} style="color:var(--rust);">{shopPhone}</a>
+            <strong>Inspection requests:</strong>{' '}
+            <a href="/contact" style="color:var(--rust);">Free estimate form</a>
           </p>
           <p>
             <strong>Email:</strong>{' '}
@@ -245,20 +238,11 @@ const localBusinessSchema = {
           </p>
           <div class="button-row" style="margin-top:20px;">
             <a class="button primary" href="/contact">Get My Quick Quote</a>
-            <a class="button ghost" href="https://maps.google.com/?q=7695+Granger+Rd+Cleveland+OH+44125" target="_blank" rel="noopener">Get Directions</a>
+            
           </div>
         </div>
         <div class="card" style="padding:0;overflow:hidden;border-radius:16px;">
-          <iframe
-            title={`All Dent PDR shop — door ding repair near ${city.name} OH`}
-            src="https://maps.google.com/maps?q=7695+Granger+Rd+Cleveland+OH+44125&output=embed"
-            width="100%"
-            height="300"
-            style="border:0;display:block;"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
+          </div>
       </div>
     </div>
   </section>
@@ -271,7 +255,7 @@ const localBusinessSchema = {
       <div class="grid-3">
         <article class="card">
           <h3>1. Drive in or call ahead</h3>
-          <p>Walk-ins are welcome at our Cleveland shop — only {city.driveMinutes} minutes from {city.name}. Call {shopPhone} to reserve a time.</p>
+          <p>Contact us to schedule in Northeast Ohio — only {city.driveMinutes} minutes from {city.name}. Use the contact form to request a time.</p>
         </article>
         <article class="card">
           <h3>2. Free inspection & estimate</h3>
@@ -376,7 +360,7 @@ const localBusinessSchema = {
       </p>
       <div class="button-row" style="justify-content:center;">
         <a class="button primary" href="/contact">Get a Free Estimate</a>
-        <a class="button ghost" href={`tel:${shopPhone.replace(/-/g,'')}`}>Call {shopPhone}</a>
+        <a class="button ghost" href="/contact">Get free estimate</a>
       </div>
     </div>
   </section>

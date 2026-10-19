@@ -7,7 +7,7 @@ pubDate: "2026-05-23"
 
 Northeast Ohio's spring hail season is in full swing. If your vehicle was damaged by hail in **Bedford, Ohio (44146)** or the surrounding Cuyahoga County area, this guide covers exactly what to do — from the moment the storm ends through getting your vehicle restored.
 
-**All Dent PDR is your closest professional hail repair shop** — located at [7695 Granger Rd, Cleveland, OH 44125](/hail-damage-repair-bedford-ohio), just 10 minutes from Bedford via Broadway Ave.
+**All Dent PDR is your closest professional hail repair shop** — located at [Greater Cleveland & Northeast Ohio](/hail-damage-repair-bedford-ohio), just 10 minutes from Bedford via Broadway Ave.
 
 ---
 
@@ -31,7 +31,7 @@ Ohio drivers have the legal right to choose their own repair shop. Your insurer 
 
 ## Why Bedford drivers use All Dent PDR
 
-Our shop on Granger Rd has repaired vehicles for Bedford, Bedford Heights, Garfield Heights, Maple Heights, and Solon drivers consistently. Here's what sets us apart:
+Our shop on  has repaired vehicles for Bedford, Bedford Heights, Garfield Heights, Maple Heights, and Solon drivers consistently. Here's what sets us apart:
 
 **We specialize in hail — it's not a side service.** Hail damage PDR requires a different skill set than door ding repair. Our technicians read entire panels under specialized lighting, methodically working each dent from behind the metal without sanding, filling, or repainting.
 
@@ -70,7 +70,7 @@ Most Ohio auto policies require claims to be filed within 30–60 days of the da
 Comprehensive claims (including hail) generally do not increase your premiums the way at-fault collision claims do. Policies vary — check with your carrier — but most Ohio drivers see no rate increase from a single hail claim.
 
 **Do I need an appointment, or can I walk in?**
-Walk-ins are welcome at our shop Monday–Friday 8am–6pm and Saturday 9am–2pm. We can assess your hail damage at no charge and give you a written estimate the same day.
+Contact us to schedule at our shop Monday–Friday 8am–6pm and Saturday 9am–2pm. We can assess your hail damage at no charge and give you a written estimate the same day.
 
 ---
 
@@ -80,6 +80,6 @@ Don't wait for the backlog to build. After a major storm event, quality PDR shop
 
 Visit our full [hail damage repair page for Bedford, Ohio](/hail-damage-repair-bedford-ohio) for shop address, hours, directions from Bedford, and to request your free estimate.
 
-**All Dent PDR — 7695 Granger Rd, Cleveland, OH 44125**  
-Phone: [1-855-425-5336](tel:18554255336)  
+**All Dent PDR — Greater Cleveland & Northeast Ohio**  
+Phone: [request an inspection](/contact)  
 Serving Bedford, OH 44146 and all of Northeast Ohio.

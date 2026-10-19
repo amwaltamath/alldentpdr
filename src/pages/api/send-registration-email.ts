@@ -126,7 +126,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       <p style="margin:0;font-size:14px"><strong>Track your repair online:</strong> Visit <a href="https://alldentpdr.com/portal/customer-login" style="color:#fc1317">alldentpdr.com/portal/customer-login</a> and log in with your email and license plate <strong>${plate ? escHtml(plate) : ''}</strong> to see real-time status updates.</p>
     </div>
 
-    <p style="color:#555">Questions? Call us at <strong>1-855-425-5336</strong> or reply to this email.</p>
+    <p style="color:#555">Questions? Reply to this email or visit <a href="https://alldentpdr.com/contact">alldentpdr.com/contact</a>.</p>
 
     <div style="margin-top:32px;padding-top:20px;border-top:1px solid #e8e0d5;color:#aaa;font-size:12px">
       <p style="margin:0">All Dent PDR · Paintless Dent Repair Shop · alldentpdr.com</p>

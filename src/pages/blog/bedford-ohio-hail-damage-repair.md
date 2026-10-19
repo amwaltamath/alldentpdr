@@ -1,13 +1,13 @@
 ---
 layout: ../../layouts/BlogPost.astro
 title: "Bedford, Ohio Hail Damage Repair Guide (44146): What to Do After the Storm"
-description: "Vehicle caught in a Bedford, OH hail storm? Learn what to do immediately, how PDR works, and why All Dent PDR at 7695 Granger Rd, Cleveland is Bedford's go-to repair shop."
+description: "Vehicle caught in a Bedford, OH hail storm? Learn what to do immediately, how PDR works, and why All Dent PDR at , Cleveland is Bedford's go-to repair shop."
 pubDate: "2026-05-01"
 ---
 
 If your vehicle was caught in a hail storm near **Bedford, Ohio (44146)**, you are likely dealing with dozens of dents across the hood, roof, trunk, and upper door panels. The good news is that many of these dents can be repaired without sanding, filling, or repainting when the factory finish is still intact.
 
-All Dent PDR provides **hail damage repair at our shop at 7695 Granger Rd, Cleveland, OH 44125** — just minutes from Bedford. Visit our dedicated [hail damage repair page for Bedford, Ohio](/hail-damage-repair-bedford-ohio) for shop hours, directions, and a free estimate.
+All Dent PDR provides **hail damage repair across Greater Cleveland & Northeast Ohio** — just minutes from Bedford. Visit our dedicated [hail damage repair page for Bedford, Ohio](/hail-damage-repair-bedford-ohio) for shop hours, directions, and a free estimate.
 
 ## Bedford-area hail damage: what to do first
 
@@ -69,7 +69,7 @@ Just as important: you generally **have the right to choose your own repair prov
 
 ## Hail damage repair shop near Bedford, Ohio
 
-All Dent PDR operates a **full-service repair shop at 7695 Granger Rd, Cleveland, OH 44125** — just minutes from Bedford (44146). You can drop your vehicle off directly at our shop, or we can schedule an assessment quickly after you contact us.
+All Dent PDR serves drivers across Greater Cleveland & Northeast Ohio** — just minutes from Bedford (44146). You can schedule repair through our team, or we can schedule an assessment quickly after you contact us.
 
 Our shop-based service for Bedford-area customers includes:
 
@@ -80,7 +80,7 @@ Our shop-based service for Bedford-area customers includes:
 - 1–3 day turnaround on most hail repairs
 - Walk-ins welcome Monday–Friday 8am–6pm, Saturday 9am–2pm
 
-Bedford is approximately 5 miles from our Cleveland shop — a quick, easy drive down Rockside Road or Broadway Avenue.
+Bedford is approximately 5 miles for Northeast Ohio drivers — a quick, easy drive down Rockside Road or Broadway Avenue.
 
 ## Request a Bedford hail damage assessment
 

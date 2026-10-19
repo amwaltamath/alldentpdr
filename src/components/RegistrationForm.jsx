@@ -188,7 +188,7 @@ export default function RegistrationForm() {
       }).catch((err) => console.warn('[registration email]', err));
     } catch (err) {
       console.error(err);
-      setErrorMsg('There was a problem submitting your registration. Please call us at 1-855-425-5336.');
+      setErrorMsg('There was a problem submitting your registration. Please try again or email admin@alldentpdr.com.');
       setStatus('error');
     }
   };

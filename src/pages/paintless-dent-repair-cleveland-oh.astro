@@ -11,27 +11,24 @@ declare global {
 }
 
 const title = 'Paintless Dent Repair Cleveland, OH | Free Inspection | All Dent PDR';
-const description = 'Paintless dent repair in Cleveland, OH at 7695 Granger Rd. All Dent PDR fixes hail dents, door dings, and minor dents while preserving factory paint. Serving Bedford, Parma, Garfield Heights, and Northeast Ohio. Call 1-855-425-5336.';
+const description = 'Paintless dent repair in Cleveland, OH at . All Dent PDR fixes hail dents, door dings, and minor dents while preserving factory paint. Serving Bedford, Parma, Garfield Heights, and Northeast Ohio. Free estimate online.';
 const canonical = 'https://alldentpdr.com/paintless-dent-repair-cleveland-oh';
 
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': ['AutoRepair', 'LocalBusiness'],
   name: 'All Dent PDR - Paintless Dent Repair Cleveland OH',
-  description: 'Paintless dent repair shop in Cleveland, OH at 7695 Granger Rd serving Bedford, Parma, Garfield Heights, Maple Heights, Solon, and Northeast Ohio.',
+  description: 'Paintless dent repair shop in Cleveland, OH at  serving Bedford, Parma, Garfield Heights, Maple Heights, Solon, and Northeast Ohio.',
   url: canonical,
   telephone: '1-855-425-5336',
   email: 'admin@alldentpdr.com',
   image: 'https://alldentpdr.com/images/logo-branded.svg',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '7695 Granger Rd',
     addressLocality: 'Cleveland',
     addressRegion: 'OH',
-    postalCode: '44125',
     addressCountry: 'US'
   },
-  geo: { '@type': 'GeoCoordinates', latitude: 41.3960, longitude: -81.6100 },
   areaServed: ['Cleveland, OH', 'Bedford, OH', 'Parma, OH', 'Garfield Heights, OH', 'Maple Heights, OH', 'Independence, OH', 'Solon, OH', 'Warrensville Heights, OH'],
   priceRange: '$$',
   paymentAccepted: 'Cash, Credit Card, Insurance',
@@ -47,7 +44,7 @@ const faqSchema = {
   '@type': 'FAQPage',
   mainEntity: [
     { '@type': 'Question', name: 'What is paintless dent repair?', acceptedAnswer: { '@type': 'Answer', text: 'Paintless dent repair (PDR) removes dents by reshaping metal from behind the panel without sanding, fillers, or repainting — preserving your factory finish.' } },
-    { '@type': 'Question', name: 'Where is All Dent PDR located in Cleveland?', acceptedAnswer: { '@type': 'Answer', text: 'Our shop is at 7695 Granger Rd, Cleveland, OH 44125 — easily accessible from Parma, Garfield Heights, Bedford, Maple Heights, and all of Northeast Ohio.' } },
+    { '@type': 'Question', name: 'Where is All Dent PDR located in Cleveland?', acceptedAnswer: { '@type': 'Answer', text: 'Our shop is at Greater Cleveland & Northeast Ohio — easily accessible from Parma, Garfield Heights, Bedford, Maple Heights, and all of Northeast Ohio.' } },
     { '@type': 'Question', name: 'How long does paintless dent repair take in Cleveland?', acceptedAnswer: { '@type': 'Answer', text: 'Many single-panel dents are completed same day. Multi-panel hail damage may take 1-3 days depending on severity and insurance approval.' } },
     { '@type': 'Question', name: 'Does insurance cover paintless dent repair?', acceptedAnswer: { '@type': 'Answer', text: 'Most comprehensive policies cover hail and qualifying dent damage after your deductible. We work directly with major insurance carriers.' } }
   ]
@@ -71,8 +68,8 @@ const faqSchema = {
       </a>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
         <span style="font-size:0.82rem;color:#6b5c52;">Mon-Fri 8am-6pm &middot; Sat 9am-2pm</span>
-        <a href="tel:18554255336" style="background:#fc1317;color:#fff;padding:11px 22px;border-radius:999px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 2px 10px rgba(252,19,23,0.35);">
-          &#128222; 1-855-425-5336
+        <a href="/contact" style="background:#fc1317;color:#fff;padding:11px 22px;border-radius:999px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 2px 10px rgba(252,19,23,0.35);">
+          Get free estimate
         </a>
       </div>
     </div>
@@ -88,7 +85,7 @@ const faqSchema = {
           Paintless Dent Repair in Cleveland, OH
         </h1>
         <p style="font-size:1.08rem;color:rgba(255,255,255,0.93);margin-bottom:28px;line-height:1.65;">
-          All Dent PDR is a professional paintless dent repair shop at <strong style="color:#fff;">7695 Granger Rd, Cleveland, OH 44125</strong>, serving Bedford, Garfield Heights, Parma, Independence, Solon, and communities throughout Northeast Ohio. We specialize in hail damage, door dings, and insurance-supported PDR while preserving your vehicle's factory paint.
+          All Dent PDR is a professional paintless dent repair shop at <strong style="color:#fff;">Greater Cleveland & Northeast Ohio</strong>, serving Bedford, Garfield Heights, Parma, Independence, Solon, and communities throughout Northeast Ohio. We specialize in hail damage, door dings, and insurance-supported PDR while preserving your vehicle's factory paint.
         </p>
 
         <div style="display:flex;flex-direction:column;gap:13px;margin-bottom:32px;">
@@ -105,8 +102,8 @@ const faqSchema = {
           ))}
         </div>
 
-        <a href="tel:18554255336" style="display:inline-flex;align-items:center;gap:8px;background:#fc1317;color:#fff;padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.1rem;text-decoration:none;box-shadow:0 4px 18px rgba(252,19,23,0.45);">
-          &#128222; Call for a Free Inspection
+        <a href="/contact" style="display:inline-flex;align-items:center;gap:8px;background:#fc1317;color:#fff;padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.1rem;text-decoration:none;box-shadow:0 4px 18px rgba(252,19,23,0.45);">
+          Request free inspection
         </a>
 
         <div style="margin-top:24px;display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:12px 16px;">
@@ -163,7 +160,7 @@ const faqSchema = {
         </form>
 
         <p style="font-size:0.78rem;color:#a0907e;text-align:center;margin-top:14px;">
-          Or call us directly: <a href="tel:18554255336" style="color:#fc1317;font-weight:700;">1-855-425-5336</a>
+          <a href="/contact" style="color:#fc1317;font-weight:700;">Request an inspection online</a>
         </p>
 
         <script>
@@ -214,13 +211,13 @@ const faqSchema = {
                   if (typeof window.fbq === 'function') window.fbq('track', 'Lead', {}, { eventID: eventId });
                   if (typeof window.gtag === 'function') window.gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
                 } else {
-                  stat.textContent = 'Something went wrong - please call 1-855-425-5336.';
+                  stat.textContent = 'Something went wrong - please try the contact form again.';
                   stat.style.color = '#dc2626';
                   btn.disabled = false;
                   btn.textContent = 'Request Free Inspection';
                 }
               } catch {
-                stat.textContent = 'Something went wrong - please call 1-855-425-5336.';
+                stat.textContent = 'Something went wrong - please try the contact form again.';
                 stat.style.color = '#dc2626';
                 btn.disabled = false;
                 btn.textContent = 'Request Free Inspection';
@@ -235,7 +232,7 @@ const faqSchema = {
 
   <section style="background:#fff;border-top:1px solid #eee;border-bottom:1px solid #eee;padding:28px 24px;">
     <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:center;gap:36px;text-align:center;">
-      <div><strong style="display:block;font-size:1.5rem;color:#fc1317;">7695 Granger Rd</strong><span style="font-size:0.83rem;color:#6b5c52;">Cleveland, OH 44125</span></div>
+      <div><strong style="display:block;font-size:1.5rem;color:#fc1317;"></strong><span style="font-size:0.83rem;color:#6b5c52;">Cleveland, OH </span></div>
       <div><strong style="display:block;font-size:1.5rem;color:#fc1317;">1,000+</strong><span style="font-size:0.83rem;color:#6b5c52;">Vehicles Restored</span></div>
       <div><strong style="display:block;font-size:1.5rem;color:#fc1317;">100%</strong><span style="font-size:0.83rem;color:#6b5c52;">Paint Preserved</span></div>
       <div><strong style="display:block;font-size:1.5rem;color:#fc1317;">Same-Day</strong><span style="font-size:0.83rem;color:#6b5c52;">Small Dents Available</span></div>
@@ -249,7 +246,7 @@ const faqSchema = {
       <h2 style="font-size:clamp(1.5rem,3vw,2.1rem);margin:16px 0 44px;font-family:Georgia,serif;color:#1a1410;">From inspection to flawless finish &mdash; 4 steps</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;text-align:left;">
         {[
-          { n: '1', h: 'Stop in or call', p: '7695 Granger Rd, Cleveland, OH 44125 — walk-ins welcome for a free assessment.' },
+          { n: '1', h: 'Request an inspection online', p: 'Greater Cleveland & Northeast Ohio — free assessment with photos and details from the form.' },
           { n: '2', h: 'Get your estimate', p: 'Transparent, panel-by-panel pricing with no hidden fees.' },
           { n: '3', h: 'Precision PDR repair', p: 'Door dings and dents corrected with controlled, factory-finish techniques.' },
           { n: '4', h: 'Drive away clean', p: 'Your vehicle leaves with original paint intact and a cleaner final finish.' },
@@ -287,14 +284,14 @@ const faqSchema = {
   <section style="padding:70px 24px;background:#fff;border-top:1px solid #eee;">
     <div style="max-width:1000px;margin:0 auto;">
       <span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Our Cleveland shop</span>
-      <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 20px;font-family:Georgia,serif;color:#1a1410;">Visit All Dent PDR on Granger Road</h2>
+      <h2 style="font-size:clamp(1.4rem,3vw,2rem);margin:16px 0 20px;font-family:Georgia,serif;color:#1a1410;">Visit All Dent PDR on </h2>
       <p style="color:#6b5c52;line-height:1.65;max-width:720px;">
-        Our shop sits in <strong>south Cleveland (44125)</strong>, between Garfield Heights, Cuyahoga Heights, and Newburgh Heights.
-        Most drivers reach us from <strong>I-480</strong> or <strong>Rockside Rd</strong>, then north on Granger Rd.
-        Walk-ins are welcome for hail inspections and door ding estimates.
+        Our shop sits in <strong>south Cleveland ()</strong>, between Garfield Heights, Cuyahoga Heights, and Newburgh Heights.
+        Most drivers reach us from <strong>I-480</strong> or <strong>Rockside Rd</strong>, then north on .
+        Contact us to schedule for hail inspections and door ding estimates.
       </p>
       <p style="margin-top:14px;">
-        <a href={BUSINESS.googleMapsUrl} target="_blank" rel="noopener noreferrer" style="color:#fc1317;font-weight:700;">Get directions in Google Maps →</a>
+        
       </p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:32px;">
         {[
@@ -324,9 +321,9 @@ const faqSchema = {
       <div style="display:flex;flex-direction:column;gap:16px;">
         {[
           { q: 'What is paintless dent repair?', a: 'PDR removes dents by reshaping metal from behind the panel without sanding, fillers, or repainting — preserving your factory finish.' },
-          { q: 'Where is your Cleveland PDR shop?', a: '7695 Granger Rd, Cleveland, OH 44125 — south Cleveland near Garfield Heights. Serving Bedford, Parma, Maple Heights, Solon, and Northeast Ohio.' },
-          { q: 'Do I need an appointment for a Cleveland PDR estimate?', a: 'No appointment is required for an initial inspection. Walk-ins are welcome during shop hours (Mon–Fri 8am–6pm, Sat 9am–2pm).' },
-          { q: 'Is parking available at your Granger Rd shop?', a: 'Yes — customers can pull in for drop-off and inspection. Call ahead if you are bringing a heavily hail-damaged vehicle so we can plan bay space.' },
+          { q: 'Where is your Cleveland PDR shop?', a: 'Greater Cleveland & Northeast Ohio — south Cleveland near Garfield Heights. Serving Bedford, Parma, Maple Heights, Solon, and Northeast Ohio.' },
+          { q: 'Do I need an appointment for a Cleveland PDR estimate?', a: 'No appointment is required for an initial inspection. Contact us to schedule during shop hours (Mon–Fri 8am–6pm, Sat 9am–2pm).' },
+          { q: 'Is parking available at your  shop?', a: 'Yes — customers can pull in for drop-off and inspection. Call ahead if you are bringing a heavily hail-damaged vehicle so we can plan bay space.' },
           { q: 'How long does paintless dent repair take?', a: 'Many single-panel dents can be completed same day. Multi-panel hail damage may take 1-3 days depending on severity and insurance approval.' },
           { q: 'Does insurance cover paintless dent repair?', a: 'Most comprehensive policies cover hail and qualifying dent damage after your deductible. We work directly with major insurance carriers.' },
         ].map(({ q, a }) => (
@@ -345,23 +342,23 @@ const faqSchema = {
   <section style="background:linear-gradient(135deg,#fc1317 0%,#c8000a 100%);color:#fff;padding:70px 24px;text-align:center;">
     <div style="max-width:700px;margin:0 auto;">
       <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 14px;font-family:Georgia,serif;">Don't wait &mdash; dents spread over time</h2>
-      <p style="font-size:1.02rem;color:rgba(255,255,255,0.88);margin-bottom:32px;line-height:1.6;">Schedule your free inspection today at our Cleveland shop. We'll assess every panel and give you a clear repair plan the same day.</p>
+      <p style="font-size:1.02rem;color:rgba(255,255,255,0.88);margin-bottom:32px;line-height:1.6;">Schedule your free inspection today in Northeast Ohio. We'll assess every panel and give you a clear repair plan the same day.</p>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-        <a href="tel:18554255336" style="background:#fff;color:#fc1317;padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);">
-          &#128222; Call 1-855-425-5336
+        <a href="/contact" style="background:#fff;color:#fc1317;padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);">
+          Get free estimate
         </a>
         <a href="#lp-form" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.7);padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;">
           Fill Out the Form
         </a>
       </div>
-      <p style="margin-top:20px;font-size:0.85rem;color:rgba(255,255,255,0.65);">7695 Granger Rd &middot; Cleveland, OH 44125 &middot; Mon-Fri 8am-6pm &middot; Sat 9am-2pm</p>
+      <p style="margin-top:20px;font-size:0.85rem;color:rgba(255,255,255,0.65);"> &middot; Cleveland, OH  &middot; Mon-Fri 8am-6pm &middot; Sat 9am-2pm</p>
     </div>
   </section>
 
   <footer style="background:#1a1410;color:rgba(255,255,255,0.5);text-align:center;padding:22px 24px;font-size:0.82rem;">
     <p style="margin:0;">
-      &copy; 2026 All Dent PDR &middot; 7695 Granger Rd, Cleveland, OH 44125 &middot;
-      <a href="tel:18554255336" style="color:rgba(255,255,255,0.7);">1-855-425-5336</a> &middot;
+      &copy; 2026 All Dent PDR &middot; Greater Cleveland & Northeast Ohio &middot;
+      <a href="/contact" style="color:rgba(255,255,255,0.7);">Get free estimate</a> &middot;
       <a href="/" style="color:rgba(255,255,255,0.5);margin-left:8px;">Home</a> &middot;
       <a href="/services" style="color:rgba(255,255,255,0.5);margin-left:8px;">Services</a> &middot;
       <a href="/contact" style="color:rgba(255,255,255,0.5);margin-left:8px;">Contact</a>

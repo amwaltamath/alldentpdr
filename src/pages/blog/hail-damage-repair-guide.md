@@ -43,7 +43,7 @@ Paintless dent repair is the industry-standard method for hail damage restoratio
 
 ## How hail repair works at our Cleveland-area shop
 
-At All Dent PDR, we operate from our shop at **7695 Granger Rd, Cleveland, OH 44125**, just minutes from Bedford and surrounding Northeast Ohio communities. Here's what that looks like:
+At All Dent PDR, we operate across **Greater Cleveland & Northeast Ohio**, just minutes from Bedford and surrounding Northeast Ohio communities. Here's what that looks like:
 
 1. **You contact us** with your location, vehicle details, and storm information.
 2. **We inspect the vehicle** and provide a repair plan based on the number of panels and severity.
@@ -88,4 +88,4 @@ All Dent PDR has extensive experience with storm damage repair for Bedford, Clev
 
 If your vehicle was caught in a hail storm, [contact All Dent PDR](/contact) to request an inspection. Share your location and vehicle details, and we'll reply with pricing guidance, timing, and next steps after inspection.
 
-Based at 7695 Granger Rd, Cleveland, OH 44125 and serving Bedford, Cleveland, and Northeast Ohio.
+Based at Greater Cleveland & Northeast Ohio and serving Bedford, Cleveland, and Northeast Ohio.

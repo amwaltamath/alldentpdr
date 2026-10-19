@@ -38,7 +38,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   }
 
   if (isRateLimited(`contact:${clientAddress}`, 5, 10 * 60 * 1000)) {
-    return new Response(JSON.stringify({ error: 'Too many requests. Please try again later or call us directly.' }), { status: 429 });
+    return new Response(JSON.stringify({ error: 'Too many requests. Please try again later or email us at info@alldentpdr.com.' }), { status: 429 });
   }
 
   // Heuristically-suspicious messages are still saved (in case of a false positive) but

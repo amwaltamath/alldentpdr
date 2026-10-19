@@ -269,7 +269,7 @@ export default function ChatWidget() {
                 {sending ? 'Sending…' : 'Start chat'}
               </button>
               <p className="chat-foot-note">
-                Prefer the phone? Call <a href="tel:18554255336">855-425-5336</a>
+                Need a faster response? <a href="/contact">Send an inspection request</a>
               </p>
             </form>
           ) : (

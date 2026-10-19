@@ -1,10 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { BUSINESS, buildLocalBusinessSchema } from '../lib/business';
+import { BUSINESS, buildLocalBusinessSchema, LEAD_CTA } from '../lib/business';
 
 const canonical = 'https://alldentpdr.com/nationwide-hail-damage-repair';
 const title = 'Nationwide Hail Damage Repair & Storm Response | All Dent PDR';
-const description = 'All Dent PDR deploys for major hail events nationwide while our home shop remains at 7695 Granger Rd, Cleveland, OH 44125. Storm-response paintless dent repair for fleets, dealerships, and insurance partners.';
+const description = 'All Dent PDR deploys for major hail events nationwide while our home shop remains at Greater Cleveland & Northeast Ohio. Storm-response paintless dent repair for fleets, dealerships, and insurance partners.';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Nationwide Hail Response', url: canonical },
@@ -12,11 +12,11 @@ const breadcrumbs = [
 const faqItems = [
   {
     question: 'Is All Dent PDR a mobile-only company?',
-    answer: `No. Our primary location is an in-shop paintless dent repair facility at ${BUSINESS.fullAddress}. We also deploy teams for large-scale hail events when storm volume requires additional capacity.`,
+    answer: `No. Our primary location is an in-shop paintless dent repair facility at ${BUSINESS.regionLabel}. We also deploy teams for large-scale hail events when storm volume requires additional capacity.`,
   },
   {
     question: 'Who should contact you for nationwide hail response?',
-    answer: 'Dealership groups, fleet operators, insurance partners, and property managers coordinating post-storm vehicle repair can reach us at 1-855-425-5336.',
+    answer: 'Dealership groups, fleet operators, insurance partners, and property managers coordinating post-storm vehicle repair can use our contact form with fleet details and storm location.',
   },
 ];
 const schema = buildLocalBusinessSchema({
@@ -37,12 +37,11 @@ const schema = buildLocalBusinessSchema({
       <span class="section-label">Storm response · Separate from local shop service</span>
       <h1>Nationwide hail damage repair &amp; storm response</h1>
       <p>
-        All Dent PDR is rooted at <strong>{BUSINESS.fullAddress}</strong> in Cleveland, Ohio — our home shop for Northeast Ohio drivers.
+        All Dent PDR is rooted at <strong>{BUSINESS.regionLabel}</strong> in Cleveland, Ohio — our home shop for Northeast Ohio drivers.
         For major hail events, we also coordinate deployment to storm-affected markets for dealerships, fleets, and insurance partners.
       </p>
       <div class="button-row" style="justify-content:center;margin-top:16px;">
-        <a class="button primary" href="/contact">Contact for storm deployment</a>
-        <a class="button ghost" href={`tel:${BUSINESS.phoneTel}`}>Call {BUSINESS.phone}</a>
+        <a class="button primary" href={LEAD_CTA.href}>Contact for storm deployment</a>
       </div>
     </div>
   </section>

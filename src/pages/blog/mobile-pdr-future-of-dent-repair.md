@@ -11,7 +11,7 @@ Here's why flexible PDR scheduling is especially useful for Bedford, Cleveland, 
 
 ## What is flexible PDR service?
 
-Flexible PDR means the repair plan is built around the damage and the vehicle. Most All Dent PDR repairs happen at our Cleveland-area shop at **7695 Granger Rd, Cleveland, OH 44125**, where we can inspect panels under proper lighting and complete insurance documentation accurately.
+Flexible PDR means the repair plan is built around the damage and the vehicle. Most All Dent PDR repairs happen at our Cleveland-area shop at **Greater Cleveland & Northeast Ohio**, where we can inspect panels under proper lighting and complete insurance documentation accurately.
 
 **The process is the same as shop-based PDR:**
 - Access the back side of the dented panel
@@ -66,7 +66,7 @@ PDR is the best option when:
 
 1. **Contact us** with your damage details and location via our [contact form](/contact) or email
 2. **Schedule the right inspection** so pricing and timeline are based on the actual repair
-3. **You visit our shop** at 7695 Granger Rd, Cleveland, OH 44125 for inspection or drop-off
+3. **You visit our shop** at Greater Cleveland & Northeast Ohio for inspection or drop-off
 4. **Repairs are completed** with professional-grade PDR tools and LED inspection lighting
 5. **You inspect the results** before pickup
 

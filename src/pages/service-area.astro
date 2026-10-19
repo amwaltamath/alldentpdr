@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { serviceAreas } from '../data/serviceAreas';
 
-const title = 'PDR Service Area | Cleveland, OH Shop | All Dent PDR';
-const description = 'All Dent PDR serves 20+ communities across Northeast Ohio from our shop at 7695 Granger Rd, Cleveland, OH 44125. See if we cover your city — Bedford, Parma, Solon, Garfield Heights, and more.';
+const title = 'PDR Service Area | Cleveland, OH | All Dent PDR';
+const description = 'All Dent PDR serves 20+ communities across Northeast Ohio across Greater Cleveland & Northeast Ohio. See if we cover your city — Bedford, Parma, Solon, Garfield Heights, and more.';
 const canonical = 'https://alldentpdr.com/service-area';
 
 const breadcrumbs = [
@@ -14,15 +14,15 @@ const breadcrumbs = [
 const faqItems = [
   {
     question: 'What areas does All Dent PDR serve?',
-    answer: 'All Dent PDR serves 20+ communities across Northeast Ohio from our shop at 7695 Granger Rd, Cleveland, OH 44125. Primary service areas include Bedford, Garfield Heights, Maple Heights, Parma, Solon, Independence, Warrensville Heights, and many more.',
+    answer: 'All Dent PDR serves 20+ communities across Northeast Ohio across Greater Cleveland & Northeast Ohio. Primary service areas include Bedford, Garfield Heights, Maple Heights, Parma, Solon, Independence, Warrensville Heights, and many more.',
   },
   {
     question: 'Do you offer service outside of Bedford?',
-    answer: 'Yes. In addition to Bedford, we serve 20+ Northeast Ohio communities from our shop at 7695 Granger Rd, Cleveland, OH 44125. If your area was hit by hail, contact us and we will confirm availability quickly.',
+    answer: 'Yes. In addition to Bedford, we serve 20+ Northeast Ohio communities across Greater Cleveland & Northeast Ohio. If your area was hit by hail, contact us and we will confirm availability quickly.',
   },
   {
     question: 'My city is not listed — do you still serve me?',
-    answer: 'Likely yes. If you are in Northeast Ohio, we probably serve your area. Contact us at 1-855-425-5336 or via our contact form and we will confirm quickly.',
+    answer: 'Likely yes. If you are in Northeast Ohio, we probably serve your area. Contact us via our contact form or via our contact form and we will confirm quickly.',
   },
 ];
 
@@ -30,23 +30,16 @@ const serviceAreaSchema = {
   '@context': 'https://schema.org',
   '@type': ['AutoRepair', 'LocalBusiness'],
   name: 'All Dent PDR — Hail Damage Repair Northeast Ohio',
-  description: 'Expert paintless dent repair and hail damage repair shop serving 20+ communities across Northeast Ohio from 7695 Granger Rd, Cleveland, OH 44125.',
+  description: 'Expert paintless dent repair and hail damage repair shop serving 20+ communities across Northeast Ohio from Greater Cleveland & Northeast Ohio.',
   url: 'https://alldentpdr.com/service-area',
   telephone: '1-855-425-5336',
   email: 'alldentpdr@gmail.com',
   image: 'https://alldentpdr.com/images/logo-branded.svg',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '7695 Granger Rd',
     addressLocality: 'Cleveland',
     addressRegion: 'OH',
-    postalCode: '44125',
     addressCountry: 'US',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: 41.3960,
-    longitude: -81.6100,
   },
   areaServed: serviceAreas.map(c => ({ '@type': 'City', name: `${c.name}, OH` })),
   sameAs: ['https://share.google/7cCa7EhinPDCM8Owu', 'https://www.facebook.com/alldentpdr/'],
@@ -82,13 +75,12 @@ const sorted = [...serviceAreas].sort((a, b) => a.distanceMiles - b.distanceMile
       <span class="section-label">Northeast Ohio Service Area</span>
       <h1>Paintless dent repair serving 20+ communities from Cleveland, OH</h1>
       <p>
-        All Dent PDR's shop at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> is the go-to paintless
+        All Dent PDR's shop at <strong>Greater Cleveland & Northeast Ohio</strong> is the go-to paintless
         dent repair destination for drivers across Northeast Ohio. See if your city is in our coverage zone — 
-        and if you don't see it, call us anyway.
+        and if you don't see it, send an inspection request anyway.
       </p>
       <div class="button-row" style="justify-content:center;">
         <a class="button primary" href="/contact">Get a Free Estimate</a>
-        <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
       </div>
     </div>
   </section>
@@ -108,7 +100,7 @@ const sorted = [...serviceAreas].sort((a, b) => a.distanceMiles - b.distanceMile
       <h2>All cities we serve</h2>
       <p style="max-width:680px;">
         Every city below has a dedicated page with shop directions, drive times, and local details.
-        All repairs are performed at or dispatched from our shop at 7695 Granger Rd, Cleveland, OH 44125.
+        All repairs are performed at or dispatched across Greater Cleveland & Northeast Ohio.
       </p>
 
       <div class="service-area-grid">
@@ -138,29 +130,19 @@ const sorted = [...serviceAreas].sort((a, b) => a.distanceMiles - b.distanceMile
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;" class="map-grid">
         <div>
           <p>
-            Our repair shop sits along Granger Rd in Cleveland, with easy access from I-480,
+            Our repair shop sits along  in Cleveland, with easy access from I-480,
             I-77, and Rockside Rd. Most Northeast Ohio communities are within a 20-minute drive.
           </p>
-          <p><strong>Address:</strong><br />7695 Granger Rd<br />Cleveland, OH 44125</p>
+          
           <p><strong>Hours:</strong><br />Mon–Fri: 8:00am – 6:00pm<br />Saturday: 9:00am – 2:00pm<br />Sunday: Closed</p>
-          <p><strong>Phone:</strong> <a href="tel:18554255336" style="color:var(--rust);">1-855-425-5336</a></p>
           <p><strong>Email:</strong> <a href="mailto:alldentpdr@gmail.com" style="color:var(--rust);">alldentpdr@gmail.com</a></p>
           <div class="button-row" style="margin-top:20px;">
             <a class="button primary" href="/contact">Schedule a Visit</a>
-            <a class="button ghost" href="https://maps.google.com/?q=7695+Granger+Rd+Cleveland+OH+44125" target="_blank" rel="noopener">Get Directions</a>
+            
           </div>
         </div>
         <div style="border-radius:16px;overflow:hidden;border:1px solid #e8e0d8;">
-          <iframe
-            title="All Dent PDR shop location map — 7695 Granger Rd Cleveland OH 44125"
-            src="https://maps.google.com/maps?q=7695+Granger+Rd+Cleveland+OH+44125&output=embed"
-            width="100%"
-            height="340"
-            style="border:0;display:block;"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
+          </div>
       </div>
     </div>
   </section>
@@ -220,12 +202,12 @@ const sorted = [...serviceAreas].sort((a, b) => a.distanceMiles - b.distanceMile
     <div class="container">
       <h2>Your city in Northeast Ohio? We've got you covered.</h2>
       <p>
-        All Dent PDR · 7695 Granger Rd, Cleveland, OH 44125 · Mon–Fri 8am–6pm · Sat 9am–2pm<br />
+        All Dent PDR · Greater Cleveland & Northeast Ohio · Mon–Fri 8am–6pm · Sat 9am–2pm<br />
         Walk-ins welcome · Free estimates · Insurance claims handled · 20+ communities served
       </p>
       <div class="button-row" style="justify-content:center;">
         <a class="button primary" href="/contact">Schedule at Our Shop</a>
-        <a class="button ghost" href="tel:18554255336">Call 1-855-425-5336</a>
+        <a class="button ghost" href="/contact">Get free estimate</a>
       </div>
     </div>
   </section>

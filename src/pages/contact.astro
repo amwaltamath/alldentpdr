@@ -2,8 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { BUSINESS } from '../lib/business';
 
-const title = 'Contact All Dent PDR | Cleveland, OH Shop | 7695 Granger Rd';
-const description = `Contact All Dent PDR at ${BUSINESS.fullAddress}. Serving Bedford, Parma, and all of Northeast Ohio with expert paintless dent and hail damage repair. Call ${BUSINESS.phone}.`;
+const title = 'Contact All Dent PDR | Cleveland & Northeast Ohio';
+const description = `Contact All Dent PDR for paintless dent and hail damage repair in ${BUSINESS.regionLabel}. Send an inspection request — we reply the same day.`;
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Contact', url: 'https://alldentpdr.com/contact' }
@@ -14,8 +14,8 @@ const breadcrumbs = [
   <section class="page-hero page-hero--contact">
     <div class="container">
       <span class="section-label">Contact Us</span>
-      <h1>Visit our shop or request an inspection</h1>
-      <p>Our repair shop is located at <strong>7695 Granger Rd, Cleveland, OH 44125</strong> — serving Bedford, OH and all of Northeast Ohio. Fill out the form or call us and we'll reply the same day.</p>
+      <h1>Request an inspection</h1>
+      <p>We serve <strong>{BUSINESS.regionLabel}</strong> — including Bedford, Parma, Solon, and surrounding communities. Fill out the form or call {BUSINESS.phone} and we will reply the same day.</p>
     </div>
   </section>
 
@@ -114,13 +114,13 @@ const breadcrumbs = [
                   gtagFn('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
                 }
               } else {
-                status.textContent = 'Something went wrong. Please call 1-855-425-5336.';
+                status.textContent = 'Something went wrong. Please try again or email admin@alldentpdr.com.';
                 status.style.color = '#c0392b';
                 btn.disabled = false;
                 btn.textContent = 'Send request';
               }
             } catch {
-              status.textContent = 'Something went wrong. Please call 1-855-425-5336.';
+              status.textContent = 'Something went wrong. please try the contact form again.';
               status.style.color = '#c0392b';
               btn.disabled = false;
               btn.textContent = 'Send request';
@@ -133,13 +133,12 @@ const breadcrumbs = [
       </div>
       <div class="card">
         <h3>Reach us directly</h3>
-        <p><strong>Phone:</strong> <a href="tel:18554255336">1-855-425-5336</a></p>
-        <p><strong>Email:</strong> <a href="mailto:admin@alldentpdr.com">admin@alldentpdr.com</a></p>
+        <p><strong>Email:</strong> <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p>
+        <p class="muted" style="font-size:14px;">We reply to inspection requests by phone or email — use the form so we have your vehicle details.</p>
         <hr style="margin:16px 0;border:none;border-top:1px solid #e8e0d8;" />
-        <p><strong>Shop Location</strong></p>
-        <p>{BUSINESS.streetAddress}<br />{BUSINESS.addressLocality}, {BUSINESS.addressRegion} {BUSINESS.postalCode}</p>
-        <p><a href={BUSINESS.googleMapsUrl} target="_blank" rel="noopener noreferrer">Open in Google Maps →</a></p>
-        <p>Serving Cleveland, Bedford, Bedford Heights, Maple Heights, Garfield Heights, Parma, Solon, and all of Northeast Ohio.</p>
+        <p><strong>Service area</strong></p>
+        <p>{BUSINESS.regionLabel}</p>
+        <p>{BUSINESS.serviceAreaSummary}.</p>
         <hr style="margin:16px 0;border:none;border-top:1px solid #e8e0d8;" />
         <p><strong>Hours:</strong> Mon–Fri 8am–6pm · Sat 9am–2pm</p>
         <p><a href="/nationwide-hail-damage-repair">Nationwide hail storm response</a> for commercial and fleet partners.</p>

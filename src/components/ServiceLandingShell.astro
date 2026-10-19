@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { BUSINESS, buildLocalBusinessSchema } from '../lib/business';
+import { BUSINESS, buildLocalBusinessSchema, LEAD_CTA } from '../lib/business';
 
 interface Props {
   title: string;
@@ -47,10 +47,10 @@ const schema = buildLocalBusinessSchema({
       <p>{heroLead}</p>
       <div class="button-row" style="justify-content:center;margin-top:16px;">
         <a class="button primary" href="/contact">Get a Free Estimate</a>
-        <a class="button ghost" href={`tel:${BUSINESS.phoneTel}`}>Call {BUSINESS.phone}</a>
+        <a class="button ghost" href={LEAD_CTA.href}>{LEAD_CTA.label}</a>
       </div>
       <p style="margin-top:14px;text-align:center;font-size:0.95rem;">
-        <strong>{BUSINESS.fullAddress}</strong> · Mon–Fri 8am–6pm · Sat 9am–2pm
+        <strong>{BUSINESS.regionLabel}</strong> · Mon–Fri 8am–6pm · Sat 9am–2pm
       </p>
     </div>
   </section>
@@ -67,7 +67,7 @@ const schema = buildLocalBusinessSchema({
       <div class="grid-3">
         <article class="card">
           <h3><a href="/paintless-dent-repair-cleveland-oh">PDR Cleveland, OH</a></h3>
-          <p>Our primary local landing page with shop details, FAQs, and before/after work.</p>
+          <p>Our primary Cleveland-area landing page with FAQs and before/after work.</p>
         </article>
         <article class="card">
           <h3><a href="/hail-damage-repair">Hail damage repair</a></h3>
@@ -83,11 +83,11 @@ const schema = buildLocalBusinessSchema({
 
   <section class="cta-banner">
     <div class="container">
-      <h2>Visit our Cleveland shop</h2>
-      <p>{BUSINESS.fullAddress} · Walk-ins welcome for free damage assessments</p>
+      <h2>Get a free estimate</h2>
+      <p>Serving {BUSINESS.regionLabel} — call or send photos for a same-day response.</p>
       <div class="button-row" style="justify-content:center;">
         <a class="button primary" href="/contact">Request an Inspection</a>
-        <a class="button ghost" href={BUSINESS.googleMapsUrl} target="_blank" rel="noopener noreferrer">Get Directions</a>
+        <a class="button ghost" href={LEAD_CTA.href}>{LEAD_CTA.label}</a>
       </div>
     </div>
   </section>

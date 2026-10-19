@@ -14,12 +14,12 @@ export function getStaticPaths() {
 
 const { city } = Astro.props as { city: CityData };
 
-const shopAddress = '7695 Granger Rd, Cleveland, OH 44125';
+const shopAddress = 'Greater Cleveland & Northeast Ohio';
 const shopPhone = '1-855-425-5336';
 const shopEmail = 'alldentpdr@gmail.com';
 
 const title = `Paintless Dent Repair in ${city.name}, OH | Hail Damage Repair | All Dent PDR`;
-const description = `Paintless dent repair near ${city.name}, OH — All Dent PDR's shop is only ${city.driveMinutes} minutes away at 7695 Granger Rd, Cleveland, OH 44125. Hail damage, door dings, and minor collision dents. No repaint, factory finish preserved. Call ${shopPhone}.`;
+const description = `Paintless dent repair near ${city.name}, OH. All Dent PDR serves Greater Cleveland & Northeast Ohio — hail damage, door dings, and minor collision dents with factory finish preserved. Free online estimates.`;
 const keywords = `paintless dent repair ${city.name} OH, PDR ${city.name}, dent repair ${city.name} OH, hail damage repair ${city.name}, door ding repair ${city.name}, ${city.zipCodes.join(', ')}, All Dent PDR`;
 const canonical = `https://alldentpdr.com/paintless-dent-repair/${city.slug}`;
 
@@ -48,11 +48,11 @@ const faqItems = [
   },
   {
     question: `Do I need an appointment to drop off my vehicle from ${city.name}?`,
-    answer: `Walk-ins are welcome at our Cleveland shop at ${shopAddress} — just ${city.driveMinutes} minutes from ${city.name}. You can also call ${shopPhone} to schedule ahead. Estimates are always free.`,
+    answer: `Use our contact form to schedule in Northeast Ohio — we serve ${city.name} and surrounding ${city.county} County. Estimates are always free.`,
   },
   {
     question: `What ZIP codes near ${city.name} does All Dent PDR serve for paintless dent repair?`,
-    answer: `We serve ${city.name} (${city.zipCodes.join(', ')}) along with nearby ${city.nearbyShops.join(', ')} and the rest of ${city.county} County from our Cleveland shop.`,
+    answer: `We serve ${city.name} (${city.zipCodes.join(', ')}) along with nearby ${city.nearbyShops.join(', ')} and the rest of ${city.county} County for Northeast Ohio drivers.`,
   },
 ];
 
@@ -60,23 +60,16 @@ const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': ['AutoRepair', 'LocalBusiness'],
   name: `All Dent PDR — Paintless Dent Repair serving ${city.name}, OH`,
-  description: `Expert paintless dent repair serving ${city.name}, OH from our shop at ${shopAddress}. Hail damage, door dings, and minor collision dents — factory finish preserved.`,
+  description: `Expert paintless dent repair serving ${city.name}, OH serving ${shopAddress}. Hail damage, door dings, and minor collision dents — factory finish preserved.`,
   url: canonical,
   telephone: shopPhone,
   email: shopEmail,
   image: 'https://alldentpdr.com/images/logo-branded.svg',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '7695 Granger Rd',
     addressLocality: 'Cleveland',
     addressRegion: 'OH',
-    postalCode: '44125',
     addressCountry: 'US',
-  },
-  geo: {
-    '@type': 'GeoCoordinates',
-    latitude: 41.3960,
-    longitude: -81.6100,
   },
   openingHoursSpecification: [
     { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '08:00', closes: '18:00' },
@@ -117,7 +110,7 @@ const localBusinessSchema = {
     <div class="container hero-inner">
       <div>
         <span class="hero-pill">
-          Serving {city.name}, OH · {city.distanceMiles} mi from shop · {city.driveMinutes} min drive
+          Serving {city.name}, OH · Northeast Ohio PDR
         </span>
         <h1>Paintless dent repair near {city.name}, Ohio</h1>
         <p>
@@ -220,14 +213,14 @@ const localBusinessSchema = {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;" class="responsive-two-col">
         <div>
           <p>
-            Dropping off your vehicle from {city.name} is quick and easy. Our shop sits along Granger Rd
+            Dropping off your vehicle from {city.name} is quick and easy. Our shop sits along 
             in Cleveland with easy access from I-480, I-77, and Rockside Rd.
           </p>
-          <p><strong>Address:</strong><br />7695 Granger Rd<br />Cleveland, OH 44125</p>
+          
           <p><strong>Hours:</strong><br />Mon–Fri: 8:00am – 6:00pm<br />Saturday: 9:00am – 2:00pm<br />Sunday: Closed</p>
           <p>
-            <strong>Phone:</strong>{' '}
-            <a href={`tel:${shopPhone.replace(/-/g,'')}`} style="color:var(--rust);">{shopPhone}</a>
+            <strong>Inspection requests:</strong>{' '}
+            <a href="/contact" style="color:var(--rust);">Free estimate form</a>
           </p>
           <p>
             <strong>Email:</strong>{' '}
@@ -235,20 +228,11 @@ const localBusinessSchema = {
           </p>
           <div class="button-row" style="margin-top:20px;">
             <a class="button primary" href="/contact">Get My Quick Quote</a>
-            <a class="button ghost" href="https://maps.google.com/?q=7695+Granger+Rd+Cleveland+OH+44125" target="_blank" rel="noopener">Get Directions</a>
+            
           </div>
         </div>
         <div class="card" style="padding:0;overflow:hidden;border-radius:16px;">
-          <iframe
-            title={`All Dent PDR shop — paintless dent repair near ${city.name} OH`}
-            src="https://maps.google.com/maps?q=7695+Granger+Rd+Cleveland+OH+44125&output=embed"
-            width="100%"
-            height="300"
-            style="border:0;display:block;"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
+          </div>
       </div>
     </div>
   </section>
@@ -261,7 +245,7 @@ const localBusinessSchema = {
       <div class="grid-3">
         <article class="card">
           <h3>1. Drive in or call ahead</h3>
-          <p>Walk-ins are welcome at our Cleveland shop — only {city.driveMinutes} minutes from {city.name}. Call {shopPhone} to reserve a time.</p>
+          <p>Contact us to schedule in Northeast Ohio — only {city.driveMinutes} minutes from {city.name}. Use the contact form to request a time.</p>
         </article>
         <article class="card">
           <h3>2. Free inspection & estimate</h3>
@@ -366,7 +350,7 @@ const localBusinessSchema = {
       </p>
       <div class="button-row" style="justify-content:center;">
         <a class="button primary" href="/contact">Get a Free Estimate</a>
-        <a class="button ghost" href={`tel:${shopPhone.replace(/-/g,'')}`}>Call {shopPhone}</a>
+        <a class="button ghost" href="/contact">Get free estimate</a>
       </div>
     </div>
   </section>

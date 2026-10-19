@@ -11,7 +11,7 @@ declare global {
 }
 
 const title = 'Paintless Dent Repair Bedford OH | Free Inspection | All Dent PDR';
-const description = 'Need paintless dent repair near Bedford, OH? All Dent PDR at 7695 Granger Rd, Cleveland, OH 44125 is just minutes away. Door dings, hail dents, and minor dents repaired with factory finish preserved. Free inspection. Call 1-855-425-5336.';
+const description = 'Need paintless dent repair near Bedford, OH? All Dent PDR at Greater Cleveland & Northeast Ohio is just minutes away. Door dings, hail dents, and minor dents repaired with factory finish preserved. Free inspection. Free estimate online.';
 const canonical = 'https://alldentpdr.com/bedford-paintless-dent-repair';
 
 const localBusinessSchema = {
@@ -25,13 +25,10 @@ const localBusinessSchema = {
   image: 'https://alldentpdr.com/images/logo-branded.svg',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '7695 Granger Rd',
     addressLocality: 'Cleveland',
     addressRegion: 'OH',
-    postalCode: '44125',
     addressCountry: 'US'
   },
-  geo: { '@type': 'GeoCoordinates', latitude: 41.3960, longitude: -81.6100 },
   areaServed: ['Bedford, OH', 'Bedford Heights, OH', 'Maple Heights, OH', 'Garfield Heights, OH', 'Solon, OH', 'Warrensville Heights, OH', 'Oakwood Village, OH', 'Twinsburg, OH'],
   priceRange: '$$',
   paymentAccepted: 'Cash, Credit Card, Insurance',
@@ -49,7 +46,7 @@ const faqSchema = {
     { '@type': 'Question', name: 'Can paintless dent repair fix Bedford door dings and small dents?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Paintless dent repair is ideal for most door dings, parking lot dents, and many minor dents where paint remains intact.' } },
     { '@type': 'Question', name: 'Do I need repainting for dents?', acceptedAnswer: { '@type': 'Answer', text: 'In most cases, no. PDR reshapes metal from behind the panel, preserving your factory paint and finish.' } },
     { '@type': 'Question', name: 'How long does paintless dent repair take?', acceptedAnswer: { '@type': 'Answer', text: 'Many single-panel dents can be completed same day. Multi-panel or complex dents may take 1-2 days depending on access and severity.' } },
-    { '@type': 'Question', name: 'How far is All Dent PDR from Bedford, OH?', acceptedAnswer: { '@type': 'Answer', text: 'Our shop at 7695 Granger Rd, Cleveland, OH 44125 is about 5 minutes from Bedford with easy access from I-480 and Rockside Rd.' } }
+    { '@type': 'Question', name: 'How far is All Dent PDR from Bedford, OH?', acceptedAnswer: { '@type': 'Answer', text: 'Our Northeast Ohio service area is about 5 minutes from Bedford with easy access from I-480 and Rockside Rd.' } }
   ]
 };
 ---
@@ -71,8 +68,8 @@ const faqSchema = {
       </a>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
         <span style="font-size:0.82rem;color:#6b5c52;">Mon-Fri 8am-6pm &middot; Sat 9am-2pm</span>
-        <a href="tel:18554255336" style="background:#fc1317;color:#fff;padding:11px 22px;border-radius:999px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 2px 10px rgba(252,19,23,0.35);">
-          &#128222; 1-855-425-5336
+        <a href="/contact" style="background:#fc1317;color:#fff;padding:11px 22px;border-radius:999px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 2px 10px rgba(252,19,23,0.35);">
+          Get free estimate
         </a>
       </div>
     </div>
@@ -88,7 +85,7 @@ const faqSchema = {
           Bedford dented your car?<br />We'll make it factory-clean.
         </h1>
         <p style="font-size:1.08rem;color:rgba(255,255,255,0.93);margin-bottom:28px;line-height:1.65;">
-          All Dent PDR at <strong style="color:#fff;">7695 Granger Rd, Cleveland, OH 44125</strong> is just minutes from Bedford. We restore door dings, hail dents, and minor dents with paintless dent repair &mdash; no repainting, factory finish preserved.
+          All Dent PDR at <strong style="color:#fff;">Greater Cleveland & Northeast Ohio</strong> is just minutes from Bedford. We restore door dings, hail dents, and minor dents with paintless dent repair &mdash; no repainting, factory finish preserved.
         </p>
 
         <div style="display:flex;flex-direction:column;gap:13px;margin-bottom:32px;">
@@ -105,8 +102,8 @@ const faqSchema = {
           ))}
         </div>
 
-        <a href="tel:18554255336" style="display:inline-flex;align-items:center;gap:8px;background:#fc1317;color:#fff;padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.1rem;text-decoration:none;box-shadow:0 4px 18px rgba(252,19,23,0.45);">
-          &#128222; Call for a Free Inspection
+        <a href="/contact" style="display:inline-flex;align-items:center;gap:8px;background:#fc1317;color:#fff;padding:16px 32px;border-radius:999px;font-weight:700;font-size:1.1rem;text-decoration:none;box-shadow:0 4px 18px rgba(252,19,23,0.45);">
+          Request free inspection
         </a>
 
         <div style="margin-top:24px;display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:12px 16px;">
@@ -163,7 +160,7 @@ const faqSchema = {
         </form>
 
         <p style="font-size:0.78rem;color:#a0907e;text-align:center;margin-top:14px;">
-          Or call us directly: <a href="tel:18554255336" style="color:#fc1317;font-weight:700;">1-855-425-5336</a>
+          <a href="/contact" style="color:#fc1317;font-weight:700;">Request an inspection online</a>
         </p>
 
         <script>
@@ -214,13 +211,13 @@ const faqSchema = {
                   if (typeof window.fbq === 'function') window.fbq('track', 'Lead', {}, { eventID: eventId });
                   if (typeof window.gtag === 'function') window.gtag('event', 'conversion', { send_to: 'AW-18153754648/o4LuCOyPm60cEJigsdBD' });
                 } else {
-                  stat.textContent = 'Something went wrong - please call 1-855-425-5336.';
+                  stat.textContent = 'Something went wrong - please try the contact form again.';
                   stat.style.color = '#dc2626';
                   btn.disabled = false;
                   btn.textContent = 'Request Free Inspection';
                 }
               } catch {
-                stat.textContent = 'Something went wrong - please call 1-855-425-5336.';
+                stat.textContent = 'Something went wrong - please try the contact form again.';
                 stat.style.color = '#dc2626';
                 btn.disabled = false;
                 btn.textContent = 'Request Free Inspection';
@@ -249,7 +246,7 @@ const faqSchema = {
       <h2 style="font-size:clamp(1.5rem,3vw,2.1rem);margin:16px 0 44px;font-family:Georgia,serif;color:#1a1410;">From inspection to flawless finish &mdash; 4 steps</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;text-align:left;">
         {[
-          { n: '1', h: 'Stop in or call', p: '7695 Granger Rd, Cleveland &mdash; just minutes from Bedford, no appointment needed.' },
+          { n: '1', h: 'Request an inspection online', p: 'Greater Cleveland & Northeast Ohio — Bedford-area customers welcome via the contact form.' },
           { n: '2', h: 'Get your estimate', p: 'Transparent, panel-by-panel pricing with no hidden fees.' },
           { n: '3', h: 'Precision PDR repair', p: 'Door dings and dents corrected with controlled, factory-finish techniques.' },
           { n: '4', h: 'Drive away clean', p: 'Your vehicle leaves with original paint intact and a cleaner final finish.' },
@@ -286,19 +283,14 @@ const faqSchema = {
 
   <section style="padding:70px 24px;background:#fff;border-top:1px solid #eee;">
     <div style="max-width:960px;margin:0 auto;">
-      <span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Directions from Bedford</span>
-      <h2 style="font-size:clamp(1.35rem,3vw,1.9rem);margin:16px 0 16px;font-family:Georgia,serif;color:#1a1410;">About 5 miles from Bedford (44146) to our Cleveland shop</h2>
+      <span style="background:#eef5fb;color:#0a71d0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:5px 14px;border-radius:999px;">Serving Bedford</span>
+      <h2 style="font-size:clamp(1.35rem,3vw,1.9rem);margin:16px 0 16px;font-family:Georgia,serif;color:#1a1410;">Paintless dent repair for Bedford &amp; south Cuyahoga County</h2>
       <p style="color:#6b5c52;line-height:1.65;">
-        All Dent PDR is located at <strong>{BUSINESS.fullAddress}</strong> — not inside Bedford city limits, but close enough that most Bedford drivers are at the shop in about <strong>10 minutes</strong>.
+        All Dent PDR serves <strong>{BUSINESS.regionLabel}</strong>, including Bedford (44146), Bedford Heights, and nearby communities.
+        Call or send an inspection request — we respond the same day with next steps.
       </p>
-      <ul style="color:#3a2e28;line-height:1.7;margin:20px 0;padding-left:20px;">
-        <li><strong>From downtown Bedford:</strong> Head northwest on Broadway Ave toward I-480, continue to Granger Rd.</li>
-        <li><strong>From Turney Rd / Bedford Heights:</strong> Take Turney Rd north, connect to Granger Rd near Garfield Heights.</li>
-        <li><strong>From I-480:</strong> Exit toward Granger Rd — our shop is on the north side of Granger between Garfield Heights and Cuyahoga Heights.</li>
-      </ul>
       <p>
-        <a href={BUSINESS.googleMapsUrl} target="_blank" rel="noopener noreferrer" style="color:#fc1317;font-weight:700;">Open directions in Google Maps →</a>
-        · <a href="/hail-damage-repair-bedford-ohio" style="color:#fc1317;font-weight:700;">Bedford hail damage repair →</a>
+        <a href="/hail-damage-repair-bedford-ohio" style="color:#fc1317;font-weight:700;">Bedford hail damage repair →</a>
         · <a href="/paintless-dent-repair-cleveland-oh" style="color:#fc1317;font-weight:700;">Cleveland PDR hub →</a>
       </p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:28px;">
@@ -318,9 +310,8 @@ const faqSchema = {
           { q: 'Can paintless dent repair fix Bedford door dings and small dents?', a: 'Yes. Paintless dent repair is ideal for most door dings, parking lot dents, and many minor dents where paint remains intact.' },
           { q: 'Do I need repainting for dents?', a: 'In most cases, no. PDR reshapes metal from behind the panel, preserving your factory paint and finish.' },
           { q: 'How long does paintless dent repair take?', a: 'Many single-panel dents can be completed same day. Multi-panel or complex dents may take 1-2 days depending on access and severity.' },
-          { q: 'How far is All Dent PDR from Bedford?', a: 'Our shop at 7695 Granger Rd, Cleveland, OH 44125 is about 5 miles and roughly 10 minutes from Bedford (44146) via Broadway Ave or Turney Rd.' },
-          { q: 'Why is the shop address in Cleveland if you serve Bedford?', a: 'Our physical location is on Granger Rd in Cleveland 44125 — the closest professional PDR shop for Bedford, Bedford Heights, and south Cuyahoga County drivers.' },
-          { q: 'Do you repair hail damage for Bedford zip code 44146?', a: 'Yes. We inspect and repair hail-damaged vehicles from Bedford and file insurance claims from our Cleveland shop. See our Bedford hail page for storm-season guidance.' },
+          { q: 'Do you serve Bedford, OH?', a: 'Yes. Bedford and Bedford Heights are core communities in our Northeast Ohio service area, along with Maple Heights, Garfield Heights, and surrounding suburbs.' },
+          { q: 'Do you repair hail damage for Bedford zip code 44146?', a: 'Yes. We inspect and repair hail-damaged vehicles from Bedford and file insurance claims for Northeast Ohio drivers. See our Bedford hail page for storm-season guidance.' },
         ].map(({ q, a }) => (
           <details style="background:#fff;border:1px solid #e8e0d8;border-radius:12px;padding:0;overflow:hidden;">
             <summary style="padding:18px 24px;font-weight:700;font-size:0.97rem;color:#1a1410;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;">
@@ -337,23 +328,23 @@ const faqSchema = {
   <section style="background:linear-gradient(135deg,#fc1317 0%,#c8000a 100%);color:#fff;padding:70px 24px;text-align:center;">
     <div style="max-width:700px;margin:0 auto;">
       <h2 style="font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 14px;font-family:Georgia,serif;">Don't wait &mdash; dents spread over time</h2>
-      <p style="font-size:1.02rem;color:rgba(255,255,255,0.88);margin-bottom:32px;line-height:1.6;">Schedule your free inspection at our Cleveland shop on Granger Rd — a short drive from Bedford. We'll assess every panel and give you a clear repair plan the same day.</p>
+      <p style="font-size:1.02rem;color:rgba(255,255,255,0.88);margin-bottom:32px;line-height:1.6;">Schedule your free inspection — a short drive from Bedford. We'll assess every panel and give you a clear repair plan the same day.</p>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-        <a href="tel:18554255336" style="background:#fff;color:#fc1317;padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);">
-          &#128222; Call 1-855-425-5336
+        <a href="/contact" style="background:#fff;color:#fc1317;padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.2);">
+          Get free estimate
         </a>
         <a href="#lp-form" style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,0.7);padding:17px 34px;border-radius:999px;font-weight:700;font-size:1.05rem;text-decoration:none;">
           Fill Out the Form
         </a>
       </div>
-      <p style="margin-top:20px;font-size:0.85rem;color:rgba(255,255,255,0.65);">7695 Granger Rd &middot; Cleveland, OH 44125 &middot; Mon-Fri 8am-6pm &middot; Sat 9am-2pm</p>
+      <p style="margin-top:20px;font-size:0.85rem;color:rgba(255,255,255,0.65);"> &middot; Cleveland, OH  &middot; Mon-Fri 8am-6pm &middot; Sat 9am-2pm</p>
     </div>
   </section>
 
   <footer style="background:#1a1410;color:rgba(255,255,255,0.5);text-align:center;padding:22px 24px;font-size:0.82rem;">
     <p style="margin:0;">
-      &copy; 2026 All Dent PDR &middot; 7695 Granger Rd, Cleveland, OH 44125 &middot;
-      <a href="tel:18554255336" style="color:rgba(255,255,255,0.7);">1-855-425-5336</a> &middot;
+      &copy; 2026 All Dent PDR &middot; Greater Cleveland & Northeast Ohio &middot;
+      <a href="/contact" style="color:rgba(255,255,255,0.7);">Get free estimate</a> &middot;
       <a href="/" style="color:rgba(255,255,255,0.5);margin-left:8px;">Home</a> &middot;
       <a href="/services" style="color:rgba(255,255,255,0.5);margin-left:8px;">Services</a> &middot;
       <a href="/contact" style="color:rgba(255,255,255,0.5);margin-left:8px;">Contact</a>

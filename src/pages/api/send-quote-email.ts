@@ -173,13 +173,13 @@ export const POST: APIRoute = async ({ request }) => {
       </div>` : ''}
 
       <p style="line-height:1.6;color:#4a3f36;margin-bottom:24px">
-        Questions about your estimate? Call us at <strong>1-855-425-5336</strong> or reply to this email.
+        Questions about your estimate? Reply to this email or submit an inspection request on our website.
         We're happy to schedule an appointment time that works for you.
       </p>
 
       <div style="text-align:center;margin-bottom:8px">
-        <a href="tel:18554255336" style="display:inline-block;background:#fc1317;color:#fff;padding:12px 28px;border-radius:24px;font-weight:700;text-decoration:none;font-size:15px">
-          Call to Schedule
+        <a href="https://alldentpdr.com/contact" style="display:inline-block;background:#fc1317;color:#fff;padding:12px 28px;border-radius:24px;font-weight:700;text-decoration:none;font-size:15px">
+          Request inspection
         </a>
       </div>
     </div>

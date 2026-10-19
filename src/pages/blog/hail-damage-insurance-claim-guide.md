@@ -101,6 +101,6 @@ Without comprehensive coverage, hail damage repair is an out-of-pocket expense. 
 
 ## All Dent PDR works with your insurance
 
-We handle hail damage insurance repairs regularly and work directly with adjusters to ensure accurate estimates and smooth approvals. Our shop at 7695 Granger Rd, Cleveland, OH 44125 serves Bedford, Cleveland, and Northeast Ohio drivers after hail storms.
+We handle hail damage insurance repairs regularly and work directly with adjusters to ensure accurate estimates and smooth approvals. Our Northeast Ohio service area serves Bedford, Cleveland, and Northeast Ohio drivers after hail storms.
 
 [Contact us to request an inspection](/contact) — send your location and vehicle details, and we'll reply with the next step.

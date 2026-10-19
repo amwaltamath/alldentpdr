@@ -9,7 +9,7 @@ const FROM = 'noreply@alldentpdr.com';
 const STATUS_MESSAGES: Record<string, { headline: string; body: string; color: string }> = {
   'Estimate': {
     headline: 'Your estimate is ready.',
-    body: "We've assessed your vehicle and prepared an estimate. Please review it and let us know how you'd like to proceed. Call us at 1-855-425-5336 or reply to this email with any questions.",
+    body: "We've assessed your vehicle and prepared an estimate. Please review it and let us know how you'd like to proceed. Reply to this email or use alldentpdr.com/contact with any questions.",
     color: '#fc1317',
   },
   'Pending Insurance': {
@@ -82,7 +82,7 @@ export const POST: APIRoute = async ({ request }) => {
               ${plate ? `<p style="margin:0"><strong>Plate:</strong> ${escHtml(plate)}</p>` : ''}
             </div>
             <p>Track your repair anytime at <a href="https://alldentpdr.com/portal/customer-login" style="color:#fc1317">alldentpdr.com/portal/customer-login</a>.</p>
-            <p>Questions? Call us at <strong>1-855-425-5336</strong>.</p>
+            <p>Questions? Reply to this email or visit <a href="https://alldentpdr.com/contact">alldentpdr.com/contact</a>.</p>
             <div style="margin-top:32px;padding-top:24px;border-top:1px solid #e8e0d5;color:#888;font-size:12px">
               <p style="margin:0">All Dent PDR · Paintless Dent Repair Shop · alldentpdr.com</p>
             </div>

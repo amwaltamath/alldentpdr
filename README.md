@@ -1,6 +1,6 @@
 # All Dent PDR Website
 
-Fast, modern marketing site and portal for **All Dent PDR** — a paintless dent repair shop at 7695 Granger Rd, Cleveland, OH 44125, serving Bedford and greater Northeast Ohio.
+Fast, modern marketing site and portal for **All Dent PDR** — a paintless dent repair shop across Greater Cleveland & Northeast Ohio, serving Bedford and greater Northeast Ohio.
 
 Built with **Astro 6**, **React 19**, and **CSS3** for performance, SEO, and portal workflows.
 

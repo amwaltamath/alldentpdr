@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import MobileMenu from '../components/MobileMenu.jsx';
 import ChatWidget from '../components/ChatWidget.jsx';
-import { buildLocalBusinessSchema, BUSINESS, SHOP_TAGLINE } from '../lib/business';
+import { buildLocalBusinessSchema, BUSINESS, LEAD_CTA, SHOP_TAGLINE } from '../lib/business';
 
 const {
   title = 'AllDent PDR | Paintless Dent Repair Cleveland, OH',
@@ -247,8 +247,8 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
               </div>
             </div>
             <p>
-              All Dent PDR is a paintless dent repair shop located at 7695 Granger Rd, Cleveland, OH 44125,
-              serving Bedford, Garfield Heights, Maple Heights, Parma, Independence, Solon, and communities throughout Northeast Ohio.
+              All Dent PDR provides paintless dent repair and hail damage restoration across Greater Cleveland
+              and Northeast Ohio — including Bedford, Garfield Heights, Parma, Independence, and Solon.
             </p>
           </div>
           <div>
@@ -272,18 +272,16 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
           </div>
           <div>
             <h5>Contact</h5>
-            <p><a href="tel:18554255336">1-855-425-5336</a></p>
-            <p><a href="mailto:admin@alldentpdr.com">admin@alldentpdr.com</a></p>
+            <p><a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a></p>
             <p><a href="https://www.facebook.com/alldentpdr/" target="_blank" rel="noopener noreferrer">Facebook</a></p>
             <p><a href="/contact">Request Inspection</a></p>
             <p><a href="/portal/customer-login">Customer Login</a></p>
             <p><a href="/portal/admin-dashboard">Admin</a></p>
           </div>
           <div>
-            <h5>Shop Location</h5>
-            <p>7695 Granger Rd</p>
-            <p>Cleveland, OH 44125</p>
-            <p>(Serving Greater Cleveland &amp; NE Ohio)</p>
+            <h5>Service area</h5>
+            <p>Greater Cleveland &amp; Northeast Ohio</p>
+            <p><a href="/service-area">View cities we serve</a></p>
           </div>
           <div>
             <h5>Hours</h5>
@@ -301,8 +299,7 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
 
     {!bare && (
       <div class="mobile-cta-bar" aria-label="Quick contact">
-        <a class="mcta-call" href="tel:18554255336">Call Now</a>
-        <a class="mcta-quote" href="/contact">Get Free Estimate</a>
+        <a class="mcta-quote mcta-quote--solo" href={LEAD_CTA.href}>{LEAD_CTA.label}</a>
       </div>
     )}
 
@@ -314,10 +311,6 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
           <p class="lead-popup-kicker">Free Estimate</p>
           <h3 id="lead-popup-title">Get your quick estimate</h3>
           <p class="lead-popup-copy">Tell us about your vehicle and damage. We will contact you shortly.</p>
-          <p class="lead-popup-call">
-            <a href="tel:18554255336" class="lead-popup-call-link">Prefer to talk? Call 1-855-425-5336</a>
-          </p>
-
           <form id="lead-popup-form" class="lead-popup-form">
             <label for="lead-popup-name">Full name</label>
             <input id="lead-popup-name" name="name" type="text" required placeholder="Jane Smith" />
@@ -457,19 +450,6 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
             }
           });
         })();
-      </script>
-    )}
-
-    {!bare && (
-      <script is:inline>
-        document.addEventListener('click', (event) => {
-          const link = event.target instanceof Element ? event.target.closest('a[href^="tel:"]') : null;
-          if (!(link instanceof HTMLAnchorElement)) return;
-          if (typeof window.fbq === 'function') window.fbq('track', 'Contact');
-          if (typeof window.gtag === 'function') {
-            window.gtag('event', 'generate_lead', { method: 'phone_click' });
-          }
-        });
       </script>
     )}
 
