@@ -65,7 +65,7 @@ PDR has limits. You'll need a traditional body shop when:
 
 One major benefit of PDR that body shops often can't match: **it avoids the paint and bodywork bottleneck**. All Dent PDR repairs qualifying dents without sanding, body filler, primer, or repainting, which means many vehicles can be completed much faster than conventional repair.
 
-Our Cleveland-area shop gives Bedford and Northeast Ohio drivers a local option for hail damage inspections, insurance documentation, and fast PDR repair timelines.
+Our Greater Cincinnati team gives Southwest Ohio drivers a local option for hail damage inspections, insurance documentation, and fast PDR repair timelines.
 
 ## The bottom line
 

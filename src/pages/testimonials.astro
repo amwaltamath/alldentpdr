@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../lib/business';
 import GoogleReviewsSection from '../components/GoogleReviewsSection.astro';
 import { customerStories } from '../data/customer-stories';
 import { getGoogleReviews } from '../lib/google-reviews';
 
-const title = 'Customer Reviews & Testimonials | All Dent PDR Cleveland OH';
-const description = 'Read Google reviews and customer stories for All Dent PDR — paintless dent repair and hail damage repair at Greater Cleveland & Northeast Ohio.';
+const title = `Customer Reviews & Testimonials | All Dent PDR ${BUSINESS.addressLocality} OH`;
+const description = `Read Google reviews and customer stories for All Dent PDR — paintless dent repair and hail damage repair in ${BUSINESS.regionLabel}.`;
 const canonical = 'https://alldentpdr.com/testimonials';
 
 const googleReviews = await getGoogleReviews();
@@ -18,7 +19,7 @@ const googleReviews = await getGoogleReviews();
       <h1>Customer reviews &amp; testimonials</h1>
       <p>
         See what drivers, dealerships, and insurance partners say about paintless dent repair
-        and hail damage work from All Dent PDR in Cleveland, OH.
+        and hail damage work from All Dent PDR in {BUSINESS.addressLocality}, OH.
       </p>
     </div>
   </section>
@@ -59,7 +60,7 @@ const googleReviews = await getGoogleReviews();
   <section class="cta-banner">
     <div class="container">
       <h2>Happy with your repair?</h2>
-      <p>Your Google review helps other Northeast Ohio drivers find trusted paintless dent repair.</p>
+      <p>Your Google review helps other drivers in {BUSINESS.regionLabel} find trusted paintless dent repair.</p>
       <div class="button-row" style="justify-content: center;">
         <a class="button primary" href={googleReviews.leaveReviewUri} target="_blank" rel="noopener noreferrer">
           Leave a Google Review

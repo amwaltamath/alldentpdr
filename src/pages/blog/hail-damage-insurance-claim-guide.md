@@ -65,7 +65,7 @@ Choose a technician with proven hail repair experience. All Dent PDR works direc
 
 ### 6. Get the repair done
 
-Once approved, schedule your repair. With PDR, most hail repairs are completed in **1–3 days** depending on severity. All Dent PDR completes hail repairs at our Cleveland-area shop, where proper lighting and panel access help us document and repair the vehicle accurately.
+Once approved, schedule your repair. With PDR, most hail repairs are completed in **1–3 days** depending on severity. All Dent PDR completes hail repairs with proper lighting and panel access so we can document and repair the vehicle accurately.
 
 ### 7. Final inspection and payment
 
@@ -101,6 +101,6 @@ Without comprehensive coverage, hail damage repair is an out-of-pocket expense. 
 
 ## All Dent PDR works with your insurance
 
-We handle hail damage insurance repairs regularly and work directly with adjusters to ensure accurate estimates and smooth approvals. Our Northeast Ohio service area serves Bedford, Cleveland, and Northeast Ohio drivers after hail storms.
+We handle hail damage insurance repairs regularly and work directly with adjusters to ensure accurate estimates and smooth approvals. We serve drivers across our current local market and storm-deployment regions after hail events.
 
 [Contact us to request an inspection](/contact) — send your location and vehicle details, and we'll reply with the next step.

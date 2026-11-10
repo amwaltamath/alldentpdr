@@ -3,8 +3,8 @@ import ServiceLandingShell from '../../components/ServiceLandingShell.astro';
 import { BUSINESS } from '../../lib/business';
 
 const canonical = 'https://alldentpdr.com/services/paintless-dent-repair';
-const title = 'Paintless Dent Repair Cleveland, OH | In-Shop PDR | All Dent PDR';
-const description = `Professional paintless dent repair at ${BUSINESS.regionLabel}. Hail dents, door dings, and minor collision damage — factory paint preserved. Serving Cleveland, Bedford, and Northeast Ohio.`;
+const title = `Paintless Dent Repair ${BUSINESS.addressLocality}, OH | In-Shop PDR | All Dent PDR`;
+const description = `Professional paintless dent repair at ${BUSINESS.regionLabel}. Hail dents, door dings, and minor collision damage — factory paint preserved.`;
 ---
 
 <ServiceLandingShell
@@ -18,16 +18,16 @@ const description = `Professional paintless dent repair at ${BUSINESS.regionLabe
   ]}
   faqItems={[
     { question: 'What is paintless dent repair?', answer: 'Paintless dent repair (PDR) removes dents by reshaping metal from behind the panel without sanding, fillers, or repainting — preserving your factory finish.' },
-    { question: 'Where is your PDR shop?', answer: `All Dent PDR is located at ${BUSINESS.regionLabel}, serving Greater Cleveland and Northeast Ohio.` },
+    { question: 'Where is your PDR team?', answer: `All Dent PDR is currently serving ${BUSINESS.regionLabel}.` },
   ]}
   schemaName="All Dent PDR — Paintless Dent Repair"
   schemaDescription={description}
-  heroLabel="Paintless Dent Repair · Cleveland, OH"
-  h1="Paintless dent repair in Cleveland, Ohio"
+  heroLabel={`Paintless Dent Repair · ${BUSINESS.addressLocality}, OH`}
+  h1={`Paintless dent repair in ${BUSINESS.addressLocality}, Ohio`}
   heroLead={`All Dent PDR is an in-shop paintless dent repair specialist at ${BUSINESS.regionLabel}. We restore hail damage, door dings, creases, and minor collision dents while keeping your original paint intact.`}
 >
   <span class="section-label">In-shop PDR</span>
-  <h2>Factory-finish dent removal in Northeast Ohio</h2>
+  <h2>Factory-finish dent removal in {BUSINESS.regionLabel}</h2>
   <p>
     Every repair starts with a panel-by-panel inspection under specialized lighting. Our technicians access dents from behind the panel,
     using precision tools to restore the original metal shape — no bondo, no repaint, no unnecessary body work.
@@ -37,5 +37,5 @@ const description = `Professional paintless dent repair at ${BUSINESS.regionLabe
     <article class="card"><h3>Door dings</h3><p>Parking lot and shopping cart damage removed in hours, not days.</p></article>
     <article class="card"><h3>Minor collision dents</h3><p>Soft-impact dents when paint is still intact and PDR is the right method.</p></article>
   </div>
-  <p style="margin-top:20px;"><a href="/paintless-dent-repair-cleveland-oh">See our full Cleveland PDR page →</a></p>
+  <p style="margin-top:20px;"><a href={BUSINESS.pdrHubPath}>See our {BUSINESS.addressLocality} PDR hub →</a></p>
 </ServiceLandingShell>

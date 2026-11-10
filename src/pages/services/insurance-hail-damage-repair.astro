@@ -3,8 +3,8 @@ import ServiceLandingShell from '../../components/ServiceLandingShell.astro';
 import { BUSINESS } from '../../lib/business';
 
 const canonical = 'https://alldentpdr.com/services/insurance-hail-damage-repair';
-const title = 'Insurance Hail Damage Repair Cleveland, OH | All Dent PDR';
-const description = `Insurance hail damage repair and claim support at ${BUSINESS.regionLabel}. Direct billing, documentation, and paintless dent repair for Cleveland and Northeast Ohio.`;
+const title = `Insurance Hail Damage Repair ${BUSINESS.addressLocality}, OH | All Dent PDR`;
+const description = `Insurance hail damage repair and claim support at ${BUSINESS.regionLabel}. Direct billing, documentation, and paintless dent repair.`;
 ---
 
 <ServiceLandingShell
@@ -22,8 +22,8 @@ const description = `Insurance hail damage repair and claim support at ${BUSINES
   ]}
   schemaName="All Dent PDR — Insurance Hail Damage Repair"
   schemaDescription={description}
-  heroLabel="Insurance hail claims · Cleveland, OH"
-  h1="Insurance hail damage repair in Cleveland, Ohio"
+  heroLabel={`Insurance hail claims · ${BUSINESS.addressLocality}, OH`}
+  h1={`Insurance hail damage repair in ${BUSINESS.addressLocality}, Ohio`}
   heroLead={`After a storm, bring your vehicle to ${BUSINESS.regionLabel} for a free hail inspection. We support the insurance process from documentation through paintless dent repair.`}
 >
   <span class="section-label">Insurance support</span>

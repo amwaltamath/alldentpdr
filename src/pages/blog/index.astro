@@ -1,59 +1,33 @@
 ﻿---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { BUSINESS } from '../../lib/business';
 
-const title = 'Paintless Dent Repair Blog | PDR Tips, Guides & Hail Damage Info | All Dent PDR';
-const description = 'Expert guides on paintless dent repair, hail damage recovery, and insurance claims from All Dent PDR — Cleveland, OH shop serving Bedford and Northeast Ohio.';
-const breadcrumbs = [
-  { name: 'Home', url: 'https://alldentpdr.com' },
-  { name: 'Blog', url: 'https://alldentpdr.com/blog' }
-];
+const title = 'PDR & Hail Repair Blog | All Dent PDR';
+const description = `Expert guides on paintless dent repair, hail damage recovery, and insurance claims from All Dent PDR — serving ${BUSINESS.regionLabel}.`;
 ---
 
-<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/blog" breadcrumbs={breadcrumbs}>
-  <section class="page-hero page-hero--blog">
+<BaseLayout title={title} description={description} canonical="https://alldentpdr.com/blog">
+  <section class="page-hero">
     <div class="container">
       <span class="section-label">Blog</span>
-      <h1>Paintless dent repair guides &amp; insights</h1>
-      <p>Expert guides on paintless dent repair, hail damage, and insurance claims from All Dent PDR's Cleveland-area shop.</p>
+      <h1>PDR &amp; hail repair guides</h1>
+      <p>Practical advice on paintless dent repair, insurance claims, and storm damage from the All Dent PDR team.</p>
     </div>
   </section>
 
-  <section class="section alt">
-    <div class="container blog-list">
-      <article class="blog-item">
-        <span class="tag">Fast Repair</span>
-        <h3><a href="/blog/no-wait-hail-damage-repair">No-Wait Hail Damage Repair: Get Your Car Fixed Fast</a></h3>
-        <p>Skip the body shop backlog. Walk-in inspections, same-day estimates, and paintless hail repair with turnaround in days — not weeks.</p>
+  <section class="section">
+    <div class="container grid-3">
+      <article class="card">
+        <h3><a href="/blog/pdr-vs-body-shop">PDR vs. traditional body shop</a></h3>
+        <p>When paintless repair wins — and when conventional autobody is the right call.</p>
       </article>
-      <article class="blog-item">
-        <span class="tag">Storm Season</span>
-        <h3><a href="/blog/hail-damage-repair-bedford-ohio-2026">Hail Damage Repair Bedford Ohio 2026: Spring Storm Season Guide</a></h3>
-        <p>Hail storms are peaking in spring 2026 — what Bedford drivers should do immediately after a storm and how to file an insurance claim.</p>
+      <article class="card">
+        <h3><a href="/blog/hail-damage-insurance-claim-guide">Hail damage insurance claim guide</a></h3>
+        <p>How comprehensive coverage works and how to document storm damage.</p>
       </article>
-      <article class="blog-item">
-        <span class="tag">Ohio Storm</span>
-        <h3><a href="/blog/bedford-ohio-hail-damage-repair">Bedford, Ohio Hail Damage Repair: What to Do After the Storm</a></h3>
-        <p>Local guidance for Bedford-area drivers, plus what makes premium paintless dent repair worth choosing after hail.</p>
-      </article>
-      <article class="blog-item">
-        <span class="tag">Insurance</span>
-        <h3><a href="/blog/hail-damage-insurance-claim-guide">How to File an Insurance Claim for Hail Damage</a></h3>
-        <p>Step-by-step guide to filing a hail damage claim, what your policy covers, and how to get repaired fast.</p>
-      </article>
-      <article class="blog-item">
-        <span class="tag">Storm season</span>
-        <h3><a href="/blog/mobile-pdr-future-of-dent-repair">Why Flexible PDR Service Helps After Ohio Hail Storms</a></h3>
-        <p>How shop-based paintless dent repair and storm-response scheduling get Bedford and Northeast Ohio drivers fixed faster.</p>
-      </article>
-      <article class="blog-item">
-        <span class="tag">Comparison</span>
-        <h3><a href="/blog/pdr-vs-body-shop">PDR vs. Traditional Body Shop: Which Is Right for Your Dent?</a></h3>
-        <p>Compare cost, time, paint preservation, and results between PDR and conventional body repair.</p>
-      </article>
-      <article class="blog-item">
-        <span class="tag">Hail Damage</span>
-        <h3><a href="/blog/hail-damage-repair-guide">Hail Damage Repair: The Complete Guide to Restoring Your Vehicle</a></h3>
-        <p>Everything you need to know about hail damage — what to do after a storm and how PDR restores your car.</p>
+      <article class="card">
+        <h3><a href="/blog/autobody-repair-cincinnati-ohio">Autobody repair in Greater Cincinnati</a></h3>
+        <p>What to expect from collision repair and PDR in Southwest Ohio.</p>
       </article>
     </div>
   </section>

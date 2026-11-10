@@ -1,11 +1,12 @@
 ﻿---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../lib/business';
 
-const title = 'About All Dent PDR | Hail Damage Repair Shop — Bedford &amp; Cleveland, OH';
-const description = 'All Dent PDR operates a paintless dent repair shop at Greater Cleveland & Northeast Ohio, serving Bedford, OH and Northeast Ohio. Expert PDR technicians, transparent inspections, and factory-quality hail damage repair.';
+const title = `About All Dent PDR | Paintless Dent Repair — ${BUSINESS.addressLocality}, OH`;
+const description = `All Dent PDR provides paintless dent repair in ${BUSINESS.regionLabel}. Expert technicians, transparent inspections, and factory-quality hail and dent repair.`;
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
-  { name: 'About', url: 'https://alldentpdr.com/about' }
+  { name: 'About', url: 'https://alldentpdr.com/about' },
 ];
 ---
 
@@ -15,34 +16,32 @@ const breadcrumbs = [
       <div class="container about-hero-grid">
         <div class="about-hero-main">
           <span class="section-label">About All Dent PDR</span>
-          <h1>A real Northeast Ohio shop with standards that do not move.</h1>
+          <h1>Paintless dent repair with standards that do not move.</h1>
           <p>
-            All Dent PDR is a permanent paintless dent repair shop at
-            <strong>Greater Cleveland & Northeast Ohio</strong>. We are not a pop-up team
-            chasing storms. We are local, accountable, and focused on factory-quality results.
+            All Dent PDR serves <strong>{BUSINESS.regionLabel}</strong> with professional paintless dent repair.
+            We deploy to hail-affected markets after major storms, with a current local focus on the Cincinnati metro.
           </p>
           <div class="about-hero-pills">
-            <span>Shop-Based Repairs</span>
-            <span>Insurance Direct Billing</span>
-            <span>Factory Paint Preserved</span>
+            <span>Inspection-first repairs</span>
+            <span>Insurance direct billing</span>
+            <span>Factory paint preserved</span>
           </div>
           <div class="button-row">
             <a class="button primary" href="/contact">Get a Free Estimate</a>
-            <a class="button ghost" href="/contact">Get free estimate</a>
           </div>
         </div>
 
         <aside class="about-hero-panel" aria-label="Shop trust details">
           <h3>Why drivers choose us</h3>
           <ul>
-            <li>Northeast Ohio service coverage</li>
+            <li>{BUSINESS.regionLabel} service</li>
             <li>Panel-by-panel LED inspection process</li>
             <li>No filler-first or volume-first shortcuts</li>
             <li>Clear estimates before any repair begins</li>
           </ul>
           <div class="about-hero-meta">
-            <strong>Greater Cleveland & Northeast Ohio</strong>
-            <span>Mon-Fri 8am-6pm, Sat 9am-2pm</span>
+            <strong>{BUSINESS.regionLabel}</strong>
+            <span>Mon–Fri 8am–6pm, Sat 9am–2pm</span>
           </div>
         </aside>
       </div>
@@ -52,232 +51,38 @@ const breadcrumbs = [
   <section class="section alt">
     <div class="container grid-3">
       <article class="card">
-        <h3>Local &amp; accountable</h3>
-        <p>We're not a traveling crew following the storm map. We live here, work here, and our name is on every repair we do. If something isn't right, we're a phone call away — not three states over.</p>
+        <h3>Accountable workmanship</h3>
+        <p>We measure success by factory-quality results — honest inspections, transparent pricing, and work that holds up under real light.</p>
       </article>
       <article class="card">
         <h3>Restoration, not just removal</h3>
-        <p>We don't measure success by how many cars we process in a day. We measure it by whether your vehicle looks factory-perfect when it leaves our shop. Every panel. Every time.</p>
+        <p>Every panel is reshaped with precision tools under specialized lighting. Your vehicle passes a final LED inspection before we call it done.</p>
       </article>
       <article class="card">
-        <h3>No gimmicks. Just results.</h3>
-        <p>Storm chasers offer free rentals, free meals, and inflated insurance scopes to win business. We earn trust through craftsmanship — honest inspections, transparent pricing, and work that holds up under real light.</p>
+        <h3>Storm-ready teams</h3>
+        <p>When hail volume spikes, we scale deployment while keeping the same quality standard on every repair.</p>
       </article>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <span class="section-label">Our Standard</span>
-      <h2>The All Dent PDR difference</h2>
+      <span class="section-label">Our coverage</span>
+      <h2>Where we serve today</h2>
       <p>
-        There's a growing problem in the PDR industry: high-volume storm operations that prioritize speed over quality. They move fast, process hundreds of vehicles, and are gone before you notice the results don't hold up — or before you realize your factory finish has been compromised.
+        Our current local market is <strong>{BUSINESS.regionLabel}</strong> — including Cincinnati, Mason, West Chester,
+        Blue Ash, Fairfield, and surrounding communities. <a href="/service-area">See all service cities</a>.
       </p>
-      <p style="margin-top: 16px;">
-        At All Dent PDR, we operate differently. Every vehicle is treated like it belongs to someone we know — because in Northeast Ohio, it often does. Our technicians work panel by panel, using precision tools under specialized lighting to reshape metal back to its original contour. Before we call you for pickup, your vehicle passes a final LED light inspection. We don't release a car we wouldn't be proud of.
-      </p>
-      <p style="margin-top: 16px;">
-        That standard isn't a marketing line. It's the reason drivers, dealerships, and insurance partners in Cleveland and across Northeast Ohio keep coming back to us.
-      </p>
-    </div>
-  </section>
-
-  <section class="section alt">
-    <div class="container">
-      <span class="section-label">What We Believe</span>
-      <h2>Quality that speaks for itself</h2>
-      <div class="grid-3">
-        <article class="card">
-          <h3>Factory finish or it doesn't leave</h3>
-          <p>Your vehicle's original paint is irreplaceable. Once it's sanded or repainted, you've lost something permanent. PDR preserves that finish — and we make sure every repair meets the standard your car deserves.</p>
-        </article>
-        <article class="card">
-          <h3>Honest inspections, honest pricing</h3>
-          <p>We assess every panel under LED lighting and tell you exactly what we find — no inflated damage counts, no manufactured urgency. Our estimates are what we actually charge.</p>
-        </article>
-        <article class="card">
-          <h3>We're here after the storm</h3>
-          <p>Our Northeast Ohio service area has been serving Northeast Ohio for years. After any hail event, we're not packing up and leaving — we're right here, ready to stand behind our work.</p>
-        </article>
-      </div>
-      <div class="button-row" style="justify-content: center; margin-top: 32px;">
-        <a class="button primary" href="/contact">Get a Free Estimate</a>
-        <a class="button ghost" href="/services">View Services</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <span class="section-label">Our Coverage</span>
-      <h2>Where we serve</h2>
-      <p>All Dent PDR's shop is located just minutes from Bedford, OH at Greater Cleveland & Northeast Ohio. We serve the entire Greater Cleveland area and Northeast Ohio from our permanent, full-service repair facility.</p>
-      <div class="grid-3" style="margin-top: 28px;">
-        <article class="card">
-          <h3>Bedford &amp; NE Ohio</h3>
-          <p>Our home shop serves Bedford, Bedford Heights, Maple Heights, Garfield Heights, Solon, Warrensville Heights, Northfield, Twinsburg, and surrounding communities daily.</p>
-        </article>
-        <article class="card">
-          <h3>Greater Cleveland</h3>
-          <p>From Parma to Beachwood, Independence to Brecksville — if you're in Cuyahoga or Summit County, we're your local shop.</p>
-        </article>
-        <article class="card">
-          <h3>Storm season ready</h3>
-          <p>When hail season hits Northeast Ohio, our shop is staffed and equipped to handle high volume — with fast turnaround and insurance direct billing.</p>
-        </article>
-      </div>
     </div>
   </section>
 
   <section class="cta-banner">
     <div class="container">
-      <h2>Ready to work with a shop you can actually trust?</h2>
-      <p>Get a free estimate in Northeast Ohio or send us photos of the damage. No pressure, no gimmicks — just an honest assessment and quality work.</p>
+      <h2>Ready for an honest inspection?</h2>
+      <p>Send photos and vehicle details through our contact form — we reply the same business day.</p>
       <div class="button-row" style="justify-content: center;">
         <a class="button primary" href="/contact">Get a Free Estimate</a>
-        <a class="button ghost" href="/contact">Get free estimate</a>
       </div>
     </div>
   </section>
-
-  <style>
-    .about-hero {
-      position: relative;
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      min-height: 540px;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .about-hero-overlay {
-      width: 100%;
-      background:
-        radial-gradient(900px 360px at 92% 10%, rgba(252, 19, 23, 0.18), transparent 60%),
-        linear-gradient(120deg, rgba(6, 10, 20, 0.82), rgba(6, 10, 20, 0.6));
-      padding: 72px 0;
-    }
-
-    .about-hero-grid {
-      display: grid;
-      gap: 28px;
-      grid-template-columns: 1.2fr minmax(280px, 420px);
-      align-items: center;
-    }
-
-    .about-hero-main .section-label { color: #ffd3d4; margin-bottom: 12px; }
-    .about-hero-main h1 {
-      color: #fff;
-      margin-bottom: 14px;
-      font-size: clamp(2rem, 4.1vw, 3.25rem);
-      max-width: 18ch;
-    }
-    .about-hero-main p {
-      color: rgba(255, 255, 255, 0.9);
-      max-width: 58ch;
-      font-size: 1.04rem;
-      margin-bottom: 18px;
-    }
-
-    .about-hero-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .about-hero-pills span {
-      display: inline-flex;
-      align-items: center;
-      padding: 7px 11px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .about-hero-panel {
-      background: rgba(255, 255, 255, 0.96);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 18px 42px rgba(5, 10, 24, 0.35);
-    }
-    .about-hero-panel h3 { margin-bottom: 12px; }
-    .about-hero-panel ul {
-      list-style: none;
-      margin: 0 0 16px;
-      padding: 0;
-      display: grid;
-      gap: 8px;
-    }
-    .about-hero-panel li {
-      color: var(--ink-700);
-      font-size: 14px;
-      padding-left: 18px;
-      position: relative;
-    }
-    .about-hero-panel li::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--rust);
-      position: absolute;
-      left: 0;
-      top: 8px;
-    }
-
-    .about-hero-meta {
-      border-top: 1px solid var(--line);
-      padding-top: 14px;
-      display: grid;
-      gap: 6px;
-    }
-    .about-hero-meta strong { color: var(--ink); font-size: 14px; }
-    .about-hero-meta span { color: var(--muted); font-size: 13px; }
-
-    body.theme-liquid-dark .about-hero-panel {
-      background: linear-gradient(150deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)) border-box, rgba(12, 21, 35, 0.82);
-      border: 1px solid rgba(184, 207, 242, 0.32);
-      box-shadow: 0 24px 52px rgba(2, 6, 12, 0.46);
-      backdrop-filter: blur(14px) saturate(1.15);
-      -webkit-backdrop-filter: blur(14px) saturate(1.15);
-    }
-
-    body.theme-liquid-dark .about-hero-panel h3 {
-      color: #eef4ff;
-    }
-
-    body.theme-liquid-dark .about-hero-panel li {
-      color: #d6e2f6;
-    }
-
-    body.theme-liquid-dark .about-hero-panel li::before {
-      background: #ff808b;
-    }
-
-    body.theme-liquid-dark .about-hero-meta {
-      border-top-color: rgba(184, 207, 242, 0.24);
-    }
-
-    body.theme-liquid-dark .about-hero-meta strong {
-      color: #eef4ff;
-    }
-
-    body.theme-liquid-dark .about-hero-meta span {
-      color: #9caecc;
-    }
-
-    @media (max-width: 920px) {
-      .about-hero-overlay { padding: 56px 0; }
-      .about-hero-grid { grid-template-columns: 1fr; }
-      .about-hero-main h1 { max-width: 100%; }
-    }
-  </style>
 </BaseLayout>

@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { BUSINESS } from '../lib/business';
 
-const title = 'Contact All Dent PDR | Cleveland & Northeast Ohio';
+const title = `Contact All Dent PDR | ${BUSINESS.regionLabel}`;
 const description = `Contact All Dent PDR for paintless dent, hail, and autobody collision repair in ${BUSINESS.regionLabel}. Send an inspection request — we reply the same day.`;
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
@@ -15,7 +15,7 @@ const breadcrumbs = [
     <div class="container">
       <span class="section-label">Contact Us</span>
       <h1>Request an inspection</h1>
-      <p>We serve <strong>{BUSINESS.regionLabel}</strong> — including Bedford, Parma, Solon, and surrounding communities. Fill out the form or call {BUSINESS.phone} and we will reply the same day.</p>
+      <p>We serve <strong>{BUSINESS.regionLabel}</strong> — including Cincinnati, Mason, West Chester, and surrounding communities. Submit the form and we will reply the same business day.</p>
     </div>
   </section>
 

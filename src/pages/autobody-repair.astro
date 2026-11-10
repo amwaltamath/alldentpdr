@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { BUSINESS } from '../lib/business';
 
-const title = 'Autobody Repair Cleveland & Northeast Ohio | All Dent PDR';
+const title = `Autobody Repair ${BUSINESS.addressLocality} & ${BUSINESS.regionLabel} | All Dent PDR`;
 const description = `Autobody and collision repair in ${BUSINESS.regionLabel}. Bumper repair, paint, panel work, and insurance claims — with paintless dent repair when your factory finish can be saved.`;
 const canonical = 'https://alldentpdr.com/autobody-repair';
 
@@ -18,9 +18,8 @@ const faqItems = [
       'We are best known for paintless dent repair and hail damage, but we also perform autobody and collision repair when damage requires paint, parts, or conventional body methods. You get an honest recommendation on PDR vs. body shop repair for each panel.',
   },
   {
-    question: 'What autobody services do you offer in Cleveland?',
-    answer:
-      'Typical work includes bumper repair, scratch and paint damage, door and fender repair, panel replacement when needed, and insurance-supported collision restoration across Greater Cleveland and Northeast Ohio.',
+    question: `What autobody services do you offer in ${BUSINESS.addressLocality}?`,
+    answer: `Typical work includes bumper repair, scratch and paint damage, door and fender repair, panel replacement when needed, and insurance-supported collision restoration across ${BUSINESS.regionLabel}.`,
   },
   {
     question: 'How do I get an autobody estimate?',
@@ -39,8 +38,8 @@ const faqItems = [
   <section class="hero">
     <div class="container hero-inner">
       <div>
-        <span class="hero-pill">Autobody Repair · Cleveland, OH</span>
-        <h1>Autobody &amp; collision repair in Northeast Ohio</h1>
+        <span class="hero-pill">Autobody Repair · {BUSINESS.addressLocality}, OH</span>
+        <h1>Autobody &amp; collision repair in {BUSINESS.addressLocality}, Ohio</h1>
         <p>
           All Dent PDR serves <strong>{BUSINESS.regionLabel}</strong> with autobody repair, collision restoration,
           and paint work when your vehicle needs more than paintless dent repair — plus PDR when the factory finish can stay intact.
@@ -83,7 +82,7 @@ const faqItems = [
         </article>
       </div>
       <div class="button-row" style="justify-content:center;margin-top:24px;">
-        <a class="button primary" href="/autobody-repair-cleveland">Cleveland autobody hub</a>
+        <a class="button primary" href="/services/autobody-collision-repair">Autobody services</a>
         <a class="button ghost" href="/service-area">Cities we serve</a>
       </div>
     </div>

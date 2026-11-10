@@ -131,15 +131,13 @@ export function getCityStaticPaths(): Array<{
   params: { city: string };
   props: { city: CityData; marketId: MarketId; isActiveMarket: boolean };
 }> {
-  return (Object.entries(MARKET_SERVICE_AREAS) as [MarketId, CityData[]][]).flatMap(
-    ([marketId, areas]) =>
-      areas.map((city) => ({
-        params: { city: city.slug },
-        props: {
-          city,
-          marketId,
-          isActiveMarket: isActiveMarket(marketId),
-        },
-      })),
-  );
+  const areas = MARKET_SERVICE_AREAS[ACTIVE_MARKET_ID];
+  return areas.map((city) => ({
+    params: { city: city.slug },
+    props: {
+      city,
+      marketId: ACTIVE_MARKET_ID,
+      isActiveMarket: true,
+    },
+  }));
 }

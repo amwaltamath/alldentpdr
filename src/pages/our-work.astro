@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../lib/business';
 import { createClient } from '@supabase/supabase-js';
 
 const title = 'Our Work — Before & After Paintless Dent Repair | All Dent PDR';
-const description = 'See real before and after photos from All Dent PDR at Greater Cleveland & Northeast Ohio. Hail damage, door dings, and dents — factory paint preserved. Serving Northeast Ohio.';
+const description = `See real before and after photos from All Dent PDR in ${BUSINESS.regionLabel}. Hail damage, door dings, and dents — factory paint preserved.`;
 const canonical = 'https://alldentpdr.com/our-work';
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
@@ -67,7 +68,7 @@ const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))]
   <section class="hero-img" style="background-image:url('/images/topofcarbeforandafter.jpg')">
     <div class="hero-img-overlay">
       <div class="container">
-        <span class="section-label">Gallery — Cleveland &amp; Northeast Ohio</span>
+        <span class="section-label">Gallery — {BUSINESS.regionLabel}</span>
         <h1>Our work — real results, real vehicles</h1>
         <p>Every project in our gallery was completed by All Dent PDR technicians using paintless dent repair techniques that preserve your factory finish. Hail damage, door dings, creases — see the difference for yourself.</p>
         <div class="button-row" style="justify-content:center;margin-top:16px;">
@@ -152,7 +153,7 @@ const categories = [...new Set(projects.map((p) => p.category).filter(Boolean))]
     <div class="container">
       <span class="section-label">Ready to get started?</span>
       <h2>Get a free estimate today</h2>
-      <p>All Dent PDR serves Bedford, OH and 20+ Northeast Ohio communities. We work with all major insurance carriers.</p>
+      <p>All Dent PDR serves {BUSINESS.regionLabel}. We work with all major insurance carriers.</p>
       <div class="button-row" style="justify-content:center;margin-top:20px;">
         <a class="button primary" href="/contact">Contact Us</a>
         <a class="button ghost" href="/service-area">View Service Areas</a>

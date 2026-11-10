@@ -98,7 +98,8 @@ p { margin: 0 0 1rem; color: var(--muted); }
 }
 
 .logo { display: inline-flex; align-items: center; gap: 12px; font-weight: 700; }
-.logo-img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; box-shadow: var(--shadow-xs); }
+.logo--image-only { gap: 0; }
+.logo-img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; box-shadow: var(--shadow-xs); }
 .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
 .logo-mark { font-size: 17px; letter-spacing: -0.02em; color: var(--ink); }
 .logo-sub  { font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted-2); }
@@ -2466,8 +2467,8 @@ p {
 }
 
 .logo-img {
-  width: 42px;
-  height: 42px;
+  width: 56px;
+  height: 56px;
   border-radius: 12px;
   object-fit: cover;
   box-shadow: var(--shadow-xs);
@@ -3186,17 +3187,9 @@ select:focus {
     flex: 1;
   }
 
-  .logo-sub {
-    display: none;
-  }
-
   .logo-img {
-    width: 38px;
-    height: 38px;
-  }
-
-  .logo-mark {
-    font-size: 16px;
+    width: 52px;
+    height: 52px;
   }
 
   .hero {

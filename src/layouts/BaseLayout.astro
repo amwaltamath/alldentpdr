@@ -167,12 +167,8 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
     {!bare && (
       <header class="site-header">
         <div class="container header-inner">
-          <a class="logo" href="/">
-            <img src="/images/logo.jpg" alt="AllDent PDR - Paintless Dent Repair Cleveland, OH" class="logo-img" />
-            <div class="logo-text">
-              <span class="logo-mark">AllDent PDR</span>
-              <span class="logo-sub">Cleveland, OH · Serving NE Ohio</span>
-            </div>
+          <a class="logo logo--image-only" href="/">
+            <img src="/images/logo.jpg" alt="AllDent PDR" class="logo-img" />
           </a>
           <nav class="nav">
             {navLinks.map((link) => (
@@ -281,7 +277,7 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
           </div>
           <div>
             <h5>Service area</h5>
-            <p>Greater Cleveland &amp; Northeast Ohio</p>
+            <p>{BUSINESS.regionLabel}</p>
             <p><a href="/service-area">View cities we serve</a></p>
           </div>
           <div>
@@ -292,7 +288,7 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
           </div>
         </div>
         <div class="container footer-bottom">
-          <span>© 2026 AllDent PDR · Paintless Dent Repair — Cleveland, OH</span>
+          <span>© 2026 AllDent PDR · Paintless Dent Repair — {BUSINESS.addressLocality}, OH</span>
           <span><a href="/about">About</a> · <a href="/service-area">Service Area</a> · <a href="/blog">Blog</a> · <a href="/contact">Contact</a></span>
         </div>
       </footer>

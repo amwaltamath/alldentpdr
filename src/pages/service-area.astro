@@ -18,9 +18,9 @@ const faqItems = [
     answer: `All Dent PDR is currently serving ${BUSINESS.regionLabel}, including Cincinnati, Mason, West Chester, Blue Ash, Fairfield, Hamilton, Milford, and many more. We redeploy to other hail markets after major storms.`,
   },
   {
-    question: 'Do you still serve Northeast Ohio?',
+    question: 'Do you deploy to other cities?',
     answer:
-      'Cleveland and Northeast Ohio local service is paused until our team redeploys after the next regional hail event. Use the contact form if you need storm deployment scheduling.',
+      'Yes. After major hail events we move teams to storm-affected markets. Our service area page always reflects where we are serving locally today.',
   },
   {
     question: 'My city is not listed — do you still serve me?',
@@ -233,9 +233,9 @@ const sorted = [...serviceAreas].sort((a, b) => a.distanceMiles - b.distanceMile
   <!-- CTA -->
   <section class="cta-banner">
     <div class="container">
-      <h2>Your city in Northeast Ohio? We've got you covered.</h2>
+      <h2>Your city in Greater Cincinnati? We've got you covered.</h2>
       <p>
-        All Dent PDR · Greater Cleveland & Northeast Ohio · Mon–Fri 8am–6pm · Sat 9am–2pm<br />
+        All Dent PDR · {BUSINESS.regionLabel} · Mon–Fri 8am–6pm · Sat 9am–2pm<br />
         Walk-ins welcome · Free estimates · Insurance claims handled · 20+ communities served
       </p>
       <div class="button-row" style="justify-content:center;">

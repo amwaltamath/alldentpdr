@@ -11,7 +11,7 @@ const CITY_ROUTE_PREFIXES = [
 ] as const;
 
 /** Standalone marketing pages marked noindex (inactive / legacy markets). */
-/** Cleveland-era blog posts — omit from sitemap while Cincinnati is the active market. */
+/** Legacy local-market blog URLs (301 elsewhere) — omit from sitemap. */
 export const INACTIVE_MARKET_BLOG_SLUGS = new Set([
   'bedford-ohio-hail-damage-repair',
   'hail-damage-repair-bedford-ohio-2026',

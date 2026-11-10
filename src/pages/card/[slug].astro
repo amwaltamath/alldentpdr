@@ -1,4 +1,6 @@
 ---
+import { BUSINESS } from '../../lib/business';
+
 export const prerender = true;
 
 export function getStaticPaths() {
@@ -39,7 +41,7 @@ const vcardLines = [
   `TEL;TYPE=WORK,VOICE:${phoneRaw}`,
   `EMAIL;TYPE=WORK:${email}`,
   `URL:${website}`,
-  'ADR;TYPE=WORK:;;Bedford;OH;;United States',
+  `ADR;TYPE=WORK:;;${BUSINESS.addressLocality};${BUSINESS.addressRegion};;United States`,
   'END:VCARD'
 ].join('\n');
 

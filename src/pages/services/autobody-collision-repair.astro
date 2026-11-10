@@ -3,7 +3,7 @@ import ServiceLandingShell from '../../components/ServiceLandingShell.astro';
 import { BUSINESS } from '../../lib/business';
 
 const canonical = 'https://alldentpdr.com/services/autobody-collision-repair';
-const title = 'Autobody & Collision Repair Cleveland, OH | All Dent PDR';
+const title = `Autobody & Collision Repair ${BUSINESS.addressLocality}, OH | All Dent PDR`;
 const description = `Autobody and collision repair in ${BUSINESS.regionLabel}. Paint, bumpers, panel replacement, and insurance claims — plus paintless dent repair when the factory finish can be preserved.`;
 ---
 
@@ -40,14 +40,14 @@ const description = `Autobody and collision repair in ${BUSINESS.regionLabel}. P
   ]}
   schemaName="All Dent PDR — Autobody & Collision Repair"
   schemaDescription={description}
-  heroLabel="Autobody · Collision · Cleveland, OH"
-  h1="Autobody & collision repair in Cleveland, Ohio"
+  heroLabel={`Autobody · Collision · ${BUSINESS.addressLocality}, OH`}
+  h1={`Autobody & collision repair in ${BUSINESS.addressLocality}, Ohio`}
   heroLead={`From fender benders to paint damage and bumper repairs, All Dent PDR serves ${BUSINESS.regionLabel} with honest inspections and factory-focused finish work — starting with paintless repair whenever it is the right call.`}
 >
   <span class="section-label">Body shop services</span>
   <h2>Collision repair when paintless dent repair is not enough</h2>
   <p>
-    Drivers searching for an <strong>auto body shop in Cleveland</strong> or <strong>collision repair near Northeast Ohio</strong>
+    Drivers searching for an <strong>auto body shop in {BUSINESS.addressLocality}</strong> or <strong>collision repair near you</strong>
     often want one team that understands both PDR and conventional body work. We assess each panel under proper lighting,
     explain whether paintless or autobody repair fits, and quote the repair before work begins.
   </p>

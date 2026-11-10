@@ -23,7 +23,7 @@ const faqItems = [
 <BaseLayout title={title} description={description} canonical="https://alldentpdr.com/services" breadcrumbs={breadcrumbs} faqItems={faqItems}>
   <section class="page-hero page-hero--services services-hero-shell">
     <div class="container">
-      <span class="section-label">Our Services — Cleveland, OH</span>
+      <span class="section-label">Our Services — {BUSINESS.addressLocality}, OH</span>
       <h1>Paintless dent repair in Greater Cincinnati</h1>
       <p>All Dent PDR serves <strong>{BUSINESS.regionLabel}</strong> — Cincinnati, Mason, West Chester, and surrounding communities. Door dings, hail, and insurance-supported PDR with free written estimates.</p>
       <div class="button-row" style="justify-content:center;margin-top:16px;">
@@ -35,9 +35,9 @@ const faqItems = [
 
   <section class="services-kpi-strip" aria-label="Service highlights">
     <div class="container services-kpi-grid">
-      <div class="services-kpi-item"><strong>5 min</strong><span>From Bedford</span></div>
+      <div class="services-kpi-item"><strong>16+</strong><span>Cincinnati-area cities</span></div>
       <div class="services-kpi-item"><strong>1,000+</strong><span>Vehicles Repaired</span></div>
-      <div class="services-kpi-item"><strong>20+</strong><span>NE Ohio Areas</span></div>
+      <div class="services-kpi-item"><strong>PDR</strong><span>Factory finish</span></div>
       <div class="services-kpi-item"><strong>Insurance</strong><span>Direct Billing</span></div>
     </div>
   </section>
@@ -52,7 +52,7 @@ const faqItems = [
       <article class="card services-lane-card">
         <span class="tag">Hail Damage</span>
         <h3><a href="/hail-damage-repair">Hail damage repair</a></h3>
-        <p>Storm inspections, insurance support, and panel-by-panel restoration in Northeast Ohio.</p>
+        <p>Storm inspections, insurance support, and panel-by-panel restoration in {BUSINESS.regionLabel}.</p>
       </article>
       <article class="card services-lane-card">
         <span class="tag">Door Dings</span>
@@ -98,7 +98,7 @@ const faqItems = [
         </div>
         <div class="process-step card services-process-card">
           <h3>Bring It to Our Shop</h3>
-          <p>Visit All Dent PDR at Greater Cleveland & Northeast Ohio for a professional in-shop repair.</p>
+          <p>Work with All Dent PDR in {BUSINESS.regionLabel} for a professional in-shop repair.</p>
         </div>
         <div class="process-step card services-process-card">
           <h3>Flawless Finish</h3>
@@ -118,7 +118,7 @@ const faqItems = [
             client:visible 
             before="/images/topdoorbefore.jpg" 
             after="/images/topdoorafter.jpg" 
-            alt="Paintless dent repair Cleveland OH - Door ding removal before and after showing restored factory finish"
+            alt="Paintless dent repair Cincinnati OH - Door ding removal before and after showing restored factory finish"
           />
         </div>
         <div class="card">
@@ -127,7 +127,7 @@ const faqItems = [
             client:visible 
             before="/images/pdrhoodbefore.png" 
             after="/images/pdrhoodafter.png" 
-            alt="Hood dent paintless repair Cleveland OH - Before and after PDR technique without repainting"
+            alt="Hood dent paintless repair Cincinnati OH - Before and after PDR technique without repainting"
           />
         </div>
         <div class="card">
@@ -136,7 +136,7 @@ const faqItems = [
             client:visible 
             before="/images/haildamangetopbefore.jpg" 
             after="/images/haildamagetopafter.jpg" 
-            alt="Hail damage repair Cleveland OH - Before and after paintless dent removal from storm damage"
+            alt="Hail damage repair Cincinnati OH - Before and after paintless dent removal from storm damage"
           />
         </div>
       </div>
@@ -166,8 +166,7 @@ const faqItems = [
         the vehicle in proper lighting so the result looks right when you get it back.
       </p>
       <p>
-        We prioritize Bedford, Garfield Heights, Maple Heights, Independence, Parma, Solon,
-        Warrensville Heights, Oakwood Village, Northfield, and 15+ additional Northeast Ohio communities.
+        We serve Cincinnati, Mason, West Chester, Fairfield, Hamilton, Blue Ash, Milford, and surrounding communities.
         <a href="/service-area" style="color:var(--rust);font-weight:600;">See the full service area list.</a>
       </p>
       <div class="grid-3">
@@ -192,7 +191,7 @@ const faqItems = [
       <h2>Frequently asked questions about paintless dent repair</h2>
       <div class="faq-list">
         <details class="faq-item">
-          <summary>How much does paintless dent repair cost in Cleveland, OH?</summary>
+          <summary>How much does paintless dent repair cost in {BUSINESS.addressLocality}, OH?</summary>
           <p>PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75–$150, while hail damage is quoted per panel after an inspection.</p>
         </details>
         <details class="faq-item">
@@ -222,7 +221,7 @@ const faqItems = [
   <section class="cta-banner services-cta-shell">
     <div class="container">
       <h2>Contact us or call for a same-day response</h2>
-      <p>All Dent PDR · Greater Cleveland & Northeast Ohio · Serving Bedford, OH and 20+ Northeast Ohio communities</p>
+      <p>All Dent PDR · {BUSINESS.regionLabel}</p>
       <div class="button-row" style="justify-content: center;">
         <a class="button primary" href="/contact">Schedule at Our Shop</a>
         <a class="button ghost" href="/contact">Get free estimate</a>
