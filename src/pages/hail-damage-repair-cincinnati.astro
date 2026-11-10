@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../lib/business';
+
+const title = 'Hail Damage Repair Cincinnati, OH | PDR | All Dent PDR';
+const description = `Hail damage repair in Cincinnati and Greater Cincinnati with paintless dent repair, insurance claim help, and free estimates. Serving Mason, West Chester, and Southwest Ohio.`;
+const canonical = 'https://alldentpdr.com/hail-damage-repair-cincinnati';
+
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Hail Damage Repair Cincinnati', url: canonical },
+];
+
+const faqItems = [
+  {
+    question: 'Can hail damage in Cincinnati be repaired with PDR?',
+    answer:
+      'When paint is intact, hail dents are often ideal for paintless dent repair. We inspect every panel and confirm the right method before work begins.',
+  },
+  {
+    question: 'Does insurance cover hail damage in Ohio?',
+    answer:
+      'Most comprehensive policies cover hail after your deductible. We help document damage and work with your carrier.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems}>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="hero-pill">Hail damage · Cincinnati, OH</span>
+        <h1>Hail damage repair in Cincinnati, Ohio</h1>
+        <p>
+          Storm dent restoration across <strong>{BUSINESS.regionLabel}</strong> with paintless dent repair,
+          panel-by-panel estimates, and insurance support.
+        </p>
+        <div class="button-row">
+          <a class="button primary" href="/contact">Request hail inspection</a>
+          <a class="button ghost" href={BUSINESS.pdrHubPath}>Cincinnati PDR hub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../lib/business';
+
+const canonical = 'https://alldentpdr.com/autobody-repair-cleveland';
+const title = 'Autobody Repair Cleveland, OH | Collision & Paint | All Dent PDR';
+const description = `Cleveland autobody and collision repair — bumpers, paint, panel work, and insurance claims. PDR when possible; conventional body repair when your vehicle needs it. Serving ${BUSINESS.regionLabel}.`;
+
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Autobody Repair', url: 'https://alldentpdr.com/autobody-repair' },
+  { name: 'Cleveland', url: canonical },
+];
+
+const faqItems = [
+  {
+    question: 'Where can I get autobody repair in Cleveland, Ohio?',
+    answer: `All Dent PDR serves Greater Cleveland and Northeast Ohio with autobody, collision, and paintless dent repair. Request an inspection online with photos — we reply the same business day.`,
+  },
+  {
+    question: 'Do you handle insurance collision claims in Cleveland?',
+    answer:
+      'Yes. We document damage, work with adjusters, and repair to estimate scope. You may use any licensed shop you choose under Ohio consumer protection rules.',
+  },
+  {
+    question: 'Is paintless dent repair still available?',
+    answer:
+      'Absolutely. Cleveland-area hail, door dings, and minor impacts with intact paint are often ideal for PDR. We only recommend autobody methods when they produce the correct result.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems} noindex={true}>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="hero-pill">Cleveland · Autobody &amp; Collision</span>
+        <h1>Cleveland autobody repair &amp; collision restoration</h1>
+        <p>
+          Searching for a <strong>Cleveland auto body shop</strong> or <strong>collision repair near me</strong>?
+          All Dent PDR combines paintless dent repair expertise with conventional autobody work for bumpers, paint damage,
+          and panel repairs across {BUSINESS.regionLabel}.
+        </p>
+        <div class="button-row">
+          <a class="button primary" href="/contact">Get a free estimate</a>
+          <a class="button ghost" href="/paintless-dent-repair-cleveland-oh">Cleveland PDR</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>Cleveland-area body work</h3>
+        <ul>
+          <li>Bumper &amp; collision damage</li>
+          <li>Paint &amp; scratch refinish</li>
+          <li>Insurance claim coordination</li>
+          <li>PDR on panels that qualify</li>
+          <li>Bedford, Parma, Garfield Heights &amp; suburbs</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <span class="section-label">Local pages</span>
+      <h2>Autobody repair near Cleveland suburbs</h2>
+      <p>City-specific pages with drive times and local details:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:20px;">
+        {['parma', 'bedford', 'garfield-heights', 'maple-heights', 'solon', 'independence'].map((slug) => (
+          <a
+            href={`/autobody-repair/${slug}`}
+            style="padding:10px 18px;background:var(--card);border-radius:8px;border:1px solid #e8e0d8;font-weight:600;color:var(--rust);text-decoration:none;text-transform:capitalize;"
+          >
+            {slug.replace(/-/g, ' ')}, OH →
+          </a>
+        ))}
+        <a class="button ghost" href="/service-area">All service areas</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

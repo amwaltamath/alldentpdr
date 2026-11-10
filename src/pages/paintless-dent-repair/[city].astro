@@ -1,25 +1,29 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { serviceAreas } from '../../data/serviceAreas';
 import type { CityData } from '../../data/serviceAreas';
+import { getCityStaticPaths, MARKETS, type MarketId } from '../../lib/activeMarket';
+import { BUSINESS } from '../../lib/business';
 
 export const prerender = true;
 
 export function getStaticPaths() {
-  return serviceAreas.map(city => ({
-    params: { city: city.slug },
-    props: { city },
-  }));
+  return getCityStaticPaths();
 }
 
-const { city } = Astro.props as { city: CityData };
+const { city, marketId, isActiveMarket } = Astro.props as {
+  city: CityData;
+  marketId: MarketId;
+  isActiveMarket: boolean;
+};
 
-const shopAddress = 'Greater Cleveland & Northeast Ohio';
+const market = MARKETS[marketId];
+const copy = market.localeCopy;
+const shopAddress = market.regionLabel;
 const shopPhone = '1-855-425-5336';
 const shopEmail = 'alldentpdr@gmail.com';
 
 const title = `Paintless Dent Repair in ${city.name}, OH | Hail Damage Repair | All Dent PDR`;
-const description = `Paintless dent repair near ${city.name}, OH. All Dent PDR serves Greater Cleveland & Northeast Ohio — hail damage, door dings, and minor collision dents with factory finish preserved. Free online estimates.`;
+const description = `Paintless dent repair near ${city.name}, OH. All Dent PDR serves ${shopAddress} — hail damage, door dings, and minor collision dents with factory finish preserved. Free online estimates.`;
 const keywords = `paintless dent repair ${city.name} OH, PDR ${city.name}, dent repair ${city.name} OH, hail damage repair ${city.name}, door ding repair ${city.name}, ${city.zipCodes.join(', ')}, All Dent PDR`;
 const canonical = `https://alldentpdr.com/paintless-dent-repair/${city.slug}`;
 
@@ -48,11 +52,11 @@ const faqItems = [
   },
   {
     question: `Do I need an appointment to drop off my vehicle from ${city.name}?`,
-    answer: `Use our contact form to schedule in Northeast Ohio — we serve ${city.name} and surrounding ${city.county} County. Estimates are always free.`,
+    answer: `Use our contact form to schedule in ${copy.scheduleRegion} — we serve ${city.name} and surrounding ${city.county} County. Estimates are always free.`,
   },
   {
     question: `What ZIP codes near ${city.name} does All Dent PDR serve for paintless dent repair?`,
-    answer: `We serve ${city.name} (${city.zipCodes.join(', ')}) along with nearby ${city.nearbyShops.join(', ')} and the rest of ${city.county} County for Northeast Ohio drivers.`,
+    answer: `We serve ${city.name} (${city.zipCodes.filter(Boolean).join(', ') || 'local ZIPs'}) along with nearby ${city.nearbyShops.join(', ')} and the rest of ${city.county} County within ${shopAddress}.`,
   },
 ];
 
@@ -67,7 +71,7 @@ const localBusinessSchema = {
   image: 'https://alldentpdr.com/images/logo-branded.svg',
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Cleveland',
+    addressLocality: market.locality,
     addressRegion: 'OH',
     addressCountry: 'US',
   },
@@ -78,7 +82,7 @@ const localBusinessSchema = {
   areaServed: [
     city.name,
     ...city.nearbyShops,
-    'Cleveland, OH',
+    `${market.locality}, OH`,
   ],
   priceRange: '$$',
   paymentAccepted: 'Cash, Credit Card, Insurance',
@@ -100,6 +104,7 @@ const localBusinessSchema = {
   canonical={canonical}
   breadcrumbs={breadcrumbs}
   faqItems={faqItems}
+  noindex={!isActiveMarket}
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
@@ -110,7 +115,7 @@ const localBusinessSchema = {
     <div class="container hero-inner">
       <div>
         <span class="hero-pill">
-          Serving {city.name}, OH · Northeast Ohio PDR
+          Serving {city.name}, OH · {copy.heroPillSuffix}
         </span>
         <h1>Paintless dent repair near {city.name}, Ohio</h1>
         <p>
@@ -214,7 +219,7 @@ const localBusinessSchema = {
         <div>
           <p>
             Dropping off your vehicle from {city.name} is quick and easy. Our shop sits along 
-            in Cleveland with easy access from I-480, I-77, and Rockside Rd.
+            {copy.shopAccessNote}
           </p>
           
           <p><strong>Hours:</strong><br />Mon–Fri: 8:00am – 6:00pm<br />Saturday: 9:00am – 2:00pm<br />Sunday: Closed</p>
@@ -245,7 +250,7 @@ const localBusinessSchema = {
       <div class="grid-3">
         <article class="card">
           <h3>1. Drive in or call ahead</h3>
-          <p>Contact us to schedule in Northeast Ohio — only {city.driveMinutes} minutes from {city.name}. Use the contact form to request a time.</p>
+          <p>Contact us to schedule in {copy.scheduleRegion} — about {city.driveMinutes} minutes from {city.name}. Use the contact form to request a time.</p>
         </article>
         <article class="card">
           <h3>2. Free inspection & estimate</h3>
@@ -293,7 +298,7 @@ const localBusinessSchema = {
           href="/service-area"
           style="padding:10px 18px;background:var(--rust);border-radius:8px;color:#fff;font-weight:600;text-decoration:none;"
         >
-          View all 20+ service areas →
+          {copy.serviceAreaLinkLabel}
         </a>
       </div>
     </div>
@@ -303,21 +308,21 @@ const localBusinessSchema = {
   <section class="section alt">
     <div class="container">
       <span class="section-label">Reviews</span>
-      <h2>What Northeast Ohio customers say</h2>
+      <h2>{copy.testimonialsHeading}</h2>
       <div class="grid-3">
         <blockquote class="card">
           <p>"I was nervous about paintless repair but they walked me through the whole thing before starting. My car looks exactly like it did before. I'm a believer now."</p>
-          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Cuyahoga County vehicle owner</footer>
+          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">{copy.reviewBylines[0]}</footer>
           <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
         </blockquote>
         <blockquote class="card">
           <p>"Fast, honest, and the work holds up. I've had body shop work before that looked fine at first and then you notice things. All Dent PDR's finish work is genuinely better."</p>
-          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Northeast Ohio driver</footer>
+          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">{copy.reviewBylines[1]}</footer>
           <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
         </blockquote>
         <blockquote class="card">
           <p>"They fixed my hail damage and two door dings in the same visit. Factory finish on everything. I'll never take a car to a body shop again if I don't have to."</p>
-          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Bedford area customer</footer>
+          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">{copy.reviewBylines[2]}</footer>
           <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
         </blockquote>
       </div>

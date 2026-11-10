@@ -1,0 +1,160 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { CityData } from '../../data/serviceAreas';
+import { getCityStaticPaths, MARKETS, type MarketId } from '../../lib/activeMarket';
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return getCityStaticPaths();
+}
+
+const { city, marketId, isActiveMarket } = Astro.props as {
+  city: CityData;
+  marketId: MarketId;
+  isActiveMarket: boolean;
+};
+
+const market = MARKETS[marketId];
+const shopAddress = market.regionLabel;
+
+const title = `Autobody Repair in ${city.name}, OH | Collision & Paint | All Dent PDR`;
+const description = `Autobody and collision repair near ${city.name}, OH — ${city.driveMinutes} minutes from our ${shopAddress} team. Bumper, paint, panel work, and insurance claims; PDR when paint is intact.`;
+const canonical = `https://alldentpdr.com/autobody-repair/${city.slug}`;
+
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Autobody Repair', url: 'https://alldentpdr.com/autobody-repair' },
+  { name: `${city.name}, OH`, url: canonical },
+];
+
+const faqItems = [
+  {
+    question: `Is there an autobody shop near ${city.name}, Ohio?`,
+    answer: `All Dent PDR serves ${city.name} and ${city.county} County from ${shopAddress} — about ${city.distanceMiles} miles (${city.driveMinutes} minutes) from ${city.name}. Submit photos through our contact form for a same-day reply.`,
+  },
+  {
+    question: `Do you do collision repair for ${city.name} drivers?`,
+    answer:
+      'Yes. We repair bumper damage, painted panels, and collision-related body work, and we coordinate with insurance when you have a comprehensive or collision claim.',
+  },
+  {
+    question: `Can hail damage on ${city.name} vehicles be PDR instead of autobody?`,
+    answer:
+      'Often yes when paint is not broken. We inspect hail and storm damage panel by panel and use paintless dent repair whenever it meets our quality standard; remaining panels can be repaired with conventional autobody methods in the same job.',
+  },
+  {
+    question: `What ZIP codes around ${city.name} do you serve?`,
+    answer: `We regularly serve ${city.name} (${city.zipCodes.filter(Boolean).join(', ') || 'local ZIPs'}) and nearby communities including ${city.nearbyShops.join(', ')}.`,
+  },
+];
+
+function nearbySlug(name: string) {
+  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems} noindex={!isActiveMarket}>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="hero-pill">Autobody · {city.name}, OH</span>
+        <h1>Autobody repair near {city.name}, Ohio</h1>
+        <p>
+          Looking for an <strong>auto body shop near {city.name}</strong>? All Dent PDR serves {city.county} County from
+          <strong>{shopAddress}</strong> — about {city.driveMinutes} minutes away — with collision repair, paint, bumper work,
+          and <a href={`/paintless-dent-repair/${city.slug}`}>paintless dent repair</a> when the factory finish can be preserved.
+        </p>
+        <p>{city.uniqueNote}</p>
+        <div class="button-row">
+          <a class="button primary" href="/contact">Request an inspection</a>
+          <a class="button ghost" href="/services/autobody-collision-repair">Autobody services</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>Body work for {city.name} &amp; {city.county} County</h3>
+        <ul>
+          <li>{city.driveMinutes} min from {city.name}</li>
+          <li>Collision &amp; bumper repair</li>
+          <li>Paint &amp; scratch refinish</li>
+          <li>Insurance claim support</li>
+          <li>PDR when panels qualify</li>
+        </ul>
+        <p class="tag">{shopAddress}</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-strip">
+    <div class="trust-item"><strong>{city.driveMinutes} min</strong><span>From {city.name}</span></div>
+    <div class="trust-item"><strong>PDR + Body</strong><span>One team</span></div>
+    <div class="trust-item"><strong>Insurance</strong><span>Claims supported</span></div>
+    <div class="trust-item"><strong>Estimates</strong><span>Photo-based intake</span></div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <span class="section-label">Services</span>
+      <h2>Auto body &amp; collision repair for {city.name}</h2>
+      <div class="grid-3">
+        <article class="card">
+          <h3>Collision damage</h3>
+          <p>Fenders, doors, and quarters after impacts — repaired and refinished to match your vehicle.</p>
+        </article>
+        <article class="card">
+          <h3>Bumper repair</h3>
+          <p>Front and rear bumper covers common on daily drivers in {city.county} County.</p>
+        </article>
+        <article class="card">
+          <h3>Paintless option</h3>
+          <p>Dents with intact OEM paint may qualify for <a href={`/paintless-dent-repair/${city.slug}`}>PDR near {city.name}</a> instead of a full repaint.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <span class="section-label">Also serving</span>
+      <h2>Autobody repair near {city.name}</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin:20px 0;">
+        {city.nearbyShops.map((n) => (
+          <a
+            href={`/autobody-repair/${nearbySlug(n)}`}
+            style="padding:10px 18px;background:var(--card);border-radius:8px;border:1px solid #e8e0d8;font-weight:600;color:var(--rust);text-decoration:none;"
+          >
+            {n}, OH →
+          </a>
+        ))}
+        <a href="/autobody-repair-cleveland" style="padding:10px 18px;background:var(--rust);border-radius:8px;color:#fff;font-weight:600;text-decoration:none;">
+          Cleveland autobody hub →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <span class="section-label">FAQ</span>
+      <h2>Autobody repair questions — {city.name}, OH</h2>
+      <div style="display:flex;flex-direction:column;gap:16px;max-width:780px;margin:0 auto;">
+        {faqItems.map((item) => (
+          <details style="background:var(--card);border-radius:12px;padding:20px 24px;border:1px solid #e8e0d8;">
+            <summary style="font-weight:600;cursor:pointer;font-size:1.05rem;">{item.question}</summary>
+            <p style="margin-top:12px;color:#4a3f35;">{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Need autobody repair near {city.name}?</h2>
+      <p>Submit photos and vehicle details — we respond the same business day.</p>
+      <div class="button-row" style="justify-content:center;">
+        <a class="button primary" href="/contact">Get a free estimate</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

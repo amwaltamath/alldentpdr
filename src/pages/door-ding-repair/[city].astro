@@ -1,25 +1,28 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { serviceAreas } from '../../data/serviceAreas';
 import type { CityData } from '../../data/serviceAreas';
+import { getCityStaticPaths, MARKETS, type MarketId } from '../../lib/activeMarket';
 
 export const prerender = true;
 
 export function getStaticPaths() {
-  return serviceAreas.map(city => ({
-    params: { city: city.slug },
-    props: { city },
-  }));
+  return getCityStaticPaths();
 }
 
-const { city } = Astro.props as { city: CityData };
+const { city, marketId, isActiveMarket } = Astro.props as {
+  city: CityData;
+  marketId: MarketId;
+  isActiveMarket: boolean;
+};
 
-const shopAddress = 'Greater Cleveland & Northeast Ohio';
+const market = MARKETS[marketId];
+const copy = market.localeCopy;
+const shopAddress = market.regionLabel;
 const shopPhone = '1-855-425-5336';
 const shopEmail = 'alldentpdr@gmail.com';
 
 const title = `Door Ding Repair in ${city.name}, OH | All Dent PDR`;
-const description = `Door ding and dent removal near ${city.name}, OH. All Dent PDR serves Greater Cleveland & Northeast Ohio with paintless dent repair and free online estimates.`;
+const description = `Door ding and dent removal near ${city.name}, OH. All Dent PDR serves ${shopAddress} with paintless dent repair and free online estimates.`;
 const keywords = `door ding repair ${city.name} OH, dent removal ${city.name} OH, paintless dent repair ${city.name}, car door ding repair ${city.name}, ${city.name} dent repair, ${city.zipCodes.join(', ')}, All Dent PDR`;
 const canonical = `https://alldentpdr.com/door-ding-repair/${city.slug}`;
 
@@ -44,7 +47,7 @@ const faqItems = [
   },
   {
     question: `Do I need an appointment for door ding repair from ${city.name}?`,
-    answer: `Use our contact form to request a time in Northeast Ohio. We serve ${city.name} and nearby communities in ${city.county} County.`,
+    answer: `Use our contact form to request a time in ${copy.scheduleRegion}. We serve ${city.name} and nearby communities in ${city.county} County.`,
   },
   {
     question: `Will door ding repair require repainting?`,
@@ -67,7 +70,7 @@ const localBusinessSchema = {
   image: 'https://alldentpdr.com/images/logo-branded.svg',
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Cleveland',
+    addressLocality: market.locality,
     addressRegion: 'OH',
     addressCountry: 'US',
   },
@@ -78,7 +81,7 @@ const localBusinessSchema = {
   areaServed: [
     city.name,
     ...city.nearbyShops,
-    'Cleveland, OH',
+    `${market.locality}, OH`,
   ],
   priceRange: '$$',
   paymentAccepted: 'Cash, Credit Card',
@@ -100,6 +103,7 @@ const localBusinessSchema = {
   canonical={canonical}
   breadcrumbs={breadcrumbs}
   faqItems={faqItems}
+  noindex={!isActiveMarket}
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
@@ -110,7 +114,7 @@ const localBusinessSchema = {
     <div class="container hero-inner">
       <div>
         <span class="hero-pill">
-          Serving {city.name}, OH · Northeast Ohio PDR
+          Serving {city.name}, OH · {copy.heroPillSuffix}
         </span>
         <h1>Door ding repair near {city.name}, Ohio</h1>
         <p>
@@ -224,7 +228,7 @@ const localBusinessSchema = {
         <div>
           <p>
             Dropping off your vehicle from {city.name} is quick and easy. Our shop sits along 
-            in Cleveland with easy access from I-480, I-77, and Rockside Rd.
+            {copy.shopAccessNote}
           </p>
           
           <p><strong>Hours:</strong><br />Mon–Fri: 8:00am – 6:00pm<br />Saturday: 9:00am – 2:00pm<br />Sunday: Closed</p>
@@ -255,7 +259,7 @@ const localBusinessSchema = {
       <div class="grid-3">
         <article class="card">
           <h3>1. Drive in or call ahead</h3>
-          <p>Contact us to schedule in Northeast Ohio — only {city.driveMinutes} minutes from {city.name}. Use the contact form to request a time.</p>
+          <p>Contact us to schedule in {copy.scheduleRegion} — about {city.driveMinutes} minutes from {city.name}. Use the contact form to request a time.</p>
         </article>
         <article class="card">
           <h3>2. Free inspection & estimate</h3>
@@ -303,7 +307,7 @@ const localBusinessSchema = {
           href="/service-area"
           style="padding:10px 18px;background:var(--rust);border-radius:8px;color:#fff;font-weight:600;text-decoration:none;"
         >
-          View all 20+ service areas →
+          {copy.serviceAreaLinkLabel}
         </a>
       </div>
     </div>
@@ -313,21 +317,21 @@ const localBusinessSchema = {
   <section class="section alt">
     <div class="container">
       <span class="section-label">Reviews</span>
-      <h2>What Northeast Ohio customers say</h2>
+      <h2>{copy.testimonialsHeading}</h2>
       <div class="grid-3">
         <blockquote class="card">
           <p>"I had a nasty parking lot ding on my driver door. They had it out in a couple hours and you can't tell it was ever there. Paint is perfect."</p>
-          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Cuyahoga County driver</footer>
+          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">{copy.reviewBylines[0]}</footer>
           <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
         </blockquote>
         <blockquote class="card">
           <p>"Fast, honest, and the work holds up. I've had body shop work before that looked fine at first and then you notice things. All Dent PDR's finish work is genuinely better."</p>
-          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Northeast Ohio vehicle owner</footer>
+          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">{copy.reviewBylines[1]}</footer>
           <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
         </blockquote>
         <blockquote class="card">
           <p>"Dropped it off in the morning and it was done by noon. No paint, no filler, just the dent completely gone. Worth every penny."</p>
-          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">— Bedford area customer</footer>
+          <footer style="margin-top:12px;font-style:italic;font-size:0.9rem;color:var(--rust);">{copy.reviewBylines[2]}</footer>
           <div style="color:#f5a623;font-size:1.1rem;letter-spacing:2px;margin-top:6px;">★★★★★</div>
         </blockquote>
       </div>

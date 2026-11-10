@@ -4,19 +4,24 @@ import { BUSINESS, buildLocalBusinessSchema, LEAD_CTA } from '../lib/business';
 
 const canonical = 'https://alldentpdr.com/nationwide-hail-damage-repair';
 const title = 'Nationwide Hail Damage Repair & Storm Response | All Dent PDR';
-const description = 'All Dent PDR deploys for major hail events nationwide while our home shop remains at Greater Cleveland & Northeast Ohio. Storm-response paintless dent repair for fleets, dealerships, and insurance partners.';
+const description = `All Dent PDR deploys for major hail events nationwide. Day-to-day local paintless dent repair is currently in ${BUSINESS.regionLabel}; storm teams rotate to the next market after regional hail.`;
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Nationwide Hail Response', url: canonical },
 ];
 const faqItems = [
   {
-    question: 'Is All Dent PDR a mobile-only company?',
-    answer: `No. Our primary location is an in-shop paintless dent repair facility at ${BUSINESS.regionLabel}. We also deploy teams for large-scale hail events when storm volume requires additional capacity.`,
+    question: 'Where is All Dent PDR based right now?',
+    answer: `${BUSINESS.deploymentBlurb} For local PDR near you today, see ${BUSINESS.pdrHubPath}.`,
   },
   {
     question: 'Who should contact you for nationwide hail response?',
     answer: 'Dealership groups, fleet operators, insurance partners, and property managers coordinating post-storm vehicle repair can use our contact form with fleet details and storm location.',
+  },
+  {
+    question: 'Will you return to Northeast Ohio?',
+    answer:
+      'Yes. When the next major hail event hits Northeast Ohio, we plan to redeploy local service and reactivate Cleveland-area SEO pages. Until then, Cleveland market pages are archival.',
   },
 ];
 const schema = buildLocalBusinessSchema({
@@ -34,24 +39,28 @@ const schema = buildLocalBusinessSchema({
 
   <section class="page-hero page-hero--services">
     <div class="container">
-      <span class="section-label">Storm response · Separate from local shop service</span>
+      <span class="section-label">Storm response · Rotating local markets</span>
       <h1>Nationwide hail damage repair &amp; storm response</h1>
       <p>
-        All Dent PDR is rooted at <strong>{BUSINESS.regionLabel}</strong> in Cleveland, Ohio — our home shop for Northeast Ohio drivers.
-        For major hail events, we also coordinate deployment to storm-affected markets for dealerships, fleets, and insurance partners.
+        All Dent PDR runs a <strong>storm-season deployment model</strong>: local paintless dent repair where the team is
+        stationed today (<strong>{BUSINESS.regionLabel}</strong>), plus nationwide capacity when hail volume demands it.
       </p>
       <div class="button-row" style="justify-content:center;margin-top:16px;">
         <a class="button primary" href={LEAD_CTA.href}>Contact for storm deployment</a>
+        <a class="button ghost" href={BUSINESS.pdrHubPath}>Current local market</a>
       </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <h2>Local shop first — nationwide when storms demand it</h2>
+      <h2>Local market today — Cincinnati</h2>
       <p>
-        Cleveland-area customers should visit our shop or use our <a href="/paintless-dent-repair-cleveland-oh">Cleveland PDR page</a> and
-        <a href="/hail-damage-repair-cleveland">Cleveland hail repair page</a>. This page is for commercial storm-response inquiries outside our daily local market.
+        Cincinnati-area customers should use our <a href={BUSINESS.pdrHubPath}>Cincinnati PDR hub</a> and
+        <a href={BUSINESS.hailHubPath}>Cincinnati hail repair page</a> or <a href="/service-area">service area</a> for city pages.
+      </p>
+      <p>
+        This page is for commercial storm-response inquiries and scheduling the <em>next</em> deployment market.
       </p>
     </div>
   </section>

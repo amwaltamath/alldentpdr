@@ -5,8 +5,8 @@ import ChatWidget from '../components/ChatWidget.jsx';
 import { buildLocalBusinessSchema, BUSINESS, LEAD_CTA, SHOP_TAGLINE } from '../lib/business';
 
 const {
-  title = 'AllDent PDR | Paintless Dent Repair Cleveland, OH',
-  description = SHOP_TAGLINE + ' Hail damage, door dings, and insurance-supported PDR.',
+  title = 'AllDent PDR | Paintless Dent Repair Cincinnati, OH',
+  description = SHOP_TAGLINE + ' Hail damage, door dings, autobody collision repair, and insurance-supported estimates.',
   canonical = 'https://alldentpdr.com',
   ogImage = '/images/logo-branded.svg',
   noindex = false,
@@ -243,20 +243,21 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
               <img src="/images/logo.jpg" alt="AllDent PDR" class="logo-img" />
               <div class="logo-text">
                 <span class="logo-mark" style="color:#fff;">AllDent PDR</span>
-                <span class="logo-sub">Cleveland, OH · Serving NE Ohio</span>
+                <span class="logo-sub">Cincinnati, OH · Greater Cincinnati</span>
               </div>
             </div>
             <p>
-              All Dent PDR provides paintless dent repair and hail damage restoration across Greater Cleveland
-              and Northeast Ohio — including Bedford, Garfield Heights, Parma, Independence, and Solon.
+              All Dent PDR provides paintless dent repair and hail damage restoration across {BUSINESS.regionLabel}.
+              We redeploy to hail-affected markets after major storms — see nationwide storm response.
             </p>
           </div>
           <div>
             <h5>Services</h5>
-            <p><a href="/paintless-dent-repair-cleveland-oh">PDR Cleveland</a></p>
-            <p><a href="/hail-damage-repair-cleveland">Hail Repair Cleveland</a></p>
-            <p><a href="/bedford-paintless-dent-repair">PDR Bedford</a></p>
-            <p><a href="/bedford-hail-damage-repair">Hail Repair Bedford</a></p>
+            <p><a href={BUSINESS.pdrHubPath}>PDR Cincinnati</a></p>
+            <p><a href={BUSINESS.hailHubPath}>Hail Cincinnati</a></p>
+            <p><a href="/paintless-dent-repair/mason">PDR Mason</a></p>
+            <p><a href="/paintless-dent-repair/west-chester">PDR West Chester</a></p>
+            <p><a href="/nationwide-hail-damage-repair">Storm deployment</a></p>
             <p><a href="/services">All Services</a></p>
             <p><a href="/our-work">Our Work</a></p>
             <p><a href="/testimonials">Reviews</a></p>
@@ -264,11 +265,11 @@ const isActiveLink = (href: string) => pathname === href || pathname.startsWith(
           <div>
             <h5>Service Areas</h5>
             <p><a href="/service-area">All Service Areas</a></p>
-            <p><a href="/paintless-dent-repair/garfield-heights">Garfield Heights</a></p>
-            <p><a href="/paintless-dent-repair/parma">Parma</a></p>
-            <p><a href="/paintless-dent-repair/solon">Solon</a></p>
-            <p><a href="/hail-damage-repair/maple-heights">Maple Heights</a></p>
-            <p><a href="/hail-damage-repair/independence">Independence</a></p>
+            <p><a href="/paintless-dent-repair/blue-ash">Blue Ash</a></p>
+            <p><a href="/paintless-dent-repair/fairfield">Fairfield</a></p>
+            <p><a href="/paintless-dent-repair/milford">Milford</a></p>
+            <p><a href="/hail-damage-repair/mason">Hail Mason</a></p>
+            <p><a href="/hail-damage-repair/cincinnati">Hail Cincinnati</a></p>
           </div>
           <div>
             <h5>Contact</h5>

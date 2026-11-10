@@ -66,8 +66,12 @@ const schema = buildLocalBusinessSchema({
       <h2>Related services &amp; locations</h2>
       <div class="grid-3">
         <article class="card">
-          <h3><a href="/paintless-dent-repair-cleveland-oh">PDR Cleveland, OH</a></h3>
-          <p>Our primary Cleveland-area landing page with FAQs and before/after work.</p>
+          <h3><a href={BUSINESS.pdrHubPath}>PDR {BUSINESS.addressLocality}, OH</a></h3>
+          <p>Our primary local market landing page with FAQs and service details.</p>
+        </article>
+        <article class="card">
+          <h3><a href="/autobody-repair">Autobody &amp; collision repair</a></h3>
+          <p>Paint, bumpers, and conventional body work when PDR is not the right method.</p>
         </article>
         <article class="card">
           <h3><a href="/hail-damage-repair">Hail damage repair</a></h3>

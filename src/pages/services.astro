@@ -2,15 +2,17 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BeforeAfter from '../components/BeforeAfter.jsx';
 
-const title = 'Paintless Dent Repair Services Cleveland, OH | All Dent PDR';
-const description = 'Professional paintless dent repair and hail damage repair at All Dent PDR’s shop — Greater Cleveland & Northeast Ohio. Serving Bedford, Parma, and 20+ Northeast Ohio communities. Free estimate online.';
+import { BUSINESS } from '../lib/business';
+
+const title = `Paintless Dent Repair Services Cincinnati, OH | All Dent PDR`;
+const description = `Paintless dent repair and hail damage restoration in ${BUSINESS.regionLabel}. Serving Mason, West Chester, Blue Ash, and Greater Cincinnati. Free estimate online.`;
 const breadcrumbs = [
   { name: 'Home', url: 'https://alldentpdr.com' },
   { name: 'Services', url: 'https://alldentpdr.com/services' }
 ];
 const faqItems = [
-  { question: 'Where is All Dent PDR’s shop located?', answer: 'Our shop is at Greater Cleveland & Northeast Ohio — serving Bedford, Parma, Garfield Heights, and 20+ Northeast Ohio communities. Commercial nationwide hail deployment is available separately for storm events.' },
-  { question: 'How much does paintless dent repair cost near Bedford, Ohio?', answer: 'PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75-$150, while hail damage is quoted per panel after an in-person inspection at our shop.' },
+  { question: 'Where is All Dent PDR serving locally right now?', answer: `We are focused on ${BUSINESS.regionLabel}, including Cincinnati, Mason, West Chester, and Blue Ash. Nationwide hail deployment is available when we rotate to the next storm market.` },
+  { question: 'How much does paintless dent repair cost near Cincinnati, Ohio?', answer: 'PDR pricing depends on dent size, location, and panel accessibility. Small door dings typically start around $75-$150, while hail damage is quoted per panel after an inspection with photos or in person.' },
   { question: 'How long does paintless dent repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Hail damage with multiple panels may take 1-3 days. We provide realistic timelines upfront so you can plan.' },
   { question: 'Will PDR damage my factory paint?', answer: 'No. Paintless dent repair preserves your original factory finish. We reshape the metal from behind the panel without using fillers, sanding, or repainting.' },
   { question: 'What types of dents can be fixed with PDR?', answer: 'PDR works best on dents where the paint surface is intact — including door dings, hail dents, minor collision dents, and creases. Very sharp or stretched-metal dents may require conventional repair.' },
@@ -22,8 +24,8 @@ const faqItems = [
   <section class="page-hero page-hero--services services-hero-shell">
     <div class="container">
       <span class="section-label">Our Services — Cleveland, OH</span>
-      <h1>Paintless dent repair &amp; hail damage repair in Northeast Ohio</h1>
-      <p>All Dent PDR's shop at <strong>Greater Cleveland & Northeast Ohio</strong> serves Bedford, OH and 20+ surrounding communities. From single door dings to full hail storm recovery — expert PDR with insurance direct billing and free written estimates.</p>
+      <h1>Paintless dent repair in Greater Cincinnati</h1>
+      <p>All Dent PDR serves <strong>{BUSINESS.regionLabel}</strong> — Cincinnati, Mason, West Chester, and surrounding communities. Door dings, hail, and insurance-supported PDR with free written estimates.</p>
       <div class="button-row" style="justify-content:center;margin-top:16px;">
         <a class="button primary" href="/service-area">View All Service Areas</a>
         <a class="button ghost" href="/contact">Schedule a Visit</a>
@@ -58,7 +60,12 @@ const faqItems = [
         <p>Fast paintless repair for parking lot dents and light creases.</p>
       </article>
       <article class="card services-lane-card">
-        <span class="tag">Collision</span>
+        <span class="tag">Autobody</span>
+        <h3><a href="/services/autobody-collision-repair">Autobody &amp; collision repair</a></h3>
+        <p>Paint, bumpers, panel work, and insurance collision claims — plus PDR when possible.</p>
+      </article>
+      <article class="card services-lane-card">
+        <span class="tag">Collision PDR</span>
         <h3><a href="/services/minor-collision-dent-repair">Minor collision dent repair</a></h3>
         <p>PDR for low-speed impacts when paint is still intact.</p>
       </article>

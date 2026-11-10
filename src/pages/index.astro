@@ -6,12 +6,12 @@ import { customerStories } from '../data/customer-stories';
 import { getGoogleReviews } from '../lib/google-reviews';
 import { BUSINESS, LEAD_CTA } from '../lib/business';
 
-const title = 'Paintless Dent Repair Cleveland, OH | All Dent PDR';
-const description = `All Dent PDR serves ${BUSINESS.regionLabel} with paintless dent repair, hail damage restoration, door dings, and insurance-supported PDR.`;
+const title = 'Paintless Dent Repair Cincinnati, OH | All Dent PDR';
+const description = `All Dent PDR serves ${BUSINESS.regionLabel} with paintless dent repair, hail damage restoration, door dings, and insurance-supported estimates. Storm deployment to other markets after major hail events.`;
 const faqItems = [
-  { question: 'What areas does All Dent PDR serve?', answer: `We serve ${BUSINESS.regionLabel}, including Bedford, Parma, Solon, Garfield Heights, and surrounding communities. For large-scale storm deployment, see our nationwide hail response page.` },
+  { question: 'What areas does All Dent PDR serve right now?', answer: `We are currently serving ${BUSINESS.regionLabel}, including Cincinnati, Mason, West Chester, Blue Ash, Fairfield, and surrounding communities. After major hail storms we redeploy — see our nationwide hail response page.` },
   { question: 'What is paintless dent repair?', answer: 'Paintless dent repair (PDR) is a technique that removes dents from vehicle panels without sanding, filling, or repainting. A technician uses specialized tools to reshape the metal from behind the panel, preserving your factory paint finish.' },
-  { question: 'How much does paintless dent repair cost near Cleveland, Ohio?', answer: 'PDR cost depends on dent size, location, and accessibility. Small door dings typically range from $75-$150. Hail damage is quoted per panel after an in-person inspection so we can price the repair accurately.' },
+  { question: 'How much does paintless dent repair cost near Cincinnati, Ohio?', answer: 'PDR cost depends on dent size, location, and accessibility. Small door dings typically range from $75-$150. Hail damage is quoted per panel after an inspection with photos or in person so we can price the repair accurately.' },
   { question: 'How long does a typical PDR repair take?', answer: 'Most single-dent repairs are completed in 1-3 hours. Multi-panel hail damage may take a full day. We provide a timeline upfront so you can plan accordingly.' }
 ];
 
@@ -23,24 +23,25 @@ const showStaticStories = googleReviews.source !== 'live' || googleReviews.revie
 	<section class="hero">
 		<div class="container hero-inner">
 			<div>
-				<h1>Paintless Dent Repair &amp; Hail Damage Repair in Cleveland, OH</h1>
+				<h1>Paintless Dent Repair in Cincinnati, OH</h1>
 				<p>
-					All Dent PDR is a professional paintless dent repair team serving <strong>{BUSINESS.regionLabel}</strong>
-					— including Bedford, Garfield Heights, Parma, Independence, and Solon.
-					We handle hail damage, door dings, and insurance-supported PDR while preserving your vehicle's factory paint.
+					All Dent PDR is serving <strong>{BUSINESS.regionLabel}</strong>
+					— including Cincinnati, Mason, West Chester, Blue Ash, and Milford.
+					We specialize in paintless dent repair and hail damage with factory finish preserved.
+					{BUSINESS.deploymentBlurb}
 				</p>
 				<div class="button-row">
 					<a class="button primary" href="/contact">Request an Inspection</a>
-					<a class="button ghost" href="/paintless-dent-repair-cleveland-oh">Cleveland PDR Services</a>
+					<a class="button ghost" href={BUSINESS.pdrHubPath}>Cincinnati PDR hub</a>
 					<a class="button ghost" href={LEAD_CTA.href}>{LEAD_CTA.label}</a>
 				</div>
 			</div>
 			<div class="hero-card">
-				<h3>Why Cleveland-area drivers choose All Dent PDR</h3>
+				<h3>Why Greater Cincinnati drivers choose All Dent PDR</h3>
 				<ul>
 					<li>Certified paintless dent repair technicians</li>
 					<li>Premium, detail-first workmanship on every panel</li>
-					<li>Local PDR across Northeast Ohio</li>
+					<li>Local PDR across Southwest Ohio</li>
 					<li>Preserve your factory paint &amp; vehicle value</li>
 					<li>Insurance-approved repairs with direct billing</li>
 					<li>Inspection-based pricing for accurate repair planning</li>
@@ -53,23 +54,26 @@ const showStaticStories = googleReviews.source !== 'live' || googleReviews.revie
 
 	<div class="trust-strip">
 		<div class="trust-item"><strong>1,000+</strong><span>Vehicles Repaired</span></div>
-		<div class="trust-item"><strong>Cleveland, OH</strong><span>Service Area</span></div>
+		<div class="trust-item"><strong>Cincinnati, OH</strong><span>Current market</span></div>
 		<div class="trust-item"><strong>100%</strong><span>Paint Preserved</span></div>
 		<div class="trust-item"><strong>Detail-First</strong><span>In-Person Evaluations</span></div>
 	</div>
 
 	<section class="section">
 		<div class="container">
-			<span class="section-label">Storm Response</span>
-			<h2>Serving Greater Cleveland and all of Northeast Ohio</h2>
+			<span class="section-label">Local service</span>
+			<h2>Serving Greater Cincinnati and Southwest Ohio</h2>
 			<p>
-				We help drivers across south Cleveland, Garfield Heights, Cuyahoga Heights, and surrounding suburbs.
-				Request a free hail inspection or contact us for insurance-approved paintless dent repair.
+				We help drivers across Cincinnati, Norwood, Kenwood, Anderson Township, and surrounding suburbs.
+				Request a hail or dent inspection through our contact form — we reply the same business day.
 			</p>
 			<p>
-				We serve Bedford, Parma, Maple Heights, Solon, Warrensville Heights, Twinsburg, Beachwood,
-				and dozens of other communities across Cuyahoga and Summit counties.
+				We serve Mason, West Chester, Fairfield, Hamilton, Blue Ash, Milford, Loveland, Sharonville, and more.
 				<a href="/service-area">See our full service area →</a>
+			</p>
+			<p>
+				After major hail events we redeploy to storm-affected markets.
+				<a href="/nationwide-hail-damage-repair">Nationwide storm response →</a>
 			</p>
 			<div class="button-row" style="justify-content: center;">
 				<a class="button primary" href="/contact">Request an Inspection</a>
@@ -227,38 +231,38 @@ const showStaticStories = googleReviews.source !== 'live' || googleReviews.revie
 	<section class="section">
 		<div class="container">
 			<span class="section-label">Local Services</span>
-			<h2>Paintless dent repair across Northeast Ohio</h2>
-			<p>Explore dedicated service pages for the repairs and markets that matter most.</p>
+			<h2>Paintless dent repair across Greater Cincinnati</h2>
+			<p>Explore dedicated PDR pages for the communities we serve today.</p>
 			<div class="grid-3">
 				<article class="card">
-					<span class="tag">Cleveland</span>
-					<h3><a href="/paintless-dent-repair-cleveland-oh">Paintless Dent Repair Cleveland</a></h3>
-					<p>Door dings, hail dents, creases, and minor collision damage across the Cleveland area.</p>
+					<span class="tag">Cincinnati</span>
+					<h3><a href={BUSINESS.pdrHubPath}>Paintless Dent Repair Cincinnati</a></h3>
+					<p>Door dings, hail dents, and factory-finish PDR across the Queen City.</p>
 				</article>
 				<article class="card">
-					<span class="tag">Hail Damage</span>
-					<h3><a href="/hail-damage-repair-cleveland">Hail Damage Repair Cleveland</a></h3>
-					<p>Storm-season hail repair with insurance billing and factory-finish PDR restoration.</p>
+					<span class="tag">Hail</span>
+					<h3><a href={BUSINESS.hailHubPath}>Hail Damage Repair Cincinnati</a></h3>
+					<p>Storm dent restoration with insurance billing and panel-by-panel PDR.</p>
 				</article>
 				<article class="card">
-					<span class="tag">Bedford</span>
-					<h3><a href="/bedford-paintless-dent-repair">Paintless Dent Repair Bedford</a></h3>
-					<p>Fast service for Bedford drivers — same technicians and premium repair standard.</p>
+					<span class="tag">Mason</span>
+					<h3><a href="/paintless-dent-repair/mason">PDR Mason, OH</a></h3>
+					<p>Warren County hail and door ding repair.</p>
 				</article>
 				<article class="card">
-					<span class="tag">Bedford Hail</span>
-					<h3><a href="/bedford-hail-damage-repair">Hail Damage Repair Bedford</a></h3>
-					<p>Post-storm hail inspections and panel-by-panel repair for Bedford-area drivers.</p>
+					<span class="tag">West Chester</span>
+					<h3><a href="/paintless-dent-repair/west-chester">PDR West Chester</a></h3>
+					<p>Butler County paintless dent repair.</p>
 				</article>
 				<article class="card">
-					<span class="tag">Parma</span>
-					<h3><a href="/paintless-dent-repair/parma">PDR Parma, OH</a></h3>
-					<p>Convenient access from Parma with walk-in inspections and direct insurance billing.</p>
+					<span class="tag">Blue Ash</span>
+					<h3><a href="/paintless-dent-repair/blue-ash">PDR Blue Ash, OH</a></h3>
+					<p>Kenwood corridor and I-71 commuter dents.</p>
 				</article>
 				<article class="card">
 					<span class="tag">All Areas</span>
 					<h3><a href="/service-area">Full Service Area</a></h3>
-					<p>Garfield Heights, Maple Heights, Solon, Independence, Twinsburg, Beachwood, and more.</p>
+					<p>Fairfield, Hamilton, Milford, Loveland, Norwood, Sharonville, and more.</p>
 				</article>
 			</div>
 		</div>

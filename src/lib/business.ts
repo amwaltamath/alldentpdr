@@ -1,5 +1,9 @@
 /** Canonical business identity for copy, schema, and contact consistency. */
 
+import { getActiveMarket } from './activeMarket';
+
+const active = getActiveMarket();
+
 export const BUSINESS = {
   name: 'All Dent PDR',
   brand: 'AllDent PDR',
@@ -7,13 +11,16 @@ export const BUSINESS = {
   phone: '1-855-425-5336',
   phoneTel: '18554255336',
   email: 'admin@alldentpdr.com',
-  addressLocality: 'Cleveland',
-  addressRegion: 'OH',
+  addressLocality: active.locality,
+  addressRegion: active.region,
   addressCountry: 'US',
   /** Public-facing service region (no street address on the website). */
-  regionLabel: 'Greater Cleveland & Northeast Ohio',
-  serviceAreaSummary:
-    'Bedford, Garfield Heights, Parma, Solon, Independence, and communities throughout Northeast Ohio',
+  regionLabel: active.regionLabel,
+  serviceAreaSummary: active.serviceAreaSummary,
+  /** Primary local PDR landing page for the active market */
+  pdrHubPath: active.pdrHubPath,
+  hailHubPath: active.hailHubPath,
+  deploymentBlurb: active.deploymentBlurb,
   googleReviewUrl: 'https://share.google/7cCa7EhinPDCM8Owu',
   facebookUrl: 'https://www.facebook.com/alldentpdr/',
 } as const;
@@ -27,22 +34,9 @@ export const LEAD_CTA = {
 
 export const SAME_AS = [BUSINESS.googleReviewUrl, BUSINESS.facebookUrl];
 
-export const SERVICE_AREA_CITIES = [
-  'Bedford',
-  'Bedford Heights',
-  'Garfield Heights',
-  'Maple Heights',
-  'Parma',
-  'Independence',
-  'Solon',
-  'Warrensville Heights',
-  'Twinsburg',
-  'Beachwood',
-  'Cleveland',
-] as const;
+export const SERVICE_AREA_CITIES = active.schemaCities;
 
-export const SHOP_TAGLINE =
-  'Professional paintless dent repair and hail damage restoration serving Greater Cleveland and Northeast Ohio.';
+export const SHOP_TAGLINE = `Professional paintless dent repair and hail damage restoration serving ${active.regionLabel}. Storm-season deployment to hail-affected markets nationwide.`;
 
 export const OPENING_HOURS_SPECIFICATION = [
   {

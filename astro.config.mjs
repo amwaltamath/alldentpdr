@@ -7,10 +7,13 @@ import { fileURLToPath } from 'node:url';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
+import { getActiveMarket } from './src/lib/activeMarket.ts';
+import { isExcludedFromSitemap } from './src/lib/sitemapPolicy.ts';
 import { serviceAreas } from './src/data/serviceAreas.ts';
 
 const BASE = 'https://alldentpdr.com';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const active = getActiveMarket();
 
 const corePages = [
   '/',
@@ -20,6 +23,8 @@ const corePages = [
   '/services/door-ding-repair',
   '/services/minor-collision-dent-repair',
   '/services/insurance-hail-damage-repair',
+  '/services/autobody-collision-repair',
+  '/autobody-repair',
   '/nationwide-hail-damage-repair',
   '/contact',
   '/service-area',
@@ -27,12 +32,8 @@ const corePages = [
   '/testimonials',
   '/privacy-policy',
   '/hail-damage-repair',
-  '/bedford-paintless-dent-repair',
-  '/bedford-hail-damage-repair',
-  '/bedford-door-ding-repair',
-  '/hail-damage-repair-bedford-ohio',
-  '/hail-damage-repair-cleveland',
-  '/paintless-dent-repair-cleveland-oh',
+  active.pdrHubPath,
+  active.hailHubPath,
   '/blog',
 ];
 
@@ -46,6 +47,7 @@ const cityRoutePrefixes = [
   'hail-damage-repair',
   'paintless-dent-repair',
   'door-ding-repair',
+  'autobody-repair',
 ];
 
 // SSR mode requires customPages since non-prerendered pages are not auto-discovered.
@@ -54,10 +56,10 @@ const customPages = [
     ...corePages.map((page) => `${BASE}${page === '/' ? '' : page}`),
     ...blogSlugs.map((slug) => `${BASE}/blog/${slug}`),
     ...cityRoutePrefixes.flatMap((prefix) =>
-      citySlugs.map((slug) => `${BASE}/${prefix}/${slug}`)
+      citySlugs.map((slug) => `${BASE}/${prefix}/${slug}`),
     ),
   ]),
-];
+].filter((url) => !isExcludedFromSitemap(url));
 
 // https://astro.build/config
 export default defineConfig({
@@ -69,10 +71,7 @@ export default defineConfig({
     react(),
     sitemap({
       customPages,
-      filter: (page) =>
-        !page.includes('/portal/') &&
-        !page.includes('/register') &&
-        !page.includes('/card/'),
+      filter: (page) => !isExcludedFromSitemap(page),
     }),
   ],
 });

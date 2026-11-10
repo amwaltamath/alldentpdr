@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS, buildLocalBusinessSchema } from '../lib/business';
+
+const title = 'Paintless Dent Repair Cincinnati, OH | Free Estimate | All Dent PDR';
+const description = `Paintless dent repair in Cincinnati, OH and Greater Cincinnati. Hail dents, door dings, and factory-finish PDR — Mason, West Chester, Blue Ash, Milford, and Southwest Ohio.`;
+const canonical = 'https://alldentpdr.com/paintless-dent-repair-cincinnati-oh';
+
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Paintless Dent Repair Cincinnati', url: canonical },
+];
+
+const faqItems = [
+  {
+    question: 'Where does All Dent PDR offer local paintless dent repair in Ohio?',
+    answer: `We are currently focused on ${BUSINESS.regionLabel}, including Cincinnati, Mason, West Chester, Fairfield, and surrounding communities. After major hail events we also deploy to other storm markets.`,
+  },
+  {
+    question: 'What is paintless dent repair?',
+    answer:
+      'PDR removes dents by reshaping metal from behind the panel without fillers or repainting — preserving your factory OEM finish.',
+  },
+  {
+    question: 'How do I get a PDR estimate in Cincinnati?',
+    answer: 'Submit an inspection request at alldentpdr.com/contact with photos of the damage. We reply the same business day with next steps.',
+  },
+  {
+    question: 'Does insurance cover hail and dent repair?',
+    answer:
+      'Comprehensive coverage often applies to hail; other damage may fall under collision. We document panels and work with major carriers.',
+  },
+];
+
+const schema = buildLocalBusinessSchema({
+  name: 'All Dent PDR — Paintless Dent Repair Cincinnati OH',
+  description,
+  url: canonical,
+});
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </Fragment>
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="hero-pill">Paintless Dent Repair · Cincinnati, OH</span>
+        <h1>Paintless dent repair in Cincinnati, Ohio</h1>
+        <p>
+          All Dent PDR is serving <strong>{BUSINESS.regionLabel}</strong> with professional paintless dent repair —
+          hail damage, door dings, parking lot dents, and insurance-supported PDR while your factory paint stays intact.
+        </p>
+        <p>{BUSINESS.deploymentBlurb}</p>
+        <div class="button-row">
+          <a class="button primary" href="/contact">Request an inspection</a>
+          <a class="button ghost" href="/service-area">View service cities</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>Why Cincinnati-area drivers choose us</h3>
+        <ul>
+          <li>Panel-by-panel inspections &amp; written estimates</li>
+          <li>Factory paint preserved — no unnecessary repainting</li>
+          <li>Hail, door dings &amp; minor impact dents</li>
+          <li>Insurance documentation &amp; billing support</li>
+          <li>Photo-based intake — fast replies</li>
+        </ul>
+        <p class="tag">{BUSINESS.regionLabel}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <span class="section-label">Local PDR</span>
+      <h2>Communities we serve from Cincinnati</h2>
+      <p>Mason, West Chester, Fairfield, Hamilton, Blue Ash, Kenwood, Milford, Loveland, Norwood, and more.</p>
+      <div class="button-row" style="justify-content:center;">
+        <a class="button primary" href="/paintless-dent-repair/mason">PDR Mason, OH</a>
+        <a class="button ghost" href="/paintless-dent-repair/west-chester">PDR West Chester</a>
+        <a class="button ghost" href="/paintless-dent-repair/blue-ash">PDR Blue Ash</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

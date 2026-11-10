@@ -50,7 +50,7 @@ const faqSchema = {
 };
 ---
 
-<BaseLayout title={title} description={description} canonical={canonical} bare={true}>
+<BaseLayout title={title} description={description} canonical={canonical} bare={true} noindex={true}>
 	<Fragment slot="head">
 		<script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
 		<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />

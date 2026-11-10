@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BUSINESS } from '../lib/business';
+
+const title = 'Autobody Repair Cleveland & Northeast Ohio | All Dent PDR';
+const description = `Autobody and collision repair in ${BUSINESS.regionLabel}. Bumper repair, paint, panel work, and insurance claims — with paintless dent repair when your factory finish can be saved.`;
+const canonical = 'https://alldentpdr.com/autobody-repair';
+
+const breadcrumbs = [
+  { name: 'Home', url: 'https://alldentpdr.com' },
+  { name: 'Autobody Repair', url: canonical },
+];
+
+const faqItems = [
+  {
+    question: 'Is All Dent PDR an autobody shop?',
+    answer:
+      'We are best known for paintless dent repair and hail damage, but we also perform autobody and collision repair when damage requires paint, parts, or conventional body methods. You get an honest recommendation on PDR vs. body shop repair for each panel.',
+  },
+  {
+    question: 'What autobody services do you offer in Cleveland?',
+    answer:
+      'Typical work includes bumper repair, scratch and paint damage, door and fender repair, panel replacement when needed, and insurance-supported collision restoration across Greater Cleveland and Northeast Ohio.',
+  },
+  {
+    question: 'How do I get an autobody estimate?',
+    answer:
+      'Submit an inspection request at alldentpdr.com/contact with photos of the damage, your vehicle year/make/model, and insurance details if applicable. We reply the same business day with next steps.',
+  },
+  {
+    question: 'Do you still do paintless dent repair?',
+    answer:
+      'Yes — PDR remains our core specialty. Many customers use us for hail and dings, and for collision jobs where only some panels need conventional repair.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} breadcrumbs={breadcrumbs} faqItems={faqItems}>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="hero-pill">Autobody Repair · Cleveland, OH</span>
+        <h1>Autobody &amp; collision repair in Northeast Ohio</h1>
+        <p>
+          All Dent PDR serves <strong>{BUSINESS.regionLabel}</strong> with autobody repair, collision restoration,
+          and paint work when your vehicle needs more than paintless dent repair — plus PDR when the factory finish can stay intact.
+        </p>
+        <div class="button-row">
+          <a class="button primary" href="/contact">Request an inspection</a>
+          <a class="button ghost" href="/services/autobody-collision-repair">Service details</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>Why drivers choose us for body work</h3>
+        <ul>
+          <li>PDR-first mindset — no unnecessary repainting</li>
+          <li>Conventional autobody when the damage requires it</li>
+          <li>Insurance collision &amp; comprehensive support</li>
+          <li>One team for hail, dings, and collision damage</li>
+          <li>Inspection-based estimates before repair begins</li>
+        </ul>
+        <p class="tag">{BUSINESS.regionLabel}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <span class="section-label">Repairs</span>
+      <h2>Auto body shop services we perform</h2>
+      <div class="grid-3">
+        <article class="card">
+          <h3>Collision &amp; fender damage</h3>
+          <p>Low-speed impacts, parking lot collisions, and side-swipe damage with paint or panel deformation.</p>
+        </article>
+        <article class="card">
+          <h3>Bumper repair</h3>
+          <p>Plastic bumper covers, sensors, and paint match after impact.</p>
+        </article>
+        <article class="card">
+          <h3>Paint &amp; scratch repair</h3>
+          <p>When clear coat or color is broken and refinish is the correct fix.</p>
+        </article>
+      </div>
+      <div class="button-row" style="justify-content:center;margin-top:24px;">
+        <a class="button primary" href="/autobody-repair-cleveland">Cleveland autobody hub</a>
+        <a class="button ghost" href="/service-area">Cities we serve</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <span class="section-label">Learn more</span>
+      <h2>PDR vs. autobody — which do you need?</h2>
+      <p>
+        If the paint is intact, paintless dent repair is often faster and preserves resale value.
+        If paint is cracked or metal is severely stretched, conventional autobody repair is the right path.
+      </p>
+      <p><a href="/blog/pdr-vs-body-shop">Read the full comparison →</a></p>
+    </div>
+  </section>
+</BaseLayout>
